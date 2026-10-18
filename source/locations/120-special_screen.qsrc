@@ -1,0 +1,101 @@
+# special_screen
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1420 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'special_screen': gs 'snk_room_bridge', 'guard', 'special_screen'
+! JO9 MOD END J9M1420
+!Special Screen
+!Created by crushboss
+
+killvar '$special_image'
+killvar '$special_image_full'
+killvar '$special_action'
+
+gs '_layout'
+
+if $special_action[txt] ! '':
+	dynamic $special_action[txt]
+end
+
+npc = 0
+menu_form = 0
+$return_lock = 'menu_form' & city_form = 0 &! city_form = 0 to bypass menu_form ESC intercept but still play door sound
+
+if trophy_fire_staff = 0 and посох_огня = 0:
+	$place = 'edge_patrol'
+	copyarr '$text', '$fire_staff_reward_special'
+	$special_action[1] = {
+		npc = 0
+		$place = 'edge_patrol'
+	}
+	$special_action[2] = {
+		npc = 0
+	}
+	$special_action[3] = {
+		npc = 0
+	}
+	$special_action[4] = {
+		npc = 0
+	}
+	$special_action[5] = {
+		npc = 0
+	}
+	$special_action[6] = {
+		npc = 0
+	}
+	!Reset and set vars - crushboss
+	gs '$combat_variable_reset'
+	gs '$newloc'
+	get_girl = 0
+	fog_battle = 0
+	trophy_fire_staff = 1
+	посох_огня = 1
+end
+
+! JO9 MOD START J9M1419 | 2026-10-08_persistent_image_cycle, 2026-10-15_z_inline_text_prefix | changed block; context may be included
+*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\<<$bg[$place]>>.png"></div>')
+! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($text[txt], '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $text[txt] = $mid($text[txt], len($jo9_leading_empty) + 1, len($text[txt]))
+! JO9 MOD END J9M1419
+*p '<div id = "text"><<$text[txt]>></div>'
+
+*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<$place_name[$place]>></div><<$place_location[$place]>><br>'
+*nl '참고 정보:</center></div>'
+*p '<div id = "side_panel_text"><span class="jo9-reference-body"><<$place_info[$place]>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style></div>'
+
+!$info_bar = ''
+!*p '<div id = "interaction_stat_bar"><<$info_bar>></div>'
+
+if $special_image_full[txt] ! '':
+! JO9 MOD START J9M1418 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	if nsfw = 0: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="<<$special_image_full[txt]>>"></div>')
+! JO9 MOD END J9M1418
+elseif $special_image[txt] ! '':
+! JO9 MOD START J9M1417 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	if nsfw = 0: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$special_image[txt]>>"></div>')
+! JO9 MOD END J9M1417
+end
+
+if sound_on = 1 and $play_sound[txt] ! '': play 'content\snd\<<$play_sound[txt]>>.wav', sound_volume
+if $play_sound[txt] ! '': $play_sound[txt] = ''
+
+IF $interaction_type = 'talk_assistant':
+ npc = 1
+ $npc_id = 'assistant'
+ IF nsfw = 0:
+! JO9 MOD START J9M1416 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+  if assistant['image_mode'] = 0: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$fullimage[assistant_type]>>.png"></div>')
+! JO9 MOD END J9M1416
+ END
+END
+
+
+
+if txt > 1:
+	addobj '<img src = "content\pic\buttons\back_button.png">'
+else
+	addobj '<img src = "content\pic\buttons\noback_button.png">'
+end
+addobj '<img src = "content\pic\buttons\forward_button.png">'
+
+------------ special_screen ------------

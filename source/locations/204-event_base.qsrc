@@ -1,0 +1,10 @@
+# #event_base
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2929 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '#event_base': gs 'snk_room_bridge', 'guard', '#event_base'
+! JO9 MOD END J9M2929
+!База событий
+$event['спасение_рождества'] = '<a href = "EXEC:Спасение рождества. Вызывается на 5 игровой день диалогом с Анжеликой. Событие включает в себя 11 уровней.</a>'
+
+$event['Akabur_quest'] = '<a href = "EXEC:Помогаем Джинну и ведьме выйти из тупика в котором они оказались. Событие включает в себя Х уровней.</a>'
+------------ #event_base ------------

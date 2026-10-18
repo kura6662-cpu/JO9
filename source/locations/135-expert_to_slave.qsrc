@@ -1,0 +1,13 @@
+# expert_to_slave
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2882 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'expert_to_slave': gs 'snk_room_bridge', 'guard', 'expert_to_slave'
+! JO9 MOD END J9M2882
+!Expert sends found slave to master
+
+dynamic $swap_slave_instances, 'slave', 'selected'
+master_moodlet['pos_new_slave'] = 6 - brand_reputation
+
+killvar 'search'
+
+------------ expert_to_slave ------------

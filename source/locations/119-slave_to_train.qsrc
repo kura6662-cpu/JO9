@@ -1,0 +1,71 @@
+# slave_to_train
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1415 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'slave_to_train': gs 'snk_room_bridge', 'guard', 'slave_to_train'
+! JO9 MOD END J9M1415
+!Осмотр рабыни на обучение по контракту
+gs '_layout'
+
+:loop
+gs 'generate_stock'
+!if slave_base_price < contractor_demand['base_price']: jump 'loop'
+if stock['age'] = contractor_demand['refuse_age']: jump 'loop'
+if contractor_demand['agree_age'] ! 0 and stock['age'] ! iif(no_loli = 1 and contractor_demand['agree_age'] = CONST_INT['loli_age'], CONST_INT['young_age'], contractor_demand['agree_age']): jump 'loop'
+if stock['stamina'] < contractor_demand['min_stamina']: jump 'loop'
+if stock['sensitivity'] < contractor_demand['min_sensitivity']: jump 'loop'
+if stock['temper'] < contractor_demand['min_temper']: jump 'loop'
+if stock['beauty'] < contractor_demand['min_beauty']: jump 'loop'
+if stock['virginity'] > 1 and contractor_demand['virginity'] = 1: jump 'loop'
+if stock['temper'] > contractor_demand['max_temper']: jump 'loop'
+
+killvar 'contractor_demand'
+contractor_demand['refuse_age'] = 99
+contractor_demand['max_temper'] = 99
+
+! JO9 MOD START J9M1414 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\dungeon.png"></div>')
+! JO9 MOD END J9M1414
+*p func('display_fullimage', 'stock', 'bg')
+*p '<div id = "text">    Вместе со своим потенциальным работодателем вы отправляетесь в центр передержки гильдии, чтобы осмотреть предмет контракта. После тщательной оценки рабыни, вы готовы принять решение о том браться ли за контракт или отказаться от него как от бесперспективного.</div>'
+
+gs '$addon', 'info_box'
+
+*p '<div id = "interaction_stat_bar">'
+*nl '이름: <<$stock_name>>'
+*nl '나이: &nbsp;<<$slave_age_name[stock["age"]]>>'
+if $master_head_gear = 'raven_crown':
+	*nl '능력치 등급: &nbsp;<<$rating[rating]>><br>'
+else
+	*nl
+end
+*nl '<u>능력치</u>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'beauty', stock['beauty'], 1)
+*nl '<a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $красота_справка & dynamic $msg, $красота_справка_2"><<$beauty[stock["beauty"]]>></a>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'stamina', stock['stamina'], 1)
+*nl '<a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $здоровье_справка & dynamic $msg, $здоровье_справка_2"><<$stamina[stock["stamina"]]>></a>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'sensitivity', stock['sensitivity'], 1)
+*nl '<a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $чувствительность_справка & dynamic $msg, $чувствительность_справка_2"><<$sensitivity[stock["sensitivity"]]>></a>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'temper', stock['temper'], 1)
+*nl '<a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $темперамент_справка & dynamic $msg, $темперамент_справка_2"><<$temper[stock["temper"]]>></a>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'intellect', stock['intellect'], 1)
+*nl '<a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $ум_справка & dynamic $msg, $ум_справка_2"><<$intellect[stock["intellect"]]>></a>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'ego', stock['ego'], 1)
+*nl '<a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $характер_справка & dynamic $msg, $характер_справка_2"><<$ego[stock["ego"]]>></a>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'pride', -1)
+*nl '<a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $гордыня_справка & dynamic $msg, $гордыня_справка_2"><<$pride[stock["pride"]]>></a>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'exotic', stock['exotic'], 1)
+*nl '<a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $экзотичность_справка & dynamic $msg, $экзотичность_справка_2"><<$exotic[stock["exotic"]]>></a>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'fat', iif(stock['fat'] = 1 or stock['fat'] = 5, 1, 6 - stock['fat']))
+*nl '<a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $жыр_справка & dynamic $msg, $жыр_справка_2"><<$fat[stock["fat"]]>></a>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'style', stock['style'], 1)
+*nl '<a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $стиль_справка & dynamic $msg, $стиль_справка_2"><<$style[stock["style"]]>></a>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'fame', stock['fame'], 1)
+*nl '<a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $слава_справка & dynamic $msg, $слава_справка_2"><<$girl_fame[stock["fame"]]>></a>'
+*nl
+*nl '<u>특성</u>'
+*nl '<<$stock_features_list>></div>'
+
+*p '<div id = "approve"><a href = "EXEC: gt ''slave_to_train_get''"><img src="content\pic\buttons\approve.png"></a></div>'
+*p '<div id = "deny"><a href = "EXEC: city_form = 1 & gt ''city_menu_form''"><img src="content\pic\buttons\deny.png"></a></div>'
+
+------------ slave_to_train ------------

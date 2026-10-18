@@ -1,0 +1,13 @@
+# stock_to_slave
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2880 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'stock_to_slave': gs 'snk_room_bridge', 'guard', 'stock_to_slave'
+! JO9 MOD END J9M2880
+!move stock slave to master and change location after
+
+gs 'stock_to_slave_nogt'
+
+if hunting_prize = 0 and farid_potential_debt <= 0: gt 'hard_return'
+! hard_return handles get_initial_slave for starting with an assistant on easy game difficulty, and either way ends with gt $return_lock
+
+------------ stock_to_slave ------------

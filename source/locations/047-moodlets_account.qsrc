@@ -1,0 +1,95 @@
+# $moodlets_account
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2829 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$moodlets_account': gs 'snk_room_bridge', 'guard', '$moodlets_account'
+! JO9 MOD END J9M2829
+!refreshes master_mood (and $master_mood_list diary mood description texts) for master
+!derives mood from active moodlets (any with positive magnitudes) and mood_master_rate
+!called from $calculate_attributes which is called from $newloc
+
+master_mood = 0
+!note that we use a different variable (master_mood) to store the calculated numeric mood value vs. the array of numeric moodlet magnitudes (master_moodlet)
+!this is because mixing numeric and string indices in the same variable can cause unexpected results (string indices can map to the same slots as numeric indices)
+
+!AddOn - makes no sense to reset on every $newloc trigger
+!mood rate was being reset every time - changed to re-apply on each refresh and clear in next_day - ImperatorAugustus
+if master_mood_rate ! 0: master_mood += master_mood_rate &! note: mood rate can be negative (division by 10 occurs after the loops)
+
+!construct a linebreak-separated string listing mood descriptions for active moodlets and apply mood +/- adjustments
+$master_mood_list = ''
+
+n = arrsize('$master_good_mood')
+i = 0 &! array starts from index 0
+:master_mood_loop1
+	$curmod = $master_good_mood[i]
+	if master_moodlet[$curmod] > 0:
+		$master_mood_list += "   <<$mood_description[$curmod]>><br>"
+		master_mood += 10
+	end
+	i += 1
+if i < n: jump 'master_mood_loop1'
+
+!extra line break between good mood descriptions and bad mood descriptions
+if $master_mood_list ! '': $master_mood_list += '<br>'
+
+n = arrsize('$master_bad_mood')
+i = 0 &! array starts from index 0
+:master_mood_loop2
+	$curmod = $master_bad_mood[i]
+	if master_moodlet[$curmod] > 0:
+		$master_mood_list += "   <<$mood_description[$curmod]>><br>"
+		master_mood -= 15 &! extra half mood level per slaver negative moodlet to make mood management non-trivial - ImperatorAugustus
+	end
+	i += 1
+if i < n: jump 'master_mood_loop2'
+
+master_mood /= 10 &! convert from sum of rates to mood value
+
+! keep mood within [-5, +5] range
+if master_mood > 5:  master_mood = 5
+if master_mood < -5:  master_mood = -5
+
+if debug_master_mood = 1: msg 'mood rate=<<master_mood_rate>>, mood=<<master_mood>><br><<$master_mood_list>>'
+
+
+!assistant['mood'] = 0
+!killvar '$assistant_mood_list'
+!ndex_a = 0
+!if $assistant_psy_status = 'broken': jump 'loop_broken_a'
+!n = arrsize('$assistant_bad_mod')
+!i = 0
+!:loop5
+ !   i += 1
+  !  $curmod = $assistant_bad_mod[i]
+   ! if i = 10:
+    ! if assistant['nymphomania'] < 0: assistant['<<$curmod>>'] = 0
+!    end
+ !   IF assistant['<<$curmod>>'] > 0:
+  !      ndex_a += 1
+!msg 'Bad <<i>> <<$curmod>>'
+   !     $assistant_mood_list[ndex_a] = "   <<$mood_description_assistant['<<$curmod>>']>>"
+     !    assistant['mood'] -= 1
+!    END
+!if i < n: jump 'loop5'
+!n = arrsize('$assistant_good_mod')
+!i = 0
+!:loop6
+ !   i += 1
+!    $curmod = $assistant_good_mod[i]
+!    if i = 5:
+ !    if assistant['nymphomania'] < 0: assistant['<<$curmod>>'] = 0
+  !  end
+  !  IF assistant['<<$curmod>>'] > 0:
+   !     ndex_a += 1
+!msg 'Good <<i>> <<$curmod>>'        
+  !      $assistant_mood_list[ndex_a] = "   <<$mood_description_assistant['<<$curmod>>']>>"
+  !      assistant['mood'] += 1
+ !   END
+!if i < n: jump 'loop6'
+!if ndex_a < 1: $assistant_mood_list[1] = '   [<<$assistant_name>>]
+!- У меня всё в порядке. Ничего особенного...'
+!:loop_broken_a
+!if $assistant_psy_status = 'broken': $assistant_mood_list[1] = '   [<<$assistant_name>>]
+!- Никак, мне всё равно.'
+
+------------ $moodlets_account ------------

@@ -1,0 +1,569 @@
+# #help_msg
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1759 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '#help_msg': gs 'snk_room_bridge', 'guard', '#help_msg'
+! JO9 MOD END J9M1759
+!must load after #static_base and #static_txt
+!TODO: Нужен var_base для vb_cycle вставок, + придумать нормальную замену by Lyazar
+!help messages
+! JO9 MOD START J9M1758 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$красота_справка = '<br><center>외 모 -<br><br>'
+! JO9 MOD END J9M1758
+$красота_справка += dyneval($vb_cycle_skill, 0, '추함') + '<br>'
+$красота_справка += dyneval($vb_cycle_skill, 1, '평범함') + '<br>'
+$красота_справка += dyneval($vb_cycle_skill, 2, '귀여움') + '<br>'
+$красота_справка += dyneval($vb_cycle_skill, 3, '예쁨') + '<br>'
+$красота_справка += dyneval($vb_cycle_skill, 4, '아름다움') + '<br>'
+$красота_справка += dyneval($vb_cycle_skill, 5, '눈부심') + '</center>'
+
+$красота_справка_2 = '<br><br>외모는 특히 시장 가치가 높습니다.<br><br><font color="#911f9c"><u>육성 등급 상한은 외모 등급</u></font>과 같습니다.<br><br>등급이 높을수록 가격이 비쌉니다.(명성과 외모중 높은 것 우선)'
+! JO9 MOD START J9M1757 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$красота_совет = '[외모 TIPS]<br>&nbsp;외모는 선천적인 비중이 가장 크며, 만약 상처나 폭행 자국이 있다면 등급이 떨어집니다.<br> 노예의 외모를 개선 시키고 싶다면, <b>기술 집약소</b>의 <b>의학 중심지</b>에서 성형수술을 한차례 받을 수 있습니다.<br> 노예를 꾸미거나 옷을 입히는 것은 외모 등급이 아닌, 세련됨 수치를 올리는 것임을 기억해두세요.'
+! JO9 MOD END J9M1757
+
+! JO9 MOD START J9M1756 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$здоровье_справка = '<br><center>체력 -<br><br>'
+! JO9 MOD END J9M1756
+$здоровье_справка += dyneval($vb_cycle_skill, 0, '죽어감') + '<br>'
+$здоровье_справка += dyneval($vb_cycle_skill, 1, '쇠약함') + '<br>'
+$здоровье_справка += dyneval($vb_cycle_skill, 2, '평범함') + '<br>'
+$здоровье_справка += dyneval($vb_cycle_skill, 3, '건강함') + '<br>'
+$здоровье_справка += dyneval($vb_cycle_skill, 4, '강인함') + '<br>'
+$здоровье_справка += dyneval($vb_cycle_skill, 5, '근육질') + '</center>'
+$здоровье_справка_2 = '<br><br>탄력적인 몸매를 가진 노예일수록<br>더 매력적으로 고객을 잘 이끕니다.<Br>치명적인 부상이나 낮은 체력은<br>노예를 죽음에 이르게 할 수도 있습니다 '
+! JO9 MOD START J9M1755 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$здоровье_совет = '[체력 TIPS]<br>&nbsp;붉은별: 과로 보라별: 근육통 -<br>낮은 체력, 질병, 상처, 비만, 음수 열량 에는 불이익이 따릅니다. 과로와 근육통을 조심하세요.<br>체력은 근력·신체운동, 춤, 경마녀, 투기, 애완녀, 과한 성관계 로 오릅니다<br>상처 및 질병 치료는 조수의 간호기술, 약물,병원에서 가능합니다.'
+! JO9 MOD END J9M1755
+
+! JO9 MOD START J9M1754 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$экзотичность_справка = '<br><center>독특함 -<br><br>'
+! JO9 MOD END J9M1754
+$экзотичность_справка += dyneval($vb_cycle_skill, 0, '일반적') + '<br>'
+$экзотичность_справка += dyneval($vb_cycle_skill, 1, '기이함') + '<br>'
+$экзотичность_справка += dyneval($vb_cycle_skill, 2, '이국적임') + '<br>'
+$экзотичность_справка += dyneval($vb_cycle_skill, 3, '매혹적임') + '<br>'
+$экзотичность_справка += dyneval($vb_cycle_skill, 4, '신비로움') + '<br>'
+$экзотичность_справка += dyneval($vb_cycle_skill, 5, '불가사의함') + '</center>'
+$экзотичность_справка_2 = '<br><br><br>독특한 분위기를 연출할수록<br>고객들의 흥미를 더 잘 돋굽니다.'
+! JO9 MOD START J9M1753 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$экзотичность_совет = '[독특함 TIPS]<br>&nbsp;가끔 타고난 독특함을 가진 노예도 있습니다.<br>문신, 피어싱, 신체 수술, 옷, 가발 등으로 올릴 수 있습니다'
+! JO9 MOD END J9M1753
+
+! JO9 MOD START J9M1752 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$жыр_справка = '<br><center>체형 -<br><br>'
+! JO9 MOD END J9M1752
+$жыр_справка += dyneval($vb_cycle_skill, 0, '비만') + '<br>'
+$жыр_справка += dyneval($vb_cycle_skill, 2, '통통한') + '<br>'
+$жыр_справка += dyneval($vb_cycle_skill, 3, '육감적인') + '<br>'
+$жыр_справка += dyneval($vb_cycle_skill, 4, '날씬한') + '<br>'
+$жыр_справка += dyneval($vb_cycle_skill, 5, '모델 체형') + '<br>'
+$жыр_справка += dyneval($vb_cycle_skill, 1, '앙상한') + '</center>'
+$жыр_справка_2 = '<br><br>뚱뚱할 수록 많은 고기 살점이,<br>마를수록 적게 나옵니다.<br>또 과하면 매력 없으니<br>적당 체형을 유지해주세요.<br>너무 마르게는 말구요.'
+! JO9 MOD START J9M1751 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$жыр_совет = '[체형 TIPS]<br>&nbsp;몸매를 볼륨 좋게 유지하려면, 영양소 균형을 맞추어 잘 맞추어야 합니다.<br>등급비례 많은 음식이 필요하며 과식은 좋지 않습니다.<br>근력 운동이 열량 소모를 증가시킵니다.<br>강한 몸엔 많이, 약한 몸엔 적은 음식을 공급해 주세요.'
+! JO9 MOD END J9M1751
+
+! JO9 MOD START J9M1750 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$чувствительность_справка = '<br><center>감수성 -<br><br>'
+! JO9 MOD END J9M1750
+$чувствительность_справка += dyneval($vb_cycle_skill, 0, '무정함') + '<br>'
+$чувствительность_справка += dyneval($vb_cycle_skill, 1, '냉담함') + '<br>'
+$чувствительность_справка += dyneval($vb_cycle_skill, 2, '둔감함') + '<br>'
+$чувствительность_справка += dyneval($vb_cycle_skill, 3, '민감함') + '<br>'
+$чувствительность_справка += dyneval($vb_cycle_skill, 4, '다감함') + '<br>'
+$чувствительность_справка += dyneval($vb_cycle_skill, 5, '여림') + '</center>'
+$чувствительность_справка_2 = '<br><br>여릴수록 처벌 스트레스를 많이 받습니다.<br>하지만, 아이처럼 쉽게 기분 좋아집니다.<br>고객들은 그런 점을 매력으로 평가합니다.'
+! JO9 MOD START J9M1749 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$чувствительность_совет = '[감수성 TIPS]<br>&nbsp;감수성은 학대 시에, 그것이 심할수록 더 발달됩니다<br>무신경 할수록 학대를 잘 견디어 기분 변화가 적습니다.<br>하지만, 그런 무신경한 노예는 가격도 낮습니다.<br> <u>좋은 애무와 쾌감만이 감수성을 발달</u>시킵니다.'
+! JO9 MOD END J9M1749
+
+! JO9 MOD START J9M1748 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$стиль_справка = '<br><center>세련됨 -<br><br>'
+! JO9 MOD END J9M1748
+$стиль_справка += dyneval($vb_cycle_skill, 0, '유행에 뒤쳐짐') + '<br>'
+$стиль_справка += dyneval($vb_cycle_skill, 1, '흔한 스타일') + '<br>'
+$стиль_справка += dyneval($vb_cycle_skill, 2, '유행하는 스타일') + '<br>'
+$стиль_справка += dyneval($vb_cycle_skill, 3, '개성적인 스타일') + '<br>'
+$стиль_справка += dyneval($vb_cycle_skill, 4, '세련된 스타일') + '<br>'
+$стиль_справка += dyneval($vb_cycle_skill, 5, '화려한 스타일') + '</center>'
+$стиль_справка_2 = '<br><br>세련됨은 대면 거래에서 가장 중요합니다.<br>구매자는 잘빠진 몸매와 세련됨을 선호합니다.<br>노예를 다른 조건에 부합 시키더라도,<br>구려보이면 판매를 거절하기도 합니다.'
+! JO9 MOD START J9M1747 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$стиль_совет = '[세련됨 TIPS]<br>&nbsp;표현 방식: 수사학 모양새: 무용술 -<br>타고난 세련됨에도 꾸미는 기술이 필요합니다.<br>말하는 표현 방식과 움직이는 모양새도 영향 받습니다.<br>머리모양, 화장, 향수, 복장, 패물, 이 모두가 고객을 사로잡는 그 화려함의 영향입니다.<br>그렇다고 항상 화려하게 다닐 필요는 없습니다. 볼 때만 잘 하면 되니까요.'
+! JO9 MOD END J9M1747
+
+! JO9 MOD START J9M1746 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$ум_справка = '<br><center>지성 -<br><br>'
+! JO9 MOD END J9M1746
+$ум_справка += dyneval($vb_cycle_skill, 0, '정신지체') + '<br>'
+$ум_справка += dyneval($vb_cycle_skill, 1, '우둔함') + '<br>'
+$ум_справка += dyneval($vb_cycle_skill, 2, '평범함') + '<br>'
+$ум_справка += dyneval($vb_cycle_skill, 3, '영리함') + '<br>'
+$ум_справка += dyneval($vb_cycle_skill, 4, '총명함') + '<br>'
+$ум_справка += dyneval($vb_cycle_skill, 5, '지적임') + '</center>'
+$ум_справка_2 = '<br><br>지성이 높을수록 교육 성취율이 높습니다.<br>시장에서의 가치 또한 높습니다.<br>하지만, 머리나쁜 노예가 굴리기 쉽습니다.<br>몸의 교육이던, 머리의 교육이던 '
+! JO9 MOD START J9M1745 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$ум_совет = '[지성 TIPS]<br>&nbsp;좋은 두뇌라고 항상 유용하진 않죠. 머리가 좋을수록 다루기는 쉽지 않습니다.<br>머리가 좋으니까 일을 합리적으로 처리하고 말을 잘 합니다.<br>노예에 자기 표현을 허용해주고 사무교육, 회계로 지능을 발달시켜 주세요.'
+! JO9 MOD END J9M1745
+
+! JO9 MOD START J9M1744 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$темперамент_справка = '<br><center>성격 -<br><br>'
+! JO9 MOD END J9M1744
+$темперамент_справка += dyneval($vb_cycle_skill, 0, '무관심함') + '<br>'
+$темперамент_справка += dyneval($vb_cycle_skill, 1, '차가움') + '<br>'
+$темперамент_справка += dyneval($vb_cycle_skill, 2, '내성적임') + '<br>'
+$темперамент_справка += dyneval($vb_cycle_skill, 3, '수동적임') + '<br>'
+$темперамент_справка += dyneval($vb_cycle_skill, 4, '적극적임') + '<br>'
+$темперамент_справка += dyneval($vb_cycle_skill, 5, '열정적임') + '</center>'
+$темперамент_справка_2 = '<br><br>적극적일 수록 교육 효과가 낮습니다.<br>반면 침대에서 격정적이기 때문에<bR>고객층 인기가 좋습니다.<br><br>쉽게 다루기에는 적극적이지 않을 수록 좋습니다.'
+! JO9 MOD START J9M1743 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$темперамент_совет = '[성격 TIPS]<br>&nbsp;적극적인 노예는 대하기 어려우나, 차가운 건 값이 낮습니다.<br>우울하게 만들거나 입을 다물게 만들면, 어느새 성격이 나빠져 있을겁니다.<br>성격을 발달시키기 위해서는 노예의 표현을 받아주고, 서슴없이 대화하십시오.'
+! JO9 MOD END J9M1743
+
+! JO9 MOD START J9M1742 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$характер_справка = '<br><center>자아 -<br><br>'
+! JO9 MOD END J9M1742
+$характер_справка += dyneval($vb_cycle_skill, 0, '우유부단') + '<br>'
+$характер_справка += dyneval($vb_cycle_skill, 1, '겁쟁이') + '<br>'
+$характер_справка += dyneval($vb_cycle_skill, 2, '소심함') + '<br>'
+$характер_справка += dyneval($vb_cycle_skill, 3, '주관적') + '<br>'
+$характер_справка += dyneval($vb_cycle_skill, 4, '단호함') + '<br>'
+$характер_справка += dyneval($vb_cycle_skill, 5, '완고함') + '</center>'
+$характер_справка_2 = '<br><br>자아가 높은 노예들은 덜 순종적 입니다.<br>등급에 따라 기본 순종도가 낮기도 합니다.<br>노예는 억압을 할 수록 휘두르기 좋으나<br>단, 가치를 저하 시킬수 있습니다'
+! JO9 MOD START J9M1741 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$характер_совет = '[자아 TIPS]<br>&nbsp;완고한 노예들은 키워내기 쉽지 않지만, 자아가 없으면 가격도 낮습니다.<br>노예가 싫어하는 일을 강요 할 수록 점점 더 휘둘릴 것 입니다.<br>한 번 떨어진 수치는 정말 회복하기 어렵습니다. 매 행동에 신중을 기하세요.<br>연습경기, 전투, 노예 개인실, 다른 노예 교육, 여가 시간이 이 자아를 키워줍니다.'
+! JO9 MOD END J9M1741
+
+! JO9 MOD START J9M1740 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$гордыня_справка = '<br><center>태도 -<br><br>'
+! JO9 MOD END J9M1740
+$гордыня_справка += dyneval($vb_cycle_skill, 0, '오만함') + '<br>'
+$гордыня_справка += dyneval($vb_cycle_skill, 1, '건방짐') + '<br>'
+$гордыня_справка += dyneval($vb_cycle_skill, 2, '당당함') + '<br>'
+$гордыня_справка += dyneval($vb_cycle_skill, 3, '의존적') + '<br>'
+$гордыня_справка += dyneval($vb_cycle_skill, 4, '솔직함') + '<br>'
+$гордыня_справка += dyneval($vb_cycle_skill, 5, '개방적') + '</center>'
+! JO9 MOD START J9M1739 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$гордыня_справка_2 = '<br><br>오만한 태도는 행위에 걸림돌이 됩니다.<br>심지어 때론, 당신 명령을 거부하기도.<br><br> 이 수치를 낮춰야만 등급이 오릅니다.'
+$гордыня_совет = '[태도 TIPS]<br>&nbsp;건방진 태도는 판매와 교육에 있어 나쁩니다. 차라리 솔직하게 만드는 것이 좋습니다.<br>등급 상승을 위해 역겹고 더러운 일, 엄격한 규칙에 적응시켜 주세요.<br>그러면 어느 순간 개방적이 된 노예를 볼 수도 있습니다.<br>그렇다고 무리시키면 노예가 망가질 수 있습니다.'
+! JO9 MOD END J9M1739
+
+! JO9 MOD START J9M1738 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$слава_справка = '<br><center>로마 인지도 -<br><br>'
+! JO9 MOD END J9M1738
+$слава_справка += dyneval($vb_cycle_skill, 0, '무명 노예') + '<br>'
+$слава_справка += dyneval($vb_cycle_skill, 1, '알려진 노예') + '<br>'
+$слава_справка += dyneval($vb_cycle_skill, 2, '유명한 노예') + '<br>'
+$слава_справка += dyneval($vb_cycle_skill, 3, '저명한 노예') + '<br>'
+$слава_справка += dyneval($vb_cycle_skill, 4, '스타 노예') + '<br>'
+$слава_справка += dyneval($vb_cycle_skill, 5, '로마의 전설') + '</center>'
+! JO9 MOD START J9M1737 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$слава_справка_2 = '<br><br><br>유명 노예의 가치는 훨씬 높습니다.<br>노예 최소 등급은 무조건 인지도와 같습니다.<br> 대회 우승시 오릅니다.'
+$слава_совет = '[로마 인지도 TIPS]<br>&nbsp;인지도가 전부는 아닙니다. 이것에 개의치 않고도 훌륭한 노예를 육성할 수 있습니다.<br> 명성 영향 : 경주, 투기 대회'
+! JO9 MOD END J9M1737
+
+! JO9 MOD START J9M1736 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$калории_совет = '[열량 TIPS]<br>&nbsp;열 량 = 체력/체형 영향, 행동시 감소 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp임/산란/모유 배출 -> 익일 -100<br>체중 감소 = [-(100~500) + 2번)]×기초 대사 &nbsp&nbsp&nbsp 0미만&nbsp&nbsp&nbsp-> 익일 ±체력 <br>체중 증가 = (0초과 + 남은 행동)×기초 대사 &nbsp&nbsp&nbsp &nbsp&nbsp&nbsp굶주림 -> -500미만시<br>체중 가감 = 체형 영향'
+! JO9 MOD END J9M1736
+
+!CHARACTERISTICS HELP
+!$wounds_chart is initialized with $wounds in #variative now - ImperatorAugustus
+! JO9 MOD START J9M1735 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$wounds_help = '[부상 TIPS]<br>&nbsp;부상은 전투중 발생하며, 시간에 따라 회복됩니다.<br>부상중엔 기분이 저하되고 행동력 회복량이 감소합니다. 또 병원에서 치료 가능하며,<br>연금술로 <b>기적의 향유</b>을 제조하여 치유할 수도 있습니다. (재료: 추방자 영역, 미스트라의 진귀품점)'
+! JO9 MOD END J9M1735
+
+! JO9 MOD START J9M1734 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$strength_chart = '<br><center>힘 -<br><br>'
+! JO9 MOD END J9M1734
+$strength_chart += dyneval($vb_cycle_skill, 0, '무력함') + '<br>'
+$strength_chart += dyneval($vb_cycle_skill, 1, '약골') + '<br>'
+$strength_chart += dyneval($vb_cycle_skill, 2, '일반인') + '<br>'
+$strength_chart += dyneval($vb_cycle_skill, 3, '건장함') + '<br>'
+$strength_chart += dyneval($vb_cycle_skill, 4, '강력함') + '<br>'
+$strength_chart += dyneval($vb_cycle_skill, 5, '초인적') + '</center>'
+! JO9 MOD START J9M1733 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$strength_help = '[체력 TIPS]<br>&nbsp;훈련사의 힘은 매우 중요합니다. 전투중 공격, 행동력, 노예 지시력에 영향을 끼칩니다.<br><br>저급 식단을 피하고, 노예와 잦은 성교, 운동/전투술을 교육하세요. 과로도 좋지 않습니다.'
+! JO9 MOD END J9M1733
+
+! JO9 MOD START J9M1732 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$charisma_chart = '<br><center>통솔력 -<br><br>'
+! JO9 MOD END J9M1732
+$charisma_chart += dyneval($vb_cycle_skill, 0, '패배자') + '<br>'
+$charisma_chart += dyneval($vb_cycle_skill, 1, '겁쟁이') + '<br>'
+$charisma_chart += dyneval($vb_cycle_skill, 2, '평범함') + '<br>'
+$charisma_chart += dyneval($vb_cycle_skill, 3, '의욕적임') + '<br>'
+$charisma_chart += dyneval($vb_cycle_skill, 4, '주도적임') + '<br>'
+$charisma_chart += dyneval($vb_cycle_skill, 5, '타고난 리더') + '</center>'
+! JO9 MOD START J9M1731 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$charisma_help = '[통송력 TIPS]<br>&nbsp;노예와 타인을 통제하는데 영향 끼칩니다. 겉모양을 꾸밈으로써도 통솔력이 오릅니다.<br>어떤 <b>구역</b>에서, 어떤 <b>생활수준</b>으로, <b>얼마나 유명한 사람</b>이냐가, 겉모양에 영향줍니다.'
+! JO9 MOD END J9M1731
+
+! JO9 MOD START J9M1730 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$allure_chart = '<br><center>매력 -<br><br>'
+! JO9 MOD END J9M1730
+$allure_chart += dyneval($vb_cycle_skill, 0, '역겨움') + '<br>'
+$allure_chart += dyneval($vb_cycle_skill, 1, '불쾌함') + '<br>'
+$allure_chart += dyneval($vb_cycle_skill, 2, '평범함') + '<br>'
+$allure_chart += dyneval($vb_cycle_skill, 3, '인상적') + '<br>'
+$allure_chart += dyneval($vb_cycle_skill, 4, '매력적') + '<br>'
+$allure_chart += dyneval($vb_cycle_skill, 5, '치명적') + '</center>'
+! JO9 MOD START J9M1729 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$allure_help = '[매력 TIPS]<br>&nbsp;매력이 곧 외모이고, 노예는 매력적인 주인을 더 잘 따릅니다. 그중에도 성적인 것이면 더욱.<br>인상깊은 외모는 고객과의 소통에 도움이 되고, 노예와 섹스를 강압적으로 할 필요도 없습니다.<br>긍정적인 기분, 미용, 복장으로 꾸며주고 과로를 피해주세요.'
+! JO9 MOD END J9M1729
+
+! JO9 MOD START J9M1728 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$libido_chart = '<br><center>욕정 -<br><br>'
+! JO9 MOD END J9M1728
+$libido_chart += dyneval($vb_cycle_skill, 0, '무기력함') + '<br>'
+$libido_chart += dyneval($vb_cycle_skill, 1, '부족함') + '<br>'
+$libido_chart += dyneval($vb_cycle_skill, 2, '건강함') + '<br>'
+$libido_chart += dyneval($vb_cycle_skill, 3, '열렬함') + '<br>'
+$libido_chart += dyneval($vb_cycle_skill, 4, '왕성함') + '<br>'
+$libido_chart += dyneval($vb_cycle_skill, 5, '호색한') + '</center>'
+! JO9 MOD START J9M1727 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$libido_help = '[욕정 TIPS]<br>&nbsp;성행위는 노예훈련 필수 요소입니다. 욕정은 섹스에 있어 체력을 나타냅니다.<br>방탕하고 건강한 생활이 욕정 수치를 올려줍니다.<br> 부상, 질병, 나쁜 건강, 장기 금욕은 수치를 낮춥니다.'
+! JO9 MOD END J9M1727
+
+! JO9 MOD START J9M1726 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$dominance_chart = '<br><center>지배력 -<br><br>'
+! JO9 MOD END J9M1726
+$dominance_chart += dyneval($vb_cycle_skill, 0, '피지배자') + '<br>'
+$dominance_chart += dyneval($vb_cycle_skill, 1, '하층민') + '<br>'
+$dominance_chart += dyneval($vb_cycle_skill, 2, '자유민') + '<br>'
+$dominance_chart += dyneval($vb_cycle_skill, 3, '시민') + '<br>'
+$dominance_chart += dyneval($vb_cycle_skill, 4, '귀족') + '<br>'
+$dominance_chart += dyneval($vb_cycle_skill, 5, '지배자') + '</center>'
+! JO9 MOD START J9M1725 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$dominance_help = '[지배력 TIPS]<br>&nbsp;지배력은, 노예 조교/교육에 영향을 미치며 또 성교육시 유용합니다.<br>등급이 높을수록 강한 복종심을 불러 처벌에도 영향줍니다. 특히 위협, 협박 등.<br>지시를 노예가 수행했을 <u>때 마다</u> 조금씩 오릅니다.'
+! JO9 MOD END J9M1725
+
+! JO9 MOD START J9M1724 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$brand_chart = '<br><center>상표 평판 -<br><br>' + _
+'<<$brand[0]>><br>' + _
+'<<$brand[1]>><br>' + _
+'<<$brand[2]>><br>' + _
+'<<$brand[3]>><br>' + _
+'<<$brand[4]>><br>' + _
+'<<$brand[5]>></center>'
+! JO9 MOD END J9M1724
+
+! JO9 MOD START J9M1723 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$brand_help = '[상표 평판 TIPS]<br>&nbsp;이 로마에 개인상표를 가진 이상, 보다 더 중요한 건 없습니다. 당신의 상표이며, 표식입니다.<br>개인 판매하는 노예 품질이, 상표 평판을 상승 시킵니다.<br>평판에 비례해 지위가 높아지며, 고객들이 살가워지고, 콜로세움 대회에 수 차례씩 진출할수 있습니다.'
+! JO9 MOD END J9M1723
+
+! JO9 MOD START J9M1722 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$guild_brand_chart = '<br><center>조합 계급 -<br><br>' + _
+'<<$guild_brand[0]>><br>' + _
+'<<$guild_brand[1]>><br>' + _
+'<<$guild_brand[2]>><br>' + _
+'<<$guild_brand[3]>><br>' + _
+'<<$guild_brand[4]>><br>' + _
+'<<$guild_brand[5]>></center>'
+! JO9 MOD END J9M1722
+
+! JO9 MOD START J9M1721 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$guild_brand_help = '[조합 계급 TIPS]<br>&nbsp;조합 주요인사가 되려면, 조합의 계약들을 해결해야 합니다.<br>계약이나 경매장에 파는 노예의 품질이, 조합 평판에 영향을 줍니다.<br>동료의 질투를 받을수록 더 질좋은 계약이 성사되고, 판매 가격이 올라갈 수도 있습니다.'
+! JO9 MOD END J9M1721
+
+$wealth_chart = '<center>생활 수준<br>'
+$wealth_chart += dyneval($vb_cycle_skill, 0, '극빈한') + '<br>'
+$wealth_chart += dyneval($vb_cycle_skill, 1, '가난한') + '<br>'
+$wealth_chart += dyneval($vb_cycle_skill, 2, '기본적인') + '<br>'
+$wealth_chart += dyneval($vb_cycle_skill, 3, '안락한') + '<br>'
+$wealth_chart += dyneval($vb_cycle_skill, 4, '번듯한') + '<br>'
+$wealth_chart += dyneval($vb_cycle_skill, 5, '호화로운') + '<br>'
+$wealth_chart += dyneval($vb_cycle_skill, 6, '<b>사치스러운</b>') + '</center>'
+! JO9 MOD START J9M1720 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$wealth_help = '[생활수준 TIPS]<br>&nbsp;아무 노력도 없으면, 절대로 부를 거머쥘 수 없습니다.<br>집 -> 가계 활동 -> 생활수준에서 변경이 가능하며, 인지도가 조금 오릅니다.<br>수준별 금액은 꽤 차이납니다. 회계사를 쓰면 비용이 다소 감소될 수 있습니다.<br> 설정후 <u>다음 주기 때</u> 적용됩니다.'
+! JO9 MOD END J9M1720
+
+!$hygiene_chart is defined in #variative
+! JO9 MOD START J9M1719 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$hygiene_help = '[청결도 TIPS]<br>&nbsp;빈민가에서 청결을 유지하긴 어렵기에, 욕실이 딸린 집을 구하는게 좋을겁니다.<br>더러우면 기분과 건강을 해칠수 있습니다.<br>청결은 노예 기분에 직결되니 씻겨주세요. 또 온천 등 휴양시설, 해변가를 보상으로 주세요.'
+! JO9 MOD END J9M1719
+
+!$mood_chart is initialized together with $mood now - ImperatorAugustus
+
+!$mood_chart = '<center>MOOD<br>'
+!$mood_chart += 'If mood is indicated with ' + $dyneval($vb_cycle_stat, 0, 'red') + ' or similar colors it means that you feel miserable and efficiency of all actions decreases.<br>' 
+!$mood_chart += 'Vice versa, lighter moods such as ' + $dyneval($vb_cycle_stat, 7, 'blue') + ' or ' + $dyneval($vb_cycle_stat, 10, 'green') + ' improve performance and contribute to success.</center>'
+
+! JO9 MOD START J9M1718 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$mood_help = '[기분 TIPS]<br>&nbsp;기분은 교육의 효율성과 노예와 대화에 영향을 미칩니다.<br>일기장을 확인하며, 어째서 전날의 기분이 변했던건지 확인해주세요.<br>문제를 신속히 해결하고 긍적적으로 살아가세요. 이런 가상의 삶은 당신손에 달려 있습니다!'
+$slave_mood_help = '[기분 TIPS]<br>&nbsp;노예의 기분은 교육에 지대한 영향을 미칩니다. 어떤 기분인지, 뭘 원하는지 직접 물을 수도 있습니다.<br>부정적 기분은 교육의 질 하락과 불안을 주지만, 긍정적 기분은 교육의 질을 향상시킵니다.<br>기분은 실상 노예의 모든 행동에 영향을 받습니다, 입는 것도 포함해서요.'
+! JO9 MOD END J9M1718
+
+$учитель_справка = '<center>가르침<br>'
+$учитель_справка += dyneval($vb_cycle_skill, 0, '횡설수설') + '<br>'
+$учитель_справка += dyneval($vb_cycle_skill, 1, '가정교사') + '<br>'
+$учитель_справка += dyneval($vb_cycle_skill, 2, '멘토') + '<br>'
+$учитель_справка += dyneval($vb_cycle_skill, 3, '교육자') + '<br>'
+$учитель_справка += dyneval($vb_cycle_skill, 4, '교사') + '<br>'
+$учитель_справка += dyneval($vb_cycle_skill, 5, '강사') + '</center>'
+! JO9 MOD START RNL123 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$учитель_совет = '<div style="font-size: 90%;">  가르침은 노예 조련사의 핵심 기술 중 하나다. 이것은 비성적 기술 전반에서 노예 훈련의 효율을 결정한다. 교사로서의 실력은 네 노예들을 A 이상 성과로 가르칠수록 향상된다.</div>'
+! JO9 MOD END RNL123
+
+$дворецкий_справка = '<center>살림 능력<br>'
+$дворецкий_справка += dyneval($vb_cycle_skill, 0, '순진한 거주자') + '<br>'
+$дворецкий_справка += dyneval($vb_cycle_skill, 1, '잡역부') + '<br>'
+$дворецкий_справка += dyneval($vb_cycle_skill, 2, '집안일꾼') + '<br>'
+$дворецкий_справка += dyneval($vb_cycle_skill, 3, '살림꾼') + '<br>'
+$дворецкий_справка += dyneval($vb_cycle_skill, 4, '살림의 대가') + '<br>'
+$дворецкий_справка += dyneval($vb_cycle_skill, 5, '집사') + '<br>'
+$дворецкий_справка += dyneval($vb_cycle_skill, 6, '수석 집사') + '</center>'
+! JO9 MOD START RNL122 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$дворецкий_совет = '<div style="font-size: 90%;">  살림 능력은 요리, 집안 관리, 회계, 노예 관리 지식을 아우른다. 훌륭한 살림꾼은 직접 저녁을 만들거나 집을 청소할 수도 있지만, 더 중요한 것은 그 기술을 자기 노예들에게 전수할 수 있다는 점이다. 살림 능력은 관련 기술을 A 이상의 성과로 노예들에게 가르칠수록 향상된다.</div>'
+! JO9 MOD END RNL122
+
+$артдиректор_справка = '<center>예술성<br>'
+$артдиректор_справка += dyneval($vb_cycle_skill, 0, '안목 없음') + '<br>'
+$артдиректор_справка += dyneval($vb_cycle_skill, 1, '교양 없는') + '<br>'
+$артдиректор_справка += dyneval($vb_cycle_skill, 2, '딜레탕트') + '<br>'
+$артдиректор_справка += dyneval($vb_cycle_skill, 3, '예술가') + '<br>'
+$артдиректор_справка += dyneval($vb_cycle_skill, 4, '신동') + '<br>'
+$артдиректор_справка += dyneval($vb_cycle_skill, 5, '비르투오소') + '<br>'
+$артдиректор_справка += dyneval($vb_cycle_skill, 6, '마에스트로') + '</center>'
+! JO9 MOD START RNL121 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$артдиректор_совет = '  예술성은 여러 형태로 나타난다. 춤, 음악, 그림 실력, 연기와 롤플레이(동물처럼 행동하는 것까지 포함해)… 예술가로서의 실력은 관련 기술을 A 이상의 성과로 노예들에게 가르칠수록 향상된다.'
+! JO9 MOD END RNL121
+
+$медик_справка = '<center>의술<br>'
+$медик_справка += dyneval($vb_cycle_skill, 0, '동종요법사') + '<br>'
+$медик_справка += dyneval($vb_cycle_skill, 1, '돌팔이') + '<br>'
+$медик_справка += dyneval($vb_cycle_skill, 2, '응급 구조사') + '<br>'
+$медик_справка += dyneval($vb_cycle_skill, 3, '간호사') + '<br>'
+$медик_справка += dyneval($vb_cycle_skill, 4, '의료인') + '<br>'
+$медик_справка += dyneval($vb_cycle_skill, 5, '의사') + '<br>'
+$медик_справка += dyneval($vb_cycle_skill, 6, '명의') + '</center>'
+! JO9 MOD START RNL120 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$медик_совет = '<div style="font-size: 90%;">  유능한 의술사이자 연금술사는 치유술사를 길러 내고, 건강 문제를 파악하고, 병들고 다친 노예를 효과적으로 돌볼 수 있다. 의술 실력은 노예들에게 의학을 A 이상의 성과로 가르칠수록 향상된다.</div>'
+! JO9 MOD END RNL120
+
+$боец_справка = '<center>전사<br>'
+$боец_справка += dyneval($vb_cycle_skill, 0, '비전투원') + '<br>'
+$боец_справка += dyneval($vb_cycle_skill, 1, '싸움꾼') + '<br>'
+$боец_справка += dyneval($vb_cycle_skill, 2, '투사') + '<br>'
+$боец_справка += dyneval($vb_cycle_skill, 3, '전사') + '<br>'
+$боец_справка += dyneval($vb_cycle_skill, 4, '기사') + '<br>'
+$боец_справка += dyneval($vb_cycle_skill, 5, '용사') + '<br>'
+$боец_справка += dyneval($vb_cycle_skill, 6, '영웅') + '</center>'
+! JO9 MOD START RNL119 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$боец_совет = '<div style="font-size: 90%;">  무예 실력은 검투 노예를 훈련시키는 데에도, 실제 전투에서도 유용하다. 콜로세움 조련사에게서 특수 기술을 배울 수 있는 능력과 네 공격 효과의 지속 시간은 전투 실력에 달려 있다. 전투 실력은 노예들을 전투에서 A 이상의 성과로 훈련시킬수록, 그리고 네가 전투에서 승리할수록 향상된다.</div>'
+! JO9 MOD END RNL119
+
+$маг_справка = '<center>마법<br>'
+$маг_справка += dyneval($vb_cycle_skill, 0, '일반인') + '<br>'
+$маг_справка += dyneval($vb_cycle_skill, 1, '견습생') + '<br>'
+$маг_справка += dyneval($vb_cycle_skill, 2, '주술사') + '<br>'
+$маг_справка += dyneval($vb_cycle_skill, 3, '마술사') + '<br>'
+$маг_справка += dyneval($vb_cycle_skill, 4, '마법사') + '<br>'
+$маг_справка += dyneval($vb_cycle_skill, 5, '마도사') + '<br>'
+$маг_справка += dyneval($vb_cycle_skill, 6, '대마도사') + '</center>'
+! JO9 MOD START RNL118 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$маг_совет = '<div style="font-size: 90%;">  이 기술은 스파크를 사용해 주문을 시전하는 능력을 담당하며, 그 주문들의 효율에도 직접 영향을 준다. 네가 직접 훈련시킨 연금술사와 마법부여사의 실력은 네 마법 숙련 등급을 넘을 수 없다. 훈련된 연금술사들은 연구실에서 네게 유용한 물약을 만들어 줄 수 있지만, 재료는 아웃캐스트 구역의 ’미스트라의 희귀품점’에서 구해야 한다. 마법 실력은 노예들을 A 이상의 성과로 훈련시키고, 사용할 수 있는 최고 수준의 마법을 구사할수록 향상된다.</div>'
+! JO9 MOD END RNL118
+
+
+! JO9 MOD START J9M1717 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$флагеляция_справка = '<br><center>채찍 기술 -<br><br>'
+! JO9 MOD END J9M1717
+$флагеляция_справка += dyneval($vb_cycle_skill, 0, '서툰 채찍질') + '<br>'
+$флагеляция_справка += dyneval($vb_cycle_skill, 1, '초보적 채찍질') + '<br>'
+$флагеляция_справка += dyneval($vb_cycle_skill, 2, '익숙한 채찍질') + '<br>'
+$флагеляция_справка += dyneval($vb_cycle_skill, 3, '날렵한 채찍질') + '<br>'
+$флагеляция_справка += dyneval($vb_cycle_skill, 4, '무거운 채찍질') + '<br>'
+$флагеляция_справка += dyneval($vb_cycle_skill, 5, '고통의 채찍질') + '</center>'
+! JO9 MOD START J9M1716 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$флагеляция_совет = '[채찍 기술 TIPS]<br>&nbsp;채찍류 처벌에서 두각을 나타냅니다.<br>벨트, 갈래 채찍, 채찍 이용 처벌은 노예의 몸에 흉터를 낼 수도 있습니다.<br> 위 도구를 사용시 자연스레 오릅니다.'
+! JO9 MOD END J9M1716
+
+! JO9 MOD START J9M1715 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$палач_справка = '<br><center>고문 기술 -<br><br>'
+! JO9 MOD END J9M1715
+$палач_справка += dyneval($vb_cycle_skill, 0, '서툰 고문가') + '<br>'
+$палач_справка += dyneval($vb_cycle_skill, 1, '징벌자') + '<br>'
+$палач_справка += dyneval($vb_cycle_skill, 2, '고문기술자') + '<br>'
+$палач_справка += dyneval($vb_cycle_skill, 3, '처형인') + '<br>'
+$палач_справка += dyneval($vb_cycle_skill, 4, '심문관') + '<br>'
+$палач_справка += dyneval($vb_cycle_skill, 5, '집행관') + '</center>'
+! JO9 MOD START J9M1714 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$палач_совет = '[고문 기술 TIPS]<br>&nbsp;고문류 처벌에서 두각을 나타냅니다.<br>큰 기구를 이용하여 벌을 줄수도 있지만, 진짜 달인들은 작은 도구로도 엄청난 벌을 가합니다.<br>정말 중요한 건, 여기 고문은 노예 외모나 건강에 피해주지 않는다는 것.<br> 고문 실행시 자연스레 오릅니다. <b>지하실</b> 필수'
+! JO9 MOD END J9M1714
+
+! JO9 MOD START J9M1713 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$бондаж_справка = '<br><center>속박 기술 -<br><br>'
+! JO9 MOD END J9M1713
+$бондаж_справка += dyneval($vb_cycle_skill, 0, '서툰 결박술') + '<br>'
+$бондаж_справка += dyneval($vb_cycle_skill, 1, '속박사') + '<br>'
+$бондаж_справка += dyneval($vb_cycle_skill, 2, '포박사') + '<br>'
+$бондаж_справка += dyneval($vb_cycle_skill, 3, '결박사') + '<br>'
+$бондаж_справка += dyneval($vb_cycle_skill, 4, '긴박사') + '<br>'
+$бондаж_справка += dyneval($vb_cycle_skill, 5, '밧줄 예술가') + '</center>'
+! JO9 MOD START J9M1712 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$бондаж_совет = '[속박 기술 TIPS]<br>&nbsp;기술 숙련도가 구속류 처벌에서 두각을 나타냅니다.<br>노예를 속박하고 그대로 방치하는 기술입니다.<br>적당히 아프고 야한 속박은 교육과 흥분도에 효과적입니다.<br> 구속 실행시 자연스레 오릅니다.'
+! JO9 MOD END J9M1712
+
+! JO9 MOD START J9M1711 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$master_petting_chart = '<br><center>애무 기술 -<br><br>'
+! JO9 MOD END J9M1711
+$master_petting_chart += dyneval($vb_cycle_skill, 0, '서툰 손놀림') + '<br>'
+$master_petting_chart += dyneval($vb_cycle_skill, 1, '어설픈 손놀림') + '<br>'
+$master_petting_chart += dyneval($vb_cycle_skill, 2, '익숙한 손놀림') + '<br>'
+$master_petting_chart += dyneval($vb_cycle_skill, 3, '유혹적인 손놀림') + '<br>'
+$master_petting_chart += dyneval($vb_cycle_skill, 4, '매혹적인 손놀림') + '<br>'
+$master_petting_chart += dyneval($vb_cycle_skill, 5, '손놀림의 달인') + '</center>'
+! JO9 MOD START J9M1710 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$master_petting_help = '[애무 기술 TIPS]<br>&nbsp;기술 숙련도가 애무에 관련된 훈련에서 두각을 나타냅니다.<br>손 뿐만이 아닌, 몸을 사용하는 애무에도 영향을 줍니다.<br>주인이 만지는 것 뿐만이 아닌, 만지게 하는 것도 포함됩니다.<br> 애무 실행시 자연스레 오릅니다.'
+! JO9 MOD END J9M1710
+
+! JO9 MOD START J9M1709 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$master_oral_chart = '<br><center>구강 기술 -<br><br>'
+! JO9 MOD END J9M1709
+$master_oral_chart += dyneval($vb_cycle_skill, 0, '서툰 혀놀림') + '<br>'
+$master_oral_chart += dyneval($vb_cycle_skill, 1, '어설픈 혀놀림') + '<br>'
+$master_oral_chart += dyneval($vb_cycle_skill, 2, '익숙한 혀놀림') + '<br>'
+$master_oral_chart += dyneval($vb_cycle_skill, 3, '유혹적인 혀놀림') + '<br>'
+$master_oral_chart += dyneval($vb_cycle_skill, 4, '매혹적인 혀놀림') + '<br>'
+$master_oral_chart += dyneval($vb_cycle_skill, 5, '혀놀림의 달인') + '</center>'
+! JO9 MOD START J9M1708 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$master_oral_help = '[구강 기술 TIPS]<br>&nbsp;기술 숙련도가 입을 사용하는 훈련에서 두각을 나타냅니다.<br>노예뿐만이 아닌, 주인의 입을 사용하는 것도 포함됩니다.<br>.<br> 구강을 사용하는 훈련 실행시 자연스레 오릅니다.'
+! JO9 MOD END J9M1708
+
+! JO9 MOD START J9M1707 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$master_penetration_chart = '<br><center>삽입 기술 -<br><br>'
+! JO9 MOD END J9M1707
+$master_penetration_chart  += dyneval($vb_cycle_skill, 0, '숫총각') + '<br>'
+$master_penetration_chart  += dyneval($vb_cycle_skill, 1, '경험 있음') + '<br>'
+$master_penetration_chart  += dyneval($vb_cycle_skill, 2, '능숙함') + '<br>'
+$master_penetration_chart  += dyneval($vb_cycle_skill, 3, '난봉꾼') + '<br>'
+$master_penetration_chart  += dyneval($vb_cycle_skill, 4, '색마') + '<br>'
+$master_penetration_chart  += dyneval($vb_cycle_skill, 5, '밤의 제왕') + '</center>'
+! JO9 MOD START J9M1706 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$master_penetration_help = '[삽입 기술 TIPS]<br>&nbsp;기술 숙련도가 삽입 훈련에서 두각을 나타냅니다.<br>노예의 구멍을 사용하는 여러 수단에 영향을 줍니다.<br> 일반적인 섹스부터 집단 난교까지, 인간과의 삽입 행위에 익숙해지면 저항감도 줄어듭니다.<br> 섹스와 같은 훈련시 자연스레 오릅니다.'
+! JO9 MOD END J9M1706
+
+! JO9 MOD START J9M1705 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$master_fetish_chart  = '<br><center>이상 성욕 기술 -<br><br>'
+! JO9 MOD END J9M1705
+$master_fetish_chart += dyneval($vb_cycle_skill, 0, '일반인') + '<br>'
+$master_fetish_chart += dyneval($vb_cycle_skill, 1, '흥미 있음') + '<br>'
+$master_fetish_chart += dyneval($vb_cycle_skill, 2, '익숙함') + '<br>'
+$master_fetish_chart += dyneval($vb_cycle_skill, 3, '도착적') + '<br>'
+$master_fetish_chart += dyneval($vb_cycle_skill, 4, '변태') + '<br>'
+$master_fetish_chart += dyneval($vb_cycle_skill, 5, '최악의 변태') + '</center>'
+! JO9 MOD START J9M1704 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$master_fetish_help = '[이상 성욕 기술 TIPS]<br>&nbsp;기술 숙련도가 이상성욕 훈련에서 두각을 나타냅니다.<br>피학, 이종간, 스카톨로지와 같은 평범하지 않은 성행위에 영향을 줍니다.<br>상당한 충성심을 가지지 않은 이상, 쉽게 허락하지 않습니다.<br> 이상성욕과 이종교미 훈련시 자연스레 오릅니다..'
+! JO9 MOD END J9M1704
+
+!OTHER TIPS
+! JO9 MOD START J9M1703 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$атрибуты_справка = '<br><center><b>기틀 속성</b> -<br><br>체력, 감수성, 성격, 지성, 자아, 태도.- 태도는 개방적일수록 고등급</center>'
+! JO9 MOD END J9M1703
+
+$no_money_school = '노예를 학과에 보낼 스파크가 없다. 젠장, 가난하다...'
+
+$no_money_coach = '교사를 초빙해올 스파크도가 없다. 젠장, 가난하다...'
+
+$no_money_groceries = '식료품에 쓸 스파크가 없다. 빌어먹을 통조림은 질색이다...'
+
+$no_boudoir = '노예에게 내어줄 개인실이 집에 존재하지 않는다. 순백색 대도시 부동산에서 알아보자.'
+
+$no_tentacle = '당신은 정액을 짜낼만한 안개 괴물을 가지고 있지 않다. 빈민가의 밀수업자 은닉처에서 알아보자'
+
+$no_spawn_semen = '당신은 노예에게 먹일 촉수 산란액을 가지고 있지 않다.'
+
+$no_vballs = '당신은 바기나 비즈를 가지고 있지 않아서, 이 규칙을 실행할 수 없다. 망자의 영역에 있는 철의 장미에서 사와야 한다.'
+
+$no_vballs_virgin = '이 도구를 사용하기 이전에 노예의 처녀막을 찢어내야 한다.'
+
+$no_services_exam = '<<$경고>> 튜토리얼에서는 할 수 없다.'
+
+$no_assistant = '당신은 조수가 없어서 불가능하다.'
+
+$no_house_mess = '노예를 가르치기에는 집이 너무 깨끗하다.'
+
+$no_kitchen = '부엌이 없다. 이 시궁창같은 집에서 벗어날 방법을 생각해보자.'
+
+$no_magic_skill = '당신은 아직 이 마법을 다룰 수 있을 정도의 능력이 없다.'
+
+$use_raven_crown = '큰까마귀 관에서 이미 시전중이다. <br><br>당신은 더이상 아우스펙스를 사용하기 위해 주문을 시전할 필요가 없다.'
+
+$max_skill = '이미 숙련도가 최고 단계이기 때문에, 더 가르칠 수 없다.'
+
+$assistant_skill = '조수의 기술 수준이 노예를 가르칠만큼 충분하지 않다.'
+
+$no_lab = '당신은 집에 연금실이 없다. 순백색 대도시 부동산에서 알아보자'
+
+$no_slave = '당신은 조수로 둘만한 노예가 없다.'
+
+$no_slave_stamina = '노예 체력이 약해서, 더이상 무리시킬 수 없다.'
+
+$not_enough_stamina = '노예의 체력이 너무 부족하다. 운동을 시켜서 체력을 키워주자.'
+
+$no_bath = '욕조가 없다. 이 시궁창같은 집에서 벗어날 방법을 생각해보자.'
+
+$no_creature = '당신은 생물체를 키울 공간이 없거나, 생물체가 없다.'
+
+$no_dungeon = '당신은 지하실이 없어서 할 수 없다. 순백색 대도시 부동산에서 알아보자'
+
+$no_pen = '당신은 안개 괴물을 들어있는 우리가 필요하다.'
+
+$no_barn = '당신은 외양간이 없어서 동물을 키울 수 없다.'
+
+! JO9 MOD START J9M1702 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$presets_help = '<center>현재 설정된 규칙을 저장합니다 -</center><br>a. 박스 클릭 : 해당 설정 (비)활성화<br>b. 목록 클릭 : 이름 변경<br>c. 저장 클릭 : 현재규칙 저장<br><br>뭐든 저장해두는게 손가락 건강에 좋습니다'
+! JO9 MOD END J9M1702
+
+$charm_help = '<center>매력계</center><br>상승: 세련됨/독특함/인지도/충성심/평판<br>하락: 체중 쏠림/불안/응석/외상<br><br>고객들에 보여지는 전반적 매력입니다.<br>매력계가 낮으면, 판매를 거부당할 수도 있습니다.<br>판매에는 `상표+조건 부합`이 필수입니다.'
+
+$rank_help = '<br><br><br>노예의 등급 정보는<br>각 속성/특성을 누르면 상세 설명이 나옵니다.<br>우측 기술을 누르면 노예상이 직접 가르칩니다.'
+
+! JO9 MOD START RANK_LABEL_GUIDE | 2026-10-17_zz_rank_display_labels
+! RNL: 숫자값을 바꾸지 않고 종합 11단계와 개별 속성·기술 6단계의 표시를 안내한다.
+$rank_help_2 = '<center style="font-family:맑은 고딕;font-size:16px;line-height:20px;color:#222222"><b>속성정보 등급 안내</b>'
+$rank_help_2 += '<table align="center" width="340" cellpadding="2" cellspacing="0" style="font-size:14px;line-height:18px"><tr><td valign="top" align="center" width="160"><b>종합등급 · 11단계</b><table align="center" width="145" cellpadding="1" cellspacing="0" style="font-size:14px;line-height:16px"><tr><td align="center">값</td><td align="center">등급</td></tr><tr><td align="center">0</td><td align="center"><font color="#cd0000"><b>F</b></font></td></tr><tr><td align="center">1</td><td align="center"><font color="#EA0090"><b>D</b></font></td></tr><tr><td align="center">2</td><td align="center"><font color="#FF4FBB"><b>D+</b></font></td></tr><tr><td align="center">3</td><td align="center"><font color="#6B0084"><b>C</b></font></td></tr><tr><td align="center">4</td><td align="center"><font color="#A300CC"><b>C+</b></font></td></tr><tr><td align="center">5</td><td align="center"><font color="#0000A5"><b>B</b></font></td></tr><tr><td align="center">6</td><td align="center"><font color="#0000D8"><b>B+</b></font></td></tr><tr><td align="center">7</td><td align="center"><font color="#006599"><b>A</b></font></td></tr><tr><td align="center">8</td><td align="center"><font color="#009FEF"><b>A+</b></font></td></tr><tr><td align="center">9</td><td align="center"><font color="#006600"><b>S</b></font></td></tr><tr><td align="center">10</td><td align="center"><font color="#009900"><b>S+</b></font></td></tr></table></td><td valign="top" align="center" width="180"><b>개별 속성·기술 · 6단계</b><table align="center" width="165" cellpadding="1" cellspacing="0" style="font-size:14px;line-height:16px"><tr><td align="center">값</td><td align="center">단계</td><td align="center">등급</td></tr><tr><td align="center">0</td><td align="center">최하</td><td align="center"><font color="#cd0000"><b>F</b></font></td></tr><tr><td align="center">1</td><td align="center">하등</td><td align="center"><font color="#EA0090"><b>D</b></font></td></tr><tr><td align="center">2</td><td align="center">일반</td><td align="center"><font color="#6B0084"><b>C</b></font></td></tr><tr><td align="center">3</td><td align="center">전문</td><td align="center"><font color="#0000D8"><b>B</b></font></td></tr><tr><td align="center">4</td><td align="center">상등</td><td align="center"><font color="#009FEF"><b>A</b></font></td></tr><tr><td align="center">5</td><td align="center">최상</td><td align="center"><font color="#009900"><b>S</b></font></td></tr></table></td></tr></table>'
+$rank_help_2 += '<span style="font-size:14px">제목 왼쪽 등급은 종합등급입니다.</span></center>'
+! JO9 MOD END RANK_LABEL_GUIDE
+
+! JO9 MOD START J9M1700 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$specialisation_help = '<br><center><u>전 공</u> -</center><br>시종 : 잡일과 청소, 요리<br>' + _
+'비서 : 사무지식.수사학 의 최저랭크 B이상<br>' + _
+'치유술사 : 간호의학.연금술.마법력의 최저랭크 B이상<br>' + _
+'여검투사 : 전투술.체력.자아.성격의 최저랭크 B이상<br>' + _
+'예술가 : 무용술.음악성.미술성의 최저랭크 B이상<br>' + _
+'성노예 : 애무, 구강, 삽입, 노출의 최저랭크 B이상<br>' + _
+'애완동물 : 애완녀.경마녀의 최저랭크 B이상'
+! JO9 MOD END J9M1700
+
+$assistant_help = '<div style="font-size: 90%;">  현재 노예는 보조가 될 만큼 충분한 헌신이 없다. 노예가 자기 위치를 온 마음으로 받아들이고 진심으로 주인을 섬기고 싶어할 때, 그녀는 우리가 헌신이라고 부르는 도덕적 성장을 이룬 것이다. 노예의 도덕성은 한편으로 그녀가 자기 처지에 만족하고 기분이 좋으며, 다른 한편으로는 습관적, 본능적, 이성적 복종을 길렀을 때 나타나기 시작한다. 두려움은 결정적이지는 않지만, 두려움이 남아 있는 동안에는 노예 도덕성을 키우기 어렵다.</div>'
+
+!Tips for master creation wizard
+! JO9 MOD START J9M1699 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$rep_message = '<center>평판 -</center><br>로마인들에게 얼마나 알려져있나,<br>당신의 악명은 어느 정도인가. 그 척도이며<br>영역별 평판에 따라 활동영역이 커지고<br>집 임대 혹은 구매 또한 가능해집니다.<br><br>당신은 판잣집에만 머물 예정인가요?'
+$сила_с_справка = '<center>힘 -</center><br>강함은 존경을 불러옵니다.<br>훈련가로써, 조련사로써 힘은 중요한 것.<br><br>힘은 당신 체력과 전투 공격력에 영향 끼치며,<br>강한 남자는 노예를 힘으로 제압할 수 있습니다.'
+$харизма_с_справка = '<center>통솔력 -</center><br>통솔력과 결단력을 가진 훈련사는<br>타인을 더 쉽게 조종하므로써<br>노예상인 생활에 지대한 영향을 끼칩니다.'
+$возбуждение_с_справка = '<center>욕정 -</center><br>욕정과 발기력은 일일 흥분수치 입니다.<br>현실처럼 매일 쌓입니다.'
+$учитель_с_справка = '<center>지도력 -</center><br>노예상인으로써 하나의 열쇠 입니다.<br>일반 교육 효율에 영향줍니다.'
+$дворецкий_с_справка = '<center>관리력 -</center><br>집안의 관리와 회계에 관련된 기술입니다.<전투 기술력이 높을 수록<br>가계일을 잘하는 건 물론,<br>잘 전수해줍니다.'
+$артдиректор_с_справка = '<center>예술 지식 -</center><br>무용, 음악, 그림 기술의 혼합체입니다.<br>하지만 동물놀이 역시 예술의 일환...'
+$медик_с_справка = '<center>의학 지식 -</center><br>유능한 의사와 연금술사는<br>치유술사를 양성할 수 있습니다.<br>뿐만 아니라 건강문제 진단 및<br>다친 노예를 효과적으로 돌봐줍니다.'
+$боец_с_справка = '<center>전투 기술 -</center><br>투사 교육과 전투에 영향줍니다.<br>콜로세움 훈련사에게 특수기를<br>배울 수 있으며, 그 영향력이<Br>이 기술 능력에 따라 다릅니다.'
+$маг_с_справка = '<center>마법력 -</center><br>스파크 이용 모든 마법류에 영향줍니다.<br>게임 특성상 혼자 연금/마법 사용 불가합니다.<br>능숙한 마법사는 재료 구매를 통해<br>연금실 약물 제조가 가능합니다.'
+$доминирование_с_справка = '<center>지배력 -</center><br>정복력을 겸한 지배력,<br>교육 기술만큼이나 중요합니다.<br>지배력은 노예의 복종과 언어 폭력에<br>가히 영향 줍니다.<br>성기술 교육시에도 유용합니다.'
+$флагеляция_с_справка = '<center>채찍 기술 -</center><br>채찍류 처벌에 영향줍니다.<br>능숙한 만큼, 상처 없는 채찍질을<br>능히 가합니다.'
+$палач_с_справка = '<center>고문 기술 -</center><br>고문 처벌에 영향줍니다.<br>여기서 작은 도구는 기본,<br>커다란 기구또한 사용 가능합니다.<br>중요한 것!<br>고문을 통한 외관 손상이 전혀 없습니다.'
+$бондаж_с_справка = '<center>속박 기술 -</center><br>속박 및 방치 처벌에 영향줍니다.<br>흥분되는 야한 속박또한 가능합니다.'
+$секс_техники_с_справка = '<center>성적 기술 -</center><br>성교육 효율에 영향줍니다.'
+$patrician_mode_help = '<center>추가 특전 -</center><br>고등급 조수, 장비들을 갖고 시작합니다.<br>각 영역별 입주가능 평판도 가집니다.'
+! JO9 MOD END J9M1699
+$lactation_needed = '<center>노예가 젖이 나오는 중이어야 합니다.</center>'
+
+$energy_help = '<div style="font-size: 90%;">  초록 에너지 별은 대부분의 행동에 소비되며, 수면, 캄라, 요정 꽃가루, 강장 영약, 숙련된 마사지로 증가한다. 빨간 별은 피로를 뜻한다. 피로한 상태에서 에너지를 소모하는 행동을 하면 근력이나 지구력에 해를 준다. 일일 운동 한계에 도달하면 초록 에너지 별은 보라색이 되며, 이는 추가 운동이 해롭다는 뜻이다. 휴식 보상은 초록 에너지 별을 파란 별로 바꾸고, 이것들은 밤에 규칙 행동용으로 환급되거나 이월된다 (지구력 상한 적용).</div>'
+
+------------ #help_msg ------------

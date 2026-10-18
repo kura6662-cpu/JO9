@@ -1,0 +1,21 @@
+# interior_storage
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2869 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'interior_storage': gs 'snk_room_bridge', 'guard', 'interior_storage'
+! JO9 MOD END J9M2869
+!Interior Storage - created by crushboss
+!Fixes bugs when restoring/reloading all the databases in the game
+
+previous_ui_style = ui_style
+previous_nsfw = nsfw
+
+$previous_study = $study
+$previous_bed = $bed
+if bath > 0: $previous_bath = $bath
+if dungeon > 0: $previous_dungeon = $dungeon
+if kitchen > 0: $previous_kitchen = $kitchen
+if lab > 0: $previous_lab = $lab
+if boudoir > 0: $previous_boudoir = $boudoir
+if barn > 0: $prvious_barn = $barn
+
+------------ interior_storage ------------

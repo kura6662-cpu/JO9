@@ -1,0 +1,143 @@
+# init_demo_game
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2923 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'init_demo_game': gs 'snk_room_bridge', 'guard', 'init_demo_game'
+! JO9 MOD END J9M2923
+$master_ava = 'content\pic\master\master_noble_sepia.png'
+$master_ava_color = 'content\pic\master\master_noble.png'
+$master_name = '잭'
+
+
+master_energy = 5
+
+master_str = 3
+master_cha = 3
+master_libido = 3
+master_domination = 3
+
+master_tutor = 3
+master_fighter = 3
+master_mage = 3
+master_butler = 3
+master_artdirector = 3
+master_medic = 3
+
+master_bondage = 3
+master_flagelation = 3
+master_torture = 3
+
+master_petting = 3
+master_oral = 3
+master_penetration = 3
+master_fetish = 3
+
+master_haircut = 30
+master_visage = 10
+
+!other starting vars
+
+bath = 1
+kitchen = 1
+barn = 0 &! disable barn for tutorial - ImperatorAugustus
+dungeon = 0
+lab = 0
+library = 0
+
+art_material = 4
+percussion = 16
+woodwind = 4
+violin = 4
+piano = 2
+
+
+dog = 1
+$dog_name = 'Jake'
+
+cooked_food = -1
+sparks = 800
+$защита[0] = 'блок'
+
+$суперудар[1] = ''
+$суперудар[2] = ''
+$суперудар[3] = ''
+$суперудар[4] = ''
+$суперудар[5] = ''
+$суперудар[6] = ''
+
+$master_armor = 'без_брони' &! no armor
+$master_cloth = 'comfy_robes'
+
+$master_back_wpn = 'скотобой' &! cattle prod
+$master_left_wpn = 'демократизатор' &! baton
+$master_right_wpn = 'кнут' &! whip
+$master_arm_wpn = 'нагайка' &! lash
+$master_leg_wpn = 'кинжал' &! dagger
+
+$master_head_gear = 'none'
+$master_earring = 'none'
+$master_amulet = 'none'
+$master_ring = 'none'
+$master_karman = 'none'
+
+faction_fame['neutral'] = 0
+faction_fame['taurus'] = 0
+faction_fame['serpis'] = 0
+faction_fame['korvus'] = 0
+faction_fame['kamira'] = 0
+
+vibrator = 1
+inventory['deprivation_suit'] = 1
+inventory['vaginal_balls'] = 1
+inventory['anal_plug'] = 1
+inventory['secure_gag'] = 1
+inventory['chastity_belt'] = 1
+inventory['pissuar_stable'] = 1
+inventory['toilet_stable'] = 1
+inventory['stethoscope'] = 1
+
+get_initial_slave = 0
+
+fridge['vegetables'] = 25
+fridge['grain'] = 25
+fridge['spice'] = 25
+fridge['cheese'] = 25
+fridge['alcohol'] = 25
+fridge['eggs'] = 25
+fridge['milk'] = 25
+fridge['cream'] = 25
+fridge['mince'] = 25
+fridge['meat'] = 25
+
+lab_store['slime'] = 3
+lab_store['kanabis'] = 3
+lab_store['koffe'] = 3
+lab_store['meth'] = 3
+lab_store['opium'] = 3
+
+вакхический_нектар = 6
+тонизируюзщий_эликсир = 6
+целительный_бальзам = 6
+афродизиак = 6
+мощный_афодизиак = 6
+приворотное_зелье = 6
+вода_леты = 6
+
+fancy_suit = 1
+regal_suit = 1
+formal_suit = 1
+aketon = 1
+livery = 1
+medic_robes = 1
+wizard_robes = 1
+
+demo_game = 1
+ui_style = 1
+story_mode = 0
+custom_game = 0
+difficulty_setting = 1
+brand_rate = 0
+
+!quests
+active[$quest[1]] = 0
+active[$quest[3]] = 0
+------------ init_demo_game ------------

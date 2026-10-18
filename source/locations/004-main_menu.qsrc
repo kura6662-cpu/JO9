@@ -1,0 +1,57 @@
+# main_menu
+! Readable view; authoritative fields are in ../locations.json.
+if snk_room_target > 0 and $curloc = 'main_menu': gs 'snk_room_bridge', 'guard', 'main_menu'
+! JO9 MOD START J9M2693 | 2026-10-14_hide_outer_frame_on_startup | changed block; context may be included
+*p '<style id="jo9_startup_no_outer_frame">body:before,body:after{display:none!important;}</style>'
+! JO9 MOD END J9M2693
+!Main Start menu of the game
+!Overhauled by crushboss
+!Revised by ImperatorAugustus
+if warning_pass = 0: gt 'warning' &! before start_refresh
+
+!AddOn - changed text output to reflect version number
+
+!The line breaks here are used to vertically position the menu buttons
+'<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>'
+$text_display = ''
+func('$menu', '===BEGIN===', 'mainmenu')
+func('$menu', 'exec_options', $menu_item_Tutorial, 'gt "demo_intro"', '튜토리얼')
+! JO9 MOD START J9M2692 | 2026-10-10_restore_kura_personal_patch | changed block; context may be included
+func('$menu', 'exec_options', $menu_item_Storyselect, 'gt "hero_customization_man"', '일반 시작')
+! JO9 MOD END J9M2692
+FUNC('$menu', 'exec_options', $menu_item_Storycreate, 'gs "init_custom_game" & gt "hero_creation"', '커스텀 게임')
+func('$menu', 'exec_options', $menu_item_Controls, 'gt "controls"', '조작법')
+func('$menu', 'exec_options', $menu_item_Aboutfix, 'gt "development"', '개발')
+func('$menu', 'exec_options', $menu_item_Credits, 'gt "credits"', '제작진')
+func('$menu', '===END===')
+*p '<div id = "main_menu"><<$text_display>></div>'
+
+gs 'start_refresh' &! ERASES ALL VARIABLES IN THE GAME, MUST BE DONE AFTER MENU DISPLAY ABOVE FOR CORRECT RENDERING
+
+!AddOn - Initialisation
+$code_rev = '2.4.0.0'
+$title_fix = '잭 오 나인 테일 v<<$code_rev>> Kor Ver'
+$game_ver = $title_fix
+
+one_time_conversion_of_interaction_counter_arrays = 1 &! initialized to 1 in main_menu so new games started after this code was added will bypass the update check in $newloc
+
+gs '$addon_custom_data'
+gs 'refresh_database'
+gs 'init_game'
+
+if sound_on = 1 and warning_pass = 1: $toplay = 'mainscreen' & dynamic $play_music
+
+!a = rand(1,3)
+!if a = 1: $backimage = 'content/pic/title.png'
+!if a = 2: $backimage = 'content/pic/title10.png'
+!if a = 3: $backimage = 'content/pic/title17.png'
+
+$title_pic = 'title' + rand(1,13)
+$backimage = 'content/pic/<<$title_pic>>.png' 
+
+MAINDESC_X = 1
+MAINDESC_Y = 1
+MAINDESC_W = 1280
+MAINDESC_H = 800
+
+------------ main_menu ------------

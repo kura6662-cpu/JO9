@@ -1,0 +1,125 @@
+# choice_screen
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1267 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'choice_screen': gs 'snk_room_bridge', 'guard', 'choice_screen'
+! JO9 MOD END J9M1267
+!yes/no choice screen
+
+!if hero_choice > 100: gs '#var_base_woman'
+gs '#var_base'
+
+gs '_layout'
+
+if not_safe = 1:
+	not_safe = 0
+! JO9 MOD START J9M1266 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\empty.png"></div>')
+! JO9 MOD END J9M1266
+elseif $picture_type = 'pic_png':
+! JO9 MOD START J9M1265 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$bg_path>>.png"></div>')
+! JO9 MOD END J9M1265
+else
+! JO9 MOD START J9M1264 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\<<$bg[$place]>>.png"></div>')
+! JO9 MOD END J9M1264
+end
+! JO9 MOD START J9M1263 | 2026-10-15_z_inline_text_prefix | changed block; context may be included
+! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($text[txt], '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $text[txt] = $mid($text[txt], len($jo9_leading_empty) + 1, len($text[txt]))
+! JO9 MOD END J9M1263
+*p '<div id = "text"><<$text[txt]>></div>'
+
+if $picture_type = 'slave_picture':
+	if nsfw = 0: *p func('display_fullimage', 'slave', 'bg')
+elseif $picture_type = 'assistant_picture':
+	npc = 0
+	if nsfw = 0: *p func('display_fullimage', 'assistant', 'bg')
+elseif $picture_type = 'stock_picture':
+	if npc ! 9999: npc = 0
+	if nsfw = 0: *p func('display_fullimage', 'stock', 'bg')
+elseif $picture_type = 'prisoner_picture':
+	npc = 0
+	if nsfw = 0: *p func('display_fullimage', 'prisoner', 'bg')
+elseif $picture_type = 'cow_picture':
+	npc = 0
+	if nsfw = 0: *p func('display_fullimage', 'cow', 'bg')
+end
+
+!수정부분
+!조합노예, 안개노예
+if npc = 0:
+	$info_bar = ''
+	*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<$place_name[$place]>></div><<$place_location[$place]>><br>'
+	*nl '참고 정보:'
+	*nl '</center></div>'
+	*p '<div id = "side_panel_text"><span class="jo9-reference-body"><<$place_info[$place]>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style></div>'
+elseif npc ! 9999:
+	$info_bar = ''
+	if nsfw = 1:
+! JO9 MOD START J9M1262 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+		*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\empty.png"></div>')
+! JO9 MOD END J9M1262
+	elseif $npc_image[$npc_id] ! '':
+! JO9 MOD START J9M1261 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+		*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\characters\<<$npc_image[$npc_id]>>.png"></div>')
+! JO9 MOD END J9M1261
+	end
+	*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<$npc_name[$npc_id]>></div><<$npc_status[$npc_id]>><br>'
+	*nl '참고 정보:'
+	*nl '</center></div>'
+	*p '<div id = "side_panel_text"><<$npc_attitude[npc_attitude[$npc_id]]>>'
+	*nl '<span class="jo9-reference-body"><<$npc_info[$npc_id]>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style></div>'
+else
+	gs '$addon', 'info_box'
+	gs '$slave_price', 'stock' &! merged $slave_price_stock into $slave_price - ImperatorAugustus
+	*p '<div id = "side_panel_location">Guild Contract Job<br><font size="3">~ Jack-O-Nine-Tails 2.4.0.0 & Kor Ver ~</font></div>'
+	*p '<div id = "barn_stat_bar">'
+	*nl '호 칭 : &nbsp;<<$stock_name>>'
+	*nl '연 령 대 : &nbsp;<<$slave_age_name[stock["age"]]>>'
+	if $master_head_gear = 'raven_crown':
+		*nl '<a style="font-size:30px"><<$rating[rating]>></a>'
+	else
+		*nl
+	end
+	*p '<br> 속성정보<div style="line-height:25%"><br></div>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'beauty', stock['beauty'], 1)
+	*p '<font style="font-size:12px;">외모 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $красота_справка & dynamic $msg, $красота_справка_2"><<$beauty[stock["beauty"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'stamina', stock['stamina'], 1)
+	*nl '<font style="font-size:12px;">체력 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $здоровье_справка & dynamic $msg, $здоровье_справка_2"><<$stamina[stock["stamina"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'sensitivity', stock['sensitivity'], 1)
+	*nl '<font style="font-size:12px;">감수성 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $чувствительность_справка & dynamic $msg, $чувствительность_справка_2"><<$sensitivity[stock["sensitivity"]]>></a><div style="line-height:25%"><br></div>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'temper', stock['temper'], 1)
+	*p '<font style="font-size:12px;">성격 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $темперамент_справка & dynamic $msg, $темперамент_справка_2"><<$temper[stock["temper"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'intellect', stock['intellect'], 1)
+	*nl '<font style="font-size:12px;">지성 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $ум_справка & dynamic $msg, $ум_справка_2"><<$intellect[stock["intellect"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'ego', stock['ego'], 1)
+	*nl '<font style="font-size:12px;">자아 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $характер_справка & dynamic $msg, $характер_справка_2"><<$ego[stock["ego"]]>></a><div style="line-height:25%"><br></div>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'pride', stock['pride'], -1)
+	*p '<font style="font-size:12px;">태도 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $гордыня_справка & dynamic $msg, $гордыня_справка_2"><<$pride[stock["pride"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'exotic', stock['exotic'], 1)
+	*nl '<font style="font-size:12px;">독특함 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $экзотичность_справка & dynamic $msg, $экзотичность_справка_2"><<$exotic[stock["exotic"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'fat', IIF(stock['fat'] = 1 or stock['fat'] = 5, 1, 6 - stock['fat']))
+	*nl '<font style="font-size:12px;">체형 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $жыр_справка & dynamic $msg, $жыр_справка_2"><<$fat[stock["fat"]]>></a><div style="line-height:25%"><br></div>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'style', stock['style'], 1)
+	*p '<font style="font-size:12px;">세련됨 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $стиль_справка & dynamic $msg, $стиль_справка_2"><<$style[stock["style"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'fame', stock['fame'], 1)
+	*nl '<font style="font-size:12px;">인지도 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $слава_справка & dynamic $msg, $слава_справка_2"><<$girl_fame[stock["fame"]]>></a><div style="line-height:25%"><br></div>'
+	*p '<div style="line-height:25%"><br></div>노예의 특성<div style="line-height:5%"><br></div><<$stock_features_list>></div>'
+end
+
+*p '<div id = "interaction_stat_bar"><<$info_bar>></div>'
+if $special_image[txt] ! '':
+! JO9 MOD START J9M1260 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	if nsfw = 0:*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$special_image[txt]>>"></div>')
+! JO9 MOD END J9M1260
+end
+
+if sound_on = 1 and $play_sound[txt] ! '': play 'content\snd\<<$play_sound[txt]>>.wav', sound_volume
+if $play_sound[txt] ! '': $play_sound[txt] = ''
+
+*p '<div id = "approve"><a href = "EXEC: dynamic $yes"><img src="content\pic\buttons\approve.png"></a></div>'
+*p '<div id = "deny"><a href = "EXEC: dynamic $no"><img src="content\pic\buttons\deny.png"></a></div>'
+
+------------ choice_screen ------------

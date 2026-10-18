@@ -1,0 +1,36 @@
+# jo9_meiki_willing
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M3026 | 2026-10-15_z_meiki_voluntary_outcome | changed block; context may be included
+! JO9_MEIKI_BONUS_V1: no state changes; args[1]=1 requires a discovered trait.
+result = 0
+if $args[0] = 'slave':
+	! JO9 MOD START CHECK_CALL_SLAVE
+	! actor check returns 0 or 1; enclosing result/trait logic follows.
+	if func('jo9_meiki_checks', 'actor', slave_state) = 1:
+		result = 1
+		if args[1] = 1:
+			result = 0
+			if slave['virginity'] = 4 or (slave['jo9_meiki_known'] = 1 and (slave['virginity'] = 2 or slave['virginity'] = 3)):
+				result = 1
+			end
+		end
+	end
+	! JO9 MOD END CHECK_CALL_SLAVE
+end
+if $args[0] = 'assistant':
+	! JO9 MOD START CHECK_CALL_ASSISTANT
+	! actor check returns 0 or 1; enclosing result/trait logic follows.
+	if func('jo9_meiki_checks', 'actor', assistant_state) = 1:
+		result = 1
+		if args[1] = 1:
+			result = 0
+			if assistant['virginity'] = 4 or (assistant['jo9_meiki_known'] = 1 and (assistant['virginity'] = 2 or assistant['virginity'] = 3)):
+				result = 1
+			end
+		end
+	end
+	! JO9 MOD END CHECK_CALL_ASSISTANT
+end
+! JO9 MOD END J9M3026
+
+------------ jo9_meiki_willing ------------

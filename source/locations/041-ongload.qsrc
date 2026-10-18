@@ -1,0 +1,46 @@
+# $ongload
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 canonical resource paths: saved scene caches
+local $jo9_legacy_prefix = 'SNK' + 'mod\'
+$bg_path = replace($bg_path, $jo9_legacy_prefix, '')
+$special_bg = replace($special_bg, $jo9_legacy_prefix, '')
+local jo9_legacy_i
+if arrsize('$special_image') > 0:
+	for jo9_legacy_i = 0 to arrsize('$special_image') - 1:
+		$special_image[jo9_legacy_i] = replace($special_image[jo9_legacy_i], $jo9_legacy_prefix, '')
+	end
+end
+
+if snk_room_target > 0 and $curloc = '$ongload': gs 'snk_room_bridge', 'guard', '$ongload'
+!Game load handler (will run after game state is loaded)
+
+! JO9_MESSAGE_LAYOUT_REFRESH_20261015
+! Saved UI settings must not retain retired button paths.
+$MSG_BACKIMAGE = 'content/pic/msg_bg.png'
+$MSG_OK_IMAGE = 'content/pic/buttons/ok-icon.png'
+$MSG_FORMAT = '<div id="ink">%TEXT%</div>'
+MSG_TEXT_X = 80
+MSG_TEXT_Y = 40
+MSG_TEXT_W = 370
+MSG_TEXT_H = 400
+MSG_OK_X = 250
+MSG_OK_Y = 340
+MSG_X = 200
+! JO9_MESSAGE_LAYOUT_REFRESH_END
+! JO9 MOD START J9M3024 | 2026-10-15_policeman_family_index_save_fix | changed block; context may be included
+! JO9_POLICEMAN_FAMILY_INDEX_SAVE_FIX_20261015 (경찰관 집안 54 -> 4, 이미 있는 노예)
+if slave['family_index'] = 54: slave['family_index'] = 4
+if assistant['family_index'] = 54: assistant['family_index'] = 4
+if prisoner['family_index'] = 54: prisoner['family_index'] = 4
+if cow['family_index'] = 54: cow['family_index'] = 4
+if room1['family_index'] = 54: room1['family_index'] = 4
+if room2['family_index'] = 54: room2['family_index'] = 4
+if room3['family_index'] = 54: room3['family_index'] = 4
+if room4['family_index'] = 54: room4['family_index'] = 4
+! JO9 MOD END J9M3024
+saved_game_loaded = 1 &! do-once flag for $newloc
+
+if $curloc = 'main_screen': gt 'menu_form'
+if $curloc = 'city_screen': gt 'city_menu_form'
+
+------------ $ongload ------------

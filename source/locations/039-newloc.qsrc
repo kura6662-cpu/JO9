@@ -1,0 +1,592 @@
+# $newloc
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START COG_CACHE | 2026-10-16_innate_learning_traits
+! JO9 MOD START FOG_SAVE_CACHE | 2026-10-17_fog_relay
+ui_style = 2
+! JO9 MOD START TRAITS_SAVE_CACHE | 2026-10-17_traits_batch
+if jo9_traits_revision < 2:
+ jo9_traits_revision = 2
+ gs '#static_base'
+ gs '#dynamic'
+ gs '#static_txt'
+ gs '#variative'
+ code_defined['newloc_update_iced_features_list'] = 0
+ code_defined['interaction_result_self_sex_lesson'] = 0
+ code_defined['interaction_result_make_slave_do'] = 0
+ code_defined['interaction_result_milking_slave'] = 0
+ code_defined['interaction_cow_setup'] = 0
+ code_defined['interaction_lesson_humiliation'] = 0
+ code_defined['interaction_lesson_seduction'] = 0
+ code_defined['interaction_active_sex'] = 0
+ code_defined['interaction_entertain_concert'] = 0
+ code_defined['interaction_result_rape'] = 0
+ code_defined['interaction_serve_clean_house'] = 0
+ code_defined['interaction_entertain_erotic_show'] = 0
+ code_defined['interaction_entertain_striptease'] = 0
+ code_defined['interaction_entertain_acrobatics'] = 0
+ code_defined['interaction_serve_massage'] = 0
+ code_defined['interaction_serve_wash_master'] = 0
+ code_defined['interaction_serve_prepare_meal'] = 0
+ $jo9_traits_initialize_actor = {
+  if dynslave_state > CONST_INT['no_slave']:
+   gs 'jo9_traits_personality', 'gradecheck', 'dynslave'
+   gs 'jo9_traits_value', 'refresh', 'dynslave'
+  end
+ }
+ dynamic $do_for_each_slave_in_list, '$jo9_traits_initialize_actor', '$all_slave_characters'
+ killvar '$jo9_traits_initialize_actor'
+end
+! JO9 MOD END TRAITS_SAVE_CACHE
+if jo9_fog_revision < 1:
+ jo9_fog_revision = 1
+ gs '#options'
+ if $place = 'edge_patrol' and get_weapon = 0: copyarr '$display_options', '$edge_of_mists'
+end
+! JO9 MOD END FOG_SAVE_CACHE
+if jo9_learning_revision < 2:
+ jo9_learning_revision = 2
+ gs '#static_base'
+ gs '#dynamic'
+ gs '#static_txt'
+ gs '#txt'
+ code_defined['newloc_update_iced_features_list'] = 0
+end
+! JO9 MOD END COG_CACHE
+! JO9_STATE_V2: refresh cached definitions once per loaded legacy save.
+! JO9 MOD START J9M3010 | 2026-10-15_zzz_meiki_training | changed block; context may be included
+if jo9_meiki_revision < 214348873:
+ jo9_meiki_revision = 214348873
+! JO9 MOD END J9M3010
+ gs '#static_base'
+ gs '#dynamic'
+ ! JO9_STATE_EDITOR_LABEL_CACHE_BEGIN
+ $virginity[1] = '가짜 처녀'
+ $virginity[2] = '뻑뻑한 보지'
+ $virginity[3] = '잘 젖는 보지'
+ $virginity[4] = '최고의 보지'
+ ! JO9_STATE_EDITOR_LABEL_CACHE_END
+end
+gs 'jo9_meiki_state', 'slave', 0
+gs 'jo9_meiki_state', 'assistant', 0
+gs 'jo9_meiki_state', 'room1', 0
+gs 'jo9_meiki_state', 'room2', 0
+gs 'jo9_meiki_state', 'room3', 0
+gs 'jo9_meiki_state', 'room4', 0
+! JO9_SINGLE_GRIMDARK_UI_20261014
+! JO9 MOD START J9M3009 | 2026-10-10_restore_private_room_ui_corrections | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$newloc': gs 'snk_room_bridge', 'guard', '$newloc'
+gs 'snk_room_diet_migrate'
+! JO9 MOD END J9M3009
+! JO9 MOD START WORLD_TEXT_CACHE_V4 | 2026-10-18_world_text_rework_228
+! JO9 MOD START PLACE_STAGE_CACHE_V5 | 2026-10-18_world_description_stages
+if jo9_reference_info_revision < 5: gs 'jo9_reference_info'
+! JO9 MOD END PLACE_STAGE_CACHE_V5
+! JO9 MOD END WORLD_TEXT_CACHE_V4
+!Location handler transitions
+!Overhauled by crushboss
+!AddOnn - disabled wizard_mode check to enable in story mode via options menu
+if $master_name ! 'Старый Охотник': wizard_mode = 0
+
+!AddOn - Version check
+$code_rev = '2.4.0.0'
+$title_fix = '잭 오 나인 테일 v<<$code_rev>> Kor Ver'
+if saved_game_loaded > 0 or $ongload = '' or $game_ver ! $title_fix:
+	killvar 'saved_game_loaded'
+	gs '$addon', 'update', 'full'
+elseif one_time_conversion_of_interaction_counter_arrays = 0:
+	!TODO: move into upgrade handler when version increments from 2.2.2 to next version
+	msg '오래된 저장 파일이 감지되었습니다 ... 이제 이 창을 닫고 계속 플레이해도 됩니다 ... 이후 저장 파일 크기를 줄이기 위해 게임이 잠시 멈출 수 있습니다 ... 잠시 기다려 주십시오. 업데이트가 끝나면 알림이 표시됩니다'
+	one_time_conversion_of_interaction_counter_arrays = 2 &! initialized to 1 in main_menu so new games started after this code was added will bypass this update check
+elseif one_time_conversion_of_interaction_counter_arrays = 2:
+	one_time_conversion_of_interaction_counter_arrays = 3 &! incremental delay to ensure the first message is seen before the game pauses
+elseif one_time_conversion_of_interaction_counter_arrays = 3:
+	one_time_conversion_of_interaction_counter_arrays = 4 &! do-once
+	$temp_counter_array_vars[] = 'sex_done_today'
+	$temp_counter_array_vars[] = 'already_done_today'
+	$temp_counter_array_vars[] = 'city_already_done_today'
+	$perm_counter_array_vars[] = 'sex_done_thisperson'
+	$perm_counter_array_vars[] = 'city_already_done_ever'
+	$add_counter_vars_for_valid_slaves = {
+		if dynslave_state ! CONST_INT['no_slave']:
+			$temp_counter_array_vars[] = 'dynslave_already_done_today'         &! instance-specific version of already_done_today    &! array var, each index corresponds to an interaction id, with a count as the value
+			$perm_counter_array_vars[] = 'dynslave_already_done_total'         &! replaced 'already_done_curslave'                   &! array var, each index corresponds to an interaction id, with a count as the value
+			$temp_counter_array_vars[] = 'dynslave_already_done_recent'        &! new in 2.2                                         &! array var, each index corresponds to an interaction id, with a count as the value
+			$temp_counter_array_vars[] = 'dynslave_already_sex_today'          &! replaced 'today_sex_curslave'                      &! array var, each index corresponds to an interaction id, with a count as the value
+			$perm_counter_array_vars[] = 'dynslave_already_sex_total'          &! replaced 'already_sex_curslave'                    &! array var, each index corresponds to an interaction id, with a count as the value
+		end
+	}
+	dynamic $do_for_each_slave_in_list, '$add_counter_vars_for_valid_slaves', '$all_slave_characters'
+	dynamic $replace($add_counter_vars_for_valid_slaves, 'dyn'+'slave', 'stock')
+	dynamic $replace($add_counter_vars_for_valid_slaves, 'dyn'+'slave', 'select')
+	dynamic $replace($add_counter_vars_for_valid_slaves, 'dyn'+'slave', 'saved_stock')
+	killvar '$add_counter_vars_for_valid_slaves'
+	for i = 0 to arrsize('$temp_counter_array_vars') - 1: killvar $temp_counter_array_vars[i]
+	killvar '$temp_counter_array_vars'
+	for i = 0 to arrsize('$perm_counter_array_vars') - 1:
+		if arrsize($perm_counter_array_vars[i]) > 0:
+			for j = 0 to arrsize($perm_counter_array_vars[i]) - 1:
+				dynamic "if <<$perm_counter_array_vars[i]>>[j] > 0: converted_count += 1 & <<$perm_counter_array_vars[i]>>_converted[$str(j)] += <<$perm_counter_array_vars[i]>>[j]"
+			end
+		end
+	end
+	for i = 0 to arrsize('$perm_counter_array_vars') - 1: copyarr $perm_counter_array_vars[i], $perm_counter_array_vars[i] + '_converted'
+	for i = 0 to arrsize('$perm_counter_array_vars') - 1: killvar $perm_counter_array_vars[i] + '_converted'
+	killvar '$perm_counter_array_vars'
+	msg '업데이트가 완료되었습니다 ... 이후 저장 파일 크기가 줄어들었습니다 ... 이제 이 창을 닫고 계속 플레이해도 됩니다'
+elseif newloc_do_once_per_game = 0:
+	newloc_do_once_per_game = 1
+	gs '#estate_base' &! adjust rental costs based on game difficulty - ImperatorAugustus
+end
+
+if debug_newloc = 1: msg '$newloc: $curloc = <<$curloc>>'
+
+!Evaluate slave achievements (skip if fainted - ImperatorAugustus)
+if slave_state = CONST_INT['slave_exist']:
+	if slave['selfesteem'] > 0 and slave['virtue'] > 0:
+		slave['virtue'] = 5
+		if slave['selfesteem_revealed'] = 0: slave['selfesteem_revealed'] = 1
+	end
+	if slave['selfesteem'] < 0 and slave['sin'] > 0:
+		slave['sin'] = 5
+		if slave['selfesteem_revealed'] = 0: slave['selfesteem_revealed'] = 1
+	end
+	if slave['virtue'] > 0: eval = slave['virtue']
+	if slave['sin'] > 0: eval = 5 + slave['sin']
+	if slave['sin'] = 0 and slave['virtue'] = 0: eval = 0
+end
+
+! standard of living [0,6] must be equal or greater than residence prestige (currently ranges [-1, 4], therefore +1) and cannot be more than one level higher (therefore +2) - ImperatorAugustus
+master_wealth_target = max(estate_prestige[$estate] + 1, min(master_wealth_target, estate_prestige[$estate] + 2)) &! takes effect at next end of decade billing
+master_wealth = max(estate_prestige[$estate] + 1, min(master_wealth, estate_prestige[$estate] + 2)) &! clamp "current" level within same range (can be out of range on day 1 and after changing apartments)
+
+!Added behavior and rules for extended rental - crushboss
+if pet_tentacle ! 1:
+	pet_tentacle = 0
+	tentacle_state = 0
+	tentacle_hp = 0
+	tentacle_size = 0
+else
+	if spawn_milked = 0: tentacle_state = 1
+	if spawn_milked > tentacle_size: tentacle_state = 2
+end
+
+if dungeon ! 1:
+	arachnidSpider = 0
+	polypusvermin = 0
+else
+	arachnidSpider = 1
+	polypusvermin = 1
+end
+
+!Add data for extended rental cheat - crushboss
+if extended_rental_cheat > 0:
+	!Extended Rental
+	lab = 1
+	boudoir = 1
+	dungeon = 1
+	barn = 1
+	bath = 1
+	kitchen = 1
+	pen = 1
+	arachnidSpider = 1
+	polypusvermin = 1
+
+	!Estate Interiors
+	$study = 'classic'
+	$interior_study_large['classic'] = 'interiors\classic_study_large'
+	$interior_study['classic'] = 'interiors\classic_study'
+	$interior_study_info['classic'] = '   '
+	$bg['study'] = $interior_study[$study]
+	$bg['home_lux'] = $interior_study_large[$study]
+	$place_name['study'] = $estate_study_name[$estate]
+	$place_location['study'] = $estate_study_location[$estate]
+	$place_info['study'] = $interior_study_info[$study]
+
+	$bed = 'stylish'
+	$interior_bed_large['stylish'] = 'interiors\stylish_bed_large'
+	$interior_bed['stylish'] = 'interiors\stylish_bed'
+	$interior_bed_info['stylish'] = '   '
+	$bg['bedroom'] = $interior_bed[$bed]
+	$bg['bedroom_lux'] = $interior_bed_large[$bed]
+	$place_name['bedroom'] = $estate_bed_name[$estate]
+	$place_location['bedroom'] = $estate_bed_location[$estate]
+	$place_info['bedroom'] = $interior_bed_info[$bed]
+
+	$bath = 'gothic'
+	$interior_bath_large['gothic'] = 'interiors\gothic_bath_large'
+	$interior_bath['gothic'] = 'interiors\gothic_bath'
+	$interior_bath_info['gothic'] = '   '
+	$bg['bathroom'] = $interior_bath[$bath]
+	$bg['bathroom_lux'] = $interior_bath_large[$bath]
+	$place_name['bathroom'] = $estate_bath_name[$estate]
+	$place_location['bathroom'] = $estate_bath_location[$estate]
+	$place_info['bathroom'] = $interior_bath_info[$bath]
+
+	$dungeon = 'executor'
+	$interior_dungeon_large['executor'] = 'interiors\executor_dungeon_large'
+	$interior_dungeon['executor'] = 'interiors\executor_dungeon'
+	$interior_dungeon_info['executor'] = '   '
+	$bg['dungeon'] = $interior_dungeon[$dungeon]
+	$bg['dungeon_lux'] = $interior_dungeon_large[$dungeon]
+	$place_name['dungeon'] = $estate_dungeon_name[$estate]
+	$place_location['dungeon'] = $estate_dungeon_location[$estate]
+	$place_info['dungeon'] = $interior_dungeon_info[$dungeon]
+
+	$kitchen = 'basic'
+	$interior_kitchen_large['basic'] = 'interiors\basic_kitchen_large'
+	$interior_kitchen['basic'] = 'interiors\basic_kitchen'
+	$interior_kitchen_info['basic'] = '   '
+	$bg['kitchen'] = $interior_kitchen[$kitchen]
+	$bg['kitchen_lux'] = $interior_kitchen_large[$kitchen]
+	$place_name['kitchen'] = $estate_kitchen_name[$estate]
+	$place_location['kitchen'] = $estate_kitchen_location[$estate]
+	$place_info['kitchen'] = $interior_kitchen_info[$kitchen]
+
+	$lab = 'basic'
+	$interior_lab_large['basic'] = 'interiors\basic_lab_large'
+	$interior_lab['basic'] = 'interiors\basic_lab'
+	$interior_lab_info['basic'] = '   '
+	$bg['lab'] = $interior_lab[$lab]
+	$bg['lab_lux'] = $interior_lab_large[$lab]
+	$place_name['lab'] = $estate_lab_name[$estate]
+	$place_location['lab'] = $estate_lab_location[$estate]
+	$place_info['lab'] = $interior_lab_info[$lab]
+
+	$boudoir = 'gothic'
+	$interior_boudoir_large['gothic'] = 'interiors\gothic_boudoir_large'
+	$interior_boudoir['gothic'] = 'interiors\gothic_boudoir'
+	$interior_boudoir_info['gothic'] = '   '
+	$bg['boudoir'] = $interior_boudoir[$boudoir]
+	$bg['boudoir_lux'] = $interior_boudoir_large[$boudoir]
+	$place_name['boudoir'] = $estate_boudoir_name[$estate]
+	$place_location['boudoir'] = $estate_boudoir_location[$estate]
+	$place_info['boudoir'] = $interior_boudoir_info[$boudoir]
+
+	extended_rental_cheat -= 1
+end
+
+if master_wealth < 4: club_member = 0
+
+!Added Chimera Gem enhancement - crushboss
+if chimera_gem_on = 1: master_excitement = 5 & master_excitement_rate = 200
+
+!Variable rule normalization for assistant - crushboss
+!Rules are now properties of the assistant array, so killvar 'assistant' (below) clears them - ImperatorAugustus
+!if assistant_state = 0 and assistant['account_rule'] = 1: assistant['account_rule'] = 0
+!if assistant_state = 0 and assistant['alchemist_rule'] = 1: assistant['alchemist_rule'] = 0
+!if assistant_state = 0 and assistant['cleans_rule'] = 1: assistant['cleans_rule'] = 0
+!if assistant_state = 0 and assistant['cooks_rule'] = 1: assistant['cooks_rule'] = 0
+!if assistant_state = 0 and assistant['washes_master_rule'] = 1: assistant['washes_master_rule'] = 0
+!if assistant_state = 0 and assistant['supervise_rule'] = 1: assistant['supervise_rule'] = 0
+
+!Reset assistant variables if no assistant exists and fix blank screen bug for assistant - crushboss
+if assistant_state = CONST_INT['no_slave']: dynamic $clear_slave_instance, 'assistant'
+
+! automatically enable alchemy rule for assistant when there is no slave
+if assistant_state = CONST_INT['slave_exist'] and slave_state = CONST_INT['no_slave']: assistant['alchemist_rule'] = 1
+
+!Disable Vaginal Balls rule if the correct conditions don’t exist - crushboss
+!Most of the slave rule conditions are handled in slave_stat but for various reasons this one requires special handling here
+if slave['v_balls_rule'] = 1:
+	if inventory['vaginal_balls'] < 1 or slave['virginity'] < 1:
+		slave['v_balls_rule'] = 0
+	end
+end
+
+!Fix blank screen bug - crushboss
+if $assistant['right_wpn'] = '': $assistant['right_wpn'] = 'безоружный'
+if $assistant['left_wpn'] = '': $assistant['left_wpn'] = 'безоружный'
+if $assistant['armor'] = '': $assistant['armor'] = 'без_брони'
+if $assistant['cloth'] = '': $assistant['cloth'] = 'голая'
+
+!Reset all slave variables when no slave exists - improved - crushboss
+if slave_state = CONST_INT['no_slave']:
+	dynamic $clear_slave_instance, 'slave'
+	success = 0
+	angst_rise = 0
+	moral_app = 0
+	moral_basis = 0
+	moral_boost = 0
+	slave_fights_back = 0
+	slave_escape = 0
+	slave_attack = 0
+	slave_suicide = 0
+	slave_died = 0
+	rules_broken_message = 0
+	show_slave_fullimage = 0
+	cheer_effect = 0
+	cheer_rate = 0
+	reasoning_effect = 0
+	reasoning_rate = 0
+	slave_will_masturbate = 0
+	slave_masturbating_anyway = 0
+    room1_will_masturbate = 0
+    room2_will_masturbate = 0
+    room3_will_masturbate = 0
+    room4_will_masturbate = 0
+	fear_resistance = 0
+	rise_difficulty = 0
+	futile_threat = 0
+
+	slave_beg_for_sex = 0
+	killvar 'slave_specialisation'
+	!Do not enable - bug fix - crushboss
+	! killvar 'sex'
+end
+
+!Fix blank screen bug - crushboss
+if $slave['right_wpn'] = '': $slave['right_wpn'] = 'безоружный'
+if $slave['left_wpn'] = '': $slave['left_wpn'] = 'безоружный'
+if $slave['armor'] = '': $slave['armor'] = 'без_брони'
+if $slave['cloth'] = '': $slave['cloth'] = 'голая'
+
+!handle accumulated half actions - ImperatorAugustus
+if master_half_action > 1: master_half_action -= 2 & dynamic $master_energy_drop
+dynamic $do_for_each_slave_in_list, '$update_slave_energy_stars', '$unfrozen_slave_characters' &! this can modify energy (shifting negative half_action values to positive energy)
+
+!counting home prestige
+estate_quality = estate_prestige[$estate] + interior_prestige[$study] + interior_prestige[$bed] + interior_prestige[$bath] + interior_prestige[$kitchen] + interior_prestige[$boudoir] + interior_prestige[$dungeon] + interior_prestige[$lab]
+estate_quality_modifier = estate_quality + brand_reputation
+
+if raven_crown_on = 1: auspex = 1 & magna_magnifika = 10 &! S+ level (highest achievable through casting)
+if obereg_on = 1: spell_revelio = 1
+
+!Added bull ring enhancement - crushboss (infinite energy disabled, see $master_energy_drop -ImperatorAugustus)
+!if bull_ring_on = 1 and master_energy < 1: master_energy = 1
+
+!Not sure why the line below is needed - crushboss (that line was to prevent assistants from receiving bonuses from items the slave is wearing, in addition to the items the assistant is wearing - ImperatorAugustus)
+!assistant_item = 0 &! but it is not needed now - ImperatorAugustus
+
+! update house mess before updating slaves and master whose mood may be affected (relocated from $calculate_attributes)
+house_mess = 0
+if house_mess_rate >= house_mess_rate_cap[0]: house_mess = 1
+if house_mess_rate >= house_mess_rate_cap[1]: house_mess = 2
+if house_mess_rate >= house_mess_rate_cap[2]: house_mess = 3
+if house_mess_rate >= house_mess_rate_cap[3]: house_mess = 4
+if house_mess_rate >= house_mess_rate_cap[4]: house_mess = 5
+if house_mess_rate < 0: house_mess_rate = 0
+
+! update slave, assistant, prisoner and cow (slaves who are visible on the main screen)
+gs '$slave_traits' &! check for revealed traits and refresh trait features list for slave, assistant, prisoner, cow
+dynamic $do_for_each_slave_in_list, '$newloc_update_slave', '$main_screen_slave_characters' &! see #static_base (includes $set_obedience_difficulty and $slave_price)
+
+!TRAITS OF FROZEN SLAVES
+if code_defined['newloc_update_iced_features_list'] = 0:
+	code_defined['newloc_update_iced_features_list'] = 1 &! do-once
+
+! JO9 MOD START COG_ICED_DISPLAY | 2026-10-16_innate_learning_traits
+	$newloc_update_iced_features_list = {
+		$dynslave_features_list = ''
+		if dynslave_state ! CONST_INT['no_slave']:
+   if dynslave['jo9_learning_trait'] = 1: $dynslave_features_list += '<a href="EXEC: msg $jo9_genius_text">천재</a><br>'
+   if dynslave['jo9_learning_trait'] = -1: $dynslave_features_list += '<a href="EXEC: msg $jo9_idiot_text">백치</a><br>'
+! JO9 MOD END COG_ICED_DISPLAY
+! JO9 MOD START TRAITS_DISPLAY_DYNSLAVE_COG_ICED_DISPLAY | 2026-10-17_traits_batch
+ $dynslave_features_list += $func('jo9_traits', 'list', 'dynslave')
+! JO9 MOD END TRAITS_DISPLAY_DYNSLAVE_COG_ICED_DISPLAY
+			if dynslave['brand'] = 0: $dynslave_features_list +='<a color = ''#cd0000;'' href = ''EXEC: msg $Нет_клейма''>낙인 없음</a><br>'
+			if dynslave['wounds'] > 0: $dynslave_features_list += $wounds[dynslave['wounds']] + '<br>'
+			if dynslave['scars'] > 0: $dynslave_features_list += $scars[dynslave['scars']] + '<br>'
+			if dynslave['bruises'] > 0: $dynslave_features_list += $bruises[dynslave['bruises']] + '<br>'
+			if dynslave['rehabilitation'] > 0: $dynslave_features_list += '회복 [<<dynslave[''rehabilitation'']>>]<br>'
+			if dynslave['virginity'] < 2: $dynslave_features_list += '처녀<br>'
+			if dynslave['fertility'] = -2: $dynslave_features_list += '미성숙<br>'
+			if dynslave['fertility'] = -1: $dynslave_features_list += '불임<br>'
+			if dynslave['fertility'] = 1: $dynslave_features_list += '산란형<br>'
+			if dynslave['pregnant'] > 0 and dynslave['pregnant_revealed'] > 0: $dynslave_features_list += '임신<br>'
+			if dynslave['arena_level'] > 4: $dynslave_features_list += '투기장 챔피언<br>'
+		end
+	}
+end
+
+dynamic $do_for_each_slave_in_list, '$newloc_update_iced_features_list', '$iced_slave_characters'
+
+gs '$calculate_attributes' &! update master stats including energy and mood, should be done after updating slaves due to dependencies - ImperatorAugustus
+
+восприятие = master_fighter - 1
+ловкость = master_fighter - 1
+сила = master_fighter - 1
+
+!Update variables for displaying stats that range from negative to positive (neutral to positive use indices 0-5, negative use indices 6-10)
+master_mood_plus = iif(master_mood < 0, 5 - master_mood, master_mood)
+master_excitement_plus = iif(master_excitement < 0, 5 - master_excitement, master_excitement)
+
+slave_mood_plus = iif(slave['mood'] < 0, 5 - slave['mood'], slave['mood'])
+slave_arousal_plus = iif(slave['arousal'] < 0, 5 - slave['arousal'], slave['arousal'])
+
+assistant_mood_plus = iif(assistant['mood'] < 0, 5 - assistant['mood'], assistant['mood'])
+assistant_arousal_plus = iif(assistant['arousal'] < 0, 5 - assistant['arousal'], assistant['arousal'])
+
+if cooked_food < 0: cooked_food_plus = 0
+if cooked_food > 0: cooked_food_plus = cooked_food
+
+!calculation of fridge free space
+fridge_items = fridge['alcohol'] + fridge['vegetables'] + fridge['grain'] + fridge['spice'] + fridge['cheese'] + fridge['eggs'] + fridge['milk'] + fridge['cream'] + fridge['mince'] + fridge['meat'] + fridge['virgin_meat']
+fridge_space = estate_size[$estate] - fridge_items
+if spawn_semen > estate_size[$estate]: spawn_semen = estate_size[$estate]
+
+!Calculation of Laboratory free space - $get_lab_space - crushboss
+lab_items = lab_store['slime'] + lab_store['kanabis'] + lab_store['koffe'] + lab_store['meth'] + lab_store['opium'] + вакхический_нектар + тонизируюзщий_эликсир + целительный_бальзам + афродизиак + мощный_афодизиак + приворотное_зелье + вода_леты + метаболизм_плюс + метаболизм_минус + жир_плюс + жир_минус
+lab_space = estate_size[$estate] - lab_items
+
+if exam_in_progress = 1:
+	if sparks <= 0:
+		txt = 1
+		lecture = 13
+		gt 'demo_intro'
+	end
+end
+
+!Patrician quest adjustments - crushboss (replaced with a different tracking method - ImperatorAugustus)
+!if faction_fame['serpis'] >= 5 and npc_progress['serpis_prince_first'] ! 2: faction_fame['serpis'] = 4
+!if faction_fame['taurus'] >= 5 and npc_progress['taurus_king'] ! 2: faction_fame['taurus'] = 4
+!if faction_fame['kamira'] >= 5 and npc_progress['tiamath'] ! 2: faction_fame['kamira'] = 4
+!if faction_fame['korvus'] >= 5 and npc_progress['korvus_knyaz'] ! 2: faction_fame['korvus'] = 4
+
+!Testing code - crushboss
+if cheat_k = 1 or cheat_h = 1 or cheat_j = 1:
+	slave['rehabilitation'] = 0
+	assistant['rehabilitation'] = 0
+end
+!end of testing code - crushboss
+if slave_type ! 978 and assistant_type ! 978 and prisoner_type ! 978 and farmhand_type ! 978 and harpy_type ! 978 and cow_type ! 978 and pig_type ! 978 and iced_1_type ! 978 and iced_2_type ! 978 and iced_3_type ! 9178 and iced_4_type ! 978 and iced_5_type ! 978 and iced_6_type ! 978 and iced_7_type ! 978 and iced_8_type ! 978 and iced_9_type ! 978 and iced_10_type ! 978 and iced_11_type ! 978 and iced_12_type ! 978 and iced_13_type ! 978 and iced_14_type ! 978 and iced_15_type ! 978 and iced_16_type ! 978 and iced_17_type ! 978 and iced_18_type ! 978: unique_slave["vampirella"] = 0
+
+!Фикс квеста Акбара
+IF lost_quest_slave > 0 and npc_progress['elsa'] = 0: lost_quest_slave = 0
+IF lost_quest_slave_jasmine > 0 and npc_progress['jasmine'] = 0: lost_quest_slave_jasmine = 0
+IF lost_quest_slave = 0: lost_quest_slave = 0 and lost_quest_slave_jasmine = 0
+!Akabur_quest
+if active[$event['Akabur_quest']] >= 12 and npc_progress['jasmine'] > 0:
+    if slave_type ! 2617 and assistant_type ! 2617 and prisoner_type ! 2617 and farmhand_type ! 2617 and harpy_type ! 2617 and cow_type ! 2617 and pig_type ! 2617 and iced_1_type ! 2617 and iced_2_type ! 2617 and iced_3_type ! 2617 and iced_4_type ! 2617 and iced_5_type ! 2617 and iced_6_type ! 2617 and iced_7_type ! 2617 and iced_8_type ! 2617 and iced_9_type ! 2617 and iced_10_type ! 2617 and iced_11_type ! 2617 and iced_12_type ! 2617 and iced_13_type ! 2617 and iced_14_type ! 2617 and iced_15_type ! 2617 and iced_16_type ! 2617 and iced_17_type ! 2617 and iced_18_type ! 2617: lost_quest_slave_jasmine = 1 and active[$event['Akabur_quest']] = 22
+end
+!msg "event_Akabur_quest = <<active[$event['Akabur_quest']]>><br>npc_progress_elsa = <<npc_progress['elsa']>><br>slave_type = <<slave_type>>"
+if active[$event['Akabur_quest']] >= 2 and npc_progress['elsa'] > 0 and npc_progress['elsa'] < 3:
+	if slave_type ! 2616 and assistant_type ! 2616 and prisoner_type ! 2616 and farmhand_type ! 2616 and harpy_type ! 2616 and cow_type ! 2616 and pig_type ! 2616 and iced_1_type ! 2616 and iced_2_type ! 2616 and iced_3_type ! 2616 and iced_4_type ! 2616 and iced_5_type ! 2616 and iced_6_type ! 2616 and iced_7_type ! 2616 and iced_8_type ! 2616 and iced_9_type ! 2616 and iced_10_type ! 2616 and iced_11_type ! 2616 and iced_12_type ! 2616 and iced_13_type ! 2616 and iced_14_type ! 2616 and iced_15_type ! 2616 and iced_16_type ! 2616 and iced_17_type ! 2616 and iced_18_type ! 2616: lost_quest_slave = 1 and active[$event['Akabur_quest']] = 22
+end  
+
+
+
+!hints (temporarily disabled - ImperatorAugustus)
+if game_difficulty < 2 and 1 = 0:
+	if demo_game = 0:
+		if hint_new_game = 0:
+			if day = 1 and is_home = 1 and $curloc = 'menu_form':
+				hint_new_game = 1
+				msg '축하한다! 이제 당신은 조련사 길드의 정식 일원이 되었다.<br><br>이제 진짜 시험이 시작된다 - 그토록 많은 이들이 실패한 곳에서 당신은 성공할 수 있을까?<br><br>' & _ 
+				msg '백색 도시의 길드를 방문해 계약을 받을 수도 있고, 노예 시장에 어떤 매물이 나와 있는지 볼 수도 있다.<br><br>행운을 빈다, <<$master_name>>!'
+			elseif day > 1:
+				hint_new_game = 2
+			end
+		end
+	end
+	if hint_zero_energy_master = 0:
+		if master_energy <= 0:
+			hint_zero_energy_master = 1
+			msg '당신은 기력을 다 써 버렸다. 이제 당신의 기력을 쓰는 활동은 힘까지 깎아 먹게 된다. 하루를 끝낼 때가 된 걸지도 모른다.'
+		end
+	end
+	if hint_zero_energy_slave = 0:
+		if slave_state = CONST_INT['slave_exist'] and slave['energy'] <= 0:
+			hint_zero_energy_slave = 1
+			msg '당신의 노예는 기력을 다 써 버렸다. 이제 그녀의 기력을 쓰는 활동은 지구력까지 깎아 먹게 된다.'
+		end
+	end
+	if hint_slave_exertion_limit = 0:
+		if slave_state = CONST_INT['slave_exist'] and slave_already_done_today['exertion'] >= slave['stamina']:
+			hint_slave_exertion_limit = 1
+			msg '당신의 노예는 오늘 운동 활동의 한계에 도달했다. 더 무리하면 지구력이 깎이게 된다.'
+		end
+	end
+	if slave_state = CONST_INT['slave_exist']:
+		if hint_uncollared = 0:
+			if slave['slave_collar'] = 0 and is_home = 0 and demo_game = 0:
+				hint_uncollared = 1
+				msg '축하한다, <<$master_name>>! 이제 <<$slave_name>>의 운명은 당신 손에 달려 있다.<br><br>그녀에게 숨겨진 건강 문제가 있을 수도 있다는 점을 명심해라. 그녀가 다쳤거나 쇠약해지고 있는 것 같다면 뱀자리 구역의 테크노스피어 의료 센터로 데려갈 수 있다. 타박상은 시간이 지나면 낫고, 그녀가 행복하며 쉴 시간을 얻으면 더 빨리 회복된다.'
+			end
+		end
+		if hint_first_slave = 0:
+			if day = 1 and $curloc = 'menu_form':
+				hint_first_slave = 1
+				msg '첫 노예를 훈련시키기 시작하면서, 길드의 멘토 안젤리카가 가르쳐 준 내용을 떠올려라.<br><br>노예는 공포, 절망, 자각, 습관, 길들임, 헌신, 흥분을 통해 복종하게 된다.'
+				msg '그녀가 더는 당신의 지시 수행을 거부하지 않게 되면, 맡겨진 일을 성실하게 해내도록 동기를 부여해야 한다. 시큰둥한 노력은 아예 하지 않는 것과 거의 다름없기 때문이다.<br><br>공포, 자각, 습관, 길들임, 헌신, 흥분이 모두 성실함에 기여하지만, 그녀의 기분은 결정적인 요소다.'
+				msg '공포는 효과적인 위협과 처벌을 통해 쌓인다. 절망은 불행이나, 그녀가 마땅하다고 느끼는 것보다 더 가혹한 처벌에서 생겨난다. 자각은 복종이 보상받거나 강제된다는 사실을 배우면서 쌓인다. 습관은 그녀가 맡겨진 일을 끝내고 규칙을 따르면서 형성된다. 길들임은 그녀가 본능적으로 당신의 우월함을 느낄 때 쌓인다.'
+				msg '그녀에게 자신의 지위를 상기시키는 방법은 많지만, 오라가 당신보다 강한 노예를 길들이기는 어렵다 (이것은 <i>아우스펙스</i> 주문으로 확인할 수 있다).<br><br>자기 수련은 필수지만, 마법 기술은 지름길을 제공하기도 한다 (예를 들어 <i>마그나 마그니피카</i>). 적절한 규칙과 잠옷은 복종을 강화할 수 있다.'
+			end
+		end
+		if hint_first_refusal = 0:
+			if slave_already_done_today['sin_gained_with_negative_res'] > 0:
+				hint_first_refusal = 1
+				msg '복종은 절대적인 것이 아니다. 당신의 노예는 어떤 일은 거부하더라도 다른 일은 받아들일 수 있다. 자존심이 강하거나 영리한 노예는 집안일이 자신보다 아래라고 여길 수도 있고, 누가 지켜보지 않는 상태에서 일하는 편을 더 선호할 수도 있다. 기질이 까다로운 노예는 자신을 표현할 수 있는 활동을 선호할 수도 있다. 건강이 좋지 않은 노예는 고된 일을 거부할 수도 있다.'
+				msg '당신의 노예가 당신이 시키는 모든 일을 거부한다면, 그녀에게 알맞은 옷을 입히고 학교 수업에 보내거나 개인 교사를 붙였을 때 더 좋은 결과를 얻을 수 있다.'
+			end
+		end
+		if hint_excessive_punishment = 0:
+			if slave['daily_punishment_count'] = 3:
+				hint_excessive_punishment = 1
+				msg '당신은 오늘 노예를 세 번 처벌했다. 노예에게 자기 죄를 곱씹을 시간을 충분히 주지 않은 채 반복해서 처벌하면 절망으로 이어질 수 있다.<br><br>그녀에게 시킬 만한 일을 도저히 찾을 수 없다면, 잠시 쉬는 편이 나을지도 모른다.' + iif(slave['mood'] < 0, '<br><br>그녀의 기분을 나아지게 할 방법을 찾아볼 수도 있겠다.', '')
+			end
+		end
+		if hint_no_rules = 0:
+			if day > 1 and slave['obedience'] < 0 and overnight_rules_count = 0 and slave['fear'] = 0 and (slave['spoil'] > 0 or slave_rate['spoil'] > 0):
+				hint_no_rules = 1
+				msg '당신은 아직 노예에게 아무 규칙도 정해 주지 않았다. 노예가 당신을 두려워하지 않을 때 지나친 자유를 주면 버릇없어질 수 있다. 그녀가 당신을 두려워하게 만들 수 없다면, 깨지 않으려 하거나 애초에 깰 수 없는 규칙을 몇 가지 정해라. 그녀가 다른 면에서는 복종적이고 당신을 충분히 두려워하는 법을 익히면, 위협만으로도 제자리를 알게 할 수 있을지 모른다. 하지만 이것은 고급 기술이다.'
+			end
+		end
+		if hint_breaks_rules = 0:
+			if slave['obedience'] < 0 and slave['rules_broken'] > 0:
+				hint_breaks_rules = 1
+				msg '노예가 당신이 정한 규칙을 어겨도 그대로 두면 훈련이 약해지고, 그녀는 더 제멋대로이거나, 자존심이 강해지거나, 기질이 까다로워질 수 있다.<br><br>그녀가 자발적으로 규칙을 따르지 않으려 한다면, 네크로폴리스의 스틸 로즈에서 필요한 장비를 갖춘 규칙부터 강제로 시행할 수 있다.'
+				msg '또는 그녀가 당신을 두려워하게 만들 수 있다면, 자발적으로 따르지 않을 규칙은 덜어 줄 수도 있다. 그녀는 빈 시간을 다음 처벌을 기다리며 보내게 될 것이기 때문이다.'
+			end
+		end
+		if hint_slave_escape = 0:
+			if master_moodlet['neg_escape'] > 0:
+				hint_slave_escape = 1
+				msg '밤에 로마의 거리를 통해 달아나는 노예가 안전한 피난처를 찾기는 쉽지 않다. 설령 그녀를 돌려보내려는 사람이 발견하더라도, 낙인과 목걸이가 없다면 어떻게 그녀가 당신의 소유물이라는 걸 알겠는가?<br><br>스틸 로즈를 방문할 때가 된 것 같군.'
+			end
+		end
+		if hint_first_spoil = 0:
+			if slave['spoil'] = 1 and slave_rate['spoil'] > 0 and slave['obedience'] < 0:
+				hint_first_spoil = 1
+				msg '당신의 노예는 비협조적으로 변했다 - 약간 버릇없어진 것이다. 공적 이상으로 보상하거나 너무 자주 보상하고, 처벌을 느슨하거나 시원찮게 하고, 받을 자격이 없는 특권을 주고, 자유 시간을 너무 많이 주고, 데이트를 자주 하고, 선물을 많이 주면 이런 권리의식이 생길 수 있다.'
+				msg '비협조적인 노예는 복종도는 낮아지지만 자기 성취에 대해 더 큰 공로감을 느끼며, 이것은 때로 이점이 될 수 있다. 중요한 것은 균형을 찾는 일이다. 공포, 불행, 절망, 헌신은 노예를 제자리에 묶어 둔다.<br><br>그녀가 다른 면에서는 복종적이고 당신을 충분히 두려워하는 법을 익히면, 위협만으로도 제자리를 알게 할 수 있을지 모른다. 하지만 이것은 고급 기술이다.'
+			end
+		end
+		if hint_unruly_spoil = 0:
+			if slave['spoil'] = 2 and slave_rate['spoil'] > 0 and (slave_already_done_recent[$str(menu_goldencage)] > 0 or slave['massaged'] > 0):
+				hint_unruly_spoil = 1
+				msg 'Your slave has become unruly - moderately spoiled. Giving her massages or sending her to the Golden Cage is good for her, but it can also create a sense of entitlement. She is now spoiled enough that it is beginning to erode her obedience. It is necessary to find a balance. Fear, unhappiness, despair and devotion keep a slave in her place.'
+			end
+		end
+		if hint_first_mindbreak = 0:
+			if $slave_psy_status = 'broken':
+				hint_first_mindbreak = 1
+				msg $sanity_broken
+				msg '앞으로 이런 상태를 피하려면, 복종 심리에서 <b>불안</b>에 대해 멘토가 가르쳐 준 내용을 떠올려라.<br><br>지금 당신의 노예도 참을성만 있다면 여전히 훈련시킬 수 있다. 이런 상태의 노예에게 길드의 하급 매입 담당자가 얼마라도 지불할 의향이 있는지도 알아볼 수 있다.'
+			end
+		end
+		if hint_first_obedient = 0:
+			if slave['obedience'] > 0 and rebell[$slave_psy_status] <= 0 and slave['moral'] = 0 and $slave_psy_status ! 'broken' and $curloc = 'menu_form':
+				hint_first_obedient = 1
+				msg '축하한다, <<$master_name>>! 당신의 노예는 더 이상 반항적이지 않다. 그녀를 행복하게 유지하고, 버릇없어지지 않게 하고, 그녀가 싫어하는 규칙을 강제하지 않는다면, 그녀는 점차 자신의 운명을 받아들이고 당신에게 헌신하게 될 것이다. 자유에 대한 야망은 섬김에 대한 야망으로 바뀌게 된다. 이런 과정은 친밀한 보상과 성공적인 데이트로 더 빨리 진행시킬 수 있다.'
+			end
+		end
+		if hint_first_dminus = 0:
+			gs '$slave_price' &! update rating
+			if rating > 1: hint_first_dminus = 2
+			if rating = 1 and $slave_psy_status ! 'broken' and $curloc = 'menu_form':
+				hint_first_dminus = 1
+! JO9 MOD START RNL112 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+				msg '축하한다, <<$master_name>>! 당신의 노예는 이제 조련사 길드의 <<dyneval($vb_cycle_rank, 1, "<b>D</b>")>> 등급 기준을 충족할 만큼 복종적이고 숙련되었다. 이제 그녀의 훈련을 어떻게 마무리할지 결정해야 한다.'
+! JO9 MOD END RNL112
+				msg '시간과 노력을 충분히 들이면 어떤 노예든 최고 등급에 도달할 수 있다. 하지만 그때까지 청구서를 감당할 수 있겠는가? 당신의 목표를 잘 생각해라.' + _ 
+					iif(contract['active'] = 1, ' 길드 계약이라면 등급이 높을수록 품질 보너스도 높아진다. 계약이 하루 늦을 때마다 10스파크의 벌금이 붙는다. 품질 보너스는 이 금액을 쉽게 넘길 수 있다.', _ 
+												' 구역 거주민을 위해 노예를 준비 중이라면 요구치를 넘겨도 보너스는 없지만, 거래를 마무리할 때 당신의 노예가 의뢰인을 <b>매혹</b>할 수 있어야 한다.')
+				msg '더 높은 등급을 위해서는 그녀의 성 기술을 길러야 할 수도 있다. 이를 위해서는 당신이 직접 가르쳐야 한다. 성적 수업은 그녀의 복종심을 시험하므로, 기본부터 시작해서 경험이 쌓일수록 더 대담한 활동으로 넘어가는 편이 쉽다. 그녀의 자존심, 흥분도, 복장, 경험, 그리고 당신 자신의 매력과 경험에 주의를 기울여라.'
+			end
+		end
+	end
+end
+
+------------ $newloc ------------

@@ -1,0 +1,73 @@
+# $food_choice
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2834 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$food_choice': gs 'snk_room_bridge', 'guard', '$food_choice'
+! JO9 MOD END J9M2834
+!TODO: сделать из 5 циклов 1
+!Choose a dish for dinner
+!Expects quality level [0,5] as args[0]
+if cooked_food <= 0:
+	$cooked_meal = 'консервы' &! Canned food is the default
+	cooked_food = 0 &! canned food will not kill the slaver; unlike no food (-1) which can drain strength to zero
+end
+
+last_cooked_food = 0 &! clear first in case we do not make anything - ImperatorAugustus
+
+if args[0] > 0 and kitchen > 0:
+	!TODO: исправить хардкод - еды 1 уровня 12 штук, и далее по всем уровням
+	! 1 - 12, т.к. еда первого уровня от 1 до 12
+	meal_index_begin[1] = 1
+	meal_index_final[1] = 12
+	! 13 - 27, т.к. еда второго уровня от 13 до 27
+	meal_index_begin[2] = 13
+	meal_index_final[2] = 27
+	! 28 - 43, т.к. еда третьего уровня от 28 до 43
+	meal_index_begin[3] = 28
+	meal_index_final[3] = 43
+	! 44 - 59, т.к. еда четвертого уровня от 44 до 59
+	meal_index_begin[4] = 44
+	meal_index_final[4] = 59
+	! 60 - 74, т.к. еда пятого уровня от 60 до 74
+	meal_index_begin[5] = 60
+	meal_index_final[5] = 74
+
+	fridge['none'] = 5 &! some recipes have less than four ingredients
+
+	for meal_quality = min(5, args[0]) to 1 step -1:
+		! search for a meal that we can make, in reverse order from highest quality we can make (args[0], capped at 5) to the lowest (1)
+		for meal_attempt = 1 to 30:
+			! we will try 30 times at each meal_quality level to find a recipe we can make (possible we lack ingredients and repeatedly randomly select the same recipe)
+			! first, pick a random recipe within the [begin, final] range for the meal_quality
+			$try = $meal_id[rand(meal_index_begin[meal_quality], meal_index_final[meal_quality])]
+			! now check if we have at least one of each of the ingredients (currently, no recipe consumes >1 of a single ingredient)
+			if min(fridge[$meal_first_ingredient[$try]], fridge[$meal_second_ingredient[$try]], fridge[$meal_third_ingredient[$try]], fridge[$meal_fourth_ingredient[$try]]) > 0:
+				! we found a recipe that we can make, so we are done searching, now consume the ingredients
+				fridge[$meal_first_ingredient[$try]] -= 1
+				fridge[$meal_second_ingredient[$try]] -= 1
+				fridge[$meal_third_ingredient[$try]] -= 1
+				fridge[$meal_fourth_ingredient[$try]] -= 1
+				! now check if this meal that we made is better than any meal we previously made today
+				if meal_quality > cooked_food:
+					! it is better, so replace the old meal with the new one
+					cooked_food = meal_quality
+					cooked_food_plus = meal_quality &! for end of day scene text
+					$cooked_meal = $try
+					cooked_food = 100 &! exit signal
+				end
+				last_cooked_food = meal_quality &! save actual quality of this meal even if it was not better than one already made earlier - ImperatorAugustus
+				exit &! we made something, so we are done searching - exit inner loop
+			end
+			! otherwise, we were not able to make the recipe that we randomly selected (due to lack of ingredients), so continue searching
+		end
+		if cooked_food = 100: cooked_food = meal_quality & exit &! outer loop
+	end
+end
+
+killvar 'meal_quality'
+killvar 'meal_attempt'
+killvar '$try'
+
+!outputs are cooked_food and $cooked_meal (which will be unchanged if we were not able to make a better quality meal) and last_cooked_food (prepared meal quality, if any)
+!side effects are removal of ingredients from fridge based on recipe chosen (at random) based on args[0] quality-limit
+
+------------ $food_choice ------------

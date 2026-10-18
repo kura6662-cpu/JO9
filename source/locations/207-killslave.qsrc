@@ -1,0 +1,30 @@
+# killslave
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2931 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'killslave': gs 'snk_room_bridge', 'guard', 'killslave'
+! JO9 MOD END J9M2931
+!Уничтожение рабыни
+
+!Проверка на контрактных рабынь
+!if contract['level'] > 100 and slave['id'] = contract['id']: contract['fail'] = 1
+
+slave_state = CONST_INT['no_slave']
+killvar 'slave_type'
+killvar '$slave_type'
+killvar '$slave_name'
+killvar 'rules_broken'
+killvar 'slave'
+killvar '$slave'
+killvar 'slave_rate'
+killvar 'already_done_curslave'
+killvar 'already_sex_curslave'
+killvar 'slave_inventory'
+killvar '$slave_psy_basic'
+killvar 'virginity'
+killvar 'slave_prev'
+killvar 'prise_promised'
+killvar 'gift_promised'
+killvar 'abandon_treat'
+killvar 'death_treat'
+killvar 'slave_rules'
+------------ killslave ------------

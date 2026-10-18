@@ -1,0 +1,20 @@
+# $mood_drop
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2842 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$mood_drop': gs 'snk_room_bridge', 'guard', '$mood_drop'
+! JO9 MOD END J9M2842
+!Decrease magnitude of positive moodlets of specified slave ($args[0]) by specified number (args[1])
+
+i = arrsize('$slave_good_mood')
+:mood_drop_loop
+	i -= 1
+	$curmod = $slave_good_mood[i]
+	dynamic "
+		if <<$args[0]>>[$curmod] > 0:
+			<<$args[0]>>[$curmod] = max(0, <<$args[0]>>[$curmod] - <<args[1]>>)
+			if <<$args[0]>>[$curmod] = 0: <<$args[0]>>_rate['mood'] += 5 &! to reduce mood swings, retain a temporary +0.5 mood bonus when a positive moodlet ends - ImperatorAugustus
+		end
+	"
+if i > 0: jump 'mood_drop_loop'
+
+------------ $mood_drop ------------

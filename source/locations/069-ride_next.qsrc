@@ -1,0 +1,182 @@
+# ride_next
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2848 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'ride_next': gs 'snk_room_bridge', 'guard', 'ride_next'
+! JO9 MOD END J9M2848
+!Processing of the next section of the race route
+chariot['max_speed'] = (slave['temper'] + chariot['pony_health']*3) - chariot['weight']
+if slave['age'] ! CONST_INT['loli_age']: chariot['max_speed'] = chariot['max_speed']*2
+if slave['age'] = CONST_INT['loli_age']: chariot['max_speed'] = ((chariot['max_speed']*3)/2)
+chariot['acceleration'] = chariot['max_speed']/4
+if chariot['acceleration'] < 1: chariot['acceleration'] = 1
+chariot['inertia'] = max(1, (chariot['speed'] * chariot['weight'])/25)
+! do not reset maneuverability here, allowing it to accumulate with "draw reins" so completing races with an inadequate pony is possible - ImperatorAugustus
+
+! whip lash
+if args = 1:
+	if chariot['speed'] <= chariot['acceleration']:
+		chariot['speed'] += chariot['acceleration']*2
+	else
+		chariot['speed'] += chariot['acceleration']
+	end
+	chariot['maneuverability_effective'] = max(0, chariot['maneuverability'] - chariot['inertia']) / 2
+end
+
+! manage the reins
+if args = 2:
+	chariot['speed'] -= 1
+	chariot['maneuverability_effective'] = 1 + (max(1, chariot['maneuverability'] - chariot['inertia']) * 2) / 3
+end
+
+! draw reins (lower speed lowers inertia, which makes subsequent manage reins more effective)
+if args = 3:
+	chariot['speed'] -= chariot['acceleration']
+	chariot['maneuverability_effective'] += 1
+end
+
+if chariot['speed'] > chariot['max_speed']: chariot['speed'] = chariot['max_speed']
+if chariot['speed'] <= 0: chariot['speed'] = 1
+
+if $trace[trace_segment] = 'ride_start':
+	if args = 1:
+		$current_ride = $trace_pass_description['ride_start']
+	else
+		$current_ride = $trace_fail_description['ride_start']
+	end
+	dynamic $race_startline[$participant[1]]
+	dynamic $race_startline[$participant[2]]
+	dynamic $race_startline[$participant[3]]
+	dynamic $race_startline[$participant[4]]
+	dynamic $race_startline[$participant[5]]
+	dynamic $race_startline[$participant[6]]
+end
+
+if $trace[trace_segment] = 'straight':
+	if args = 1 or cheat_easy_race ! 0:
+		$current_ride = $trace_pass_description['straight']
+	else
+		$current_ride = $trace_fail_description['straight']
+	end
+	dynamic $race_straight[$participant[1]]
+	dynamic $race_straight[$participant[2]]
+	dynamic $race_straight[$participant[3]]
+	dynamic $race_straight[$participant[4]]
+	dynamic $race_straight[$participant[5]]
+	dynamic $race_straight[$participant[6]]
+end
+
+if $trace[trace_segment] = 'curve':
+	diff = 1 + ((48271 * (day + trace_segment)) mod 65537)/(65537/5) &! pseudo-rand(1,5)
+	if cheat_easy_race ! 0:
+		diff = chariot['maneuverability_effective']
+	end
+	if chariot['maneuverability_effective'] < diff: $current_ride = $trace_fail_description['curve'] & dynamic $damage_frame & chariot['speed'] -= 3
+	if chariot['maneuverability_effective'] >= diff: $current_ride = $trace_pass_description['curve']
+	dynamic $race_curve[$participant[1]]
+	dynamic $race_curve[$participant[2]]
+	dynamic $race_curve[$participant[3]]
+	dynamic $race_curve[$participant[4]]
+	dynamic $race_curve[$participant[5]]
+	dynamic $race_curve[$participant[6]]
+end
+
+if $trace[trace_segment] = 'russian_road':
+	$current_ride = $trace_pass_description['russian_road']
+	diff = 2 + ((48271 * (day + trace_segment)) mod 65537)/(65537/5) &! pseudo-rand(2,6)
+	safe_speed = 10 + ((48271 * (day + trace_segment)) mod 65537)/(65537/6) &! pseudo-rand(10,15)
+	if chariot['maneuverability_effective'] < diff and cheat_easy_race = 0: $current_ride = $trace_fail_description['russian_road'] & chariot['pony_health'] -= 1
+	if chariot['speed'] > safe_speed and cheat_easy_race = 0: $current_ride = $trace_fail_description['russian_road'] & dynamic $damage_wheels
+	dynamic $race_russianroad[$participant[1]]
+	dynamic $race_russianroad[$participant[2]]
+	dynamic $race_russianroad[$participant[3]]
+	dynamic $race_russianroad[$participant[4]]
+	dynamic $race_russianroad[$participant[5]]
+	dynamic $race_russianroad[$participant[6]]
+end
+
+if $trace[trace_segment] = 'dragon_teeth':
+	if args = 2 or cheat_easy_race ! 0:
+		$current_ride = $trace_pass_description['dragon_teeth']
+	else
+		$current_ride = $trace_fail_description['dragon_teeth']
+		chariot['pony_health'] -= 2
+	end
+	dynamic $race_dragonteeth[$participant[1]]
+	dynamic $race_dragonteeth[$participant[2]]
+	dynamic $race_dragonteeth[$participant[3]]
+	dynamic $race_dragonteeth[$participant[4]]
+	dynamic $race_dragonteeth[$participant[5]]
+	dynamic $race_dragonteeth[$participant[6]]
+end
+
+if $trace[trace_segment] = 'concrete_jungle':
+	diff = 1 + ((48271 * (day + trace_segment)) mod 65537)/(65537/7) &! pseudo-rand(1,7)
+	if cheat_easy_race ! 0:
+		diff = chariot['maneuverability_effective']
+	end
+	if chariot['maneuverability_effective'] >= diff:
+		$current_ride = $trace_pass_description['concrete_jungle']
+	else
+		$current_ride = $trace_fail_description['concrete_jungle']
+		dynamic $chariot_crash
+	end
+	dynamic $race_concrete[$participant[1]]
+	dynamic $race_concrete[$participant[2]]
+	dynamic $race_concrete[$participant[3]]
+	dynamic $race_concrete[$participant[4]]
+	dynamic $race_concrete[$participant[5]]
+	dynamic $race_concrete[$participant[6]]
+end
+
+if $trace[trace_segment] = 'bladestrings':
+	diff = 3 + ((48271 * (day + trace_segment)) mod 65537)/(65537/3) &! pseudo-rand(3,5)
+	if chariot['maneuverability_effective'] > diff or cheat_easy_race ! 0:
+		$current_ride = $trace_pass_description['bladestrings']
+	else
+		if slave['age'] = CONST_INT['loli_age']:
+			$current_ride = '  전차에 멍에를 멘 당신의 소녀는 키가 작아서, 어떤 속도로 달리든 줄날을 안전하게 통과할 수 있다. 줄날은 성인 여성의 목 높이에 맞춰 걸려 있어 당신들 머리 위를 휙 스쳐 지나갈 뿐 해를 끼치지 않는다. 하지만 상대에게는 이 구간이 결코 쉽게 넘어갈 수 있는 곳이 아닐 것이다!'
+		else
+			$current_ride = $trace_fail_description['bladestrings']
+			dynamic $pony_death
+		end
+	end
+	dynamic $race_bladestrings[$participant[1]]
+	dynamic $race_bladestrings[$participant[2]]
+	dynamic $race_bladestrings[$participant[3]]
+	dynamic $race_bladestrings[$participant[4]]
+	dynamic $race_bladestrings[$participant[5]]
+	dynamic $race_bladestrings[$participant[6]]
+end
+
+if $trace[trace_segment] = 'ride_finish':
+	if args = 1 or cheat_easy_race ! 0:
+		$current_ride = $trace_pass_description['ride_finish']
+	else
+		$current_ride = $trace_fail_description['ride_finish']
+	end
+	dynamic $race_finishline[$participant[1]]
+	dynamic $race_finishline[$participant[2]]
+	dynamic $race_finishline[$participant[3]]
+	dynamic $race_finishline[$participant[4]]
+	dynamic $race_finishline[$participant[5]]
+	dynamic $race_finishline[$participant[6]]
+end
+
+rider_structure['master'] = 100
+if rider_structure[$participant[1]] <= 0: rider_participates[$participant[1]] = 0
+if rider_structure[$participant[2]] <= 0: rider_participates[$participant[2]] = 0
+if rider_structure[$participant[3]] <= 0: rider_participates[$participant[3]] = 0
+if rider_structure[$participant[4]] <= 0: rider_participates[$participant[4]] = 0
+if rider_structure[$participant[5]] <= 0: rider_participates[$participant[5]] = 0
+if rider_structure[$participant[6]] <= 0: rider_participates[$participant[6]] = 0
+
+speed_points['master'] += chariot['speed']
+
+$future_ride = $trace_forward_description[$trace[trace_segment_next]]
+
+trace_segment += 1
+trace_segment_next = trace_segment + 1
+
+gt 'ride_interface'
+
+------------ ride_next ------------

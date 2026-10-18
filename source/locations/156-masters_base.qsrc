@@ -1,0 +1,2106 @@
+# #masters_base
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2473 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '#masters_base': gs 'snk_room_bridge', 'guard', '#masters_base'
+! JO9 MOD END J9M2473
+!master base
+
+! Masters
+$sepia_ava_path[1] = 'content\pic\master\master_noble_sepia.png'
+$clear_ava_path[1] = 'content\pic\master\master_noble.png'
+$master_base_name[1] = '밀로드'
+$hero_difficulty[1] = '<font color="#009900">쉬운 난이도</font>'
+$hero_description[1] = '   훌륭한 교육을 받았고 궁정과 군 복무 경험까지 갖춘 귀족. 가르치는 데 필요한 기본 기술도 모두 지니고 있어 노예상 길드에 어렵지 않게 합류했고, 모두가 그에게 눈부신 출세가 기다리고 있다고 말한다…<br>' + _
+'<br>세력: 타우루스 대가문<br>스파크: 8000'
+$master_version_stats[1] = {
+	master_str = 4
+	master_cha = 4
+	master_style = 0
+	master_libido = 2
+
+	master_tutor = 2
+	master_fighter = 4
+	master_butler = 2
+	master_artdirector = 3
+	master_medic = 2
+	master_mage = 0
+	master_torture = 3
+	master_domination = 4
+	master_bondage = 0
+	master_flagelation = 4
+
+	master_petting = 3
+	master_oral = 2
+	master_penetration = 4
+	master_fetish = 3
+
+	$master_armor = 'эльчуга'
+	$master_cloth = 'regal_suit'
+	$master_right_wpn = 'шпага'
+	$master_left_wpn = 'безоружный'
+
+	sparks = 8000 &! was 2500
+
+	faction_fame['taurus'] = 1
+	faction_fame['serpis'] = 0
+	master_vampire = 0
+}
+
+
+
+
+$sepia_ava_path[2] = 'content\pic\master\master_torturer_sepia.png'
+$clear_ava_path[2] = 'content\pic\master\master_torturer.png'
+$master_base_name[2] = '로베스피에르'
+$hero_description[2] = '   한때 그는 군인이었고 국왕을 위해 식민지 전쟁에서 싸웠다. 이후 왕은 끌어내려졌고 혁명에는 처형인이 필요해졌다. 그는 무엇보다도 아름답지만 오만했던 왕비의 목을 자기 손으로 잘라 냈다는 사실을 자랑스럽게 여긴다. 불멸의 로마에서는 사형집행인의 기술도 꽤 쓸모가 있다.<br>' + _
+'<br>세력: 타우루스 대가문<br>스파크: 7000'
+$hero_difficulty[2] = '<font color="#009900">쉬운 난이도</font>'
+$master_version_stats[2] = {
+	master_str = 5
+	master_cha = 1
+	master_style = 0
+	master_libido = 3
+
+	master_tutor = 1
+	master_fighter = 3
+	master_butler = 1
+	master_artdirector = 0
+	master_medic = 3
+	master_mage = 0
+	master_torture = 5
+	master_domination = 3
+	master_bondage = 5
+	master_flagelation = 5
+
+	master_petting = 2
+	master_oral = 2
+	master_penetration = 4
+	master_fetish = 4
+
+	$master_armor = 'без_брони' &! without armor
+	$master_cloth = 'man_rugs'
+	$master_right_wpn = 'кнут' &! whip
+	$master_left_wpn = 'безоружный' &! unarmed
+
+	sparks = 7000 &! was 1500
+
+	faction_fame['taurus'] = 1
+	faction_fame['serpis'] = 0
+	master_vampire = 0
+}
+
+
+
+
+$sepia_ava_path[3] = 'content\pic\master\master_fighter_sepia.png'
+$clear_ava_path[3] = 'content\pic\master\master_fighter.png'
+$master_base_name[3] = '블레이드'
+$hero_description[3] = '   그가 태어난 거친 세계에서는 타고난 육체적 힘이 대단히 높이 평가되었다. 블레이드는 최고의 전사들 중 하나였고 성공을 향해 자신 있게 나아가고 있었지만, 어쩌다 안개에 흘러들고 말았다. 뛰어난 전사는 불멸의 로마에서도 길을 잃지 않겠지만, 누구나 가끔은 삶을 바꾸고 이 세계의 강자들을 위해 평범하게 복무하는 것 이상의 무언가를 이루고 싶어지는 법이다.<br>' + _
+'<br>세력: 타우루스 대가문<br>스파크: 6000'
+$hero_difficulty[3] = '<font color="#0000D8">보통 난이도</font>'
+$master_version_stats[3] = {
+	master_str = 5
+	master_cha = 2
+	master_style = 0
+	master_libido = 3
+
+	master_tutor = 1
+	master_fighter = 5
+	master_butler = 1
+	master_artdirector = 0
+	master_medic = 2
+	master_mage = 0
+	master_torture = 2
+	master_domination = 3
+	master_bondage = 2
+	master_flagelation = 2
+
+	master_petting = 2
+	master_oral = 2
+	master_penetration = 4
+	master_fetish = 2
+
+	$master_armor = 'ячуга'
+	$master_cloth = 'aketon'
+	$master_right_wpn = 'бастард'
+	$master_left_wpn = 'безоружный'
+
+	sparks = 6000 &! was 1500
+
+	faction_fame['taurus'] = 1
+	faction_fame['serpis'] = 0
+	master_vampire = 0
+}
+
+
+
+
+$sepia_ava_path[4] = 'content\pic\master\master_pimp_sepia.png'
+$clear_ava_path[4] = 'content\pic\master\master_pimp.png'
+$master_base_name[4] = '실크 대디'
+$hero_description[4] = '   누구에게나 성공의 기준은 다르다. 실크 대디에게는 포주로 자리 잡는 것이 꿈의 실현이었다. 이제 그는 새로운 세계에 와 있지만, 하는 일은 어딘가 비슷하다. 흑인이든 백인이든 황인이든, 꼬리가 달렸든 아니든 - 암캐는 언제나 암캐다. 그런 년들에겐 크고 검은 대디가 필요하다. 그리고 대디에게는 많은 돈이 필요하다.<br>' + _
+'<br>세력: 세르피스 대가문<br>스파크: 4500'
+$hero_difficulty[4] = '<font color="#009900">쉬운 난이도</font>'
+$master_version_stats[4] = {
+	master_str = 3
+	master_cha = 4
+	master_style = 0
+	master_libido = 3
+
+	master_tutor = 3
+	master_fighter = 1
+	master_butler = 2
+	master_artdirector = 2
+	master_medic = 1
+	master_mage = 0
+	master_torture = 2
+	master_domination = 4
+	master_bondage = 2
+	master_flagelation = 0
+
+	master_petting = 4
+	master_oral = 4
+	master_penetration = 5
+	master_fetish = 5
+
+	$master_armor = 'без_брони'
+	$master_cloth = 'fancy_suit'
+	$master_right_wpn = 'кастет'
+	$master_left_wpn = 'безоружный'
+
+	sparks = 4500 &! was 1500
+
+	faction_fame['serpis'] = 1
+	faction_fame['taurus'] = 0
+	master_vampire = 0
+}
+
+
+
+
+$sepia_ava_path[6] = 'content\pic\master\master_impressario_sepia.png'
+$clear_ava_path[6] = 'content\pic\master\master_impressario.png'
+$master_base_name[6] = '마에스트로'
+$hero_description[6] = '   그는 구세계에서 이름을 떨치던 흥행사였고, 극작가와 작곡가, 스타들까지 그에게 굽실거렸다. 수천 명의 어린 스타 지망생들이 그의 책상 아래에 무릎을 꿇었고, 그의 캐스팅 카우치 위에 몸을 눕혔다. 하지만 네 번째 트로피 아내가 그를 떠난 뒤, 그는 모든 것을 버리고 불멸의 로마에서 새 출발을 택했다. 이 도시는 아직도 진정한 재능을 알아보는 곳이니까. 그리고 또 한 번 버릇없는 디바와 일해야 했다면… 차라리 노예와 일하는 편이 훨씬 쉽다.<br>' + _
+'<br> 마에스트로는 공연관람이 무료입니다. <br>' + _
+'<br>세력: 타우루스 대가문<br>스파크: 6000'
+$hero_difficulty[6] = '<font color="#0000D8">보통 난이도</font>'
+$master_version_stats[6] = {
+	master_str = 2
+	master_cha = 4
+	master_style = 0
+	master_libido = 1
+
+	master_tutor = 3
+	master_fighter = 0
+	master_butler = 1
+	master_artdirector = 5
+	master_medic = 0
+	master_mage = 0
+	master_torture = 0
+	master_domination = 3
+	master_bondage = 0
+	master_flagelation = 0
+
+	master_petting = 3
+	master_oral = 5
+	master_penetration = 4
+	master_fetish = 1
+
+	$master_armor = 'без_брони'
+	$master_cloth = 'formal_suit'
+	$master_right_wpn = 'безоружный'
+	$master_left_wpn = 'безоружный'
+	sparks = 6000 &! was 2000
+
+	faction_fame['taurus'] = 1
+	faction_fame['serpis'] = 0
+	master_vampire = 0
+}
+
+
+
+
+$sepia_ava_path[5] = 'content\pic\master\master_teacher_sepia.png'
+$clear_ava_path[5] = 'content\pic\master\master_teacher.png'
+
+! YO! teacher gets a slight bonus for lolis, but it expects hero_choice = 5 so be careful changing this
+$master_base_name[5] = '교사'
+$hero_description[5] = '   그는 평범한 학교 교사였고, 별다를 것 없었다. 그런 사람은 불멸의 로마에 적응하기 어려울지도 모르지만, 그는 젊은 마음을 가르치고 교실에서 엄격한 규율을 유지해 온 수년의 경험이 통할 기술이 되기를 바라고 있다. 게다가 그는 못된 젊은 숙녀들을 찰싹 때리는 것이 허용되던 그 좋은 옛날을 그리워한다! 매를 아끼면 학생을 망친다. 하지만 무엇보다도, 그는 젊고 성숙한 여자들로 가득 찬 또 다른 교실을 도저히 견딜 수 없었다, 너무 가까우면서도 또 너무 멀어서.<br>' + _
+'<br>세력: 세르피스 대가문<br>스파크: 3000'
+$hero_difficulty[5] = '<font color="#0000D8">보통 난이도</font>'
+$master_version_stats[5] = {
+	master_str = 3
+	master_cha = 3
+	master_style = 0
+	master_libido = 3
+	master_energy = 5
+
+	master_tutor = 5
+	master_fighter = 0
+	master_butler = 2
+	master_artdirector = 2
+	master_medic = 1
+	master_mage = 0
+	master_torture = 1
+	master_domination = 4
+	master_bondage = 0
+	master_flagelation = 4
+
+	master_petting = 2
+	master_oral = 1
+	master_penetration = 3
+	master_fetish = 0
+
+	$master_armor = 'без_брони'
+	$master_cloth = 'formal_suit'
+	$master_right_wpn = 'безоружный'
+	$master_left_wpn = 'безоружный'
+	sparks = 3000 &! was 1000
+
+	faction_fame['serpis'] = 1
+	faction_fame['taurus'] = 0
+	master_vampire = 0
+}
+
+
+
+
+$sepia_ava_path[8] = 'content\pic\master\master_butler_sepia.png'
+$clear_ava_path[8] = 'content\pic\master\master_butler.png'
+$master_base_name[8] = '버틀러'
+$hero_description[8] = '   불멸의 로마에 도착한 뒤, 그는 미묘한 처지에 놓이게 되었다. 물론 숙련된 하인은 어디서든 쓸모가 있지만, 그 자신이 노예가 되고 싶은 마음은 전혀 없다. 그는 노예상이 되기 위해 많은 노력을 기울였다. 결국 메이드를 집사보다 더 잘 훈련시키는 사람은 없으니까.<br>' + _
+'<br>세력: 타우루스 대가문<br>스파크: 5000'
+$hero_difficulty[8] = '<font color="#6B0084">높은 난이도</font>'
+$master_version_stats[8] = {
+	master_str = 3
+	master_cha = 3
+	master_style = 0
+	master_libido = 2
+
+	master_tutor = 3
+	master_fighter = 0
+	master_butler = 5
+	master_artdirector = 1
+	master_medic = 1
+	master_mage = 0
+	master_torture = 0
+	master_domination = 3
+	master_bondage = 0
+	master_flagelation = 2
+
+	master_petting = 2
+	master_oral = 1
+	master_penetration = 2
+	master_fetish = 0
+
+	$master_armor = 'без_брони'
+	$master_cloth = 'livery'
+	$master_right_wpn = 'безоружный'
+	$master_left_wpn = 'безоружный'
+	sparks = 5000 &! was 800
+
+	faction_fame['taurus'] = 1
+	faction_fame['serpis'] = 0
+	master_vampire = 0
+}
+
+
+
+
+$sepia_ava_path[7] = 'content\pic\master\master_doctor_sepia.png'
+$clear_ava_path[7] = 'content\pic\master\master_doctor.png'
+$master_base_name[7] = '닥터'
+$hero_description[7] = '   그는 늘 잘나가는 유능한 의사였다. 하지만 작은 실수 하나와 거대한 의료소송 하나가 겹치자, 그는 갑자기 불멸의 로마로 옮겨가기로 결심했다. 테크노스피어의 의료 센터 기준으로는 닥터의 지식도 부족하다는 사실이 드러났지만, 그렇다고 절망할 이유는 없다. 그는 언제나 더 자유분방한 방식으로 간호사들을 교육해 보고 싶어 했다. 어쩌면 그게 그의 천직일지도 모른다.<br>' + _
+'<br> 닥터는 진료가 무료입니다. <br>' + _
+'<br>세력: 세르피스 대가문<br>스파크: 1000'
+$hero_difficulty[7] = '<font color="#6B0084">높은 난이도</font><br><font size="3" color="black">아직 아파트를 감당할 수 없다</font>'
+$master_version_stats[7] = {
+	master_str = 3
+	master_cha = 3
+	master_style = 0
+	master_libido = 2
+
+	master_tutor = 2
+	master_fighter = 0
+	master_butler = 1
+	master_artdirector = 0
+	master_medic = 5
+	master_mage = 0
+	master_torture = 3
+	master_domination = 2
+	master_bondage = 0
+	master_flagelation = 0
+
+	master_petting = 2
+	master_oral = 1
+	master_penetration = 3
+	master_fetish = 0
+
+	$master_armor = 'без_брони'
+	$master_cloth = 'medic_robes'
+	$master_right_wpn = 'безоружный'
+	$master_left_wpn = 'безоружный'
+	sparks = 1000
+
+	faction_fame['serpis'] = 1
+	faction_fame['taurus'] = 0
+	master_vampire = 0
+}
+
+
+
+
+$sepia_ava_path[9] = 'content\pic\master\master_granpa_sepia.png'
+$clear_ava_path[9] = 'content\pic\master\master_granpa.png'
+! YO! Uncle Tom gets bonus for lolis and penalty for non-lolis, but it expects hero_choice = 9 so be careful changing this
+$master_base_name[9] = '조 아저씨'
+$hero_description[9] = '   그가 딸들에게 시켰던 그런 일들 말인가요?<br>' + _
+'사실 그 사람 탓은 아니야. 그 창녀들이 자초한 일이었으니까. 하지만 이제 그는 늙고 외로워졌고, 가족들에게 외면당해 자기 손녀들조차 볼 수 없게 되었어! 정말 불공평해!' + _
+' 그렇다면 외롭고 더러운 노인은 노년을 어떻게 보낼까? 그는 전형적인 노예 주인은 아니다. 발기 장애가 있고 왠지 소름 끼치기도 하지만, 어린 노예를 착한 여자로 키우는 게 딸을 키우는 것과 본질적으로 다르지 않은가?' + _
+' 그는 연금을 현금으로 바꿔 불멸의 로마로 왔다.<br>' + _
+'<br>세력: 세르피스 대가문<br>스파크: 800'
+$hero_difficulty[9] = '<font color="#EA0090">매우 높은 난이도</font><br><font size="3" color="black">아직 아파트를 감당할 수 없다</font>'
+$master_version_stats[9] = {
+	master_str = 2
+	master_cha = 1
+	master_style = 0
+	master_libido = 0
+
+	master_tutor = 2
+	master_fighter = 0
+	master_butler = 1
+	master_artdirector = 0
+	master_medic = 1
+	master_mage = 0
+	master_torture = 1
+	master_domination = 1
+	master_bondage = 0
+	master_flagelation = 2
+
+	master_petting = 4
+	master_oral = 3
+	master_penetration = 1
+	master_fetish = 4
+
+	$master_armor = 'без_брони'
+	$master_cloth = 'comfy_robes'
+	$master_right_wpn = 'безоружный'
+	$master_left_wpn = 'безоружный'
+	sparks = 800
+
+	faction_fame['serpis'] = 1
+	faction_fame['taurus'] = 0
+	master_vampire = 0
+}
+
+
+
+
+! YO! Johny gets bonus for big tits and lolis, but it expects hero_choice = 10 so be careful changing this
+$sepia_ava_path[10] = 'content\pic\master\master_nerd_sepia.png'
+$clear_ava_path[10] = 'content\pic\master\master_nerd.png'
+$hero_description[10] = '   사람들은 그를 그저 조용한 젊은 찐따로 본다. 다른 아이들은 그를 "루저"라고 부른다. 하지만 그의 꿈속에서? 그는 위대한 노예 주인이다.' + _
+' 여자들은 그의 발밑을 기어 다닌다… 아니, <i>암캐들</i>이… 벌거벗은 암캐들이… 축 늘어진 거대한 젖가슴을 흔들면서. 아, 그가 그년들에게 억지로 시키고 싶은 <i>역겨운</i> 짓들이란!!' + _
+' 그 아이는 그걸 상상하며 하루에도 열두 번씩 딸딸이를 친다.' + _
+' 그는 안개를 찾을 만큼의 마법은 배웠지만, 이 밝히는 숫총각 남학생에게 정말 성인 여자들을 자기 뜻에 굴복시킬 자질이 있을까? 그녀들이 그를 진지하게 받아들일까? 아니면 그저 그를 역시 루저라고 생각할까?<br>' + _
+'<br>세력: 세르피스 대가문<br>스파크: 200'
+$hero_difficulty[10] = '<font color="#cd0000">최고 난이도</font><br><font size="3" color="black">아직 아파트를 감당할 수 없다</font>'
+
+$master_base_name[10] = '조니'
+$master_version_stats[10] = {
+	master_str = 2
+	master_cha = 1
+	master_style = 0
+	master_libido = 5
+
+	master_tutor = 0
+	master_fighter = 0
+	master_butler = 0
+	master_artdirector = 0
+	master_medic = 0
+	master_mage = 2
+	master_torture = 0
+	master_domination = 0
+	master_bondage = 0
+	master_flagelation = 0
+
+	master_petting = 0
+	master_oral = 0
+	master_penetration = 0
+	master_fetish = 5
+
+	$master_armor = 'без_брони'
+	$master_cloth = 'man_rugs'
+	$master_right_wpn = 'безоружный'
+	$master_left_wpn = 'безоружный'
+	sparks = 200
+
+	faction_fame['serpis'] = 1
+	faction_fame['taurus'] = 0
+	master_vampire = 0
+}
+
+
+
+
+$sepia_ava_path[11] = 'content\pic\master\master_werwolf_sepia.png'
+$clear_ava_path[11] = 'content\pic\master\master_werwolf.png'
+$hero_description[11] = '   자신의 본성을 숨겨야 하는 마법 늑대인간. 그는 정체가 드러나는 걸 피하기 위해 끊임없이 떠돌아다녔고, 그게 그의 궁핍한 처지를 설명해 준다. 그는 숙련된 전사이자 고문가이며, 전쟁의 참상을 숱하게 겪어 왔다. 펜리스는 생존 가능성이 거의 없던 병사들마저 살려 낸 것으로 이름난 뛰어난 전장의 의무병이기도 하다. 여러 카미라 전쟁 야영지에서 복무하던 동안, 적군 심문에도 종종 끌려갔다. 펜리스는 두 번의 전쟁 야영지 학살에서 기적적으로 유일한 생존자가 되었다.<br>' + _
+'<br>세력: 카미라 대가문<br>스파크: 400'
+$hero_difficulty[11] = '<font color="#6B0084">높은 난이도</font><br><font size="3" color="black">아직 아파트를 감당할 수 없다</font>'
+$master_base_name[11] = '펜리스'
+$master_version_stats[11] = {
+	master_str = 4
+	master_cha = 0
+	master_style = 0
+	master_libido = 4
+	master_energy = 5
+
+	master_tutor = 1
+	master_fighter = 3
+	master_butler = 0
+	master_artdirector = 0
+	master_medic = 3
+	master_mage = 3
+	master_torture = 2
+	master_domination = 3
+	master_bondage = 2
+	master_flagelation = 2
+
+	master_petting = 0
+	master_oral = 0
+	master_penetration = 4
+	master_fetish = 2
+
+	$master_armor = 'эльчуга' &! elven chainmail
+	$master_cloth = 'aketon'
+	$master_wpn = 'шпага' &! epee
+	$master_back_wpn = 'моргенштерн' &! morningstar
+	$master_left_wpn = 'катана' &! katana
+	$master_right_wpn = 'шпага' &! epee
+	$master_arm_wpn = 'нагайка' &! lash
+	$master_leg_wpn = 'кинжал' &! dagger
+	нагайка = 1 &! lash
+	кнут = 2 &! whip
+	вакхический_нектар = 5 &! bacchic nectar
+	тонизируюзщий_эликсир = 5 &! tonic elixir
+	целительный_бальзам = 12 &! balm
+	мощный_афодизиак = 4 &! powerful aphrodisiac
+	regal_suit = 1
+	medic_robes = 1
+	wizard_robes = 1
+	fridge["alcohol"] = 20
+	fridge["virgin_meat"] = 12
+	alcohol = 20
+	virgin_meat = 12
+	sparks = 400
+
+	faction_fame['taurus'] = 0
+	faction_fame['serpis'] = 0
+	faction_fame['kamira'] = 1
+	master_vampire = 0
+}
+
+
+
+
+$sepia_ava_path[12] = 'content\pic\master\master_vampire_sepia.png'
+$clear_ava_path[12] = 'content\pic\master\master_vampire.png'
+$hero_description[12] = '   사루만은 한때 존경받는 마법사였지만 금지된 비술에 손을 댔다가 뜻하지 않게 흡혈귀의 저주에 걸리고 말았다. 처음에 사루만은 자신의 변화를 기꺼이 받아들였지만, 곧 사냥의 짜릿함은 시들해졌고 깊은 고독감만이 남았다. 영원을 함께할 어울리는 동반자를 갈망한 그는 새로운 하수인들을 집요하게 모아들였고, 그러다 어느 날 뜻밖에도 안개 속으로 미끄러져 들어갔다. 거기서 그는 우연히 한 검은 피부의 의무병을 만나 로마로 향하게 되었고, 그곳에서 마침내 진정한 사랑을 찾기를 바라고 있다.<br>' + _
+'<br>세력: 세르피스 대가문<br>스파크: 5000'
+$hero_difficulty[12] = '<font color="#009900">쉬운 난이도</font>'
+$master_base_name[12] = '사루만'
+$master_version_stats[12] = {
+	master_str = 5
+	master_cha = 5
+	master_style = 0
+	master_libido = 0
+	master_energy = 2
+
+	master_tutor = 1
+	master_fighter = 2
+	master_butler = 3
+	master_artdirector = 0
+	master_medic = 2
+	master_mage = 4
+	master_torture = 1
+	master_domination = 4
+	master_bondage = 1
+	master_flagelation = 1
+
+	master_petting = 3
+	master_oral = 3
+	master_penetration = 3
+	master_fetish = 0
+
+	$master_armor = 'без_брони'
+	$master_cloth = 'wizard_robes'
+	$master_right_wpn = 'безоружный'
+	$master_left_wpn = 'безоружный'
+	sparks = 5000 &! was 1000
+
+	faction_fame['serpis'] = 1
+	master_vampire = 1
+}
+
+! JO9 MOD START J9M2472 | 2026-10-10_restore_kura_personal_patch | changed block; context may be included
+$sepia_ava_path[13] = 'content\pic\master\master_kura_sepia.png'
+$clear_ava_path[13] = 'content\pic\master\master_kura.png'
+$master_base_name[13] = '쿠라'
+$hero_description[13] = '   본명 카일 윈스턴. 지구 24의 거대도시 메가델피아에서 강화인간 용병으로 이름을 날린 뒤 탄트라 서비스를 세웠다. 회사는 도시 매춘 산업의 약 95%를 장악했고, 그는 2조 달러가 넘는 자산을 축적했다. 하지만 목표는 한 도시가 아니라 세계의 매춘 산업 전체다.<br>' + _
+'<br>   코드네임 쿠라. 안개와 마법을 연구해 지구 24와 불멸의 로마를 잇는 비밀 통로를 완성했다. 로마에서 노예를 훈련하고 창관 사업을 장악한 뒤 인력과 기술을 지구로 가져갈 계획이며, 여러 사람이 통과할 수 있도록 통로를 개량할 협력자도 찾고 있다. 전투·의술·마법 지식과 충분한 자금을 준비해 왔다.<br>' + _
+'<br>세력: 무소속 (세르피스 가문과 우호)<br>스파크: 20000'
+$hero_difficulty[13] = '<font color="#009900">매우 쉬운 난이도</font>'
+! JO9 MOD END J9M2472
+$master_version_stats[13] = {
+! JO9 MOD START J9M2471 | 2026-10-10_restore_kura_personal_patch | changed block; context may be included
+master_str = 5
+master_cha = 5
+master_style = 4
+! JO9 MOD END J9M2471
+master_libido = 4
+! JO9 MOD START J9M2470 | 2026-10-10_restore_kura_personal_patch | changed block; context may be included
+master_tutor = 5
+master_fighter = 5
+master_butler = 3
+master_artdirector = 3
+master_medic = 4
+master_mage = 3
+master_torture = 5
+master_domination = 5
+master_bondage = 5
+master_flagelation = 4
+master_petting = 5
+master_oral = 5
+master_penetration = 5
+master_fetish = 5
+
+! JO9 MOD END J9M2470
+$master_armor = 'без_брони'
+! JO9 MOD START J9M2469 | 2026-10-10_restore_kura_personal_patch | changed block; context may be included
+$master_cloth = 'fancy_suit'
+$master_wpn = 'катана'
+$master_left_wpn = 'катана'
+$master_right_wpn = 'безоружный'
+$master_leg_wpn = 'кинжал'
+
+тонизируюзщий_эликсир = 10
+целительный_бальзам = 10
+sparks = 20000
+
+faction_fame['neutral'] = 0
+! JO9 MOD END J9M2469
+faction_fame['taurus'] = 0
+! JO9 MOD START J9M2468 | 2026-10-10_restore_kura_personal_patch | changed block; context may be included
+faction_fame['serpis'] = 3
+faction_fame['korvus'] = 0
+faction_fame['kamira'] = 0
+
+noble_status = 0
+! JO9 MOD END J9M2468
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+
+$sepia_ava_path[14] = 'content\pic\master\master_orion_sepia.png'
+$clear_ava_path[14] = 'content\pic\master\master_orion.png'
+$master_base_name[14] = '오리온'
+$hero_description[14] = '   아카데미 출신의 수수께끼 같은 신동 오리온은 모두의 사랑을 받았지만, 여성을 욕정에 찬 일탈자로 바꿔 놓곤 했다. 그의 졸업 작품은 누구도 따라올 수 없을 정도였다. 결국 그는 여성을 지배하는 것이 자신의 페티시라고 털어놓았고, 그것을 취미이자 직업으로 바꾸어 버렸다.' + _
+'<br>세력: 타우루스 대가문<br>스파크: 2500'
+$hero_difficulty[14] = '<font color="#008080">쉬운 난이도</font>'
+$master_version_stats[14] = {
+master_str = 4
+master_cha = 4
+master_style = 5
+master_libido = 2
+master_energy = 5
+master_tutor = 3
+master_fighter = 1
+master_butler = 2
+master_artdirector = 3
+master_medic = 2
+master_mage = 3
+master_torture = 3
+master_domination = 4
+master_bondage = 4
+master_flagelation = 4
+master_petting = 3
+master_oral = 3
+master_penetration = 3
+master_fetish = 5
+$master_armor = 'без_брони'
+$master_right_wpn = 'кнут'
+$master_arm_wpn = 'нагайка'
+$master_leg_wpn = 'кинжал'
+$master_cloth = 'fancy_suit'
+$master_right_wpn = ''
+sparks = 2500
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 1
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+
+$sepia_ava_path[15] = 'content\pic\master\master_gabriel_sepia.png'
+$clear_ava_path[15] = 'content\pic\master\master_gabriel.png'
+$master_base_name[15] = '가브리엘'
+$hero_description[15] = '   유혹의 달인인 프로 지골로 가브리엘에게, 영원의 도시 세계는 하나의 놀이터다. 그의 목표는 여자들이 자신을 오직 주인을 위한 돈주머니로만 여기도록 길들이는 것이며, 그러기에 이곳은 기회로 넘쳐난다.' + _
+'<br>세력: 타우루스 대가문<br>스파크: 1500'
+$hero_difficulty[15] = '<font color="#008080">쉬운 난이도</font>'
+$master_version_stats[15] = {
+master_str = 4
+master_cha = 3
+master_style = 4
+master_libido = 3
+master_tutor = 2
+master_fighter = 2
+master_butler = 1
+master_artdirector = 4
+master_medic = 2
+master_mage = 0
+master_torture = 3
+master_domination = 3
+master_bondage = 3
+master_flagelation = 3
+master_petting = 5
+master_oral = 3
+master_penetration = 5
+master_fetish = 4
+$master_armor = 'без_брони'
+$master_cloth = 'regal_suit'
+$master_right_wpn = ''
+sparks = 1500
+faction_fame['taurus'] = 1
+faction_fame['serpis'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+
+$sepia_ava_path[16] = 'content\pic\master\master_henry_sepia.png'
+$clear_ava_path[16] = 'content\pic\master\master_henry.png'
+$master_base_name[16] = '헨리'
+$hero_description[16] = '  벌거벗은 도미나트릭스를 상대로 첫 판에서 이긴 뒤, 헨리는 노예상 길드에 받아들여진다. 하지만 이제 그에게 필요한 건 행운이 아니라 훈련을 통해 노예들을 길들이는 일이다.' + _
+'<br>세력: 무소속<br>스파크: 1000'
+$hero_difficulty[16] = '<font color="#4B0082">높은 난이도</font>'
+$master_version_stats[16] = {
+master_str = 3
+master_cha = 3
+master_style = 5
+master_libido = 2
+master_tutor = 2
+master_fighter = 0
+master_butler = 2
+master_artdirector = 3
+master_medic = 1
+master_mage = 2
+master_torture = 1
+master_domination = 3
+master_bondage = 1
+master_flagelation = 1
+master_petting = 2
+master_oral = 1
+master_penetration = 3
+master_fetish = 1
+$master_armor = 'без_брони'
+$master_cloth = 'regal_suit'
+$master_right_wpn = ''
+sparks = 1000
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+
+$sepia_ava_path[17] = 'content\pic\master\master_draven_sepia.png'
+$clear_ava_path[17] = 'content\pic\master\master_draven.png'
+$master_base_name[17] = '드레이븐'
+! JO9 MOD START J9M2467 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$hero_description[17] = '<font size= 5%> 유망한 젊은 노예 조련사였던 그는 길드에 들어온 첫날부터 동료들의 존경과 인정을 받아 왔다. 결단력 있고 목적의식이 뚜렷하며, 어떤 시험도 두려워하지 않던 그는 맡는 일마다 거침없이 달려들어 손쉽게 해결했다. 특별 계약 하나를 떠맡기 전까지는… 용서받을 수 없는 단 한 번의 실수로, 그가 손잡기로 한 흡혈귀는 그를 자기와 같은 존재로 바꾸어 버렸다. 드레이븐의 행복한 삶은 하룻밤 사이에 무너졌고, 그의 내면은 어둠과 빛 사이의 치열한 대립으로 뒤틀렸다. 수많은 시련과 성격의 시험을 겪은 끝에, 그는 다시 스스로를 통제하는 법을 배웠다. 드레이븐은 자신이 인간들에게 거의 위협이 되지 않으며 그들 사이에서 평온하게 살아갈 수 있음을 모두에게 증명했다. 길드는 그런 주인을 지지하며 그에게 정상적인 삶으로 돌아갈 기회를 주었다. 그리고 그 대가로 그가 해야 할 일은, 마지막 남은 감염 - 피에 대한 굶주림 - 을 끝내 정복하는 것뿐이었다.' + _
+'<br>세력: 무소속<br> 스파크: 1000</font>'
+! JO9 MOD END J9M2467
+$hero_difficulty[17] = '<font color="#0000CD">보통 난이도</font>'
+$master_version_stats[17] = {
+master_str = 3
+master_cha = 5
+master_style = 3
+master_libido = 2
+master_tutor = 3
+master_fighter = 3
+master_butler = 2
+master_artdirector = 3
+master_medic = 3
+master_mage = 2
+master_torture = 2
+master_domination = 4
+master_bondage = 2
+master_flagelation = 2
+master_petting = 2
+master_oral = 1
+master_penetration = 3
+master_fetish = 1
+$master_armor = 'плейт'
+$master_cloth = 'regal_suit'
+$master_right_wpn = 'кинжал'
+sparks = 1000
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 0
+faction_fame['korvus'] = 0
+faction_fame['kamira'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 1
+}
+
+$sepia_ava_path[18] = 'content\pic\master\master_lestat_sepia.png'
+$clear_ava_path[18] = 'content\pic\master\master_lestat.png'
+$master_base_name[18] = '레스타트'
+$hero_description[18] = '<font size= 5%> 젊고 야심찬 흡혈귀이자, 여자 필명으로 자기 자신의 허구적 전기담을 발표하던 작가 레스타트는 실존의 의미를 찾아 방황하며 실존적 위기를 겪고 있었다. 그러던 어느 날, 순전히 우연히 안개 속에 빠져들었다. 불멸의 로마에서 그는 빠르게 상황을 파악했고 코르부스 가문 안에서 자기 동족을 찾아냈다. 그들은 레스타트에게 재정적 지원을 해 주고 노예상 길드에도 좋게 말해 주었다. 그곳에서 이 흡혈귀 작가는 노예 조련사로서 진정한 천직을 찾아냈다.' + _
+'<br>세력: 코르부스 대가문<br> 스파크: 1500</font>'
+$hero_difficulty[18] = '<font color="#0000CD">보통 난이도</font>'
+$master_version_stats[18] = {
+master_str = 4
+master_cha = 4
+master_style = 5
+master_libido = 3
+master_tutor = 2
+master_fighter = 0
+master_butler = 3
+master_artdirector = 4
+master_medic = 1
+master_mage = 2
+master_torture = 0
+master_domination = 2
+master_bondage = 1
+master_flagelation = 2
+master_petting = 2
+master_oral = 2
+master_penetration = 3
+master_fetish = 1
+$master_armor = 'плейт'
+$master_cloth = 'regal_suit'
+$master_right_wpn = 'рапира'
+sparks = 1500
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 0
+faction_fame['korvus'] = 1
+faction_fame['kamira'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 1
+}
+
+!Mistresses
+$sepia_ava_path[101] = 'content\pic\master\master_vasilisa_sepia.png'
+$clear_ava_path[101] = 'content\pic\master\master_vasilisa.png'
+$master_base_name[101] = '바실리사'
+$hero_description[101] = '<font size= 5%>여주인 안젤리카가 감상적인 태도를 보이는 일은 아주 드물다. 하지만 사실은 사실이다. 얼마 전까지만 해도 홍등가의 평범한 창녀였던 여자가 어찌된 영문인지 기적처럼 길드에 발을 들였고, 그 보증을 선 것이 바로 안젤리카였다. 하지만 두 여자를 잇는 관계가 무엇인지는 아무도 모른다. 바실리사가 노예 훈련에서 무엇을 보여 줄 수 있을지는 시간이 지나야 드러날 것이다—만약 그녀가 바닥에서 기어올라올 수 있다면 말이다. 누구도 그녀를 후원해 주지 않을 테니까. 강력한 후견인이 있다 해도 마찬가지다.' + _
+'<br>무소속<br>스파크: 2500</font>'
+$hero_difficulty[101] = '<font color="#008080">최고 난이도</font>'
+$master_version_stats[101] = {
+master_str = 2
+master_cha = 1
+master_style = 0
+master_libido = 5
+master_libido_rate = 200
+master_tutor = 0
+master_fighter = 0
+master_butler = 0
+master_artdirector = 0
+master_medic = 0
+master_mage = 0
+master_torture = 0
+master_domination = 0
+master_bondage = 0
+master_flagelation = 0
+master_petting = 1
+master_oral = 3
+master_penetration = 3
+master_fetish = 1
+female["boobs"] = 1
+female_virginity = 2
+female["age"] = 0
+$master_armor = 'без_брони'
+$master_cloth = 'man_rugs'
+$master_right_wpn = ''
+sparks = 250
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+$sepia_ava_path[102] = 'content\pic\master\master_celina_sepia.png'
+$clear_ava_path[102] = 'content\pic\master\master_celina.png'
+$master_base_name[102] = '셀리나'
+$hero_description[102] = '<font size= 5%>   셀리나는 길드 지도자 중 한 명의 딸이다. 원하는 것은 언제나 손에 넣으며 자라난 사치스러운 삶은 이 소녀를 제멋대로로 키웠다. 이제 그녀는 성인이 되었고 도미나트릭스 놀이를 하고 싶어 한다. 당연히 아빠는 모든 걸 다 마련해 주었다… 훌륭한 교육, 전투와 육체 단련을 포함한 개인 훈련까지. 그 모든 것이 그녀의 새 취미에 분명 도움이 될 것이다.' + _
+'<br>타우루스 대가문<br>스파크: 2500</font>'
+$hero_difficulty[102] = '<font color="#008080">쉬운 난이도</font>'
+$master_version_stats[102] = {
+master_str = 4
+master_cha = 4
+master_style = 0
+master_libido = 2
+master_tutor = 2
+master_fighter = 4
+master_butler = 2
+master_artdirector = 3
+master_medic = 2
+master_mage = 0
+master_torture = 3
+master_domination = 4
+master_bondage = 0
+master_flagelation = 4
+master_petting = 3
+master_oral = 2
+master_penetration = 4
+master_fetish = 3
+female["boobs"] = 3
+female_virginity = 2
+female["age"] = 0
+$master_armor = 'эльчуга'
+$master_cloth = 'regal_suit'
+$master_right_wpn = 'шпага'
+sparks = 2500
+faction_fame['taurus'] = 1
+faction_fame['serpis'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+$sepia_ava_path[103] = 'content\pic\master\master_beatriche_sepia.png'
+$clear_ava_path[103] = 'content\pic\master\master_beatriche.png'
+$master_base_name[103] = '베아트리스'
+$hero_description[103] = '<font size= 5%>   전통적으로 남성의 영역이었던 직업에서 여성이 인정을 얻는 일은 언제나 어렵다. 하지만 아버지를 닮고 싶었던 베아트리스는 결국 경찰 대령이 되었다. 혹독한 아카데미 훈련은 그녀의 몸을 단련했고, 수사부에서 보낸 세월은 그녀의 정신을 단단하게 만들었다. 하지만 그런 그녀조차 로마에서는 놀랄 수밖에 없었다.' + _
+'<br>세르피스 대가문<br>스파크: 1500</font>'
+$hero_difficulty[103] = '<font color="#0000CD">보통 난이도</font>'
+$master_version_stats[103] = {
+master_str = 3
+master_cha = 4
+master_style = 0
+master_libido = 3
+master_tutor = 3
+master_fighter = 3
+master_butler = 2
+master_artdirector = 2
+master_medic = 1
+master_mage = 0
+master_torture = 2
+master_domination = 4
+master_bondage = 3
+master_flagelation = 2
+master_petting = 2
+master_oral = 2
+master_penetration = 2
+master_fetish = 3
+female["boobs"] = 3
+female_virginity = 2
+female["age"] = 2
+$master_armor = 'без_брони'
+$master_cloth = 'fancy_suit'
+$master_right_wpn = 'кастет'
+sparks = 1500
+faction_fame['serpis'] = 1
+faction_fame['taurus'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+$sepia_ava_path[104] = 'content\pic\master\master_colette_sepia.png'
+$clear_ava_path[104] = 'content\pic\master\master_colette.png'
+$master_base_name[104] = '콜레트'
+$hero_description[104] = '<font size= 5%>   리베로! 관중석에서 우레 같은 함성이 터졌다. 콜레트는 잘린 상대의 머리를 이제는 옛 주인이 된 자가 앉아 있는 VIP 박스로 내던졌다. 그녀는 땀과 피로 평범한 삶을 얻을 기회를 쟁취했다. 노예 생활의 모든 공포와 "매력"을 견뎌 낸 뒤, 그녀는 노예제가 진정 무엇을 뜻하는지 완전히 이해하게 되었다. 이제는 저쪽 편에 설 때다. 남은 건 그 노예 문신을 지우고—자기 것이 될 소녀를 찾아 표식을 남기는 일뿐이다.' + _
+'<br>무소속<br>스파크: 1000</font>'
+$hero_difficulty[104] = '<font color="#C71585">높은 난이도</font>'
+$master_version_stats[104] = {
+master_str = 3
+master_cha = 3
+master_style = 0
+master_libido = 2
+master_tutor = 1
+master_fighter = 4
+master_butler = 2
+master_artdirector = 1
+master_medic = 2
+master_mage = 0
+master_torture = 0
+master_domination = 2
+master_bondage = 0
+master_flagelation = 1
+master_petting = 3
+master_oral = 1
+master_penetration = 3
+master_fetish = 0
+female["boobs"] = 3
+female_virginity = 2
+female["age"] = 2
+$master_armor = 'без_брони'
+$master_cloth = 'livery'
+$master_right_wpn = ''
+sparks = 1000
+faction_fame['taurus'] = 0
+faction_fame['serpis'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+$sepia_ava_path[105] = 'content\pic\master\master_gina_sepia.png'
+$clear_ava_path[105] = 'content\pic\master\master_gina.png'
+$master_base_name[105] = '지나'
+$hero_description[105] = '<font size= 5%>   지나는 어릴 적 안개에 흘러들어 갔고, 운이 따르지 않았다면 분명 죽었을 것이다—바로 그날 성 베드로 아카데미의 부원장이 학교용 밀수품을 사들이고 있었고, 불쌍한 소녀를 보고는 거두어 들였기 때문이다. 세월이 흐르며 보조 역할은 교직으로 커졌다. 아카데미에 진 빚을 갚은 뒤, 지나는 독립을 택했다. 말 안 듣는 소녀들을 가르치는 것밖에 할 줄 모르지만—로마에서는 그 재주가 언제나 수요가 높다.' + _
+'<br>세르피스 대가문<br>스파크: 1000</font>'
+$hero_difficulty[105] = '<font color="#4B0082">높은 난이도</font>'
+$master_version_stats[105] = {
+master_str = 3
+master_cha = 3
+master_style = 0
+master_libido = 2
+master_energy = 5
+master_tutor = 5
+master_fighter = 0
+master_butler = 2
+master_artdirector = 1
+master_medic = 2
+master_mage = 0
+master_torture = 0
+master_domination = 3
+master_bondage = 0
+master_flagelation = 3
+master_petting = 2
+master_oral = 1
+master_penetration = 3
+master_fetish = 0
+female["boobs"] = 4
+female_virginity = 2
+female["age"] = 0
+$master_armor = 'без_брони'
+$master_cloth = 'formal_suit'
+$master_right_wpn = ''
+sparks = 1000
+faction_fame['serpis'] = 1
+faction_fame['taurus'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+$sepia_ava_path[106] = 'content\pic\master\master_gretta_sepia.png'
+$clear_ava_path[106] = 'content\pic\master\master_gretta.png'
+$master_base_name[106] = '그레타'
+$hero_description[106] = '<font size= 5%> 그레타는 안개를 거치지 않고 불멸의 로마에 온 몇 안 되는 존재 중 하나다. 대악마인 그녀는 마기스터 발리오스에게 소환되어 그의 경호원으로 섬기게 되었다. 하지만 안개가 그녀의 힘 대부분을 억눌러 버린 것으로 드러났다. 다른 선택지가 없었던 발리오스는 그레타를 자기 조수로 삼았다. 하지만 결국 그는 헬스폰 연구에 빠져들었고, 여자들은 그의 실험에 방해만 되었다. 그레타는 자유를 얻었고—지옥으로 돌아갈 길을 찾기 위해 떠났다.' + _
+'<br>코르부스 대가문<br>스파크: 1000</font>'
+$hero_difficulty[106] = '<font color="#cd0000">높은 난이도</font>'
+$master_version_stats[106] = {
+master_str = 2
+master_cha = 2
+master_style = 0
+master_libido = 2
+master_energy = 2
+master_tutor = 1
+master_fighter = 0
+master_butler = 0
+master_artdirector = 0
+master_medic = 2
+master_mage = 4
+master_torture = 0
+master_domination = 0
+master_bondage = 0
+master_flagelation = 0
+master_petting = 0
+master_oral = 0
+master_penetration = 0
+master_fetish = 0
+female["boobs"] = 2
+female_virginity = 2
+female["age"] = 2
+$master_armor = 'без_брони'
+$master_cloth = 'wizard_robes'
+$master_right_wpn = ''
+sparks = 1000
+faction_fame['korvus'] = 1
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+$sepia_ava_path[107] = 'content\pic\master\master_nicolle_sepia.png'
+$clear_ava_path[107] = 'content\pic\master\master_nicolle.png'
+$master_base_name[107] = '니콜'
+$hero_description[107] = '<font size= 5%>   그녀의 세계에서 니콜은 동료들을 괴물들로부터 지키는 마법사였다. 불멸의 로마에서 그녀는 부유한 변태의 장난감이 되었다. 그 순종적인 계집을 노예 조련사로 만들겠다고 그가 결정했을 때도 아무도 놀라지 않았다—원래 기행으로 악명 높았으니까. 니콜이 길드 시험을 통과한 지 며칠 뒤 그가 죽었을 때도 누구 하나 놀라지 않았다. 불멸의 로마에서는 인간이든 야수인이든 날마다 픽픽 죽어나간다. 그리고 니콜은? 그녀는 제 목표를 좇고 있다—말 안 듣는 소녀들에게 독과 정신을 뒤틀어 놓는 물약 따위를 거리낌 없이 쓰면서.' + _
+'<br>세력: 카미라 대가문<br>스파크: 400</font>'
+$hero_difficulty[107] = '<font color="#cd0000">매우 높은 난이도</font>'
+$master_version_stats[107] = {
+master_str = 4
+master_cha = 1
+master_style = 0
+master_libido = 3
+master_energy = 4
+master_tutor = 1
+master_fighter = 2
+master_butler = 0
+master_artdirector = 0
+master_medic = 2
+master_mage = 3
+master_torture = 1
+master_domination = 1
+master_bondage = 1
+master_flagelation = 1
+master_petting = 2
+master_oral = 2
+master_penetration = 1
+master_fetish = 1
+female["boobs"] = 2
+female_virginity = 2
+female["age"] = 0
+$master_armor = 'эльчуга'
+$master_cloth = 'aketon'
+$master_wpn = 'шпага'
+$master_back_wpn = 'моргенштерн'
+$master_left_wpn = 'катана'
+$master_right_wpn = 'шпага'
+$master_arm_wpn = 'нагайка'
+$master_leg_wpn = 'кинжал'
+inventory['нагайка'] = 1
+inventory['кнут'] = 2
+вакхический_нектар = 5
+тонизируюзщий_эликсир = 5
+целительный_бальзам = 12
+мощный_афодизиак = 4
+inventory['regal_suit'] = 1
+inventory['medic_robes'] = 1
+inventory['wizard_robes'] = 1
+fridge["alcohol"] = 20
+fridge["virgin_meat"] = 12
+alcohol = 20
+virgin_meat = 12
+sparks = 400
+faction_fame['taurus'] = 0
+faction_fame['serpis'] = 0
+faction_fame['kamira'] = 1
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+$sepia_ava_path[108] = 'content\pic\master\master_tina_sepia.png'
+$clear_ava_path[108] = 'content\pic\master\master_tina.png'
+$master_base_name[108] = '티나'
+$hero_description[108] = '<font size= 5%>   떠돌이 서커스단이 안개를 헤매다 헬스폰과 마주친 순간, 그들의 순회공연은 끝났다. 그 참극에서 살아남은 건 티나 하나뿐이었다. 유린당했지만 살아남은 채, 그녀는 불멸의 로마의 경계까지 기어 나왔고—그곳에서 카미라의 순찰대에게 붙잡혔다. 알고 보니 수인들은 정말 짐승처럼 행동했고, 한때 호랑이 조련사였던 티나는 그들을 길들이는 데 아무 어려움이 없었다. 이제 그녀는 위험한 꼬마 고양이들을 길들인다… 인간종이라는 점만 다를 뿐.' + _
+'<br>진영: 카미라 대가문<br>스파크: 600</font>'
+$hero_difficulty[108] = '<font color="#C71585">매우 높은 난이도</font>'
+$master_version_stats[108] = {
+master_str = 2
+master_cha = 3
+master_style = 0
+master_libido = 0
+master_tutor = 2
+master_fighter = 1
+master_butler = 1
+master_artdirector = 2
+master_medic = 1
+master_mage = 0
+master_torture = 0
+master_domination = 2
+master_bondage = 0
+master_flagelation = 2
+master_petting = 2
+master_oral = 1
+master_penetration = 2
+master_fetish = 0
+female["boobs"] = 3
+female_virginity = 2
+female["age"] = 0
+$master_armor = 'без_брони'
+$master_cloth = 'comfy_robes'
+$master_right_wpn = ''
+sparks = 600
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 0
+faction_fame['kamira'] = 1
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+$sepia_ava_path[109] = 'content\pic\master\master_irina_sepia.png'
+$clear_ava_path[109] = 'content\pic\master\master_irina.png'
+$master_base_name[109] = '이리나'
+$hero_description[109] = '<font size= 5%>   삶의 경험은 쓸모 있는 것이다... 스스로를 믿도록 단련된 이리나는 안개에 들어섰을 때도 당황하지 않았고, 결국 성공으로 돌파구를 만들었다. 하지만 마침내 고비를 넘겼다고 여긴 순간, 운명은 다시 그녀를 후려쳤다—야심만만한 젊은 글램 걸들에게 평판이 박살 난 것이다. 절박해진 그녀는 마지막 기회를 잡기 위해 노예상 길드로 향했다. 해방되었지만 여전히 물러터지고 푹신한 밀프인 이리나의 과제는 명성을 되찾는 것이다. 하지만 자주 아래쪽으로 생각하는 여자가 과연 반항적이고 말 안 듣는 노예들을 길들일 수 있을까? 시간만이 답해 줄 것이다...' + _
+'<br>진영: 무소속<br>스파크: 600</font>'
+$hero_difficulty[109] = '<font color="#4B0082">높은 난이도</font>'
+$master_version_stats[109] = {
+master_str = 2
+master_cha = 4
+master_style = 4
+master_libido = 4
+master_energy = 3
+master_tutor = 3
+master_fighter = 2
+master_butler = 4
+master_artdirector = 4
+master_medic = 4
+master_mage = 2
+master_torture = 0
+master_domination = 2
+master_bondage = 0
+master_flagelation = 0
+master_petting = 4
+master_oral = 2
+master_penetration = 2
+master_fetish = 1
+female["boobs"] = 2
+female_virginity = 2
+female["age"] = 2
+$master_armor = 'без_брони'
+$master_cloth = 'fancy_suit'
+$master_right_wpn = ''
+sparks = 600
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+$sepia_ava_path[110] = 'content\pic\master\master_lola_sepia.png'
+$clear_ava_path[110] = 'content\pic\master\master_lola.png'
+$master_base_name[110] = '롤라'
+$hero_description[110] = '<font size= 5%>   타락한 귀족 두 명이 내기를 벌였다. 그들은 자신들이 가장 좋아하는 콜걸 롤라—귀엽고 젊지만 머리 좋은 편으로는 알려지지 않은 창녀—를 사서, 그녀가 얼마나 오래 버티는지 보겠다며 노예상 길드에 밀어 넣기로 했다. 하지만 그녀는 정말 겉보기만큼 멍청한 걸까? 아니면 이 소녀는 인생 최고의 당첨표를 뽑은 걸까?' + _ 
+'<br>진영: 무소속<br>스파크: 500</font>'
+$hero_difficulty[110] = '<font color="#C71585">매우 높은 난이도</font>'
+$master_version_stats[110] = {
+master_str = 2
+master_cha = 1
+master_style = 4
+master_libido = 5
+master_energy = 4
+master_tutor = 1
+master_fighter = 0
+master_butler = 1
+master_artdirector = 1
+master_medic = 1
+master_mage = 0
+master_torture = 0
+master_domination = 1
+master_bondage = 0
+master_flagelation = 1
+master_petting = 4
+master_oral = 4
+master_penetration = 4
+master_fetish = 3
+female["boobs"] = 3
+female_virginity = 2
+female["age"] = 0
+$master_armor = 'без_брони'
+$master_cloth = 'fancy_suit'
+$master_right_wpn = ''
+sparks = 500
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+$sepia_ava_path[111] = 'content\pic\master\master_diana_sepia.png'
+$clear_ava_path[111] = 'content\pic\master\master_diana.png'
+$master_base_name[111] = '다이애나'
+$hero_description[111] = '<font size= 5%>   다이애나는 노예상 길드 아카데미의 교사였다—개방적이고, 속박 없이 살며, 섹스에 집착하던 여자. 학생들 사이에서 인기도 높았다. 그리고 그녀는 종종… 개인 수업도 했다. 어느 날 그녀는 오래되고 닳아빠진 한 학생의 일기를 발견했는데, 그 특별 수업들에서 벌어진 일들이 아주 자세히 적혀 있었다. 학교 최고의 창녀라는 낙인이 찍힌 다이애나는 이제 복수를 노린다 — 그녀의 옛 제자들보다 커리어에서 더 크게 성공하는 것보다 더 좋은 방법이 어디 있겠는가.' + _
+'<br>진영: 타우루스 대가문<br>스파크: 1500</font>'
+$hero_difficulty[111] = '<font color="#0000CD">보통 난이도</font>'
+$master_version_stats[111] = {
+master_str = 3
+master_cha = 3
+master_style = 4
+master_libido = 5
+master_energy = 4
+master_tutor = 4
+master_fighter = 0
+master_butler = 3
+master_artdirector = 3
+master_medic = 3
+master_mage = 1
+master_torture = 1
+master_domination = 2
+master_bondage = 0
+master_flagelation = 0
+master_petting = 4
+master_oral = 3
+master_penetration = 4
+master_fetish = 2
+female["boobs"] = 2
+female_virginity = 2
+female["age"] = 0
+$master_armor = 'без_брони'
+$master_cloth = 'fancy_suit'
+$master_right_wpn = ''
+sparks = 1500
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 1
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+$sepia_ava_path[112] = 'content\pic\master\master_sofia_sepia.png'
+$clear_ava_path[112] = 'content\pic\master\master_sofia.png'
+$master_base_name[112] = '소피아'
+$hero_description[112] = '<font size= 5%>   죽어 가는 전쟁 참전 용사는 자기 딸을 이끌어 줄 강하고 영리한 노예를 원했다. 아마존 전사 소피아는 그 역할에 완벽했다. 그의 집에 들어간 뒤, 그녀는 늙은이가 죽기만을 기다렸다가 재빨리 주도권을 움켜쥐었다 — 그의 딸은 아무것도 상속받지 못했고, 그 결과 소피아의 순종적인 작은 장난감이 되었다. 하지만 도전 없는 삶은 소피아에게 맞지 않는다. 그녀는 새출발을 하고, 구린 과거를 지우고, 영지를 팔아 얻은 돈을 안전망으로 삼기 위해 노예상 길드에 들어갔다.' + _
+'<br>진영: 타우루스 대가문<br>스파크: 2600</font>'
+$hero_difficulty[112] = '<font color="#008080">쉬운 난이도</font>'
+$master_version_stats[112] = {
+master_str = 5
+master_cha = 4
+master_style = 3
+master_libido = 3
+master_energy = 5
+master_tutor = 2
+master_fighter = 5
+master_butler = 2
+master_artdirector = 1
+master_medic = 2
+master_mage = 2
+master_torture = 5
+master_domination = 3
+master_bondage = 5
+master_flagelation = 4
+master_petting = 2
+master_oral = 2
+master_penetration = 3
+master_fetish = 3
+female["boobs"] = 3
+female_virginity = 2
+female["age"] = 2
+$master_armor = 'без_брони'
+$master_cloth = 'aketon'
+$master_right_wpn = ''
+sparks = 2600
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 1
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+!черновик
+$sepia_ava_path[113] = 'content\pic\master\master_freya_sepia.png'
+$clear_ava_path[113] = 'content\pic\master\master_freya.png'
+$master_base_name[113] = '프레야'
+$hero_description[113] = '<font size= 5%>   고양이에게는 아홉 개의 목숨이 있다고들 한다. 프레야는 이미 그중 여덟 번의 삶을 살아냈다. 마지막 생의 순환에 이르기까지, 이 캣우먼의 영혼은 수많은 세계를 떠돌며 거의 모든 것을 보았다, 아니 전부를 보았다고 해도 될 만큼. 더는 아무것도 프레야를 놀라게 할 수 없을 것 같던 순간, 운명은 그녀를 안개로 보내는 혹독한 시험을 내렸다. 그곳에서 빠져나왔을 때 그녀는 자기 마법 능력을 잃었고, 더는 세계를 자유롭게 오갈 수 없게 되었다. 
+이제 어쩌지? 불멸의 로마라는 썩어 빠진 늪에서 지루해 죽지 않으려면, 그녀는 자기의 모든 여성적 매력과 본능을 써서 여기서 멀리 벗어날 길을 찾아야 한다...
+올바른 방향으로 가는 첫걸음은 이미 떼어졌다 — 노예상 길드의 많은 이들이 잔심부름 소녀로 비밀 지식을 향한 여정을 시작했으니까...' + _
+'<br>진영: 무소속 <br>스파크: 500</font>'
+$hero_difficulty[113] = '<font color="#4B0082">높은 난이도</font>'
+$master_version_stats[113] = {
+master_str = 2
+master_cha = 3
+master_style = 4
+master_libido = 2
+master_tutor = 2
+master_fighter = 2
+master_butler = 2
+master_artdirector = 2
+master_medic = 2
+master_mage = 1
+master_torture = 1
+master_domination = 3
+master_bondage = 1
+master_flagelation = 2
+master_petting = 3
+master_oral = 3
+master_penetration = 3
+master_fetish = 2
+female["boobs"] = 3
+female_virginity = 2
+female["age"] = 0
+$master_armor = 'без_брони'
+$master_cloth = 'man_rugs'
+$master_right_wpn = ''
+sparks = 500
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+$sepia_ava_path[114] = 'content\pic\master\master_alcina_sepia.png'
+$clear_ava_path[114] = 'content\pic\master\master_alcina.png'
+$master_base_name[114] = '알치나'
+! JO9 MOD START J9M2466 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$hero_description[114] = '<font size= 5%> 독특한 유물이 비밀 바티칸 연구실에 흘러들어 왔다. 강대한 흡혈귀 알치나 디미트레스쿠의 영혼이 깃든 육신은 산산이 부서진 용 조각상 안에 갇혀 있었다. 그녀를 구해내는 건 기술적인 문제였지만, 지나치게 공격적인 흡혈귀를 길들이는 일은 훨씬 더 어려웠다 — 하지만 그 일 또한 끝내 해냈다. 이제 남은 건 실험이 얼마나 성공적이었는지 관찰하는 것뿐이다. 알치나는 이 새로운 세계에 적응할 수 있을까, 아니면 그녀의 흡혈귀 본능이 다시 모든 것을 집어삼킬까? 바티칸의 실험체를 가까이서 감시하는 임무를 맡은 노예상 길드만이 그 답을 알려 줄 것이다.' + _
+'<br>진영: 코르부스 대가문<br>스파크: 1000</font>'
+! JO9 MOD END J9M2466
+$hero_difficulty[114] = '<font color="#008080">쉬운 난이도</font>'
+$master_version_stats[114] = {
+master_str = 4
+master_cha = 4
+master_style = 4
+master_libido = 2
+master_tutor = 2
+master_fighter = 3
+master_butler = 1
+master_artdirector = 2
+master_medic = 2
+master_mage = 2
+master_torture = 3
+master_domination = 5
+master_bondage = 3
+master_flagelation = 3
+master_petting = 2
+master_oral = 2
+master_penetration = 3
+master_fetish = 5
+female["boobs"] = 4
+female_virginity = 2
+female["age"] = 2
+$master_armor = 'без_брони'
+$master_cloth = 'regal_suit'
+$master_right_wpn = ''
+sparks = 1000
+faction_fame['korvus'] = 1
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 1
+}
+$sepia_ava_path[115] = 'content\pic\master\master_genevieve_sepia.png'
+$clear_ava_path[115] = 'content\pic\master\master_genevieve.png'
+$master_base_name[115] = '제느비에브'
+! JO9 MOD START J9M2465 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$hero_description[115] = '<font size= 5%> 마스터 스쿠푸스와 그의 의붓딸의 대화: 스쿠푸스: "왜 이게 필요하다는 거냐, 제느비에브?..." 제느비에브: "첫째, 난 당신이 고작 10,000 스파크에 팔아치운 엄마의 길을 따라가고 싶지 않아. 둘째, 성 베드로 아카데미에서 교육받은 덕에 난 한심한 암캐들이 내 앞에 기어오게 만들 만큼은 충분히 유능해. 그리고... 당신도 알잖아, 난 언제나 내가 원하는 걸 손에 넣는다는 걸!" 스쿠푸스: "내가 그럴 마음만 있었으면 벌써 널 치워 버렸을 거다! 그리고 난 노예상 길드가 네 자리가 아니라고 확신한다, 딸아!... 하지만 네가 그렇게 우긴다면, 내일 길드의 낙인을 받게 해 주마! 하지만 명심해라, 이건 장난이 아니다. 길드의 규칙은 모두에게 똑같이 적용된다. 누구도 널 특별취급해 주지 않을 거다!..." 제느비에브: "알겠어요, 아빠... 동료님!..."' + _
+'<br>진영: 타우루스 대가문<br>스파크: 2500</font>'
+! JO9 MOD END J9M2465
+$hero_difficulty[115] = '<font color="#008080">쉬운 난이도</font>'
+$master_version_stats[115] = {
+master_str = 3
+master_cha = 4
+master_style = 4
+master_libido = 2
+master_tutor = 2
+master_fighter = 2
+master_butler = 2
+master_artdirector = 3
+master_medic = 4
+master_mage = 1
+master_torture = 2
+master_domination = 3
+master_bondage = 2
+master_flagelation = 2
+master_petting = 3
+master_oral = 3
+master_penetration = 1
+master_fetish = 2
+female["boobs"] = 2
+female_virginity = 0
+female["age"] = 1
+$master_armor = 'без_брони'
+$master_cloth = 'man_rugs'
+$master_right_wpn = ''
+sparks = 2500
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 1
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+$sepia_ava_path[116] = 'content\pic\master\master_candace_sepia.png'
+$clear_ava_path[116] = 'content\pic\master\master_candace.png'
+$master_base_name[116] = '캔디스'
+! JO9 MOD START J9M2464 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$hero_description[116] = '<font size= 5%> 포주 톰의 사생활은 엉망진창이었다. 그의 양녀 캔디스는 그에게 유일한 위안이 되어주었다. 자상한 아버지였던 그는, 그동안 자신을 둘러싼 음탕하고 타락한 무리들로부터 멀리 떨어진 곳에서, 캔디스를 품위 있는 숙녀로 키워내겠다는 꿈을 품고 있었다. 하지만 자라나는 딸에게 자신의 수입원을 아무리 숨기려 해도, 그 비밀은 결국 드러나고 말았다. 어느 날 그는 집에서 캔디스가 어떤 남자의 성기에 꿰뚫린 채 있는 모습을 목격하고 말았다. "그래, 난 섹스하는 거 진짜 좋아해! 하지만 스파크가 더 좋아! 아빠, 아빠 딸은 정말 훌륭한 창녀야! 그냥 인정해!" — 캔디스는 아버지를 보자 신음하며 말했다. "걱정 마, 난 아직 처녀야! 내 고객들한테는 너무 비싸니까! 흠!!!..." 톰은 화가 나서 그녀를 쫓아냈다. 하지만 그는 그녀가 노예 상인 길드에서 새 출발할 수 있도록 도와줄 힘을 냈다. 과연 이것이 캔디스를 변화시킬 수 있을까? 아니면 과거의 "스킨"들은 결코 완전히 사라지지 않는 것일까?...''' + _
+'<br>진영: 세르피스 대가문<br>스파크: 1200</font>'
+! JO9 MOD END J9M2464
+$hero_difficulty[116] = '<font color="#4B0082">높은 난이도</font>'
+$master_version_stats[116] = {
+master_str = 3
+master_cha = 2
+master_style = 3
+master_libido = 5
+master_energy = 5
+master_tutor = 1
+master_fighter = 0
+master_butler = 2
+master_artdirector = 2
+master_medic = 1
+master_mage = 0
+master_torture = 0
+master_domination = 1
+master_bondage = 0
+master_flagelation = 0
+master_petting = 4
+master_oral = 4
+master_penetration = 2
+master_fetish = 3
+female["boobs"] = 2
+female_virginity = 0
+female["age"] = 1
+$master_armor = 'без_брони'
+$master_cloth = 'fancy_suit'
+$master_right_wpn = ''
+sparks = 1200
+faction_fame['serpis'] = 1
+faction_fame['taurus'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+$sepia_ava_path[117] = 'content\pic\master\master_marfa_sepia.png'
+$clear_ava_path[117] = 'content\pic\master\master_marfa.png'
+$master_base_name[117] = '마르파'
+! JO9 MOD START J9M2463 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$hero_description[117] = '<font size= 5%> 마르파 바실리예브나는 전형적인 "러시아 여자"다 — 달리는 말을 멈춰 세우고, 불타는 오두막으로 걸어 들어가며, 절대 말을 돌려 하지 않는다. 화려하고 카리스마 넘치며 권위적인 러시아 구역 공작 궁정의 요리사였던 그녀는, 빠르게 공작의 하인들을 휘어잡았고 심지어 공작 본인까지 "이겨" 버렸다: 그녀의 부엌 음식은 한 번도 충분히 좋지 않았고, 요리사들은 늘 손이 제대로 달려 있지 않았으니까... 불평을 듣는 데 지친 공작은 그녀를 도시로 보내 인력과 물자 문제를 직접 처리하게 했다. 하지만 그는 한 가지를 예상하지 못했다... 마르파는 그전까지 집과 일밖에 모르고 살았다. 그런데 대가문들의 귀족적인 생활방식이 그녀를 홀려 버린 것이다. "왜 내가 저들보다 못하지?!" 그녀는 그렇게 생각했다... 그녀는 셰프 모자를 공작에게 흔들어 보이고는, 노예상 길드를 통해 자기 "하늘의 학"을 쫓으러 떠났고, 길드는 곧 그녀에게 성공적인 조련사의 자질이 있다는 걸 알아보았다...''' + _
+'<br>진영: 무소속<br>스파크: 1000</font>'
+! JO9 MOD END J9M2463
+$hero_difficulty[117] = '<font color="#4B0082">높은 난이도</font>'
+$master_version_stats[117] = {
+master_str = 3
+master_cha = 4
+master_style = 2
+master_libido = 1
+master_energy = 3
+master_tutor = 4
+master_fighter = 0
+master_butler = 5
+master_artdirector = 1
+master_medic = 2
+master_mage = 0
+master_torture = 0
+master_domination = 3
+master_bondage = 0
+master_flagelation = 2
+master_petting = 1
+master_oral = 1
+master_penetration = 3
+master_fetish = 0
+female["boobs"] = 4
+female_virginity = 3
+female["age"] = 2
+$master_armor = 'без_брони'
+$master_cloth = 'formal_suit'
+$master_right_wpn = ''
+sparks = 1200
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 0
+faction_fame['korvus'] = 0
+faction_fame['kamira'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+$sepia_ava_path[118] = 'content\pic\master\master_silvia_sepia.png'
+$clear_ava_path[118] = 'content\pic\master\master_silvia.png'
+$master_base_name[118] = '실비아'
+$hero_description[118] = '<font size= 5%>   안개를 떠난 뒤, 실비아는 독보적인 예술적 재능과 눈부신 외모 덕분에 단순한 무희에서 이터널 시티 부유한 숭배자들의 총아이자 모든 VIP 파티가 탐내는 귀빈으로 빠르게 떠올랐다. 하지만 성공과 인정은 이 사교계 여자의 머리를 취하게 했고, 그녀는 더 많은 것을 원했다... 완벽을 좇으며 실비아는 최고급 스타일리스트, 성형외과 의사, 피트니스 트레이너들을 드나들기 시작했고, 매일 독점 브랜드로 자기 옷장을 갈아치웠다. 머지않아 그 독특한 미녀는 개성과 매력을 잃고 빔보가 되었다. 비싼 에스코트에 대한 흥미는 빠르게 식었고, 그녀의 터무니없는 청구서를 기꺼이 내줄 손님 수는 0으로 떨어졌다. 클럽들은 이 살아 있는 인형에게 문을 닫아걸기 시작했다. 하지만 실비아는 화려한 삶을 포기하고 싶지 않았다. 그녀는 본능적으로 스스로를 빚과 더 깊은 밑바닥으로 몰아넣었다. 더는 추락할 곳도 없고, 개조한 엉덩이에 노예 문신이 찍힐 전망이 눈앞에 드리워졌을 때, 그녀는 자기 도톰한 입술과 실리콘 공들을 쓸 만한 곳에 써야 했다. 적색가 지구의 단골 손님 덕에 — 노예상 길드의 한 마스터 덕에 — 타락한 "사교계의 여왕"은 0에서 다시 시작할 기회를 얻었다... 아니, 더 정확히는 — 4000 스파크의 빚에서.' + _
+'<br>진영: 무소속 <font color="#cd0000"> 빚: 4000 스파크, 150일</font> <br>            스파크: 300</font>'
+$hero_difficulty[118] = '<font color="#cd0000">최대 난이도</font>'
+$master_version_stats[118] = {
+master_str = 3
+master_cha = 2
+master_style = 3
+master_libido = 2
+master_energy = 3
+master_tutor = 0
+master_fighter = 0
+master_butler = 2
+master_artdirector = 5
+master_medic = 1
+master_mage = 0
+master_torture = 0
+master_domination = 0
+master_bondage = 0
+master_flagelation = 0
+master_petting = 3
+master_oral = 2
+master_penetration = 2
+master_fetish = 0
+female["boobs"] = 4
+female_virginity = 2
+female["age"] = 0
+$master_armor = 'без_брони'
+$master_cloth = 'man_rugs'
+$master_right_wpn = ''
+sparks = 300
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 0
+faction_fame['korvus'] = 0
+faction_fame['kamira'] = 0
+debt = 4000
+debt_count = 150
+debt_history = 3
+master_vampire = 0
+}
+
+$sepia_ava_path[119] = 'content\pic\master\master_scarlett_sepia.png'
+$clear_ava_path[119] = 'content\pic\master\master_scarlett.png'
+$master_base_name[119] = '스칼렛'
+! JO9 MOD START J9M2462 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$hero_description[119] = '<font size= 5%> "놀되, 찝적대지는 마!" - 이것이 안젤리카의 기본 규칙이다. 하지만 살아 있는 섹스 토이 컬렉션을 갱신하는 일이 걸리면, 강력한 도미나는 때때로 몇 가지 예외를 스스로 허락하곤 했다. 그리고 어느 날, 그건 그녀에게 잔인한 장난이 되어 돌아왔다... 우연히 만난 조숙할 만큼 귀엽고, 해방적이며, 그녀가 보기엔 쉽게 손에 넣을 수 있을 것 같았던 스칼렛은 길드의 상급 마스터의 머리를 뒤흔들어 놓았다. 그리고 곧 안젤리카는 가까운 미래 동안 자기 타락한 놀이에 쓸 훌륭하고 부지런한 암캐를 손에 넣었다고 확신했다. 심지어 그녀는 가끔 그 게임의 규칙을 정하게까지 해 주었다. 하지만 자신이 러브 베드에 수갑 채워진 채 스칼렛의 눈부신 미소 사이로 송곳니가 드러나는 걸 본 순간, 안젤리카는 로마에서 아름다운 연기자가 자기 하나만이 아니라는 걸 재빨리 깨달았다. 도미나 앞에 놓인 선택은 단순했다: 세습 흡혈귀에게 정기적인 먹이를 대주든지, 아니면 스스로 구울 무리에 합류하든지. 안젤리카에게 다행이었던 건, 그녀가 언제나 협상만큼은 잘했다는 점이다...' + _
+'<br>진영: 코르부스 대가문<br> 스파크: 2500</font>'
+! JO9 MOD END J9M2462
+$hero_difficulty[119] = '<font color="#0000CD">일반 난이도</font>'
+$master_version_stats[119] = {
+master_str = 3
+master_cha = 5
+master_style = 4
+master_libido = 2
+master_energy = 3
+master_tutor = 4
+master_fighter = 0
+master_butler = 5
+master_artdirector = 3
+master_medic = 2
+master_mage = 1
+master_torture = 0
+master_domination = 3
+master_bondage = 0
+master_flagelation = 2
+master_petting = 2
+master_oral = 1
+master_penetration = 3
+master_fetish = 0
+female["boobs"] = 3
+female["breast_enchanced"] = 0
+female_virginity = 3
+female["age"] = 2
+$master_armor = 'плейт'
+$master_cloth = 'regal_suit'
+$master_right_wpn = 'кинжал'
+sparks = 2500
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 0
+faction_fame['korvus'] = 1
+faction_fame['kamira'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 1
+}
+
+$sepia_ava_path[120] = 'content\pic\master\master_adreana_sepia.png'
+$clear_ava_path[120] = 'content\pic\master\master_adreana.png'
+$master_base_name[120] = '아드레나'
+! JO9 MOD START J9M2461 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$hero_description[120] = '<font size= 5%> 스칼렛의 여동생 아드레나는 어린 나이에 자신이 어둠의 편에는 맞지 않으며 평범한 사람들 사이에서 살고 싶다는 걸 깨달았다. 하지만 흡혈귀의 굴레를 벗어나는 일은 그리 쉬운 과제가 아니다. 게다가 언니가 널 지켜보며 네 안의 반항심을 짓누르기 위해 가능한 모든 짓을 하고 있다면, 그 목표는 완전히 불가능해 보인다... 하지만 스칼렛이 노예상 길드에 들어가게 되자, 아드레나는 그걸 언니의 지배에서 벗어날 기회로 보았다. 그녀는 스칼렛에게 자기도 길드에 들어가게 도와 달라고 부탁했고, 스칼렛은 여동생의 교활한 계획을 눈치채지 못한 채 그렇게 해 주었다. 이제 아드레나는 적어도 매일 자기 고향으로 돌아갈 필요는 없다. 그리고 목표까지의 거리는 이제 겨우 돌 하나 던질 만큼 남았다 - 인간의 피를 먹는 습관만 끊어 내면 된다. 물론, 맛 좋은 노예들이 이 길에서 극복할 수 없는 장애물이 될 수도 있지만...' + _
+'<br>진영: 코르부스 대가문<br>스파크: 1000</font>'
+! JO9 MOD END J9M2461
+$hero_difficulty[120] = '<font color="#4B0082">높은 난이도</font>'
+$master_version_stats[120] = {
+master_str = 2
+master_cha = 3
+master_style = 4
+master_libido = 1
+master_energy = 2
+master_tutor = 2
+master_fighter = 1
+master_butler = 5
+master_artdirector = 3
+master_medic = 2
+master_mage = 2
+master_torture = 0
+master_domination = 2
+master_bondage = 0
+master_flagelation = 1
+master_petting = 2
+master_oral = 1
+master_penetration = 3
+master_fetish = 0
+female["boobs"] = 2
+female["breast_enchanced"] = 0
+female_virginity = 3
+female["age"] = 0
+$master_armor = 'плейт'
+$master_cloth = 'regal_suit'
+$master_right_wpn = 'кинжал'
+sparks = 1000
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 0
+faction_fame['korvus'] = 1
+faction_fame['kamira'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 1
+}
+
+$sepia_ava_path[121] = 'content\pic\master\master_mila_sepia.png'
+$clear_ava_path[121] = 'content\pic\master\master_mila.png'
+$master_base_name[121] = '밀라'
+! JO9 MOD START J9M2460 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$hero_description[121] = '<font size= 5%> 어린 시절부터 밀라의 매일 아침은 "소의" 신선한 우유가 가득 담긴 큰 머그잔과 갓 구운 빵 껍질 한 조각으로 시작되었다. 맛있고 건강한 아침 식사는 하루를 버틸 에너지를 그녀에게 안겨 주었다. 소녀가 자라 자기가 가장 좋아하던 별미가 어떻게 만들어지는지 전부 알게 되었을 때도, 그녀는 조금의 혐오감조차 느끼지 않았고, 얼마 지나지 않아 그건 그녀의 페티시가 되기까지 했다. 곧 밀라 자신도 하루에 몇 병씩 우유를 내주기 시작했다. 하지만 자기 생산품은 그다지 마음에 들지 않았다. 그래서 그녀는 자기만의 부렌카를 갖고, 맛과 품질 모두 뛰어난 그 우유로 로마 전체를 먹여 살리겠다는 목표를 세웠다. 밀라는 길드 아카데미의 훈련을 마쳤다. 이제 그녀에게 남은 건 자기만의 작은 농장을 마련하고 자기 브랜드의 인지도를 챙기는 일뿐이다. 그러면 그녀는 열정적으로 이렇게 외칠 수 있게 될 것이다: 그래! 바로 어린 시절 그 맛이야!... "밀라의 우유를 건강하게 마셔요!"'+ _
+'<br>진영: 타우루스 대가문<br>스파크: 1500</font>'
+! JO9 MOD END J9M2460
+$hero_difficulty[121] = '<font color="#0000CD">일반 난이도</font>'
+$master_version_stats[121] = {
+master_str = 3
+master_cha = 3
+master_style = 3
+master_libido = 2
+master_energy = 3
+master_tutor = 2
+master_fighter = 1
+master_butler = 3
+master_artdirector = 2
+master_medic = 3
+master_mage = 1
+master_torture = 2
+master_domination = 2
+master_bondage = 2
+master_flagelation = 2
+master_petting = 1
+master_oral = 2
+master_penetration = 2
+master_fetish = 3
+female["boobs"] = 3
+female["breast_enchanced"] = 0
+female_virginity = 2
+female["age"] = 0
+$master_armor = 'плейт'
+$master_cloth = 'regal_suit'
+$master_right_wpn = 'кинжал'
+sparks = 1500
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 1
+faction_fame['korvus'] = 0
+faction_fame['kamira'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+
+$sepia_ava_path[122] = 'content\pic\master\master_victoria_sepia.png'
+$clear_ava_path[122] = 'content\pic\master\master_victoria.png'
+$master_base_name[122] = '빅토리아'
+$hero_description[122] = '<font size= 5%> 빅토리아는 성 베드로 아카데미에서 의학과 심리학을 우등으로 졸업했다. 하지만 그녀는 바티칸 수련생들에게 강요되는 엄격한 금지와 결핍을 분명 견딜 생각이 없었고, 프리랜서가 되었다. 유망한 전문가는 즉시 노예상 길드의 두 팔 벌린 환영을 받았다. 그리고 그녀의 작업 첫 결실은 오래지 않아 나타났다... 빅토리아의 개인 및 집단 훈련은 살아 있는 상품 판매자들 사이에서 빠르게 인기를 끌었고, 팀 분위기도 눈에 띄게 좋아지기 시작했다. 하지만 길드 수뇌부가 빅토리아가 작업에 적극적으로 사용하던 방법들을 알게 되자, 더는 기뻐할 이유가 남지 않았다. 그래도 이 만족 모르는 여자에게는 여전히 개선의 기회가 주어졌고, 노예 조련사로서 자기 음탕한 본성을 가라앉힐 기회도 주어졌다. 하지만 정작 빅토리아 자신에게 그게 필요할까?! 그녀는 계속해서 자기 "더러운" 환상과 욕망을 태연하게 현실로 옮길 수 있다. 게다가 그녀가 가장 좋아하는 가운도 곁에 남았고, 섹스 토이의 선택지도 훨씬 풍부해졌으니까...' + _
+'<br>진영: 타우루스 대가문<br>스파크: 2000</font>'
+$hero_difficulty[122] = '<font color="#0000CD">일반 난이도</font>'
+$master_version_stats[122] = {
+master_str = 2
+master_cha = 1
+master_style = 4
+master_libido = 5
+master_energy = 4
+master_tutor = 1
+master_fighter = 0
+master_butler = 2
+master_artdirector = 2
+master_medic = 4
+master_mage = 1
+master_torture = 0
+master_domination = 2
+master_bondage = 1
+master_flagelation = 0
+master_petting = 4
+master_oral = 5
+master_penetration = 4
+master_fetish = 2
+female["boobs"] = 2
+female["breast_enchanced"] = 0
+female_virginity = 3
+female["age"] = 0
+$master_armor = 'без_брони'
+$master_cloth = 'medic_robes'
+$master_right_wpn = 'глушилка'
+sparks = 2000
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 1
+faction_fame['korvus'] = 0
+faction_fame['kamira'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+
+$sepia_ava_path[123] = 'content\pic\master\master_natalia_sepia.png'
+$clear_ava_path[123] = 'content\pic\master\master_natalia.png'
+$master_base_name[123] = '나타샤'
+$hero_description[123] = '<font size= 5%> 나타샤 같은 여자는 "젖꼭지"라고 불린다. 어느 시점까지 그녀의 능숙한 입술은 한 "VIP 설탕 아빠"를 자신 있게 쥐어짰다. 그 덕분에 나타샤는 꽤나 안락한 삶까지 누릴 수 있었다. 하지만 그러다 후원자는 자기에게 질린 장난감에 흥미를 잃었다. 그리고 어느 좋은 날, 그 "설탕 아빠"는 그녀를 그냥 치워 버렸고, 사채업자와 수지맞는 거래까지 해 버렸다. 그렇게 나타샤는 설탕 아빠들의 삶 이면을 알게 되었다. 이제 그녀는 편하게 살기 위해서가 아니라, 자기에게 덮인 거액의 빚을 제때, 추가 문제 없이 갚기 위해 성실하게 빤다... 나타샤는 한 번의 성공적인 블로우잡을 했다. 이제 그녀는 입으로만이 아니라 노예를 팔아서도 스파크를 모을 수 있다. 물론 그러려면 우선 노예들을 어떻게든 다루는 법부터 배워야 하고, 그다음엔 팔 시장도 찾아야 한다. 그 깡패 새끼와 엮이려는 사람은 많지 않지만, 카운터는 계속 올라간다...' + _
+'<br>진영: 무소속 <br><font color="#cd0000">빚: 10,000 스파크</font> <br> 스파크: 500</font>'
+$hero_difficulty[123] = '<font color="#cd0000">최대 난이도</font>'
+$master_version_stats[123] = {
+master_str = 3
+master_cha = 2
+master_style = 3
+master_libido = 3
+master_energy = 4
+master_tutor = 1
+master_fighter = 0
+master_butler = 3
+master_artdirector = 2
+master_medic = 1
+master_mage = 0
+master_torture = 0
+master_domination = 0
+master_bondage = 0
+master_flagelation = 0
+master_petting = 2
+master_oral = 4
+master_penetration = 2
+master_fetish = 0
+female["boobs"] = 2
+female["breast_enchanced"] = 0
+female_virginity = 2
+female["age"] = 2
+$master_armor = 'без_брони'
+$master_cloth = 'formal_suit'
+$master_right_wpn = ''
+sparks = 500
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 0
+faction_fame['korvus'] = 0
+faction_fame['kamira'] = 0
+debt = 0
+debt_count = 0
+debt_history = 4
+master_vampire = 0
+}
+
+$sepia_ava_path[124] = 'content\pic\master\master_nadya_sepia.png'
+$clear_ava_path[124] = 'content\pic\master\master_nadya.png'
+$master_base_name[124] = '나디아'
+! JO9 MOD START J9M2459 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$hero_description[124] = '<font size= 4%> 나디아는 길드의 단골 방문객이었다. 하지만 이번에는, 바로 어제, 그 고급 창녀는 딱딱한 비즈니스 수트를 입고 있었고, 그녀의 방문 목적도 또 다른 VIP 손님을 상대하는 것이 전혀 아니었다... <b>안젤리카</b>: "신사 숙녀 여러분, 여러분의 새 동료 나디야를 소개하겠다. 부디 아끼고 잘 대해 줘!..." <b>잭</b>: "이게 농담이냐, 안젤리카? 등불 거리의 창녀가 이제 우리 동료라고?!... 내가 그걸 어떻게 믿으라는 거지?!..." <b>안젤리카</b>: "가서 보스한테 물어봐, 잭! 이건 그분 명령이야. 아니면 차라리, 그분이 아끼던 걸레가 이제 더는 창녀가 아니라 노예 상인이 됐다는 사실이나 받아들여..." <b>나디야</b>: "당신들한테서 딱 이런 반응이 나올 줄 알았어, ... 동료들. 하지만 난 내 최고의 자질을 모두 보여 주고, 내가 노예 상인이라는 칭호에 어울린다는 걸 증명해 보이겠어!..." <b>잭</b>: "네 최고의 자질이야 이미 우리도 아주 잘 알고 있지. 하지만 이제 네가 우리 편에 들어왔으니, 더 가까운 자리에서 친분을 다져 보는 게 좋겠군!... 그러는 김에 몸도 좀 보여 줘, 동료!..." <b>안젤리카</b>: "길드에 온 걸 환영한다, 아가씨! 흐음!..." <b>나디야</b>: "아직 세세한 일은 전부 파고들진 못했지만, 벌써 이 새 일자리가 마음에 들어!..." <i> 나디야의 옷은 순식간에 바닥으로 떨어졌다. 갓 노예 상인이 된 그녀는 탁자 위에서 환영의 자세를 취했고, 거의 즉시 열두 남자가 둘러싼 원의 한가운데에 놓였다. </i> <b>나디야</b>: "와우!... 우리 잘 지낼 수 있을 것 같네, 동료들!... ... 아아아!... 아아아앗!... 음음음!..."' + _
+'<br>세력: 무소속 <br>스파크: 500</font>'
+! JO9 MOD END J9M2459
+$hero_difficulty[124] = '<font color="#cd0000">최대 난이도</font>'
+$master_version_stats[124] = {
+master_str = 2
+master_cha = 1
+master_style = 1
+master_libido = 3
+master_energy = 3
+master_tutor = 0
+master_fighter = 0
+master_butler = 1
+master_artdirector = 1
+master_medic = 1
+master_mage = 0
+master_torture = 0
+master_domination = 0
+master_bondage = 0
+master_flagelation = 0
+master_petting = 3
+master_oral = 3
+master_penetration = 3
+master_fetish = 1
+female["boobs"] = 2
+female["breast_enchanced"] = 0
+female_virginity = 2
+female["age"] = 2
+$master_armor = 'без_брони'
+$master_cloth = 'formal_suit'
+$master_right_wpn = ''
+sparks = 500
+faction_fame['serpis'] = 0
+faction_fame['taurus'] = 0
+faction_fame['korvus'] = 0
+faction_fame['kamira'] = 0
+debt = 0
+debt_count = 0
+debt_history = 0
+master_vampire = 0
+}
+
+
+!Other trainers
+$trainer_id[1] = 'mistress_angelika'
+$trainer_id[2] = 'goji'
+$trainer_id[3] = 'avgia'
+$trainer_id[4] = 'marivana'
+$trainer_id[5] = 'jeevs'
+$trainer_id[6] = 'master_s'
+$trainer_id[7] = 'morrigan'
+$trainer_id[8] = 'ippolita'
+$trainer_id[9] = 'von_valtz'
+$trainer_id[10] = 'geralt'
+$trainer_id[11] = 'yodson'
+$trainer_id[12] = 'applejack'
+$trainer_id[13] = 'giess'
+$trainer_id[14] = 'ling'
+$trainer_id[15] = 'minosia'
+$trainer_id[16] = 'rabban'
+$trainer_id[17] = 'sheepherd'
+
+$base_slave_type[1] = 'refferent'
+$base_slave_type[2] = '애완 포니걸'
+$base_slave_type[3] = '치유술사'
+$base_slave_type[4] = '하인'
+$base_slave_type[5] = '여검투사'
+$base_slave_type[6] = '예술가'
+$base_slave_type[7] = '첩'
+$base_slave_type[8] = '젖소'
+
+trainer_rating[''] = 1
+trainer_refferent_rating[''] = 0
+trainer_pet_rating[''] = 0
+trainer_nurse_rating[''] = 0
+trainer_maid_rating[''] = 0
+trainer_gladiatrix_rating[''] = 0
+trainer_alchemy_rating[''] = 0
+trainer_enchanter_rating[''] = 0
+trainer_artist_rating[''] = 0
+trainer_concubine_rating[''] = 0
+trainer_cowSK_rating[''] = 0
+
+$npc_name['госпожа_ангелика'] = '여주인 안젤리카'
+$npc_status['госпожа_ангелика'] = '노예상인 길드 마스터<br>중립파'
+$npc_image['госпожа_ангелика'] = 'mistress_angelika'
+$npc_info['госпожа_ангелика'] = '   이 여인에게 내 길드 입단의 최종 결정이 달린 것 같다. 아마 이것도 형식적인 절차일 뿐이겠지만, 경계를 늦추지 않는 편이 좋다. 그녀는 약함을 용서하지 않고 이웃의 고통을 즐기는 사람처럼 보인다…<br>' + _
+'   씨발?! 완전 개같은 년처럼 생겼는데, 섹시하긴 하다.'
+npc_attitude['госпожа_ангелика'] = 11
+
+$npc_image['mistress_angelika'] = 'mistress_angelika'
+$npc_name['mistress_angelika'] = '여주인 안젤리카'
+$npc_status['mistress_angelika'] = '노예상인 길드 마스터<br>중립파'
+$npc_alignment['mistress_angelika'] = 'нейтралы'
+$npc_info['mistress_angelika'] = '   옛 친구이자 선생님. 개같은 년처럼 보이긴 하지만, 전문 지배형 미스트리스라는 직업을 생각하면 그럴 만도 하다… 이런 일은 여자의 성격을 망쳐 놓는다. 사실은 꽤 괜찮은 사람이다.'
+npc_attitude['mistress_angelika'] = 11
+npc_reveal['mistress_angelika'] = 0
+
+$npc_preferences['mistress_angelika'] = {
+	stat_importance['service'] = 2
+	stat_importance['cook'] = 3
+}
+$buyer_demand['mistress_angelika'] = {
+	demand['min_stamina'] = 4
+}
+trainer_rating['mistress_angelika'] = 5
+trainer_refferent_rating['mistress_angelika'] = 4
+trainer_pet_rating['mistress_angelika'] = 4
+trainer_nurse_rating['mistress_angelika'] = 4
+trainer_maid_rating['mistress_angelika'] = 4
+trainer_gladiatrix_rating['mistress_angelika'] = 4
+trainer_alchemy_rating['mistress_angelika'] = 4
+trainer_enchanter_rating['mistress_angelika'] = 4
+trainer_artist_rating['mistress_angelika'] = 4
+trainer_concubine_rating['mistress_angelika'] = 4
+trainer_cowSK_rating['mistress_angelika'] = 4
+
+$npc_name['goji'] = '마스터 고주'
+trainer_rating['goji'] = 5
+trainer_refferent_rating['goji'] = 4
+trainer_pet_rating['goji'] = 0
+trainer_nurse_rating['goji'] = 3
+trainer_maid_rating['goji'] = 4
+trainer_gladiatrix_rating['goji'] = 0
+trainer_alchemy_rating['goji'] = 0
+trainer_enchanter_rating['goji'] = 0
+trainer_artist_rating['goji'] = 3
+trainer_concubine_rating['goji'] = 4
+trainer_cowSK_rating['goji'] = 0
+
+$npc_name['avgia'] = '미스트리스 아우게아스'
+trainer_rating['avgia'] = 4
+trainer_refferent_rating['avgia'] = 0
+trainer_pet_rating['avgia'] = 4
+trainer_nurse_rating['avgia'] = 3
+trainer_maid_rating['avgia'] = 2
+trainer_gladiatrix_rating['avgia'] = 0
+trainer_alchemy_rating['avgia'] = 0
+trainer_enchanter_rating['avgia'] = 0
+trainer_artist_rating['avgia'] = 2
+trainer_concubine_rating['avgia'] = 3
+trainer_cowSK_rating['avgia'] = 4
+
+$npc_name['marivana'] = '미스트리스 마리반나'
+trainer_rating['marivana'] = 4
+trainer_refferent_rating['marivana'] = 4
+trainer_pet_rating['marivana'] = 3
+trainer_nurse_rating['marivana'] = 4
+trainer_maid_rating['marivana'] = 3
+trainer_gladiatrix_rating['marivana'] = 3
+trainer_alchemy_rating['marivana'] = 3
+trainer_enchanter_rating['marivana'] = 3
+trainer_artist_rating['marivana'] = 3
+trainer_concubine_rating['marivana'] = 0
+trainer_cowSK_rating['marivana'] = 2
+
+$npc_name['jeevs'] = '마스터 지브스'
+trainer_rating['jeevs'] = 4
+trainer_refferent_rating['jeevs'] = 4
+trainer_pet_rating['jeevs'] = 3
+trainer_nurse_rating['jeevs'] = 3
+trainer_maid_rating['jeevs'] = 4
+trainer_gladiatrix_rating['jeevs'] = 0
+trainer_alchemy_rating['jeevs'] = 0
+trainer_enchanter_rating['jeevs'] = 0
+trainer_artist_rating['jeevs'] = 3
+trainer_concubine_rating['jeevs'] = 3
+trainer_cowSK_rating['jeevs'] = 2
+
+$npc_name['master_s'] = '교수 S'
+trainer_rating['master_s'] = 4
+trainer_refferent_rating['master_s'] = 3
+trainer_pet_rating['master_s'] = 0
+trainer_nurse_rating['master_s'] = 3
+trainer_maid_rating['master_s'] = 3
+trainer_gladiatrix_rating['master_s'] = 0
+trainer_alchemy_rating['master_s'] = 4
+trainer_enchanter_rating['master_s'] = 4
+trainer_artist_rating['master_s'] = 0
+trainer_concubine_rating['master_s'] = 3
+trainer_cowSK_rating['master_s'] = 0
+
+$npc_name['morrigan'] = '미스트리스 모리건'
+trainer_rating['morrigan'] = 3
+trainer_refferent_rating['morrigan'] = 3
+trainer_pet_rating['morrigan'] = 3
+trainer_nurse_rating['morrigan'] = 3
+trainer_maid_rating['morrigan'] = 3
+trainer_gladiatrix_rating['morrigan'] = 3
+trainer_alchemy_rating['morrigan'] = 3
+trainer_enchanter_rating['morrigan'] = 3
+trainer_artist_rating['morrigan'] = 3
+trainer_concubine_rating['morrigan'] = 0
+trainer_cowSK_rating['morrigan'] = 3
+
+$npc_name['ippolita'] = '미스트리스 히폴리투스'
+trainer_rating['ippolita'] = 3
+trainer_refferent_rating['ippolita'] = 0
+trainer_pet_rating['ippolita'] = 4
+trainer_nurse_rating['ippolita'] = 3
+trainer_maid_rating['ippolita'] = 0
+trainer_gladiatrix_rating['ippolita'] = 3
+trainer_alchemy_rating['ippolita'] = 0
+trainer_enchanter_rating['ippolita'] = 0
+trainer_artist_rating['ippolita'] = 0
+trainer_concubine_rating['ippolita'] = 3
+trainer_cowSK_rating['ippolita'] = 3
+
+$npc_name['von_valtz'] = '마스터 폰 발츠'
+trainer_rating['von_valtz'] = 3
+trainer_refferent_rating['von_valtz'] = 3
+trainer_pet_rating['von_valtz'] = 0
+trainer_nurse_rating['von_valtz'] = 0
+trainer_maid_rating['von_valtz'] = 3
+trainer_gladiatrix_rating['von_valtz'] = 0
+trainer_alchemy_rating['von_valtz'] = 0
+trainer_enchanter_rating['von_valtz'] = 0
+trainer_artist_rating['von_valtz'] = 4
+trainer_concubine_rating['von_valtz'] = 0
+trainer_cowSK_rating['von_valtz'] = 0
+
+$npc_name['geralt'] = '마스터 게랄트'
+trainer_rating['geralt'] = 3
+trainer_refferent_rating['geralt'] = 0
+trainer_pet_rating['geralt'] = 0
+trainer_nurse_rating['geralt'] = 2
+trainer_maid_rating['geralt'] = 0
+trainer_gladiatrix_rating['geralt'] = 4
+trainer_alchemy_rating['geralt'] = 2
+trainer_enchanter_rating['geralt'] = 2
+trainer_artist_rating['geralt'] = 0
+trainer_concubine_rating['geralt'] = 2
+trainer_cowSK_rating['geralt'] = 0
+
+$npc_name['yodson'] = '마스터 요드슨'
+trainer_rating['yodson'] = 3
+trainer_refferent_rating['yodson'] = 2
+trainer_pet_rating['yodson'] = 2
+trainer_nurse_rating['yodson'] = 2
+trainer_maid_rating['yodson'] = 2
+trainer_gladiatrix_rating['yodson'] = 2
+trainer_alchemy_rating['yodson'] = 2
+trainer_enchanter_rating['yodson'] = 2
+trainer_artist_rating['yodson'] = 2
+trainer_concubine_rating['yodson'] = 3
+trainer_cowSK_rating['yodson'] = 1
+
+$npc_name['applejack'] = '미스트리스 애플잭'
+trainer_rating['applejack'] = 2
+trainer_refferent_rating['applejack'] = 0
+trainer_pet_rating['applejack'] = 3
+trainer_nurse_rating['applejack'] = 2
+trainer_maid_rating['applejack'] = 0
+trainer_gladiatrix_rating['applejack'] = 3
+trainer_alchemy_rating['applejack'] = 0
+trainer_enchanter_rating['applejack'] = 0
+trainer_artist_rating['applejack'] = 0
+trainer_concubine_rating['applejack'] = 2
+trainer_cowSK_rating['applejack'] = 2
+
+$npc_name['giess'] = '마스터 기스'
+trainer_rating['giess'] = 2
+trainer_refferent_rating['giess'] = 0
+trainer_pet_rating['giess'] = 3
+trainer_nurse_rating['giess'] = 3
+trainer_maid_rating['giess'] = 3
+trainer_gladiatrix_rating['giess'] = 2
+trainer_alchemy_rating['giess'] = 2
+trainer_enchanter_rating['giess'] = 2
+trainer_artist_rating['giess'] = 2
+trainer_concubine_rating['giess'] = 3
+trainer_cowSK_rating['giess'] = 2
+
+$npc_name['ling'] = '마스터 링 바오'
+trainer_rating['ling'] = 2
+trainer_refferent_rating['ling'] = 0
+trainer_pet_rating['ling'] = 2
+trainer_nurse_rating['ling'] = 0
+trainer_maid_rating['ling'] = 0
+trainer_gladiatrix_rating['ling'] = 3
+trainer_alchemy_rating['ling'] = 2
+trainer_enchanter_rating['ling'] = 2
+trainer_artist_rating['ling'] = 2
+trainer_concubine_rating['ling'] = 2
+trainer_cowSK_rating['ling'] = 1
+
+$npc_name['minosia'] = '미스트리스 미노스'
+trainer_rating['minosia'] = 2
+trainer_refferent_rating['minosia'] = 0
+trainer_pet_rating['minosia'] = 2
+trainer_nurse_rating['minosia'] = 0
+trainer_maid_rating['minosia'] = 0
+trainer_gladiatrix_rating['minosia'] = 3
+trainer_alchemy_rating['minosia'] = 0
+trainer_enchanter_rating['minosia'] = 0
+trainer_artist_rating['minosia'] = 0
+trainer_concubine_rating['minosia'] = 2
+trainer_cowSK_rating['minosia'] = 1
+
+$npc_name['rabban'] = '야수 라반'
+trainer_rating['rabban'] = 1
+trainer_refferent_rating['rabban'] = 0
+trainer_pet_rating['rabban'] = 0
+trainer_nurse_rating['rabban'] = 0
+trainer_maid_rating['rabban'] = 2
+trainer_gladiatrix_rating['rabban'] = 3
+trainer_alchemy_rating['rabban'] = 0
+trainer_enchanter_rating['rabban'] = 0
+trainer_artist_rating['rabban'] = 0
+trainer_concubine_rating['rabban'] = 2
+trainer_cowSK_rating['rabban'] = 0
+
+$npc_name['sheepherd'] = '마스터 셰퍼드'
+trainer_rating['sheepherd'] = 1
+trainer_refferent_rating['sheepherd'] = 0
+trainer_pet_rating['sheepherd'] = 2
+trainer_nurse_rating['sheepherd'] = 0
+trainer_maid_rating['sheepherd'] = 2
+trainer_gladiatrix_rating['sheepherd'] = 2
+trainer_alchemy_rating['sheepherd'] = 0
+trainer_enchanter_rating['sheepherd'] = 0
+trainer_artist_rating['sheepherd'] = 0
+trainer_concubine_rating['sheepherd'] = 2
+trainer_cowSK_rating['sheepherd'] = 1
+
+------------ #masters_base ------------

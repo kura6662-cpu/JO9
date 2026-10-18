@@ -1,0 +1,1886 @@
+# interaction_result
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M0015 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'interaction_result': gs 'snk_room_bridge', 'guard', 'interaction_result'
+! JO9 MOD END J9M0015
+
+if first_visit['interaction_result'] = 0:
+	first_visit['interaction_result'] = 1 &! do-once
+
+	killvar '$master_slave_interaction_types'
+	killvar '$master_assistant_interaction_types'
+	killvar '$master_prisoner_interaction_types'
+	!도나이식
+	killvar '$master_room1_interaction_types'	
+	killvar '$master_room2_interaction_types'	
+	killvar '$master_room3_interaction_types'	
+	killvar '$master_room4_interaction_types'
+	killvar '$master_cow_interaction_types'
+	killvar '$other_interaction_types'
+	killvar '$ignored_interaction_types'
+	
+
+	! list of interaction types that involve master and slave
+	$master_slave_interaction_types[] = 'talk'
+	$master_slave_interaction_types[] = 'abuse'
+	$master_slave_interaction_types[] = 'get_drug'
+	$master_slave_interaction_types[] = 'make_slave_do'
+	$master_slave_interaction_types[] = 'master_teaches_slave'
+	$master_slave_interaction_types[] = 'self_sex_lesson'
+	$master_slave_interaction_types[] = 'self_sex_lesson_special'
+	$master_slave_interaction_types[] = 'compliment'
+	$master_slave_interaction_types[] = 'praise_date'
+	$master_slave_interaction_types[] = 'present'
+	$master_slave_interaction_types[] = 'praise_erotic'
+	$master_slave_interaction_types[] = 'praise_sweets'
+	$master_slave_interaction_types[] = 'rest'
+	$master_slave_interaction_types[] = 'present_torture' &! showing torture equipment to slave
+	$master_slave_interaction_types[] = 'torture' &! involves master and slave but skilled master uses half-action (handled by $master_energy_drop)
+	$master_slave_interaction_types[] = 'rape'
+	$master_slave_interaction_types[] = 'branding'
+	$master_slave_interaction_types[] = 'execution'
+	$master_slave_interaction_types[] = 'chestbuster'
+	$master_slave_interaction_types[] = 'milking_slave'
+	$master_slave_interaction_types[] = 'lecture_slave'
+
+	! list of interaction types that involve master and assistant
+	$master_assistant_interaction_types[] = 'get_drug_assistant'
+	$master_assistant_interaction_types[] = 'master_teaches_assistant'
+	$master_assistant_interaction_types[] = 'make_assistant_do'
+	$master_assistant_interaction_types[] = 'self_sex_lesson_assistant'
+	$master_assistant_interaction_types[] = 'milking_assistant'
+	$master_assistant_interaction_types[] = 'talk_assistant'
+	$master_assistant_interaction_types[] = 'lecture_assistant'
+	$master_assistant_interaction_types[] = 'abuse_assistant'
+	$master_assistant_interaction_types[] = 'torture_assistant'
+	$master_assistant_interaction_types[] = 'assistant_compliment'
+	$master_assistant_interaction_types[] = 'assistant_prise_erotic'
+	$master_assistant_interaction_types[] = 'assistant_prise_date'
+	$master_assistant_interaction_types[] = 'assistant_rest'
+	$master_assistant_interaction_types[] = 'assistant_prise_date'
+
+	! list of interaction types that involve master and prisoner
+	$master_prisoner_interaction_types[] = 'make_prisoner_do'
+	$master_prisoner_interaction_types[] = 'rape_prisoner'
+	$master_prisoner_interaction_types[] = 'milking_prisoner'
+
+	! list of interaction types that involve master and cow
+	$master_cow_interaction_types[] = 'milking_cow'
+	$master_cow_interaction_types[] = 'impregnate_cow'
+
+	! list of interaction types that confound one-size-fits-all treatment
+	$other_interaction_types[] = 'spell_cast' &! involves master and possibly slave or assistant (auspex)
+	$other_interaction_types[] = 'make_slave_assistant_do' &! involves slave and assistant and possibly master
+	$other_interaction_types[] = 'assistant_teaches_slave' &! involves assistant and slave, no master
+	$other_interaction_types[] = 'coach_teaches_slave' &! involves slave only
+	$other_interaction_types[] = 'school_class' &! involves slave and either assistant or master as escort
+	$other_interaction_types[] = 'prisoner_torture' &! involves master, prisoner and slave (as observer)
+	$other_interaction_types[] = 'milking_farmhand' &! involves farmhand and slave
+	$other_interaction_types[] = 'cow_insemination' &! involves cow and anonymous npcs
+	$other_interaction_types[] = 'completed' &! does not increment interaction counters
+	$other_interaction_types[] = 'competition'
+	$other_interaction_types[] = 'make_slave_assistant_do'
+	$other_interaction_types[] = 'reward_special'
+	$other_interaction_types[] = 'prise_date'
+	
+	!도나이식
+	$master_room1_interaction_types[] = 'make_room1_do'	
+	$master_room2_interaction_types[] = 'make_room2_do'	
+	$master_room3_interaction_types[] = 'make_room3_do'	
+	$master_room4_interaction_types[] = 'make_room4_do'			
+	$master_room1_interaction_types[] = 'milking_room1'	
+	$master_room2_interaction_types[] = 'milking_room2'	
+	$master_room3_interaction_types[] = 'milking_room3'	
+	$master_room4_interaction_types[] = 'milking_room4'	
+
+	! list of interaction types that are ignored in this location, but are handled in interaction_screen
+	$ignored_interaction_types[] = 'basic'
+	$ignored_interaction_types[] = 'special'
+	$ignored_interaction_types[] = 'special_png'
+	$ignored_interaction_types[] = 'special_talk'
+
+	$dyn_interaction_result_extras = {
+		if sex_quality > 0:
+			sex_quality = max(1, min(interaction_dynslave['diligence'], sex_quality)) &! sex_quality [1,5] cannot exceed diligence
+			if dynslave_state = CONST_INT['slave_faint']: sex_quality = 1 &! unconscious slaves cannot apply their skills to improve sex quality for the master - ImperatorAugustus
+		end
+
+		if interaction_dynslave['res'] >= 0 and interaction_dynslave['diligence'] > 0 and $interaction_type ! 'talk' and $interaction_type ! 'abuse': dynslave_rate['custom'] += 1 &! obedience is habit-forming
+
+		! when compelled by Domini Dictum to do things the slave does not want to do, angst rate increases proportionally
+		if interaction_dynslave['res'] < 0 and dynslave['domini_dictum'] = 1:
+			dynslave_rate['angst'] -= interaction_dynslave['res']
+			interaction_dynslave['res'] = 0 &! Domini Dictum guarantees obedience
+			$dynslave_psy_status = 'reluctant' &! for better text selection
+		end
+
+		! increase applicable trait xp, reveal applicable hidden traits, apply moodlets, adjust sex skill training difficulty based on applicable traits, and clear pain threat if appropriate
+		if interaction_dynslave['res'] >= 0:
+			if orgastic > 0:
+				if dynslave['nymphomania'] < 0: rise_mod += -2
+				if dynslave['nymphomania'] = 2: rise_mod += 2
+				if dynslave['nymphomania_revealed'] = 0 and 'dynslave' = $interaction_partner: dynslave['nymphomania_revealed'] = 1
+				! xp is gained from orgasms
+			end
+			if painful > 0:
+				if dynslave['masochism'] < 0: rise_mod += -2
+				if dynslave['masochism'] = 2: rise_mod += 2
+				if dynslave['masochism_revealed'] = 0 and 'dynslave' = $interaction_partner: dynslave['masochism_revealed'] = 1
+				if dynslave['masochism'] ! 2: dynslave['neg_pain'] = max(dynslave['neg_pain'], min(torture_intensity, dynslave['sensitivity']))
+				dynslave['masochism_xp'] += 1
+				dynslave['threat_pain'] = 0 &! fulfills threat if one was made - ImperatorAugustus
+			end
+			if shameful > 0:
+				if dynslave['exhibitionism'] < 0: rise_mod += -2
+				if dynslave['exhibitionism'] = 2: rise_mod += 2
+				if dynslave['exhibitionism_revealed'] = 0 and 'dynslave' = $interaction_partner: dynslave['exhibitionism_revealed'] = 1
+				if dynslave['exhibitionism'] ! 2: dynslave['neg_shame'] = max(dynslave['neg_shame'], min(torture_intensity, dynslave['sensitivity']))
+				dynslave['exhibitionism_xp'] += 1
+				if torture_succeeded > 0 and difficulty_setting = 2 and dynslave['pride'] > 2: dynslave_rate['pride'] -= 2*torture_intensity &! only for hardcore obedience difficulty, otherwise it is handled in $dyn_torture_result
+			end
+			if disgusting > 0:
+				if dynslave['perversion'] < 0: rise_mod += -2
+				if dynslave['perversion'] = 2: rise_mod += 2
+				if dynslave['perversion_revealed'] = 0 and 'dynslave' = $interaction_partner: dynslave['perversion_revealed'] = 1
+				if dynslave['perversion'] ! 2: dynslave['neg_disgust'] = max(dynslave['neg_disgust'], min(torture_intensity, dynslave['sensitivity']))
+				dynslave['perversion_xp'] += 1
+				if torture_succeeded > 0 and difficulty_setting = 2 and dynslave['pride'] > 2: dynslave_rate['pride'] -= 2*torture_intensity &! only for hardcore obedience difficulty, otherwise it is handled in $dyn_torture_result
+			end
+			if abuse > 0:
+				if dynslave['abuse_attitude'] < 0: rise_mod += -2
+				if dynslave['abuse_attitude'] = 2: rise_mod += 2
+				if dynslave['abuse_attitude_revealed'] = 0 and 'dynslave' = $interaction_partner: dynslave['abuse_attitude_revealed'] = 1
+				if dynslave['abuse_attitude'] ! 2: dynslave['neg_abuse'] = max(dynslave['neg_abuse'], min(torture_intensity, dynslave['sensitivity']))
+				dynslave['abuse_xp'] += 1
+			end
+			if lesbian > 0:
+				if dynslave['homosexualism'] < 0: rise_mod += -2
+				if dynslave['homosexualism'] = 2: rise_mod += 2
+				if dynslave['homosexualism_revealed'] = 0 and 'dynslave' = $interaction_partner: dynslave['homosexualism_revealed'] = 1
+				if dynslave['homosexualism'] ! 2: dynslave['neg_disgust'] = max(dynslave['neg_disgust'], min(torture_intensity, dynslave['sensitivity']))
+				dynslave['lesbian_xp'] += 1
+			end
+			if bloody > 0:
+				if dynslave['blood_attitude'] < 0: rise_mod += -2
+				if dynslave['blood_attitude'] = 2: rise_mod += 2
+				if dynslave['blood_attitude_revealed'] = 0 and 'dynslave' = $interaction_partner: dynslave['blood_attitude_revealed'] = 1
+				if dynslave['blood_attitude'] ! 2: dynslave['neg_disgust'] = max(dynslave['neg_disgust'], min(torture_intensity, dynslave['sensitivity']))
+				dynslave['blood_xp'] += 1
+			end
+			if darkness > 0:
+				if dynslave['darkness_attitude'] < 0: rise_mod += -2
+				if dynslave['darkness_attitude'] = 2: rise_mod += 2
+				if dynslave['darkness_attitude_revealed'] = 0 and 'dynslave' = $interaction_partner: dynslave['darkness_attitude_revealed'] = 1
+				if dynslave['darkness_attitude'] ! 2: dynslave['neg_disgust'] = max(dynslave['neg_disgust'], min(torture_intensity, dynslave['sensitivity']))
+				dynslave['darkness_xp'] += 1
+			end
+			if deprivation > 0:
+				if dynslave['deprivation_attitude'] < 0: rise_mod += -2
+				if dynslave['deprivation_attitude'] = 2: rise_mod += 2
+				if dynslave['deprivation_attitude_revealed'] = 0 and 'dynslave' = $interaction_partner: dynslave['deprivation_attitude_revealed'] = 1
+				if dynslave['deprivation_attitude'] ! 2: dynslave['neg_disgust'] = max(dynslave['neg_disgust'], min(torture_intensity, dynslave['sensitivity']))
+				dynslave['deprivation_xp'] += 1
+			end
+			if fire_based > 0:
+				if dynslave['fire_attitude'] < 0: rise_mod += -2
+				if dynslave['fire_attitude'] = 2: rise_mod += 2
+				if dynslave['fire_attitude_revealed'] = 0 and 'dynslave' = $interaction_partner: dynslave['fire_attitude_revealed'] = 1
+				if dynslave['fire_attitude'] ! 2: dynslave['neg_disgust'] = max(dynslave['neg_disgust'], min(torture_intensity, dynslave['sensitivity']))
+				dynslave['fire_xp'] += 1
+			end
+			if water_based > 0:
+				if dynslave['water_attitude'] < 0: rise_mod += -2
+				if dynslave['water_attitude'] = 2: rise_mod += 2
+				if dynslave['water_attitude_revealed'] = 0 and 'dynslave' = $interaction_partner: dynslave['water_attitude_revealed'] = 1
+				if dynslave['water_attitude'] ! 2: dynslave['neg_disgust'] = max(dynslave['neg_disgust'], min(torture_intensity, dynslave['sensitivity']))
+				dynslave['water_xp'] += 1
+			end
+			if vermin_based > 0:
+				if dynslave['vermin_attitude'] < 0: rise_mod += -2
+				if dynslave['vermin_attitude'] = 2: rise_mod += 2
+				if dynslave['vermin_attitude_revealed'] = 0 and 'dynslave' = $interaction_partner: dynslave['vermin_attitude_revealed'] = 1
+				if dynslave['vermin_attitude'] ! 2: dynslave['neg_disgust'] = max(dynslave['neg_disgust'], min(torture_intensity, dynslave['sensitivity']))
+				dynslave['vermin_xp'] += 1
+			end
+			!compassion is handled in the appropriate interactions - ImperatorAugustus
+		end &! end of res check
+	}
+end
+
+if arrcomp('$master_slave_interaction_types', $interaction_type) ! -1:
+	$interaction_partner = 'slave'
+elseif arrcomp('$master_assistant_interaction_types', $interaction_type) ! -1:
+	$interaction_partner = 'assistant'
+elseif arrcomp('$master_prisoner_interaction_types', $interaction_type) ! -1:
+	$interaction_partner = 'prisoner'
+elseif arrcomp('$master_cow_interaction_types', $interaction_type) ! -1:
+	$interaction_partner = 'cow'
+!도나이식
+elseif arrcomp('$master_room1_interaction_types', $interaction_type) ! -1:
+	$interaction_partner = 'room1'	
+elseif arrcomp('$master_room2_interaction_types', $interaction_type) ! -1:
+	$interaction_partner = 'room2'	
+elseif arrcomp('$master_room3_interaction_types', $interaction_type) ! -1:
+	$interaction_partner = 'room3'	
+elseif arrcomp('$master_room4_interaction_types', $interaction_type) ! -1:
+	$interaction_partner = 'room4'			
+elseif arrcomp('$other_interaction_types', $interaction_type) ! -1:
+	$interaction_partner = ''
+elseif arrcomp('$ignored_interaction_types', $interaction_type) ! -1:
+	$interaction_partner = ''
+else
+	msg '경고! 알 수 없는 interaction 타입 (<<interaction>>): ''<<$interaction_type>>''. 이것을 보고해 주십시오!'
+	$interaction_partner = ''
+end
+
+
+!consolidated pre-work for specific interactions
+dynamic $do_for_each_slave_in_list, '$dyn_sex_acceptance',    '$main_screen_slave_characters' &! fills in interaction_*['sex_acceptance']
+dynamic $do_for_each_slave_in_list, '$dyn_repulse_check',     '$main_screen_slave_characters' &! fills in interaction_*['res']
+dynamic $do_for_each_slave_in_list, '$dyn_diligence',         '$main_screen_slave_characters' &! fills in interaction_*['diligence']
+dynamic $do_for_each_slave_in_list, '$dyn_torture_phobia',    '$main_screen_slave_characters' &! fills in interaction_*['phobia']
+!intentionally not done here because it should be done after $special_part:  $dyn_erotic_stimulation
+
+if $interaction_partner ! '':
+	dynamic $replace($dyn_reward_potence, 'dyn'+'slave', $interaction_partner)   &! modifies interaction_reward_potence
+	if debug_interactions > 0: dynamic $replace({msg 'dynslave: $interaction_type (<<interaction>>) = <<$interaction_type>>, sex_acceptance = <<interaction_dynslave[''sex_acceptance'']>>, obedience = <<dynslave[''obedience'']>>, repulse = <<interaction_dynslave[''repulse'']>>, res = <<interaction_dynslave[''res'']>>, motivation_repulse = <<interaction_dynslave[''motivation_repulse'']>>, diligence = <<interaction_dynslave[''diligence'']>>, psy = <<$dynslave_psy_status>>, mood = <<dynslave[''mood'']>>, arousal = <<dynslave[''arousal'']>>, fear = <<dynslave[''fear'']>>, pride = <<dynslave[''pride'']>>, taming = <<dynslave[''instinct'']>>, habit = <<dynslave[''custom'']>>, awareness = <<dynslave[''rational'']>>, devotion = <<dynslave[''moral'']>>, today = <<dynslave_already_done_today[$str(interaction)]>>, recent = <<dynslave_already_done_recent[$str(interaction)]>>, total = <<dynslave_already_done_total[$str(interaction)]>>'}, 'dynslave', $interaction_partner)
+	dynamic $replace($dyn_interaction_result_extras, 'dyn'+'slave', $interaction_partner)
+elseif $interaction_type = "make_slave_assistant_do" or $interaction_type = "assistant_teaches_slave":
+	if debug_interactions > 0: dynamic $replace({msg 'dynslave: $interaction_type (<<interaction>>) = <<$interaction_type>>, sex_acceptance = <<interaction_dynslave[''sex_acceptance'']>>, obedience = <<dynslave[''obedience'']>>, repulse = <<interaction_dynslave[''repulse'']>>, res = <<interaction_dynslave[''res'']>>, motivation_repulse = <<interaction_dynslave[''motivation_repulse'']>>, diligence = <<interaction_dynslave[''diligence'']>>, psy = <<$dynslave_psy_status>>, mood = <<dynslave[''mood'']>>, arousal = <<dynslave[''arousal'']>>, fear = <<dynslave[''fear'']>>, pride = <<dynslave[''pride'']>>, taming = <<dynslave[''instinct'']>>, habit = <<dynslave[''custom'']>>, awareness = <<dynslave[''rational'']>>, devotion = <<dynslave[''moral'']>>, today = <<dynslave_already_done_today[$str(interaction)]>>, recent = <<dynslave_already_done_recent[$str(interaction)]>>, total = <<dynslave_already_done_total[$str(interaction)]>>'}, 'dynslave', 'slave')
+	dynamic $replace($dyn_interaction_result_extras, 'dyn'+'slave', 'slave')
+	dynamic $replace($dyn_interaction_result_extras, 'dyn'+'slave', 'assistant')
+elseif $interaction_type = "coach_teaches_slave" or _ 
+       $interaction_type = "school_class" or _ 
+       $interaction_type = "milking_farmhand" or _ 
+       $interaction_type = "cow_insemination":
+	if debug_interactions > 0: dynamic $replace({msg 'dynslave: $interaction_type (<<interaction>>) = <<$interaction_type>>, sex_acceptance = <<interaction_dynslave[''sex_acceptance'']>>, obedience = <<dynslave[''obedience'']>>, repulse = <<interaction_dynslave[''repulse'']>>, res = <<interaction_dynslave[''res'']>>, motivation_repulse = <<interaction_dynslave[''motivation_repulse'']>>, diligence = <<interaction_dynslave[''diligence'']>>, psy = <<$dynslave_psy_status>>, mood = <<dynslave[''mood'']>>, arousal = <<dynslave[''arousal'']>>, fear = <<dynslave[''fear'']>>, pride = <<dynslave[''pride'']>>, taming = <<dynslave[''instinct'']>>, habit = <<dynslave[''custom'']>>, awareness = <<dynslave[''rational'']>>, devotion = <<dynslave[''moral'']>>, today = <<dynslave_already_done_today[$str(interaction)]>>, recent = <<dynslave_already_done_recent[$str(interaction)]>>, total = <<dynslave_already_done_total[$str(interaction)]>>'}, 'dynslave', 'slave')
+	dynamic $replace($dyn_interaction_result_extras, 'dyn'+'slave', 'slave')
+end
+
+!handling templates
+
+! "OTHER" INTERACTION TYPE - MUST HANDLE ITS OWN INTERACTION COUNTERS AND ENERGY DROPS
+!interaction type - studying complete
+if $interaction_type = 'completed':
+	show_slave_fullimage = 1
+	$text[1] = 'Your slave has fully mastered this skill, and you’re unlikely to be able to teach her something new. Perhaps you should pay attention to the less developed aspects or just use her skills in practice.'
+end
+
+! "OTHER" INTERACTION TYPE - MUST HANDLE ITS OWN INTERACTION COUNTERS AND ENERGY DROPS
+!magic spells
+if $interaction_type = 'spell_cast':
+	!no sex_acceptance, repulse_check, or diligence for spellcasting - magic resistance and effectiveness use different formulas
+	if master_mage <= 0: spell_effectiveness = 1
+	if master_mage = 1:  spell_effectiveness = 2
+	if master_mage = 2:  spell_effectiveness = 4
+	if master_mage = 3:  spell_effectiveness = 6
+	if master_mage = 4:  spell_effectiveness = 8
+	if master_mage = 5:  spell_effectiveness = 10
+	if master_mage >= 6: spell_effectiveness = 12
+	! If randomness is wanted, uncomment the line below. -RedGreen3
+	!spell_effectiveness -= slave['ego'] + ((48271 * (slave_type + interaction)) mod 65537)/(63357/(1+slave['ego'])) &! against a slave with max ego, spells now have a chance to fail for all master mage skill levels except S++ - ImperatorAugustus
+	dynamic $replace("$text[1] = '<<$cast_spell[interaction]>>'", 'dyn'+'slave', 'slave') &! evaluate sub-expressions with substitution
+	dynamic $special_part
+	dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'slave') &! should be done after $special_part - ImperatorAugustus
+	$place = 'study'
+	$special_image[1] = 'magic.png'
+	if interaction ! menu_magna_magnifika:
+		! magna magnifika is self-cast on the master, not on a slave
+		slave_already_done_today[$str(interaction)] += 1
+		slave_already_done_total[$str(interaction)] += 1
+		slave_already_done_recent[$str(interaction)] += 1
+	end
+	if bull_ring_on = 0: master_half_action += 1
+	if silent_auto_cast = 1 and (interaction ! menu_sententia_veritas or spell_effectiveness > 0) and $return_lock = 'end_day_screen': gt $return_lock &! do not hide failed Sententia auto-cast - ImperatorAugustus
+end
+
+
+! "OTHER" INTERACTION TYPE - MUST HANDLE ITS OWN INTERACTION COUNTERS AND ENERGY DROPS
+!interaction type - order for slave and assistant - improved and fixed - crushboss (was used only for threesome [non-lesson] interaction, now also used for lesbian show - ImperatorAugustus)
+!requires slave_skill to be set by the corresponding interaction
+if $interaction_type = 'make_slave_assistant_do':
+	if interaction_slave['res'] < 0:
+		show_slave_fullimage = 1
+		$place = 'study'
+		dynamic $replace("$text[1] = '<<$refuse_txt>>'", 'dyn'+'slave', 'slave') &! evaluate sub-expressions with substitution
+		dynamic $sin_gained_now, 'slave'
+		interaction_no_auto_energy_drop = 1
+	elseif interaction_assistant['res'] < 0:
+		show_assistant_fullimage = 1
+		$place = 'study'
+		dynamic $replace("$text[1] = '<<$refuse_txt>>'", 'dyn'+'slave', 'assistant') &! evaluate sub-expressions with substitution
+		dynamic $sin_gained_now, 'assistant'
+		interaction_no_auto_energy_drop = 1
+	else
+! JO9 MOD START J9TP_ACTIVITY_DUAL | 2026-10-17_traits_personality
+gs 'jo9_traits_personality', 'activity', 'slave', 'work:' + $target_skill, 0
+gs 'jo9_traits_personality', 'activity', 'assistant', 'work:' + $target_skill, 0
+! JO9 MOD END J9TP_ACTIVITY_DUAL
+		dynamic $special_part
+		!update slave affinities, associated moodlets, and skills
+		if $target_affinity ! '':
+			if slave[$target_affinity] ! 0: slave[$target_affinity + '_revealed'] = max(1, slave[$target_affinity + '_revealed'])
+			!revealing assistant affinities is intentionally omitted here to avoid confusion because the messages refer to "slave" (TODO)
+			if slave[$target_affinity] > 0: slave['pos_job'] = max(slave['pos_job'], 2)
+			if slave[$target_affinity] < 0: slave['neg_job'] = max(slave['neg_job'], 2)
+			if assistant[$target_affinity] > 0: assistant['pos_job'] = max(assistant['pos_job'], 2)
+			if assistant[$target_affinity] < 0: assistant['neg_job'] = max(assistant['neg_job'], 2)
+		end
+		if slave_skill = 0:
+			dynamic $sin_gained_now, 'slave'
+			dynamic $sin_gained_now, 'assistant'
+		else
+			dynamic $virtue_gained_now, 'slave'
+			dynamic $virtue_gained_now, 'assistant'
+			!tutor_modifier += iif(master_mood < 0, 1 + master_tutor/2, iif(master_mood > 3, master_tutor + 1, master_tutor))
+			!dynamic $replace($dyn_skill_rise, 'dyn'+'slave', 'slave')
+			dynamic $replace($dyn_advance_sex_skills_nolesson, 'dyn'+'slave', 'slave'), 'noreset'
+			!tutor_modifier += iif(master_mood < 0, 1 + master_tutor/2, iif(master_mood > 3, master_tutor + 1, master_tutor))
+			!dynamic $replace($dyn_skill_rise, 'dyn'+'slave', 'assistant')
+			dynamic $replace($dyn_advance_sex_skills_nolesson, 'dyn'+'slave', 'assistant'), 'noreset'
+		end
+		dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'slave') &! should be done after $special_part and after $virtue_gained_now
+		dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'assistant') &! should be done after $special_part and after $virtue_gained_now
+		dynamic $slave_energy_drop
+		dynamic $assistant_energy_drop
+		!update master skills
+		if slave['ego'] >= master_domination: master_domination_rate += (skill_adv_mul * 1)
+		slave_already_done_today[$str(interaction)] += 1
+		slave_already_done_total[$str(interaction)] += 1
+		slave_already_done_recent[$str(interaction)] += 1
+		assistant_already_done_today[$str(interaction)] += 1
+		assistant_already_done_total[$str(interaction)] += 1
+		assistant_already_done_recent[$str(interaction)] += 1
+	end
+end
+
+
+! "OTHER" INTERACTION TYPE - MUST HANDLE ITS OWN INTERACTION COUNTERS AND ENERGY DROPS
+!interaction type - assistant lesson - improved and fixed - crushboss
+if $interaction_type = 'assistant_teaches_slave':
+	show_assistant_fullimage = 1
+	$text[1] = '  당신은 조수에게 당신의 노예와 훈련 세션을 진행하라고 명령한다. <<$assistant_name>>는 고개를 숙여 명령을 받고 떠난다. 얼마 뒤, 그녀는 수행한 훈련에 대한 상세한 보고를 들고 돌아온다.'
+	if interaction_slave['res'] < 0:
+! JO9 MOD START J9M0014 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+		$text[2] = '[<<$assistant_name>>]<br>&nbsp;<font color="#8B0A50"><<$slave_name>>가 저와 함께 일하려 하지 않습니다, 주인님. 아무리 애써도 제 말을 듣지 않습니다. 제가 주인님을 실망시켰고 어떤 벌도 달게 받겠습니다만, <<$slave_name>>도 벌을 받아야 합니다!</font>'
+! JO9 MOD END J9M0014
+		dynamic $sin_gained_now, 'assistant', 3
+		dynamic $sin_gained_now, 'slave' &! intentionally not capped - ImperatorAugustus
+	elseif assistant[$target_skill] <= slave[$target_skill] and (assistant[$target_skill] ! 5 or slave[$target_skill] ! 5):
+! JO9 MOD START J9M0013 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+		$text[1] = '[<<$assistant_name>>]<br>&nbsp;<<$slave_name>>는 그 과목에서 너무 잘 훈련되어 있어, 주인님, 이미 제 지식의 최고 수준에 도달해 있습니다.'
+! JO9 MOD END J9M0013
+		interaction_no_auto_energy_drop = 1
+	else
+		$text[2] = $assistant_lesson_diligence[interaction_slave["diligence"]]
+! JO9 MOD START J9TP_ACTIVITY_ASSISTED | 2026-10-17_traits_personality
+gs 'jo9_traits_personality', 'activity', 'slave', 'learn:' + $target_skill, 0
+gs 'jo9_traits_personality', 'activity', 'assistant', 'work:' + 'teach:' + $target_skill, 0
+! JO9 MOD END J9TP_ACTIVITY_ASSISTED
+		dynamic $special_part
+		if interaction_slave['diligence'] > 0 or slave['<<assistant["id"]>>'] <= acc_rel["bad1"] or assistant['<<slave["id"]>>'] <= acc_rel["bad1"]: 
+			tutor_modifier += iif(assistant['mood'] < 0, 1 + assistant['intellect']/2, iif(assistant['mood'] > 3, assistant['intellect'] + 1, assistant['intellect']))
+			dynamic $replace($dyn_skill_rise, 'dyn'+'slave', 'slave')
+			dynamic $virtue_gained_now, 'slave'
+		else
+			dynamic $sin_gained_now, 'slave'
+			slave['<<assistant["id"]>>'] -= 3
+			assistant['<<slave["id"]>>'] -= 10
+			assistant['neg_sa_rivalry'] = 1
+		end
+		dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'slave') &! should be done after $special_part and after $virtue_gained_now - ImperatorAugustus
+		tutor_modifier = 0
+		dynamic $replace($dyn_skill_rise, 'dyn'+'slave', 'assistant')
+		dynamic $virtue_gained_now, 'assistant'
+		dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'assistant') &! should be done after $special_part and after $virtue_gained_now - ImperatorAugustus
+		dynamic $slave_energy_drop
+		dynamic $assistant_energy_drop
+		if assistant['ego'] <= slave['ego']: assistant_rate['ego'] += 1! JO9 MOD START J9TP_NATIVE_TEXT_LOOP_5 | 2026-10-17_traits_personality
+i = 1
+:jo9_trait_personality_text_loop_5
+if i <= arrsize('$text') - 1:
+ dynamic $replace("$text[i] = '<<$text[i]>>'", 'dyn'+'slave', 'slave') &! evaluate sub-expressions with substitution, after $special_part
+ i += 1
+ jump 'jo9_trait_personality_text_loop_5'
+end
+! JO9 MOD END J9TP_NATIVE_TEXT_LOOP_5
+		slave_already_done_today[$str(interaction)] += 1
+		slave_already_done_total[$str(interaction)] += 1
+		slave_already_done_recent[$str(interaction)] += 1
+	end
+end
+
+
+! "OTHER" INTERACTION TYPE - MUST HANDLE ITS OWN INTERACTION COUNTERS AND ENERGY DROPS
+!interaction type - lesson with a tutor - improved and fixed - crushboss
+if $interaction_type = 'coach_teaches_slave':
+	! tutors cannot be refused - ImperatorAugustus
+	$text[2] = $coach_teaches
+	if $coach = 'marivanna': $text[3] = $marivanna_diligence[interaction_slave["diligence"]]
+	if $coach = 'jeeves': $text[3] = $jeeves_diligence[interaction_slave["diligence"]]
+	if $coach = 'geralt': $text[3] = $geralt_diligence[interaction_slave["diligence"]]
+	if $coach = 'avgia': $text[3] = $avgia_diligence[interaction_slave["diligence"]]
+! JO9 MOD START J9M0012 | 2026-10-01_robertus_rufus_art_tutor | changed block; context may be included
+	if $coach = 'walz': $text[3] = $walz_diligence[interaction_slave["diligence"]]
+	if $coach = 'robertus_rufus': $text[3] = $robertus_rufus_diligence[interaction_slave["diligence"]]
+! JO9 MOD END J9M0012
+	if $coach = 'S': $text[3] = $S_diligence[interaction_slave["diligence"]]
+! JO9 MOD START J9TP_ACTIVITY_COACH | 2026-10-17_traits_personality
+gs 'jo9_traits_personality', 'activity', 'slave', 'learn:' + $target_skill, 0
+! JO9 MOD END J9TP_ACTIVITY_COACH
+	dynamic $special_part
+	if interaction_slave['diligence'] > 0:
+		tutor_modifier += 5
+		dynamic $replace($dyn_skill_rise, 'dyn'+'slave', 'slave')
+		dynamic $virtue_gained_now, 'slave'
+	else
+		dynamic $sin_gained_now, 'slave'
+	end
+	dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'slave') &! should be done after $special_part and after $virtue_gained_now - ImperatorAugustus
+	dynamic $slave_energy_drop
+	slave_already_done_today[$str(interaction)] += 1
+	slave_already_done_total[$str(interaction)] += 1
+	slave_already_done_recent[$str(interaction)] += 1
+end
+
+
+! "OTHER" INTERACTION TYPE - MUST HANDLE ITS OWN INTERACTION COUNTERS AND ENERGY DROPS
+!interaction type - lesson in class
+if $interaction_type = 'school_class':
+	show_slave_fullimage = 1
+	! going to school cannot be refused - ImperatorAugustus
+	!if interaction_slave['res'] < 0:
+	!	$place = 'study'
+	!	$text[1] = '<<$slave_name>> refuses to go to school. Looks like she needs to be taught a lesson in obedience!'
+	!	dynamic $sin_gained_now, 'slave'
+	!	interaction_no_auto_energy_drop = 1
+	!else
+		if assistant_state = CONST_INT['slave_exist'] and assistant['supervise_rule'] = 1:
+			$text[1] = '  당신의 조수는 <<$slave_name>>를 성 베드로 아카데미로 데려가 선택한 수업을 참관하게 한 뒤 무사히 돌아왔다.'
+! JO9 MOD START J9TP_ACTIVITY_ESCORT | 2026-10-17_traits_personality
+gs 'jo9_traits_personality', 'activity', 'assistant', 'work:' + 'escort', 1
+! JO9 MOD END J9TP_ACTIVITY_ESCORT
+			assistant['half_action'] += 1
+			!replaced $assistant_energy_drop with a half action (escorting is not hard work) - ImperatorAugustus
+		else
+			!reversed order of checks: fainted or dead assistant cannot escort - ImperatorAugustus
+			$text[1] = '  당신은 직접 <<$slave_name>>를 성 베드로 아카데미로 데려가 선택한 수업 값을 치렀다. 다른 사람을 부리고 자신은 몇 시간 빈둥거리는 것도 나쁘지 않다.'
+			if bull_ring_on = 0: master_half_action += 1
+		end
+		$text[2] = $school_end[interaction_slave["diligence"]]
+! JO9 MOD START J9TP_ACTIVITY_SCHOOL | 2026-10-17_traits_personality
+gs 'jo9_traits_personality', 'activity', 'slave', 'learn:' + $target_skill, 0
+! JO9 MOD END J9TP_ACTIVITY_SCHOOL
+		dynamic $special_part
+		if interaction_slave['diligence'] > 0:
+			$misc_bonus += ' + learn_bonus["academy"]'
+			dynamic $replace($recalc_equipment_bonuses, 'dyn'+'slave', 'slave') &! refresh learn_bonus for slave (used in $misc_bonus)
+			tutor_modifier += 4
+			dynamic $replace($dyn_skill_rise, 'dyn'+'slave', 'slave')
+			dynamic $virtue_gained_now, 'slave'
+		else
+			dynamic $sin_gained_now, 'slave'
+		end
+		dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'slave') &! should be done after $special_part and after $virtue_gained_now - ImperatorAugustus
+		dynamic $slave_energy_drop
+		slave_already_done_today[$str(interaction)] += 1
+		slave_already_done_total[$str(interaction)] += 1
+		slave_already_done_recent[$str(interaction)] += 1
+	!end
+end
+
+!interaction type - presentation of torture mechanism
+if $interaction_type = 'present_torture':
+	show_slave_fullimage = 1
+	if futile_threat = 1:
+		$text[1] = '당신은 이미 노예에게 이 메커니즘에 대해 이야기했다. 이제는 좀 더 시각적인 시연으로 넘어갈 때인 것 같다…'
+		interaction_no_auto_energy_drop = 1
+	else
+		dynamic $replace($dyn_torture_result, 'dyn'+'slave', 'slave') &! before $special_part so texts can be selected based on modified psy status
+		dynamic $special_part
+		if torture_succeeded = 0: $text[2] += ' 그녀의 행동을 바로잡는 데 완전히 실패했다. 다행히도 다른 선택지는 있다.'
+		if torture_succeeded = 1: $text[2] += ' 이 정도의 교정으로는 그녀의 공포가 늘어나지 않는 듯하다. 하지만 꾸중 자체의 효과는 조금 있을지도 모른다…'
+		if torture_succeeded > 0 and slave['ego'] >= master_domination: master_domination_rate += (skill_adv_mul * 1)
+	end
+end
+
+!interaction type - master tortures slave
+if $interaction_type = 'torture':
+	will_to_resist = torture_intensity + rebell[$slave_psy_status] + slave['spoil'] + (slave['ego'] - 3) - max(0, min(5, master_supermacy - master_style)) - slave['moral']*2 - slave['domini_dictum']*100
+	if will_to_resist > 0 and slave['beaten'] = 0:
+		if slave['gladiatrix'] - slave['beaten_ever']*slave['max_guilt'] > max(0, master_supermacy - master_style):
+			show_slave_fullimage = 1
+			$text[1] = '<<$slave_name>>는 필사적으로 저항한다. 그녀의 저항이 마침내 꺾일 때까지 심하게 때릴 수밖에 없을 것이다.'
+			dynamic $slave_fights_back &! includes a 'gt' so it stops execution of the code below
+		else
+			dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'slave')
+		end
+	end
+	dynamic $replace($dyn_torture_result, 'dyn'+'slave', 'slave') &! before $special_part so texts can be selected based on modified psy status
+	if damage > 0: dynamic $replace($dyn_slave_damaged, 'dyn'+'slave', 'slave')
+	! for masochists, set stimulating = 1 when painful > 0 (before $special_part so it can be overridden if necessary) - ImperatorAugustus
+	if painful > 0 and slave['masochism'] = 2: stimulating = 1 & interaction_dynslave['erotic_stimulation'] += torture_intensity
+	if slave['arousal'] = 5: orgastic = stimulating &! at max arousal, pain can trigger orgasm - ImperatorAugustus
+	dynamic $special_part
+	if torture_succeeded = 0: $text[2] += ' 그녀의 행동을 바로잡는 데 완전히 실패했다. 다행히도 다른 선택지는 있다.'
+	if torture_succeeded = 1: $text[2] += ' 이 정도의 교정으로는 그녀의 공포가 늘어나지 않는 듯하다. 하지만 오래 남는 영향은 있을지도 모른다…'
+	dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'slave') &! after $special_part
+	if is_perv ! 0 and painful > 0 and slave['age'] = CONST_INT['loli_age']:
+		$tmp = ''
+		if no_loli ! 2: $tmp = ' 소녀의'
+		$text[3] = iif(orgastic = 0, ' 그녀로서는 불행하게도, 당신은', '당신은') + ' 그<<$tmp>> 벌을 꽤 즐겼다. 당신 같은 늙은 변태에게는 그녀를 해치는 일이 꽤 꼴린다. 당신은 그녀가 다시 벌을 받아야 하게 되기를 거의 바랄 지경이다.'
+		if master_excitement < 0 and master_libido > 0: $text[3] = '  그<<$tmp>> 벌을 시작했을 때 당신은 <<$lcase($excitement[master_excitement_plus])>> 상태였지만, 갑자기 바지 앞이 불편할 정도로 불룩해졌다. 예전에는 딸들에게도 벌을 주어야만 했을 때 이런 일이 벌어지곤 했지. 그녀가 정말로 뉘우치고 있다면, 무릎을 꿇고 그걸 증명해야 할지도 모른다.'
+		master_excitement_rate = max(16, master_excitement_rate + torture_intensity*10)
+		master_perv_rate += torture_intensity
+	end
+	if torture_succeeded > 0 and slave['ego'] >= master_domination: master_domination_rate += (skill_adv_mul * 1)
+	house_mess_rate += 1 + torture_intensity
+	slave_rate['hygiene'] += 1 + torture_intensity
+	master_hygiene_rate += 1 + torture_intensity
+end
+
+
+! "OTHER" INTERACTION TYPE - MUST HANDLE ITS OWN INTERACTION COUNTERS AND ENERGY DROPS
+!interaction type - prisoner torture (demonstration of punishment on prisoner, observed by slave)
+if $interaction_type = 'prisoner_torture':
+	if compassion > 0:
+		if slave['sensitivity'] > 2: slave['compassion_xp'] += 1 &! add compassion xp here instead of in $torture_phobia - ImperatorAugustus
+		if slave['compassion_revealed'] = 0: slave['compassion_revealed'] = 1
+		if slave['compassion'] > 0:
+			$text[2] = '  <<$compassion_reaction["goodkind"]>>'
+			gs '$mood_drop', 'slave', torture_intensity &! traumatic for compassionate slaves
+		elseif slave['compassion'] < 0:
+			$text[2] = '  <<$compassion_reaction["sadistic"]>>'
+			gs '$mood_rise', 'slave', torture_intensity &! mood boost for sadists - ImperatorAugustus
+			interaction_slave['erotic_stimulation'] = slave['temper']*torture_intensity &! add arousal for sadists - ImperatorAugustus
+		else
+			gs '$mood_drop', 'slave', 1
+		end
+	end
+	dynamic $prisoner_energy_drop
+	dynamic $master_energy_drop &! easy_for_master is checked/reset by the function
+	slave['half_action'] += 1 &! added half action for slave as observer - ImperatorAugustus
+	! for masochists, set stimulating = 1 when painful > 0 (before $special_part so it can be overridden if necessary) - ImperatorAugustus
+	if painful > 0 and prisoner['masochism'] = 2: stimulating = 1 & interaction_prisoner['erotic_stimulation'] += torture_intensity
+	if prisoner['arousal'] = 5: orgastic = stimulating &! at max arousal, pain can trigger orgasm - ImperatorAugustus
+	dynamic $replace($dyn_torture_result, 'dyn'+'slave', 'prisoner') &! before $special_part so texts can be selected based on modified psy status
+	dynamic $replace($dyn_torture_result, 'dyn'+'slave', 'slave') &! before $special_part so texts can be selected based on modified psy status
+	if torture_succeeded > 0 and slave['ego'] >= master_domination: master_domination_rate += (skill_adv_mul * 1)
+	dynamic $special_part
+	if torture_succeeded = 0: $text[2] += ' 그녀의 행동을 바로잡는 데 완전히 실패했다. 다행히도 다른 선택지는 있다.'
+	if torture_succeeded = 1: $text[2] += ' 이 정도의 교정으로는 그녀의 공포가 늘어나지 않는 듯하다. 하지만 오래 남는 영향은 있을지도 모른다…'
+	dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'prisoner') &! after $special_part (in case the interaction adds erotic stimulation to the prisoner)
+	orgastic = iif(slave['compassion'] < 0, 1, 0) &! reset orgastic for slave unless sadistic
+	dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'slave') &! after $special_part
+	if damage > 0: dynamic $replace($dyn_slave_damaged, 'dyn'+'slave', 'prisoner') &! added physical damage check - ImperatorAugustus
+	house_mess_rate += 1 + torture_intensity
+	master_hygiene_rate += 1 + torture_intensity
+	prisoner_rate['hygiene'] += 1 + torture_intensity
+	slave_already_done_today[$str(interaction)] += 1
+	slave_already_done_total[$str(interaction)] += 1
+	slave_already_done_recent[$str(interaction)] += 1
+end
+
+
+!interaction type - talk
+if $interaction_type = 'talk':
+	interaction_no_auto_energy_drop = 1
+	show_slave_fullimage = 1
+	if interaction_slave['res'] < 0:
+		$place = 'study'
+		$text[1] = $refuse_talk[$slave_psy_status]
+		! JO9 MOD START ARGON_R2_NATIVE_TOPICS | shared native talk refusal only
+		if interaction >= 1111 and interaction <= 1117:
+			$text[1] = $dyneval($voice_native,'1113_refuse_'+$slave_psy_status,$text[1])
+		end
+		! JO9 MOD END ARGON_R2_NATIVE_TOPICS
+		if slave['max_guilt'] > 1: dynamic $sin_gained_now, 'slave', 2 &! cap guilt potential at 2
+	else
+		dynamic $special_part
+		dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'slave') &! should be done after $special_part - ImperatorAugustus
+		! TODO: add talking interaction types that are stimulating for the slave - ImperatorAugustus
+	end
+end
+
+!interaction type - drug for slave or assistant
+if code_defined['interaction_result_get_drug'] = 0:
+	code_defined['interaction_result_get_drug'] = 1 &! do-once
+
+	$interaction_result_get_drug = {
+		if interaction_dynslave['res'] < 0:
+			show_dynslave_fullimage = 1
+			$place = 'study'
+			$text[1] = '  <<$dynslave_name>>는 당신에게서 수상한 물건을 받기를 거부한다. 누군가 복종의 교훈을 배워야 할 모양이군!'
+			dynamic $sin_gained_now, 'dynslave', 4 &! cap guilt potential at 4
+			interaction_no_auto_energy_drop = 1
+		else
+			dynamic $special_part
+			dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'dynslave') &! should be done after $special_part - ImperatorAugustus
+			bulk = 1 &! signal to main_screen to play sound effect
+			menu_form = 0
+			gt 'menu_form' &! no text to display, so bypass interaction_screen - ImperatorAugustus
+		end
+	}
+end
+
+if $interaction_type = 'get_drug' or $interaction_type = 'get_drug_assistant':
+	dynamic $replace($interaction_result_get_drug, 'dyn'+'slave', $interaction_partner)
+end
+
+!interaction type - order for slave or assistant
+if code_defined['interaction_result_make_slave_do'] = 0:
+	code_defined['interaction_result_make_slave_do'] = 1 &! do-once
+
+	$interaction_result_make_slave_do = {
+		if interaction_dynslave['res'] < 0:
+			show_dynslave_fullimage = 1
+			$place = 'study'
+			dynamic $replace("$text[1] = '<<$refuse_txt>>'", 'dyn'+'slave', 'dynslave') &! evaluate sub-expressions with substitution
+			dynamic $sin_gained_now, 'dynslave'
+		else
+			if is_perv ! 0 and perv_banal_msg = 0 and painful = 0 and dynslave['age'] = CONST_INT['loli_age']:
+				$tmp = '늙은 변태인 네게는 <<$dynslave_name>> 같은 로리가 집안일을 하거나, 체조를 하거나, 목욕하는 모습을 보는 단순한 일만으로도 널 불타오르게 하기에 충분하다. 물론 그녀를 더듬거나 혼자 장난치는 모습을 보는 건 그보다 <i>훨씬</i> 더 큰 흥분거리가 될 것이다.<br><br>'
+				if dynslave['beauty'] > 2:
+					$tmp += '당신은 이렇게 <<$lcase($beauty[dynslave["beauty"]])>>한 <<$little_txt>> 소녀를 고른 것이 <i>너무나도</i> 기쁘다.'
+				else
+					$tmp += '하지만 지금은, 당신은 더 예쁜<<$little_txt>> 소녀를 골랐더라면 하고 바란다.'
+				end
+				msg '   <<$tmp>>'
+				perv_banal_msg = 1
+			end
+			if interaction_no_auto_energy_drop = 0:
+				interaction_no_auto_energy_drop = 1 &! no energy drop for master
+				dynamic $dynslave_energy_drop
+			end
+	! JO9 MOD START J9TP_ACTIVITY_ORDER | 2026-10-17_traits_personality
+gs 'jo9_traits_personality', 'activity', 'dynslave', 'work:' + iif($target_skill ! '', $target_skill, $target_affinity), 0
+! JO9 MOD END J9TP_ACTIVITY_ORDER
+		tutor_modifier = 0
+			dynamic $special_part &! note: may modify diligence! JO9 MOD START J9TP_NATIVE_TEXT_LOOP_4 | 2026-10-17_traits_personality
+i = 1
+:jo9_trait_personality_text_loop_4
+if i <= arrsize('$text') - 1:
+ dynamic $replace("$text[i] = '<<$text[i]>>'", 'dyn'+'slave', 'dynslave') &! evaluate sub-expressions with substitution, after $special_part
+ i += 1
+ jump 'jo9_trait_personality_text_loop_4'
+end
+! JO9 MOD END J9TP_NATIVE_TEXT_LOOP_4
+			if damage > 0: dynamic $replace($dyn_slave_damaged, 'dyn'+'slave', 'dynslave') &! added physical damage check - ImperatorAugustus
+			!update slave affinities, associated moodlets, and skills
+			if interaction_dynslave['diligence'] <= 0:
+				dynamic $sin_gained_now, 'dynslave'
+			else
+				dynamic $virtue_gained_now, 'dynslave'
+				if $target_skill ! '': dynamic $replace($dyn_skill_rise, 'dyn'+'slave', 'dynslave')
+				dynamic $replace($dyn_advance_sex_skills_nolesson, 'dyn'+'slave', 'dynslave'), 'noreset'
+			end
+			dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'dynslave') &! should be done after $special_part and after $virtue_gained_now - ImperatorAugustus
+			!update master skills
+			if dynslave['ego'] >= master_domination: master_domination_rate += (skill_adv_mul * 1)
+			if is_perv ! 0 and dynslave['age'] = CONST_INT['loli_age']:
+				if dynslave['ego'] >= master_domination: master_domination_rate += (skill_adv_mul * 1)
+				master_perv_rate += dynslave['beauty'] + sex_quality
+			end
+		end
+	}
+end
+
+if $interaction_type = 'make_slave_do' or $interaction_type = 'make_assistant_do' or $interaction_type = 'make_room1_do'or $interaction_type = 'make_room2_do'or $interaction_type = 'make_room3_do'or $interaction_type = 'make_room4_do':
+	dynamic $replace($interaction_result_make_slave_do, 'dyn'+'slave', $interaction_partner)
+end
+
+!interaction type - personal lesson - improved and fixed - crushboss
+if $interaction_type = 'master_teaches_slave':
+	teacher_potential = dyneval('result = <<$coach_skill>>')
+	! include potential skill boost from clothing in master inventory to determine skill level that can be taught
+	! relying on fact that master can only have one of each outfit to avoid double counting
+	!옷바꾸기 짜증나서 만듦
+	if $master_cloth = 'livery' or $master_cloth = 'miracle_robes' and $coach_skill = 'master_butler': teacher_potential += 1
+	if $master_cloth = 'aketon' or $master_cloth = 'miracle_robes' and $coach_skill = 'master_fighter': teacher_potential += 1
+	if $master_cloth = 'medic_robes' or $master_cloth = 'miracle_robes' and $coach_skill = 'master_medic': teacher_potential += 1
+	if $master_cloth = 'wizard_robes' or $master_cloth = 'miracle_robes' and $coach_skill = 'master_mage': teacher_potential += 1
+	if $master_cloth = 'formal_suit' or $master_cloth = 'miracle_robes' and $coach_skill = 'master_artdirector': teacher_potential += 1
+	if slave[$target_skill] >= teacher_potential:
+		show_slave_fullimage = 1
+		if teacher_potential > 4:
+			$text[1] = '  <<$slave_name>>는 너무 잘 훈련되어 있어, 이 주제에 관해서는 이미 당신이 아는 것을 다 익혔다. 어쩌면 다른 훈련 분야로 넘어가야 할지도 모른다…'
+		else
+			$text[1] = '  <<$slave_name>>는 너무 잘 훈련되어 있어, 이 주제에 관해서는 이미 당신의 제한된 지식 안에서 배울 수 있는 것을 다 익혔다. 어쩌면 당신 자신의 기술을 더 키워야 할지도 모른다…'
+			if $coach_skill = 'master_artdirector': $text[1] += ' 결국 예술가는 이미 얻은 명성에 안주해서는 안 되니까.'
+			if $coach_skill = 'master_flagelation': $text[1] += ' 결국 채찍 다루는 숙련에는 많은 이점이 있으니까.'
+			if $coach_skill = 'master_domination':  $text[1] += ' 결국 남을 복종시키려면 먼저 지배할 줄 알아야 하니까.'
+		end
+		interaction_no_auto_energy_drop = 1
+	elseif interaction_slave['res'] < 0:
+		show_slave_fullimage = 1
+		dynamic $sin_gained_now, 'slave'
+		$place = 'study'
+		$text[1] = '  <<$slave_name>>는 배우기를 거부한다. 이런 태도라면 수업은 쓸모가 없을 것이다.'
+		interaction_no_auto_energy_drop = 1
+	else
+		$text[2] = $lesson_diligence[interaction_slave["diligence"]] + iif(interaction_slave['diligence'] = 0 and slave['energy'] < 0, ' 그녀는 꽤 지쳐 보이기도 한다.', '')
+! JO9 MOD START J9TP_ACTIVITY_MASTER | 2026-10-17_traits_personality
+gs 'jo9_traits_personality', 'activity', 'slave', 'learn:' + $target_skill, 0
+! JO9 MOD END J9TP_ACTIVITY_MASTER
+		dynamic $special_part
+! JO9 MOD START J9TP_NATIVE_TEXT_LOOP_3 | 2026-10-17_traits_personality
+i = 1
+:jo9_trait_personality_text_loop_3
+if i <= arrsize('$text') - 1:
+ dynamic $replace("$text[i] = '<<$text[i]>>'", 'dyn'+'slave', 'slave') &! evaluate sub-expressions with substitution, after $special_part
+ i += 1
+ jump 'jo9_trait_personality_text_loop_3'
+end
+! JO9 MOD END J9TP_NATIVE_TEXT_LOOP_3
+		!update slave affinities, associated moodlets, and skills
+		if interaction_slave['diligence'] <= 0:
+			dynamic $sin_gained_now, 'slave'
+		else
+			dynamic $virtue_gained_now, 'slave'
+			!update master skills
+			if is_perv ! 0 and slave['age'] = CONST_INT['loli_age']: master_excitement_rate += 3
+			if slave['ego'] >= master_domination: master_domination_rate += (skill_adv_mul * 1)
+			if interaction_slave['diligence'] >= 4:
+				master_tutor_rate += 1
+				! if $coach_skill is not '0' and does not contain spaces, assume it is a variable that we can append a '_rate' suffix to and increment if the level of the lesson matches the level of the skill
+				! master skill only increases when teaching a slave at level just below current level, or at current level (only possible with an item boost), and achieving outcomes A+ or better - ImperatorAugustus
+				dynamic "if '<<$coach_skill>>' ! '0' and instr('<<$coach_skill>>', ' ') = 0 and (<<$coach_skill>> - boost_up['<<$coach_skill>>']) <= slave[$target_skill] + 1: <<$coach_skill>>_rate += (skill_adv_mul * 1)"
+			end
+			!update slave skills
+			if $target_skill ! '':
+				tutor_modifier += iif(master_mood < 0, 1 + master_tutor/2, iif(master_mood > 3, master_tutor + 1, master_tutor))
+				dynamic $replace($dyn_skill_rise, 'dyn'+'slave', 'slave')
+			end
+			! possibility for sex skills to be trained also (or instead, if $target_skill is cleared) - used for special (random) training events
+			dynamic $replace($dyn_advance_sex_skills_nolesson, 'dyn'+'slave', 'slave'), 'noreset'
+		end
+		dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'slave') &! should be done after $special_part and after $virtue_gained_now - ImperatorAugustus
+	end
+end
+
+
+
+!interaction type - personal lesson - improved and fixed - crushboss - updated for assistant common skills - RedGreen3
+if $interaction_type = 'master_teaches_assistant':
+	teacher_potential = dyneval('result = <<$coach_skill>>')
+	! include potential skill boost from clothing in master inventory to determine skill level that can be taught
+	! relying on fact that master can only have one of each outfit to avoid double counting
+	!옷바꾸기 짜증나서 만듦
+	if $master_cloth = 'livery' or $master_cloth = 'miracle_robes' and $coach_skill = 'master_butler': teacher_potential += 1
+	if $master_cloth = 'aketon' or $master_cloth = 'miracle_robes' and $coach_skill = 'master_fighter': teacher_potential += 1
+	if $master_cloth = 'medic_robes' or $master_cloth = 'miracle_robes' and $coach_skill = 'master_medic': teacher_potential += 1
+	if $master_cloth = 'wizard_robes' or $master_cloth = 'miracle_robes' and $coach_skill = 'master_mage': teacher_potential += 1
+	if $master_cloth = 'formal_suit' or $master_cloth = 'miracle_robes' and $coach_skill = 'master_artdirector': teacher_potential += 1
+	if assistant[$target_skill] >= teacher_potential:
+		show_assistant_fullimage = 1
+		if teacher_potential > 4:
+			$text[1] = '  <<$assistant_name>>는 너무 잘 훈련되어 있어, 이 주제에서는 이미 당신 자신의 지식 수준의 최고점에 도달해 있다. 어쩌면 다른 훈련 분야로 넘어가야 할지도 모른다…'
+		else
+			$text[1] = '  <<$assistant_name>>는 너무 잘 훈련되어 있어, 이 주제에서는 이미 당신의 제한된 지식 수준의 최고점에 도달해 있다. 어쩌면 당신 자신의 기술을 더 키워야 할지도 모른다…'
+			if $coach_skill = 'master_artdirector': $text[1] += ' 결국 예술가는 월계관 위에 안주해서는 안 되니까.'
+			if $coach_skill = 'master_flagelation': $text[1] += ' 결국 채찍의 숙련에는 많은 이점이 있으니까.'
+			if $coach_skill = 'master_domination':  $text[1] += ' 결국 남을 복종시키려면 먼저 지배할 줄 알아야 하니까.'
+		end
+		interaction_no_auto_energy_drop = 1
+	elseif interaction_assistant['res'] < 0:
+		show_assistant_fullimage = 1
+		dynamic $sin_gained_now, 'assistant'
+		$place = 'study'
+		$text[1] = '  <<$assistant_name>>는 배우기를 거부한다. 이런 태도라면 수업은 쓸모가 없을 것이다.'
+		interaction_no_auto_energy_drop = 1
+	else
+		$text[2] = $lesson_diligence[interaction_assistant["diligence"]] + iif(interaction_assistant['diligence'] = 0 and assistant['energy'] < 0, ' 그녀는 꽤 지쳐 보이기도 한다.', '')
+! JO9 MOD START J9TP_ACTIVITY_MASTER_ASSISTANT | 2026-10-17_traits_personality
+gs 'jo9_traits_personality', 'activity', 'assistant', 'learn:' + $target_skill, 0
+! JO9 MOD END J9TP_ACTIVITY_MASTER_ASSISTANT
+		dynamic $special_part! JO9 MOD START J9TP_NATIVE_TEXT_LOOP_2 | 2026-10-17_traits_personality
+i = 1
+:jo9_trait_personality_text_loop_2
+if i <= arrsize('$text') - 1:
+ dynamic $replace("$text[i] = '<<$text[i]>>'", 'dyn'+'slave', 'assistant') &! evaluate sub-expressions with substitution, after $special_part
+ i += 1
+ jump 'jo9_trait_personality_text_loop_2'
+end
+! JO9 MOD END J9TP_NATIVE_TEXT_LOOP_2
+		!update slave affinities, associated moodlets, and skills
+		if interaction_assistant['diligence'] <= 0:
+			dynamic $sin_gained_now, 'assistant'
+		else
+			dynamic $virtue_gained_now, 'assistant'
+			!update master skills
+			if is_perv ! 0 and assistant['age'] = CONST_INT['loli_age']: master_excitement_rate += 3
+			if assistant['ego'] >= master_domination: master_domination_rate += (skill_adv_mul * 1)
+			if interaction_assistant['diligence'] >= 4:
+				master_tutor_rate += 1
+				! if $coach_skill is not '0' and does not contain spaces, assume it is a variable that we can append a '_rate' suffix to and increment if the level of the lesson matches the level of the skill
+				! master skill only increases when teaching a slave at level just below current level, or at current level (only possible with an item boost), and achieving outcomes A+ or better - ImperatorAugustus
+				dynamic "if '<<$coach_skill>>' ! '0' and instr('<<$coach_skill>>', ' ') = 0 and (<<$coach_skill>> - boost_up['<<$coach_skill>>']) <= assistant[$target_skill] + 1: <<$coach_skill>>_rate += (skill_adv_mul * 1)"
+			end
+			!update slave skills
+			if $target_skill ! '':
+				tutor_modifier += iif(master_mood < 0, 1 + master_tutor/2, iif(master_mood > 3, master_tutor + 1, master_tutor))
+				dynamic $replace($dyn_skill_rise, 'dyn'+'slave', 'assistant')
+			end
+			! possibility for sex skills to be trained also (or instead, if $target_skill is cleared) - used for special (random) training events
+			dynamic $replace($dyn_advance_sex_skills_nolesson, 'dyn'+'slave', 'assistant'), 'noreset'
+		end
+		dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'assistant') &! should be done after $special_part and after $virtue_gained_now - ImperatorAugustus
+	end
+end
+
+
+!interaction type - sex lesson - slave or assistant
+if code_defined['interaction_result_self_sex_lesson'] = 0:
+	code_defined['interaction_result_self_sex_lesson'] = 1
+
+	$interaction_result_self_sex_lesson = {
+		if interaction_dynslave['res'] < 0:
+			show_dynslave_fullimage = 1
+			$place = 'study'
+			killvar 'play_sound'
+			$text[1] = '  <<$dynslave_name>>는 당신의 지시 수행을 거부한다! 이런 태도라면 수업은 쓸모가 없을 것이다!'
+			$text[1] += ' 어쩌면 ' + iif(master_style < 5, '당신이 더 매력적이거나 ', '') + '그녀가 ' + iif(dynslave['pride'] > 0, '더 개방적이거나 ', '') + iif(dynslave['mood'] < 5, '기분이 더 좋거나 ', '') + iif(dynslave['arousal'] < 5, '더 흥분해 있거나 ', '') + '더 잘 훈련되어 있었다면 결과가 달랐을지도 모른다…'
+			dynamic $sin_gained_now, 'dynslave'
+			interaction_no_auto_energy_drop = 1
+		elseif impotent = 0 and (master_excitement < -2 or (is_perv > 1 and dynslave['age'] = CONST_INT['milf_age'])):
+			$bg_path = 'scene/flaccid'
+			g = rand(1, picMax["flaccid"])
+			if g > 1: $bg_path += '_' + $str(g)
+! JO9 MOD START J9M0011 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+			$text[1] = '교육은 엉망진창이었다. 여자의 육체를 다루려는데 물건은 세워야 할 것 아닌가?'
+! JO9 MOD END J9M0011
+			if (is_perv > 1 and dynslave['age'] = CONST_INT['milf_age']): $text[1] += ' 그렇다곤 해도, <<$dynslave_name>>와 같은 늙은 여자로는 내 마음이 끌리지 않는다.'
+			dynamic $sin_gained_now, 'dynslave', 1
+			master_mood_rate -= 10
+			interaction_no_auto_energy_drop = 1
+		else
+			if is_perv ! 0 and dynslave['age'] = CONST_INT['loli_age']:
+				master_excitement_rate += max(sex_quality,perv_rating)*5
+				master_perv_rate += rand(0,perv_rating)
+			else
+				master_excitement_rate += dynslave['beauty'] * min(interaction_dynslave['diligence'], dynslave['roleplay'])
+			end
+! JO9 MOD START J9TP_ACTIVITY_SEX_LESSON | 2026-10-17_traits_personality
+gs 'jo9_traits_personality', 'activity', 'dynslave', 'learn:' + $replace($replace($subskill, 'assistant', 'slave'), 'slave_rate', 'slave'), 0
+! JO9 MOD END J9TP_ACTIVITY_SEX_LESSON
+			dynamic $special_part
+			rise_difficulty += max(1, dyneval($replace('result = <<$subskill>>', 'slave', 'dynslave')))*rise_mod
+			dynamic $replace("$text[1] = '<<$text[1]>>'", 'dyn'+'slave', 'dynslave') &! evaluate sub-expressions with substitution, after $special_part, before skill rise
+			if damage > 0: dynamic $replace($dyn_slave_damaged, 'dyn'+'slave', 'dynslave') &! should be done after $special_part
+			dynamic $replace($recalc_equipment_bonuses, 'dyn'+'slave', 'dynslave') &! refresh learn_bonus
+			success = learn_bonus['sex'] &! item bonuses currently go up to 4 and there are no items that give penalties
+			success += dyneval('result = <<$coach_skill>>') &! for balance purposes, master skill is treated as an alternative to item bonuses (giving master skill a +1 advantage at S+)
+			success += (interaction_dynslave['diligence']*(dynslave['intellect'] + dynslave['temper']))/5 &! diligence determines how much intellect and temperament contribute
+			success += (dynslave['stamina'] - 2) &! endurance B+ and up helps, below hinders
+			success += (master_mood + dynslave['mood'])/2 &! good mood helps, bad mood hinders
+			success -= dynslave['pride'] &! being prideful hinders
+			success -= dynslave['angst'] &! being depressed hinders
+			! success = [0,4] + [0,5] + [0,10] + [-2,+3] + [-5,5] - [0,5] - [0,5] = max 27 with S+ master skill, max 22 with F- master skill
+			!! wherever below is listed an F- master with full item bonuses, an A+ master with NO item bonuses can be substituted
+			! with F- master (0), B+ slave stats and D- diligence (1), Depressed mood for both (-5), NO item bonuses, C- pride (-3), no despair = -6
+			! with F- master (0), B+ slave stats and D- diligence (1), Calm mood for both (0), NO item bonuses, C- pride (-3), no despair = -2
+			! with F- master (0), B+ slave stats and B+ diligence (3), Calm mood for both (0), NO item bonuses, no pride or despair = 3
+			! with F- master (0), B+ slave stats and B+ diligence (3), Pleased mood for both (3), NO item bonuses, no pride or despair = 7                  (C- to B+ in one lesson at rise 2)
+			! with F- master (0), B+ slave stats and B+ diligence (3), Pleased mood for both (3), full item bonuses (4), no pride or despair = 11           (C- to B+ in one lesson at rise 4)
+			! with F- master (0), B+ slave stats and S+ diligence (7), Ecstatic master & Pleased slave (4), NO item bonuses, no pride or despair = 11       (C- to B+ in one lesson at rise 4) ** at this transition, using maxed
+			! with F- master (0), B+ slave stats and S+ diligence (7), Ecstatic master & Pleased slave (4), full item bonuses (4), no pride or despair = 15 (C- to B+ in one lesson at rise 5) ** item bonuses cuts lessons in half
+			! with F- master (0), A+ slave stats and S+ diligence (9), Ecstatic mood for both (5), NO item bonuses, no pride or despair = 15                (C- to B+ in one lesson at rise 5)
+			! with F- master (0), S+ slave stats and S+ diligence (13), Ecstatic mood for both (5), NO item bonuses, no pride or despair = 18               (C- to B+ in one lesson at rise 6) ** at this transition, using at least
+			! with F- master (0), S+ slave stats and S+ diligence (13), Ecstatic mood for both (5), full item bonuses (4), no pride or despair = 22         (C- to B+ in one lesson at rise 7) ** 3 in bonuses cuts lessons in half
+			!! of the 34 sex skills, 23 must be B+ for concubine specialization; if 3 lessons/day and 1 level/lesson, ignoring linked skills, that is 23 days of training (14 days at 5 lessons/day, with S+ endurance, pollen or kamra/massage)
+			!! based on the calculations above, we set rise difficulty for most of the specialization-required skills at either 5 or 7 to make master skill / item bonus valuable for C- to B+ transition
+			!! three of the required skills are set to rise difficulty 9, requiring minimum 2 lessons from C- to B+, which adds 3 lessons (~1 day) to the total amount for specialization
+			!! based on the calculations below, we set rise difficulty for most of the remaining sex skills at 11 to make item bonuses still valuable at max master skill when training to S+ level
+			! with S+ master (5), S+ slave stats and S+ diligence (13), Ecstatic mood for both (5), NO item bonuses, no pride or despair = 22               (A+ to S+ in two lessons at rise 10)   ** at this transition, using at least
+			! with S+ master (5), S+ slave stats and S+ diligence (13), Ecstatic mood for both (5), full item bonuses (4), no pride or despair = 27         (A+ to S+ in three lessons at rise 11) ** 3 in item bonuses cuts one lesson
+			!! rise 2  (1-2 lessons to S+, 1-2 lessons to A+,  1 lesson to B+):    
+			!! rise 3  (1-3 lessons to S+, 1-2 lessons to A+, 1-2 lessons to B+):  
+			!! rise 4  (1-3 lessons to S+, 1-3 lessons to A+, 1-2 lessons to B+):  
+			!! rise 5  (2-4 lessons to S+, 1-4 lessons to A+, 1-3 lessons to B+):  kissing (0), seduction (0), masturbation (0), dildo (1), handjob (1), footjob (1), humiliation (2), exhibitionism (3), rubbing (3), paizuri (3), vaginal sex (4)
+			!! rise 6  (2-5 lessons to S+, 2-4 lessons to A+, 1-3 lessons to B+):  
+			!! rise 7  (2-5 lessons to S+, 2-4 lessons to A+, 1-3 lessons to B+):  licking (5), blowjob (6), rimming (6/11), deepthroat (7), enema (9), bukkake (10), anal sex (11), fisting (9), threesome (8), masochism (12), double penetration (12)
+			!! rise 8  (2-6 lessons to S+, 2-5 lessons to A+, 2-4 lessons to B+):  
+			!! rise 9  (3-7 lessons to S+, 2-6 lessons to A+, 2-4 lessons to B+):  triple penetration (13), anal fisting (14), gangbang (16)
+			!! rise 10 (3-8 lessons to S+, 2-6 lessons to A+, 2-5 lessons to B+):  
+			!! rise 11 (3-8 lessons to S+, 2-7 lessons to A+, 2-5 lessons to B+):  self-torture (17), golden shower (18), dog sex (19), pig sex (20), horse sex (22), spider sex (23), sea tentacle (24)
+			!! rise 12 (3-9 lessons to S+, 3-7 lessons to A+, 2-6 lessons to B+):  fiend milking (24), coprophagia (26)
+			if interaction_dynslave['diligence'] <= 0:
+				success = 0
+				dynamic $sin_gained_now, 'dynslave'
+			else
+				dynamic $replace($dyn_virtue_gained_eroles, 'dyn'+'slave', 'dynslave')
+				$text[2] = $text[1]
+				$text[1] = $intimate_lesson_reaction[$dynslave_psy_status]
+				if is_perv ! 0 and perv_rating > 0:
+					$tmp = '이 암컷'
+					if no_loli = 2: $tmp = ' 아이'
+					if no_loli = 2 and rand(0,1) = 1: $tmp = ' 어린이'
+					$tmp2 = '애게 '
+					if perv_rating = 2: $tmp2 = '굵직한 자지로 미성숙한 몸을 완전히 타락시키며 '
+					if perv_rating = 3: $tmp2 = '이제 피어나는 봉오리를 양껏 맛보며 '
+					$text[1] += '<br> 당신은 <<$tmp>><<$tmp2>>가지고 있는 모든 부도덕한 감정을 토해낼 것이다. <<$perv_act1>>'
+				end
+			end
+			if dyneval($replace('result = <<$subskill>>', 'slave', 'dynslave')) < 5: $text[] = $sex_lesson_diligence[interaction_dynslave["diligence"]] + iif(interaction_dynslave['diligence'] = 0 and dynslave['energy'] < 0, ' 그녀는 꽤 지쳐 보이기도 한다.', '')
+! JO9 MOD START J9TP_NATIVE_TEXT_LOOP_1 | 2026-10-17_traits_personality
+i = 1
+:jo9_trait_personality_text_loop_1
+if i <= arrsize('$text') - 1:
+ dynamic $replace("$text[i] = '<<$text[i]>>'", 'dyn'+'slave', 'dynslave') &! evaluate sub-expressions with substitution, after $special_part
+ i += 1
+ jump 'jo9_trait_personality_text_loop_1'
+end
+! JO9 MOD END J9TP_NATIVE_TEXT_LOOP_1
+			dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'dynslave') &! should be done after $special_part and after $dyn_virtue_gained_eroles - ImperatorAugustus
+			if dyneval($replace('result = <<$subskill>>', 'slave', 'dynslave')) < 5:
+				!update master skills
+				if dynslave['ego'] >= master_domination: master_domination_rate += (skill_adv_mul * 1)
+				! if $coach_skill is not '0' and does not contain spaces, assume it is a variable that we can append a '_rate' suffix to and increment (for sex lessons, we do not require level of lesson to match level of skill)
+				dynamic "if '<<$coach_skill>>' ! '0' and instr('<<$coach_skill>>', ' ') = 0: <<$coach_skill>>_rate += (skill_adv_mul * 1)"
+				!update slave skills
+				dynamic $replace($dyn_advance_sex_skills, 'dyn'+'slave', 'dynslave')
+				if success >= rise_difficulty:
+! JO9 MOD START J9M0010 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+					$text[] = '조교가 끝나갈 때 쯤 당신은 제대로 된 성과를 냈다. 더 어려운 테크닉을 조교하는 것이 가능해졌다.'
+! JO9 MOD END J9M0010
+				else
+					if $subskill = 'slave["sub_bj"]':
+! JO9 MOD START J9M0009 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+						$text[] = '<<$dynslave_name>>는 당신이 가르치려 한 것을 완전히 해내지는 못했다. 어쩌면 다음번에는 가능할지도 모른다. 당신은 그녀에게 이렇게 설명한다. <br><br>  <i>"처음에 씨를 빨아내지 못했다면, 다시, 또 다시 시도해야 한다."</i>'
+! JO9 MOD END J9M0009
+					else
+! JO9 MOD START J9M0008 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+						$text[] = '<<$dynslave_name>>는 당신이 가르치려 한 것을 완전히 해내지는 못했다. 이 수업은 다시 반복할 필요가 있지만, 연습이 완벽을 만든다. 다음에는 더 쉬워질 것이다.'
+! JO9 MOD END J9M0008
+					end
+				end
+			end
+		end
+	}
+end
+
+if $interaction_type = 'self_sex_lesson' or $interaction_type = 'self_sex_lesson_assistant':
+	dynamic $replace($interaction_result_self_sex_lesson, 'dyn'+'slave', $interaction_partner)
+end
+
+!Sex - special - created by crushboss
+!interaction type - sex lesson special - crushboss
+if $interaction_type = 'self_sex_lesson_special':
+! JO9 MOD START J9TP_ACTIVITY_SEX_SPECIAL | 2026-10-17_traits_personality
+gs 'jo9_traits_personality', 'activity', 'slave', 'learn:' + $subskill, 0
+! JO9 MOD END J9TP_ACTIVITY_SEX_SPECIAL
+	$place = 'study'
+	menu_form = 0
+	$return_lock  = 'menu_form'
+	master_oral_rate += (skill_adv_mul * 2)
+	master_penetration_rate += (skill_adv_mul * 2)
+	master_petting_rate += (skill_adv_mul * 2)
+	if slave['stamina'] < 1: slave['stamina'] = 1
+	if slave_state = CONST_INT['slave_faint']: slave_state = CONST_INT['slave_exist']
+	slave_rate['pride'] -= 3
+	slave['sub_dt'] += 1
+	slave['sub_dt_xp'] = 0
+	slave['sub_vaginal'] += 1
+	slave['sub_vaginal_xp'] = 0
+	slave['sub_anal'] += 1
+	slave['sub_anal_xp'] = 0
+	slave['sub_hj'] += 1
+	slave['sub_hj_xp'] = 0
+	slave['sub_hug'] += 1
+	slave['sub_hug_xp'] = 0
+	master_excitement_rate = 200
+	master_excitement = 5
+	slave_rate['arousal'] += 200
+	slave['arousal'] = 5
+	slave['virtue'] = 5
+	slave['sin'] = 0
+	ejaculation_intensity = 5
+	dynamic $master_ejaculate
+	interaction_slave['final_stimulation'] = 22
+	dynamic $replace($dyn_slave_orgasm, 'dyn'+'slave', 'slave')
+	slave['virtue'] = 5
+	slave['sin'] = 0
+	slave['pos_orgasm'] += 4 &! moodlet exponentially decays in next_day -ImperatorAugustus
+	slave['energy'] = 2
+	slave_rate['mood'] += 200
+	slave['mood'] = 5
+	master_energy = 0
+	master_mood_rate += 30
+	gs '$mood_rise', 'slave', 5
+	gs '$mod_master_rise', 2
+	gs 'interior_storage'
+	$special_action[1] = {
+		show_slave_fullimage = 1
+		$bg_path = ''
+		$place = 'study'
+		$bg['study'] = $interior_study[$study]
+! JO9 MOD START J9M0007 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+		$place_name['study'] = '마법 사고<br>정열의 골짜기 -'
+! JO9 MOD END J9M0007
+		$place_info['study'] = '   당신의 주문에 뭔가 이상이 생겼다. 그냥 흐름에 몸을 맡겨라!'
+		$play_sound[1] = '<<$bj_sound[2]>>'
+	}
+	$special_action[2] = {
+		show_slave_fullimage = 0
+		$bg_path = 'girls\sex_scenes\dt_general_young'
+		$play_sound[2] = '<<$throatfuck_sound[slave["age"]]>>'
+	}
+	$special_action[3] = {
+		show_slave_fullimage = 0
+		$bg_path = 'girls\sex_scenes\dt_general_milf_2'
+		$play_sound[3] = '<<$bj_sound[2]>>'
+	}
+	$special_action[4] = {
+		show_slave_fullimage = 0
+		$bg_path = 'girls\sex_scenes\dt_general_loli_2'
+		$play_sound[4] = '<<$throatfuck_sound[0]>>'
+	}
+	$special_action[5] = {
+		show_slave_fullimage = 1
+		$bg_path = ''
+		$bed = 'stylish'
+		$bg['bedroom'] = $interior_bed[$bed]
+		$place_info['bedroom'] = $interior_bed_info[$bed]
+		$interior_bed['stylish'] = 'interiors\stylish_bed'
+		$interior_bed_info['stylish'] = '   '
+		$place = 'bedroom'
+! JO9 MOD START J9M0006 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+		$place_name['bedroom'] = '마법 사고<br>정열의 골짜기 -'
+! JO9 MOD END J9M0006
+		$place_info['bedroom'] = '   당신의 주문에 뭔가 이상이 생겼다. 그냥 흐름에 몸을 맡겨라!'
+		$play_sound[5] = '<<$fuck_sound[1]>>'
+	}
+	$special_action[6] = {
+		show_slave_fullimage = 0
+		$bg_path = 'girls\sex_scenes\sex_general_milf'
+		$play_sound[6] = '<<$fuck_sound[0]>>'
+	}
+	$special_action[7] = {
+		show_slave_fullimage = 0
+		$bg_path = 'girls\sex_scenes\sex_general_young_2'
+		$play_sound[7] = '<<$fuck_sound[2]>>'
+	}
+	$special_action[8] = {
+		show_slave_fullimage = 0
+		$bg_path = 'girls\sex_scenes\sex_general_loli'
+		$play_sound[8] = '<<$assfuck_sound[0]>>'
+	}
+	$special_action[9] = {
+		show_slave_fullimage = 0
+		$bg_path = 'girls\sex_scenes\analsex_general_young'
+		$play_sound[9] = '<<$assfuck_sound[1]>>'
+	}
+	
+	$special_action[10] = {
+		show_slave_fullimage = 0
+		$bg_path = 'girls\sex_scenes\analsex_general_loli_2'
+		$play_sound[10] = '<<$assfuck_sound[2]>>'
+	}
+	$special_action[11] = {
+		show_slave_fullimage = 0
+		$bg_path = 'girls\sex_scenes\analsex_general_loli'
+		$play_sound[11] = '<<$fuck_sound[0]>>'
+		$place_name['study'] = '홀'
+		$place_info['study'] = '   '
+		$place_name['bedroom'] = '침실'
+		$place_info['bedroom'] = '   '
+		gs '#estate_base' &! restore original place names and info
+		gs 'interior_restore' &! restore saved interiors
+	}
+end
+
+
+!interaction type - reward with a date
+if $interaction_type = 'praise_date':
+	interaction_date_success = 5
+	if interaction_reward_potence < 40: interaction_date_success = 4
+	if interaction_reward_potence < 10: interaction_date_success = 3
+	if interaction_reward_potence < 5: interaction_date_success = 2
+	if interaction_reward_potence <= 1: interaction_date_success = 1
+	dynamic "$text[1] = '<<$date_description[interaction_reward_level]>>'" &! this assumes that each interaction_reward_level of this type has only a single interaction
+	dynamic "$text[2] = '<<$date_result[interaction_date_success]>>'"
+	dynamic $special_part
+	dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'slave') &! should be done after $special_part - ImperatorAugustus
+	if interaction_date_success > 2 and interaction_slave['diligence'] > 0 and slave['domini_dictum'] = 0 and slave['pride'] < 4:
+		slave_rate['temper'] += 1
+		slave_rate['moral'] += max(0, min(2, (1 + interaction_reward_level)/2) - slave_already_done_today[$str(interaction)])
+	end
+	slave_rate['mood'] += interaction_reward_potence
+	if slave['virtue'] < interaction_reward_level:
+		effective_interaction_reward_level = interaction_reward_level - slave['virtue']
+		slave_rate['spoil'] += interaction_reward_potence * effective_interaction_reward_level
+	else
+		slave_rate['rational'] += min(interaction_reward_level, slave['intellect'])
+		slave_rate['spoil'] += (1 + interaction_reward_level)/2 &! spending time together always spoils somewhat -ImperatorAugustus
+	end
+	slave['pos_slave_date'] = interaction_date_success &! overwrite previous date moodlet duration, if any
+	if interaction_date_success > master_cha: master_moodlet['pos_date'] = interaction_date_success &! overwrite previous date moodlet duration, if any
+	if interaction_date_success > 2 or $slave_psy_status = 'broken':
+		slave['neg_cheap_reward'] = 0
+	elseif interaction_reward_level < min(5, min(3, slave['total_rewards']/5) + min(3, max(slave['spoil'], slave['pride'] - 2)) - max(0, slave['moral'] - 2)):
+		if slave['promise_reward'] > 0: slave['neg_cheap_reward'] = 100
+	else
+		slave['neg_cheap_reward'] = 0
+	end
+	slave['promise_reward'] = 0 &! promise fulfilled, even if the slave disliked it
+	slave['total_rewards'] += 1
+	sparks -= interaction_reward_cost
+	slave['virtue'] = 0
+end
+
+!interaction type - reward with a present
+if $interaction_type = 'present':
+	interaction_no_auto_energy_drop = 1
+	$bg_path = $item_demo[$item_id]
+	dynamic $special_part &! sets gift_from_invent
+	dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'slave') &! should be done after $special_part - ImperatorAugustus
+	if gift_from_invent = 1:
+		dynamic "$text[1] = '   <<$strfind($item_description[$item_id], {([ ]+Price: [0-9]+ sparks[^<]*[^ ]+)?([ ]+)?(.*)}, 3)>>'" &! remove price, evaluate delayed sub-expressions
+	else
+		shop_description = 1
+		dynamic "$text[1] = '<<$item_description[$item_id]>>'" &! show shop description with price, evaluate delayed sub-expressions
+		killvar 'shop_description'
+	end
+	$text[2] = $present_reaction[$slave_psy_status]
+	if slave_already_done_total[$str(interaction)] = 0:
+		interaction_reward_potence = item_price[$item_id]   &! becomes temporary mood bonus or spoil penalty
+	elseif slave_already_done_total[$str(interaction)] = 1 or everlasting = 1:
+		interaction_reward_potence = item_price[$item_id]/2 &! becomes temporary mood bonus or spoil penalty
+	else
+		interaction_reward_potence = 0 &! repetition of the same gift after the second time does not satisfy
+	end
+	if slave['passion_luxury'] ! 0 and slave['passion_luxury_revealed'] = 0: slave['passion_luxury_revealed'] = 1
+	if slave['passion_luxury'] = 1 and interaction_reward_potence > 0:
+		interaction_reward_potence = interaction_reward_potence*2
+		$text[2] = $present_reaction_passion
+	else
+		if everlasting = 0: interaction_reward_potence -= slave_already_done_total[$str(interaction)]
+		if interaction_reward_potence < 0: interaction_reward_potence = 0
+	end
+	if slave['passion_luxury'] = -1: interaction_reward_potence = 0
+	if interaction_reward_potence = 0: $text[2] = $present_reaction_fail
+	slave_rate['mood'] += max(5, interaction_reward_potence) &! even the cheapest gift is worth half a mood level - ImperatorAugustus
+	slave['pos_reward'] += interaction_reward_level
+	if slave['virtue'] < interaction_reward_level:
+		effective_interaction_reward_level = interaction_reward_level - slave['virtue']
+		slave_rate['spoil'] += interaction_reward_potence * effective_interaction_reward_level
+	elseif interaction_reward_potence > 0:
+		slave_rate['rational'] += min(interaction_reward_level, slave['intellect'])
+		slave_rate['spoil'] += (1 + interaction_reward_level)/2 &! receiving a present always spoils somewhat -ImperatorAugustus
+	end
+	if $item_id = 'plaid':
+		$interaction_type = 'special'
+		npc = 0
+	else
+		$interaction_type = 'special_png'
+	end
+	if slave['passion_luxury'] = 1 or $slave_psy_status = 'broken':
+		slave['neg_cheap_reward'] = 0
+		slave['neg_cheap_gift'] = 0
+	elseif interaction_reward_potence = 0 or slave['passion_luxury'] = -1 or interaction_reward_level < min(5, min(3, slave['total_gifts']/5) + min(3, max(slave['spoil'], slave['pride'] - 2)) - max(0, slave['moral'] - 2)):
+		if slave['promise_reward'] > 0: slave['neg_cheap_reward'] = 100
+		if slave['promise_gift'] > 0: slave['neg_cheap_gift'] = 100
+	else
+		slave['neg_cheap_reward'] = 0
+		slave['neg_cheap_gift'] = 0
+	end
+	slave['promise_reward'] = 0 &! promise fulfilled, even if the slave disliked it
+	slave['promise_gift'] = 0 &! promise fulfilled, even if the slave disliked it
+	slave['total_rewards'] += 1
+	slave['total_gifts'] += 1
+	if gift_from_invent ! 1: sparks -= item_price[$item_id]
+	gift_from_invent = 0
+	! no energy cost for gifts
+	slave['virtue'] = 0
+end
+
+!interaction type - reward with sweets
+if $interaction_type = 'praise_sweets':
+	interaction_no_auto_energy_drop = 1
+	dynamic $special_part
+	dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'slave') &! should be done after $special_part - ImperatorAugustus
+	if slave['prev_sweets'] = interaction or slave_already_done_today[$str(interaction)] > 0:
+		$text[2] = $sweets_consume_repeat
+		slave_rate['mood'] += interaction_reward_potence/2
+		if slave['virtue'] < interaction_reward_level: slave_rate['spoil'] += interaction_reward_potence
+		if slave['virtue'] >= interaction_reward_level: slave_rate['rational'] += 1
+	else
+		$text[2] = $sweets_consume
+		slave_rate['mood'] += interaction_reward_potence
+		slave['pos_dessert'] = max(slave['pos_dessert'], 1 + interaction_reward_level)
+		if slave['virtue'] < interaction_reward_level: slave_rate['spoil'] += interaction_reward_potence
+		if slave['virtue'] >= interaction_reward_level: slave_rate['rational'] += min(interaction_reward_level, slave['intellect'])
+	end
+	if slave['passion_sweets'] ! 0 and slave['passion_sweets_revealed'] = 0: slave['passion_sweets_revealed'] = 1
+	if slave['passion_sweets'] = 1 and $slave_psy_status ! 'broken':
+		slave_rate['mood'] += interaction_reward_potence
+		$text[2] = $sweets_consume_passion
+		slave['pos_job'] = max(slave['pos_job'], 1 + interaction_reward_level)
+	end
+	if slave['passion_sweets'] = -1 and $slave_psy_status ! 'broken':
+		slave_rate['mood'] -= interaction_reward_potence/2
+		$text[2] = $sweets_consume_hate
+	end
+	slave['calories'] += interaction_reward_level + 1
+	slave['prev_sweets'] = interaction
+	if slave['passion_sweets'] = 1 or $slave_psy_status = 'broken':
+		slave['neg_cheap_reward'] = 0
+		slave['neg_cheap_gift'] = 0
+	elseif slave['passion_sweets'] = -1 or interaction_reward_level < min(5, min(3, slave['total_gifts']/5) + min(3, max(slave['spoil'], slave['pride'] - 2)) - max(0, slave['moral'] - 2)):
+		if slave['promise_reward'] > 0: slave['neg_cheap_reward'] = 100
+		if slave['promise_gift'] > 0: slave['neg_cheap_gift'] = 100
+	else
+		slave['neg_cheap_reward'] = 0
+		slave['neg_cheap_gift'] = 0
+	end
+	slave['promise_reward'] = 0 &! promise fulfilled, even if the slave disliked it
+	slave['promise_gift'] = 0 &! promise fulfilled, even if the slave disliked it
+	slave['total_rewards'] += 1
+	slave['total_gifts'] += 1
+	sparks -= interaction_reward_cost
+	! no energy cost for treats
+	slave['virtue'] = 0
+end
+
+!interaction type - reward with ero
+if $interaction_type = 'praise_erotic':
+	$text[1] = $praise_erotic[interaction_reward_text]
+	if interaction_reward_level = 5 and slave['ero_rwd_cnt'] ! 1:
+		$text[2] = $praise_erotic5_reaction[$slave_psy_status]
+	else
+		$text[2] = $praise_erotic_reaction[$slave_psy_status]
+	end
+	if interaction_reward_level ! 5 or slave['ero_rwd_cnt'] = 1 or ($slave_psy_status ! 'frightened' and $slave_psy_status ! 'lachrymose' and $slave_psy_status ! 'broken'):
+		dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'slave') &! these interactions are required to set erotic stimulation outside $special_part - ImperatorAugustus
+		if interaction_slave['final_stimulation'] <= 0:
+			$text[2] = '  <<$slave_name>>는 당신의 행동에 반응하지 않는다. 그녀의 흥분이 오르지 않는 것이 보이고, 따라서 이 보상은 아무 효과도 내지 못할 것이다. 당신의 노예를 흥분시킬 무언가를 생각해 내야 한다…'
+			if master_style < 3: $text[2] += '<br><br>  어쩌면 당신의 매력을 좀 더 갈고닦아야 할지도 모르겠다?'
+			if slave['pride'] > 0: $text[2] += ' 그녀의 개방성을 다듬는 것도 좋은 생각일 것이다.'
+			house_mess_rate += 10
+			master_hygiene_rate += 10
+			slave_rate['hygiene'] += 10
+			killvar '$special_image'
+		else
+			interaction_reward_potence += interaction_reward_level
+			dynamic $special_part &! apply effects (including hygiene) only when final stimulation is non-zero, may modify interaction_reward_potence
+			slave['pos_gentle'] = max(slave['pos_gentle'], interaction_reward_potence)
+			slave_rate['mood'] += interaction_reward_potence*2
+			slave_rate['angst'] -= slave['sensitivity']
+			slave_rate['moral'] += max(0, min(2, (1 + interaction_reward_level)/2) - slave_already_done_today[$str(interaction)])
+			if slave['virtue'] < interaction_reward_level: slave_rate['spoil'] += interaction_reward_potence
+			if slave['virtue'] >= interaction_reward_level: slave_rate['rational'] += min(interaction_reward_potence, slave['intellect'])
+			master_mood_rate += slave['beauty']*3
+			if is_perv ! 0 and slave['age'] = CONST_INT['loli_age']:
+				master_excitement_rate += interaction_reward_level*3
+				master_perv_rate += interaction_reward_level*2
+				if master_libido > 0 and (interaction_reward_level < 5 or slave['ero_rwd_cnt'] = 1):
+					if no_loli = 1:
+						$text[] = $praise_erotic_no_loli0[interaction_reward_text]
+					else
+						$text[] = $praise_erotic_no_loli2[interaction_reward_text]
+					end
+				end
+			end
+		end
+	end
+	if $slave_psy_status = 'broken':
+		slave['neg_cheap_reward'] = 0
+	elseif interaction_reward_level < min(5, min(3, slave['total_rewards']/5) + min(3, max(slave['spoil'], slave['pride'] - 2)) - max(0, slave['moral'] - 2)):
+		if slave['promise_reward'] > 0: slave['neg_cheap_reward'] = 100
+	else
+		slave['neg_cheap_reward'] = 0
+	end
+	slave['promise_reward'] = 0 &! promise fulfilled, even if the slave disliked it
+	slave['total_rewards'] += 1
+	slave['virtue'] = 0
+end
+
+!Interaction type - Compliment
+!Repeat compliment fixed and has no penalty - crushboss
+if $interaction_type = 'compliment':
+	interaction_no_auto_energy_drop = 1
+	show_slave_fullimage = 1
+	dynamic $replace("$text[2] = '<<$compliment_reaction[$slave_psy_status]>>'", 'dyn'+'slave', 'slave') &! evaluate delayed sub-expressions with substitution
+	dynamic $special_part &! sets $text[1], might modify interaction_reward_potence and replace $text[2]
+! JO9 MOD START J9TP_PRAISE_SLAVE | 2026-10-17_traits_personality
+	gs 'jo9_traits_personality', 'praise', 'slave'
+! JO9 MOD END J9TP_PRAISE_SLAVE
+	if slave_already_done_today[$str(interaction)] > 0:
+		$text[2] = $compliment_repeat &! overwrites what was set earlier
+		if slave['virtue'] < interaction_reward_level: slave_rate['spoil'] += 1 &! excessive rewards increase spoil
+		slave_rate['rational'] -= 1 &! empty promises reduce rational obedience
+	else
+		slave_rate['mood'] += interaction_reward_potence
+		if slave['virtue'] < interaction_reward_level: slave_rate['spoil'] += interaction_reward_potence
+		if slave['virtue'] >= interaction_reward_level: slave_rate['rational'] += min(interaction_reward_level, slave['intellect'])
+	end
+	if slave['abuse_attitude'] = -1 and $slave_psy_status ! 'broken':
+		if slave['abuse_attitude_revealed'] = 0: slave['abuse_attitude_revealed'] = 1
+		slave_rate['mood'] += interaction_reward_potence &! no diminishing returns with hysteric trait - ImperatorAugustus
+		slave['pos_praise'] += interaction_reward_level
+		$text[2] = $compliment_plus
+	end
+	if slave['passion_fame'] = 1 and $slave_psy_status ! 'broken':
+		if slave['passion_fame_revealed'] = 0: slave['passion_fame_revealed'] = 1
+		slave_rate['mood'] += interaction_reward_potence &! no diminishing returns with conceited trait - ImperatorAugustus
+		slave['pos_praise'] += 2
+		$text[2] = $compliment_plus
+	end
+	if master_supermacy > 0 and interaction_reward_potence > 0 and (slave['neg_no_praise'] > 0 or ($slave_psy_status ! 'arrogant' and $slave_psy_status ! 'hateful')):
+		slave['neg_no_praise'] = 0
+		slave['pos_praise'] += interaction_reward_level
+	elseif interaction_reward_potence <= 0:
+		slave_rate['rational'] -= slave['virtue'] &! empty words reduce rational obedience proportional to the amount of merit - ImperatorAugustus
+	end
+	slave['virtue'] = 0
+end
+
+! JO9 MOD START J9TP_PRAISE_ASSISTANT | 2026-10-17_traits_personality
+if $interaction_type = 'assistant_compliment': gs 'jo9_traits_personality', 'praise', 'assistant'
+! JO9 MOD END J9TP_PRAISE_ASSISTANT
+!interaction type - reward by a rest
+if $interaction_type = 'rest':
+	$interaction_type = 'special'
+	interaction_no_auto_energy_drop = 1
+	if slave['passion_comfort'] ! 0 and slave['passion_comfort_revealed'] = 0: slave['passion_comfort_revealed'] = 1
+	dynamic $special_part &! sets $text[1]
+	dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'slave') &! should be done after $special_part - ImperatorAugustus
+	if $slave_psy_status = 'broken':
+		slave_rate['mood'] += free_time
+	elseif slave['passion_comfort'] = 1:
+		interaction_reward_potence *= 2
+		$text[1] += ' 그녀는 이런 안락함과 평온의 순간들을 진심으로 즐긴다.'
+		slave['pos_job'] = max(slave['pos_job'], 1 + interaction_reward_level)
+	elseif slave['passion_comfort'] = -1 and $slave_psy_status ! 'broken':
+		interaction_reward_potence /= 2
+		$text[1] += ' 그녀는 가만히 앉아 있는 것을 좋아하지 않기 때문에, 이 보상은 그리 마음에 들지 않았다.'
+	end
+	if slave_already_done_today[$str(interaction)] > 0:
+		slave_rate['mood'] += interaction_reward_potence/2
+		if slave['virtue'] < interaction_reward_level: slave_rate['spoil'] += interaction_reward_potence
+		if slave['virtue'] >= interaction_reward_level: slave_rate['rational'] += 1
+	else
+		slave_rate['mood'] += interaction_reward_potence
+		if slave['virtue'] < interaction_reward_level: slave_rate['spoil'] += interaction_reward_potence
+		if slave['virtue'] >= interaction_reward_level: slave_rate['rational'] += min(interaction_reward_level, slave['intellect'])
+		slave_rate['spoil'] += (1 + interaction_reward_level)/2 &! being rewarded with rest always spoils somewhat -ImperatorAugustus
+	end
+	slave['well_rested'] += free_time
+	slave['energy'] -= free_time
+	free_time = 0
+	if slave['passion_comfort'] = 1 or $slave_psy_status = 'broken':
+		slave['neg_cheap_reward'] = 0
+	elseif slave['passion_comfort'] = -1 or interaction_reward_level < min(5, min(3, slave['total_rewards']/5) + min(3, max(slave['spoil'], slave['pride'] - 2)) - max(0, slave['moral'] - 2)):
+		if slave['promise_reward'] > 0: slave['neg_cheap_reward'] = 100
+	else
+		slave['neg_cheap_reward'] = 0
+	end
+	slave['promise_reward'] = 0 &! promise fulfilled, even if the slave disliked it
+	slave['total_rewards'] += 1
+	sparks -= interaction_reward_cost
+	slave['virtue'] = 0
+end
+
+
+
+!interaction type - verbal punishment
+if $interaction_type = 'abuse':
+	interaction_no_auto_energy_drop = 1 &! no energy cost
+	show_slave_fullimage = 1
+	if futile_threat = 1: torturer_skill /= 2
+	if slave_already_done_today[$str(interaction)] > 0: torturer_skill = -100 &! resistance is guaranteed for same-day same-tier repetition unless the slave has a vulnerable trait - ImperatorAugustus
+	dynamic $replace($dyn_torture_result, 'dyn'+'slave', 'slave') &! modifies psy status so texts can be selected accordingly (also activates positive moodlet for ineffective punishment if psi-masochist)
+	dynamic $special_part &! set $text[1] and $play_sound[1]
+	if futile_threat = 1:
+		$text[1] += ' (당신은 이미 이 말을 노예에게 했지만, 아직 약속한 행동을 하지 않았다. 당신의 말에 의미를 가지게 하려면, 행동으로 뒷받침해야 한다!)'
+	end
+	if slave['abuse_attitude'] = 2:
+		$text[2] = $abuse_torture_reaction['psi-masochist'] & $play_sound[1] = ''
+	else
+		$text[2] = $abuse_torture_reaction[$slave_psy_status]
+	end
+	if torture_succeeded = 0: $text[2] += ' 그녀의 행동을 바로잡는 데 완전히 실패했다. 다행히도 다른 선택지는 있다.'
+	if torture_succeeded = 1: $text[2] += ' 이 정도의 교정으로는 그녀의 공포가 늘어나지 않는 듯하다. 하지만 오래 남는 영향은 있을지도 모른다…'
+	! update master skills
+	if torture_succeeded > 0 and slave['ego'] >= master_domination: master_domination_rate += (skill_adv_mul * 1)
+end
+
+
+!interaction type - rape
+if code_defined['interaction_result_rape'] = 0:
+	code_defined['interaction_result_rape'] = 1 & do-once
+
+	$interaction_result_rape = {
+		torture_intensity = dynslave['temper'] + dynslave['intellect'] + dynslave['pride'] - dynslave['moral']*2
+		will_to_resist = torture_intensity + rebell[$dynslave_psy_status] + dynslave['spoil'] + (dynslave['ego'] - 3) - max(0, min(5, master_supermacy - master_style)) - dynslave['moral']*2 - dynslave['domini_dictum']*100
+		if will_to_resist > 0 and dynslave['beaten'] = 0 and dynslave_state = CONST_INT['slave_exist']:
+			! prisoners are restrained and cannot fight, and unconscious slaves cannot resist either - ImperatorAugustus
+			if 'dynslave' = 'slave' and dynslave['gladiatrix'] > max(0, master_supermacy - master_style):
+				show_dynslave_fullimage = 1
+				$text[1] = '<<$dynslave_name>>는 필사적으로 저항한다. 그녀의 저항이 마침내 꺾일 때까지 심하게 때릴 수밖에 없을 것이다.'
+				dynamic $slave_fights_back &! includes a 'gt' so it stops execution of the code below
+			else
+				dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'dynslave')
+			end
+		end
+		if impotent = 0 and (master_excitement < -2 or (is_perv > 1 and dynslave['age'] = CONST_INT['milf_age'])):
+			$bg_path = 'scene/flaccid'
+			g = rand(1, picMax["flaccid"])
+			if g > 1: $bg_path += '_' + $str(g)
+			$text[1] = '  이건 재앙이다. 그녀는 당신 마음대로 할 수 있는 처지인데, 당신은 발기조차 하지 못한다. 물건 하나 제대로 세우지 못하면서 어떻게 그녀에게 존중받게 만들 수 있단 말인가!?'
+			if (is_perv > 1 and dynslave['age'] = CONST_INT['milf_age']): $text[1] += ' <<$dynslave_name>> 같은 나이 든 여자들은 애초에 당신 취향이 아니었다.'
+			master_mood_rate -= 10
+		else
+			dynamic $replace($dyn_rape_effects, 'dyn'+'slave', 'dynslave') &! apply psychological impacts before vaginal skill rises (penetration in $special_part)
+			if is_perv ! 0 and dynslave['age'] = CONST_INT['loli_age']:
+				master_perv_rate += 4
+				master_excitement_rate += dynslave['beauty']*5 &! before $special_part so master_ejaculate comes after
+			end
+			dynamic $special_part
+			dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'dynslave') &! after $special_part
+			if $subskill ! '' and $subskill_xp ! '':
+! JO9 MOD START COG_DYNAMIC_4 | 2026-10-16_innate_learning_traits
+! JO9 MOD START J9TP_GAIN_78 | 2026-10-17_traits_personality
+				dynamic $replace('if <<$subskill>> > 0: <<$subskill_xp>> += func(''jo9_traits_personality'', ''xp'', ''dynslave'', ''subskill'', func(''jo9_learning_xp'', (skill_adv_mul), dynslave[''jo9_learning_trait''], ''subskill''))', 'slave', 'dynslave')
+! JO9 MOD END J9TP_GAIN_78
+! JO9 MOD END COG_DYNAMIC_4
+				dynamic $replace('if <<$subskill>> < 1: <<$subskill>> += 1 & <<$subskill_xp>> = 0', 'slave', 'dynslave') &! sex skills will only advance from F- to D- when raped
+				if $subskill_two ! '' and $subskill_two_xp ! '':
+! JO9 MOD START COG_DYNAMIC_3 | 2026-10-16_innate_learning_traits
+! JO9 MOD START J9TP_GAIN_77 | 2026-10-17_traits_personality
+					dynamic $replace('if <<$subskill_two>> < 5: <<$subskill_two_xp>> += func(''jo9_traits_personality'', ''xp'', ''dynslave'', ''subskill'', func(''jo9_learning_xp'', (1), dynslave[''jo9_learning_trait''], ''subskill''))', 'slave', 'dynslave') &! secondary skills get a small xp boost (line order here is important - add xp before level-up/reset, not after)
+! JO9 MOD END J9TP_GAIN_77
+! JO9 MOD END COG_DYNAMIC_3
+					dynamic $replace('if <<$subskill_two>> < 1: <<$subskill_two>> += 1 & <<$subskill_two_xp>> = 0', 'slave', 'dynslave') &! sex skills will only advance from F- to D- when raped
+				end
+			end
+			! update master skills
+			if dynslave['ego'] >= master_domination: master_domination_rate += skill_adv_mul * iif(dynslave['age'] = CONST_INT['loli_age'], 3, 2)
+		end
+	}
+end
+
+!RAPE SLAVE OR RAPE_PRISONER
+if $interaction_type = 'rape' or $interaction_type = 'rape_prisoner':
+	dynamic $replace($interaction_result_rape, 'dyn'+'slave', $interaction_partner)
+end
+
+!interaction type - branding
+if $interaction_type = 'branding':
+	will_to_resist = torture_intensity + rebell[$slave_psy_status] + slave['spoil'] + (slave['ego'] - 3) - max(0, min(5, master_supermacy - master_style)) - slave['moral']*2 - slave['domini_dictum']*100
+	if will_to_resist > 0 and slave['beaten'] = 0:
+		if slave['gladiatrix'] > max(0, master_supermacy - master_style):
+			show_slave_fullimage = 1
+			$text[1] = '<<$slave_name>>는 필사적으로 저항한다. 그녀의 저항이 마침내 꺾일 때까지 심하게 때릴 수밖에 없을 것이다.'
+			dynamic $slave_fights_back &! includes a 'gt' so it stops execution of the code below
+		else
+			dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'slave')
+		end
+	end
+	$text[2] = '  <<$branding_final>>'
+	dynamic $replace($dyn_torture_result, 'dyn'+'slave', 'slave') &! before $special_part so texts can be selected based on modified psy status
+	dynamic $special_part
+	dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'slave') &! should be done after $special_part - ImperatorAugustus
+end
+
+!interaction type - execution
+if $interaction_type = 'execution':
+	will_to_resist = torture_intensity + rebell[$slave_psy_status] + slave['spoil'] + (slave['ego'] - 3) - max(0, min(5, master_supermacy - master_style)) - slave['moral']*2 - slave['domini_dictum']*100
+	if will_to_resist > 0 and slave['beaten'] = 0:
+		if slave['gladiatrix'] > max(0, master_supermacy - master_style):
+			show_slave_fullimage = 1
+			$text[1] = '<<$slave_name>> struggles desperately against you. You will have to beat her badly before her resistance is finally broken.'
+			dynamic $slave_fights_back &! includes a 'gt' so it stops execution of the code below
+		else
+			! no survival from this point onward
+			dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'slave')
+		end
+	end
+	dynamic $special_part
+	dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'slave') &! should be done after $special_part - ImperatorAugustus
+	dynamic $clear_slave_instance, 'slave'
+end
+
+if $interaction_type = 'chestbuster':
+	if pen > 0 and pet_tentacle = 0:
+		pet_tentacle = 1
+		tentacle_size = 0
+		tentacle_hp = 0
+		$text[5] = $chestbuster_catch
+		master_moodlet['neg_slave_died'] = 0
+	else
+		$text[5] = $chestbuster_flee
+	end
+end
+
+
+!interaction type - milking slave, assistant, cow, prisoner
+if code_defined['interaction_result_milking_slave'] = 0:
+	code_defined['interaction_result_milking_slave'] = 1
+
+	$interaction_result_milking_slave = {
+		if interaction_dynslave['res'] < 0:
+			show_dynslave_fullimage = 1
+			$text[1] = '<<$dynslave_name>>는 젖소처럼 착유당하기를 거부한다. 복종의 교훈을 가르쳐야 할 모양이다.'
+			dynamic $sin_gained_now, 'dynslave'
+			interaction_no_auto_energy_drop = 1
+		else
+! JO9 MOD START J9TP_ACTIVITY_MILKING | 2026-10-17_traits_personality
+gs 'jo9_traits_personality', 'activity', 'dynslave', 'work:' + 'cowSK', 0
+! JO9 MOD END J9TP_ACTIVITY_MILKING
+			if dynslave['cowSK'] > 4 or (dynslave['cowSK'] > 2 and dynslave['cowSK_affinity'] = 1):
+				$text[1] = '  당신의 노예는 기꺼이 착유하기 좋은 자세를 취한다. 그녀는 기꺼이 젖을 덜어 내게 해 주고, 끝나면 부드럽게 음메 소리를 낸다.'
+				dynslave['pos_cow'] = 1
+			elseif 'dynslave' = 'cow' and cow_locked = 1:
+				will_to_resist = rebell[$cow_psy_status] + cow['spoil'] + (cow['ego'] - 3) - max(0, min(5, master_supermacy - master_style)) - cow['moral']*2 - cow['cowSK']/4 - cow['cowSK_affinity']*12 - cow['domini_dictum']*100
+				if will_to_resist > 0 and cow['beaten'] = 0:
+					dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'cow')
+					cow['sin'] = 0 &! clear guilt from $dyn_slave_forced because it is not visible in the barn - ImperatorAugustus
+				end
+				$text[1] = '  족쇄 찬 당신의 젖소 아래에 양동이를 놓고, 당신은 그녀의 젖꼭지를 움켜쥐고 착유를 시작한다: <<$cow_name>>는 이런 대우에 분명 괴로워한다.'
+				cow_rate['angst'] += cow['sensitivity']
+				cow_rate['mood'] -= cow['temper']*5
+				gs '$mood_drop', 'cow', 1
+			else
+				$text[1] = '  무릎 꿇은 당신의 노예 아래에 양동이를 놓고, 당신은 그녀의 젖꼭지를 움켜쥐고 착유를 시작한다: <<$dynslave_name>>는 당신이 일을 하게 두긴 하지만, 분명 편해 보이지는 않는다.'
+				dynslave_rate['angst'] += dynslave['sensitivity']
+			end
+			dynamic $special_part
+			dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'dynslave') &! should be done after $special_part - ImperatorAugustus
+! JO9 MOD START COG_DIRECT_35 | 2026-10-16_innate_learning_traits
+! JO9 MOD START J9TP_GAIN_76 | 2026-10-17_traits_personality
+			dynslave_rate['cowSK'] += func('jo9_traits_personality', 'xp', 'dynslave', 'cowSK', func('jo9_learning_xp', (1), dynslave['jo9_learning_trait'], 'cowSK'))
+! JO9 MOD END J9TP_GAIN_76
+! JO9 MOD END COG_DIRECT_35
+			dynslave_rate['custom'] += 1
+			dynslave_rate['hygiene'] += 10
+			if dynslave['milk_summ'] >= 10:
+				milk_bottle_plus = dynslave['milk_summ']/10
+				dynslave['milk_summ'] -= 10*milk_bottle_plus
+			end
+! JO9 MOD START J9TP_MILKING_OUTPUT | 2026-10-17_traits_personality
+! JO9 MOD START J9TP_GAIN_75 | 2026-10-17_traits_personality
+milk_bottle_plus = func('jo9_traits_personality', 'performance', iif($interaction_type = 'milking_farmhand', 'farmhand', 'dynslave'), '', milk_bottle_plus)
+! JO9 MOD END J9TP_GAIN_75
+! JO9 MOD END J9TP_MILKING_OUTPUT
+			dynamic $milking_result
+		end
+	}
+end
+
+if $interaction_type = 'milking_slave' or $interaction_type = 'milking_assistant' or $interaction_type = 'milking_cow' or $interaction_type = 'milking_prisoner':
+	dynamic $replace($interaction_result_milking_slave, 'dyn'+'slave', $interaction_partner)
+	dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', $interaction_partner) &! should be done after $special_part - ImperatorAugustus
+	!if we got here from a lesson, return cow to slave slot and return master to home
+	if cow_lesson_in_progress = 1 and $interaction_type = 'milking_cow':
+		if show_cow_fullimage = 1: show_slave_fullimage = 1 & show_cow_fullimage = 0
+		dynamic $swap_slave_instances, 'slave', 'cow'
+		$interaction_partner = 'slave' &! apply energy drop and increment counters for the correct slave instance
+		$return_lock = 'menu_form'
+		cow_lesson_in_progress = 0
+	end
+end
+
+! "OTHER" INTERACTION TYPE - MUST HANDLE ITS OWN INTERACTION COUNTERS AND ENERGY DROPS
+!interaction type - farmhand milking the cow
+if $interaction_type = 'milking_farmhand':
+! JO9 MOD START J9TP_ACTIVITY_FARMHAND | 2026-10-17_traits_personality
+	if interaction_cow['res'] >= 0: gs 'jo9_traits_personality', 'activity', 'farmhand', 'work:milking', 0
+! JO9 MOD END J9TP_ACTIVITY_FARMHAND
+	dynamic $replace($interaction_result_milking_slave, 'dyn'+'slave', 'cow')
+	!overwrite texts, decrement cow and farmhand energy and increment interaction counters if the interaction was successful
+	if interaction_cow['res'] >= 0:
+		if cow['cowSK'] <= 2: $text[1] = '  무릎 꿇은 당신의 젖소 아래에 양동이를 놓고, 농장 일꾼은 그녀의 젖꼭지를 움켜쥐고 착유를 시작한다: <<$cow_name>>는 <<$farmhand_name>>가 자기 일을 하게 두지만, 분명 편해 보이지는 않는다.'
+		if cow['cowSK'] > 2:  $text[1] = '  당신의 젖소는 기꺼이 착유하기 좋은 자세를 취한다. 그녀는 기꺼이 젖을 덜어 내게 해 주고, 농장 일꾼이 끝내면 부드럽게 음메 소리를 낸다.'
+		dynamic $cow_energy_drop
+		farmhand['energy'] -= 1 &! TODO: farmhand energy drop - ImperatorAugustus
+	end
+	cow_already_done_today[$str(interaction)] += 1
+	cow_already_done_total[$str(interaction)] += 1
+	cow_already_done_recent[$str(interaction)] += 1
+end
+
+!interaction type - impregnate cow
+if $interaction_type = 'impregnate_cow':
+	if interaction_cow['res'] < 0 or (interaction_cow['sex_acceptance'] < 0 and cow['domini_dictum'] = 1):
+		if cow_locked = 0 and cow['domini_dictum'] = 0:
+			show_cow_fullimage = 1
+			$text[1] = $refuse_txt
+			dynamic $sin_gained_now, 'cow'
+			interaction_no_auto_energy_drop = 1
+		elseif impotent = 0 and (master_excitement < -2 or (is_perv > 1 and cow['age'] = CONST_INT['milf_age'])):
+			$bg_path = 'scene/flaccid'
+			g = rand(1, picMax["flaccid"])
+			if g > 1: $bg_path += '_' + $str(g)
+			$text[1] = '  이건 재앙이다. 그녀는 당신 마음대로 할 수 있는 처지인데, 당신은 발기조차 하지 못한다. 물건 하나 제대로 세우지 못하면서 어떻게 그녀에게 존중받게 만들 수 있단 말인가!?'
+			if (is_perv > 1 and cow['age'] = CONST_INT['milf_age']): $text[1] += '  <<$cow_name>> 같은 나이 든 여자들은 애초에 당신 취향이 아니었다.'
+			master_mood_rate -= 10
+			interaction_no_auto_energy_drop = 1
+			interaction_cow['res'] = -1 &! skip following code block
+		else
+			! no $dyn_slave_forced here because she can refuse unless mind-controlled
+			dynamic $replace($dyn_rape_effects, 'dyn'+'slave', 'cow') &! apply psychological impacts before vaginal skill rises (penetration in $special_part)
+		end
+	end
+	if interaction_cow['res'] >= 0 or cow_locked = 1:
+		dynamic $special_part
+		dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'cow') &! should be done after $special_part - ImperatorAugustus
+		if interaction_cow['res'] >= 0 and interaction_cow['diligence'] > 0:
+! JO9 MOD START COG_DIRECT_36 | 2026-10-16_innate_learning_traits
+! JO9 MOD START J9TP_GAIN_74 | 2026-10-17_traits_personality
+			cow_rate['cowSK'] += func('jo9_traits_personality', 'xp', 'cow', 'cowSK', func('jo9_learning_xp', (1), cow['jo9_learning_trait'], 'cowSK'))
+! JO9 MOD END J9TP_GAIN_74
+! JO9 MOD END COG_DIRECT_36
+		end
+		!update master skills
+		if cow['ego'] >= master_domination: master_domination_rate += (skill_adv_mul * iif(cow['age'] = CONST_INT['loli_age'], 2, 1))
+	end
+	!if we got here from a lesson, return cow to slave slot and return master to home
+	if cow_lesson_in_progress = 1:
+		if show_cow_fullimage = 1: show_slave_fullimage = 1 & show_cow_fullimage = 0
+		dynamic $swap_slave_instances, 'slave', 'cow'
+		$interaction_partner = 'slave' &! apply energy drop and increment counters for the correct slave instance
+		$return_lock = 'menu_form'
+		cow_lesson_in_progress = 0
+	end
+end
+
+if $interaction_type = 'cow_insemination':
+	if interaction_cow['res'] < 0 or (interaction_cow['sex_acceptance'] < 0 and cow['domini_dictum'] = 1):
+		will_to_resist = 8 + rebell[$cow_psy_status] + cow['spoil'] + (cow['ego'] - 3) - max(0, min(5, master_supermacy - master_style)) - cow['moral']*2 - cow['cowSK']/4 - cow['cowSK_affinity']*12 - cow['domini_dictum']*100
+		if will_to_resist > 0 and cow['beaten'] = 0:
+			if cow_locked = 0 and cow['gladiatrix'] > max(0, master_supermacy - master_style) and slave_state = CONST_INT['no_slave']:
+				! unrestrained cows can fight only if there is no slave (the combat system does not work vs. cow) - ImperatorAugustus
+				dynamic $swap_slave_instances, 'slave', 'cow'
+				dynamic $slave_fights_back &! includes a 'gt' so it stops execution of the code below
+			else
+				dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'cow')
+				cow['sin'] = 0 &! clear guilt from $dyn_slave_forced because it is not visible in the barn - ImperatorAugustus
+			end
+		end
+		dynamic $replace($dyn_rape_effects, 'dyn'+'slave', 'cow') &! apply psychological impacts before vaginal skill rises (penetration in $special_part)
+	end
+	dynamic $special_part
+	dynamic $replace($dyn_erotic_stimulation, 'dyn'+'slave', 'cow') &! after $special_part
+	if interaction_cow['res'] >= 0 and interaction_cow['diligence'] > 0:
+		tutor_modifier = 0
+		dynamic $replace($dyn_skill_rise, 'dyn'+'slave', 'cow')
+	end
+	!update master skills
+	if cow['ego'] >= master_domination: master_domination_rate += (skill_adv_mul * iif(cow['age'] = CONST_INT['loli_age'], 2, 1))
+end
+
+!General effects (fall-through from specific interactions above)
+dynamic $array_append, '$text', '$orgasm_text' & killvar '$orgasm_text' &! ensure orgasm texts are always displayed last - ImperatorAugustus
+
+!completion counter (global, character-independent)
+already_done_today[$str(interaction)] += 1
+
+!completion updates for specific slave (does not cover the interaction types listed in $other_interaction_types)
+if $interaction_partner ! '':
+	dynamic "
+		<<$interaction_partner>>_already_done_today[$str(interaction)] += 1
+		<<$interaction_partner>>_already_done_total[$str(interaction)] += 1
+		<<$interaction_partner>>_already_done_recent[$str(interaction)] += 1
+		if interaction_reward_level > 0: <<$interaction_partner>>['daily_reward_count'] += 1
+
+		! interactions that involve the master plus one other slave consume a full action for the master and the partner
+		if interaction_no_auto_energy_drop = 0 and (interaction_<<$interaction_partner>>['res'] >= 0 or instr($interaction_type, 'praise') ! 0):
+			! only energy drop if the repulse check succeeded and the bypass flag is not set
+			dynamic $master_energy_drop
+			dynamic $<<$interaction_partner>>_energy_drop
+		end
+	"
+end
+
+!Lecture Assistant
+IF $interaction_type = 'lecture_assistant':
+    txt_count = 2
+! JO9 MOD START J9TP_ACTIVITY_LECTURE_A | 2026-10-17_traits_personality
+gs 'jo9_traits_personality', 'activity', 'assistant', 'learn:' + $lecture_theme, 0
+! JO9 MOD END J9TP_ACTIVITY_LECTURE_A
+    skill_rise = master_tutor + assistant["intellect"] - assistant["world_index"]
+    if skill_rise < 0: skill_rise = 0
+    if skill_rise = 0:
+        $text[2] = $text_2
+    elseif skill_rise > 0 and skill_rise < 5:
+        $text[2] = $text_3
+    elseif skill_rise >= 5:
+        $text[2] = $text_4
+    end
+! JO9 MOD START COG_LECTURE_ASSISTANT | 2026-10-16_innate_learning_traits
+! JO9 MOD START J9TP_GAIN_73 | 2026-10-17_traits_personality
+    assistant[$lecture_theme] += func('jo9_traits_personality', 'xp', 'assistant', $lecture_theme, func('jo9_learning_xp', (skill_rise), assistant['jo9_learning_trait'], $lecture_theme))
+! JO9 MOD END J9TP_GAIN_73
+! JO9 MOD END COG_LECTURE_ASSISTANT
+    if assistant[$lecture_theme] >= 20: 
+        $text[2] = $text_5
+    end
+    dynamic $special_part
+END
+
+!Lecture Slave with world index
+IF $interaction_type = 'lecture_slave':
+	$interaction_type = 'talk'
+  res = slave["obedience"] + slave["fear"]
+  IF res < 0:
+  	$special_bg = $study
+  	txt_count = 1
+  	$text[1] = '<<$refuse_text>>'
+  	if already_done_today[interaction] = 0 and slave["sin"] < 1: slave["sin"] = 1
+  	if sententia_veritas = 1: slave["sin"] = 5 & sententia_veritas = 0 & sententia_veritas_casted = 1
+  ELSE
+    txt_count = 2
+! JO9 MOD START J9TP_ACTIVITY_LECTURE_S | 2026-10-17_traits_personality
+gs 'jo9_traits_personality', 'activity', 'slave', 'learn:' + $lecture_theme, 0
+! JO9 MOD END J9TP_ACTIVITY_LECTURE_S
+    skill_rise = master_tutor + slave["intellect"] - slave["world_index"]
+    if skill_rise < 0: skill_rise = 0
+    if skill_rise = 0:
+        $text[2] = $text_2
+    elseif skill_rise > 0 and skill_rise < 5:
+        $text[2] = $text_3
+    elseif skill_rise >= 5:
+        $text[2] = $text_4
+    end
+! JO9 MOD START COG_LECTURE_SLAVE | 2026-10-16_innate_learning_traits
+! JO9 MOD START J9TP_GAIN_72 | 2026-10-17_traits_personality
+    slave[$lecture_theme] += func('jo9_traits_personality', 'xp', 'slave', $lecture_theme, func('jo9_learning_xp', (skill_rise), slave['jo9_learning_trait'], $lecture_theme))
+! JO9 MOD END J9TP_GAIN_72
+! JO9 MOD END COG_LECTURE_SLAVE
+    if slave[$lecture_theme] >= 20: 
+        $text[2] = $text_5
+    end
+    dynamic $special_part
+  END
+END
+
+
+!Reset interaction variables to avoid influencing non-interaction results (e.g. $sin_gained_now in #dynamic checks 'res' variable)
+dynamic $do_for_each_slave_in_list, '$reset_interaction_variables', '$main_screen_slave_characters' &! every slave instance that can be 'interacted' with (slave, assistant, prisoner, cow) - ImperatorAugustus
+
+!interaction type - competition for slave and assistant - mrross
+IF $interaction_type = 'competition':
+ if couch_skill < 1: couch_skill = 1
+ if couch_skill > 5: couch_skill = 5
+ teacher_potential = couch_skill - slave_skill
+ if teacher_potential < 0: teacher_potential = 0
+ IF res < 0:
+  show_slave_fullimage = 1
+  $special_bg = $bedroom
+  txt_count = 1  
+  $text[1] = $refuse_txt
+  dynamic $sin_gained_now
+ ELSE
+! JO9 MOD START J9TP_ACTIVITY_COMPETITION | 2026-10-17_traits_personality
+gs 'jo9_traits_personality', 'activity', 'slave', 'learn:' + $replace($target_skill, 'slave_rate', 'slave'), 0
+gs 'jo9_traits_personality', 'activity', 'assistant', 'learn:' + $replace($target_skill_two, 'assistant_rate', 'slave'), 0
+! JO9 MOD END J9TP_ACTIVITY_COMPETITION
+  tutor_modifier = assistant["intellect"]
+  if master_mood < 0: tutor_modifier = (1 + (tutor_modifier/2))
+  if master_mood > master_tutor: tutor_modifier += 1
+  IF slave["intellect"] < 2:
+   tutor_modifier -= 2
+  ELSEIF slave["intellect"] = 2:
+   tutor_modifier -= 1
+  ELSEIF slave["intellect"] = 4:
+   tutor_modifier += 1
+  ELSEIF slave["intellect"] = 5:
+   tutor_modifier += 2
+  END
+  tutor_modifier += misc_bonus
+  if tutor_modifier < 0: tutor_modifier = 1
+  dynamic $diligence
+  dynamic $complex_diligence
+  if diligence < talent_bonus: diligence = talent_bonus
+  skill_rise = ((tutor_modifier * diligence)/2)
+  if talent_bonus > 0 and $slave['pos_job'] < 1: $slave['pos_job'] = 1
+  if slave[$target_affinity] > 0: slave['pos_job'] = 1
+  if slave[$target_affinity] < 0: slave['neg_job'] = 1 & gs '$mod_slave_drop', 1
+  IF $target_skill = 'slave_rate["stamina"]':
+   skill_rise = skill_rise/2
+   if skill_rise < 3: skill_rise = 3
+  END
+  if skill_rise < 1: skill_rise = 1
+  IF diligence = 0: skill_rise = 1
+  slave_competition_potential = slave_skill + slave_skill_2 + slave_skill_3 + diligence + complex_diligence - (slave["<<assistant['id']>>"] / 20)
+  res = 5
+  dynamic $diligence_assistant
+  dynamic $complex_diligence_assistant
+  assiatant_competition_potential = assistant_skill + assistant_skill_2 + assistant_skill_3 + diligence + complex_diligence - (assistant["<<slave['id']>>"] / 20)
+  competition_result = slave_competition_potential - assiatant_competition_potential
+  if competition_result > 3:
+  	$text[2] = $slave_won
+  	diligence = 5
+  	dynamic $virtue_gained_now
+  	slave["<<assistant['id']>>"] -= relation_bonus
+  	assistant["<<slave['id']>>"] -= relation_bonus * 3
+  elseif competition_result < -3:
+  	$text[2] = $assistant_won
+  	sin_potential = 3
+  	dynamic $sin_gained_now  	
+  	slave["<<assistant['id']>>"] -= relation_bonus * 3
+  	assistant["<<slave['id']>>"] -= relation_bonus
+  else
+  	$text[2] = $competition_draw
+  	slave["<<assistant['id']>>"] += relation_bonus * 2
+  	assistant["<<slave['id']>>"] += relation_bonus * 2
+  end
+  IF talent_bonus > 0:
+   IF slave["mood"] > 0:
+    slave_rate["mood"] += slave["mood"]
+   ELSE
+    slave_rate["mood"] += 1
+   END
+  END
+  master_hygiene_rate += add_master_hygiene
+  slave_rate["hygiene"] += add_slave_hygiene
+  assistant_rate["hygiene"] += add_assistant_hygiene
+  house_mess_rate += add_house_mess
+! JO9 MOD START COG_COMPETITION_SLAVE | 2026-10-16_innate_learning_traits
+! JO9 MOD START TRAITS_BODY_COMPETITION_SLAVE | 2026-10-17_traits_batch
+! JO9 MOD START J9TP_GAIN_71 | 2026-10-17_traits_personality
+  dynamic '<<$target_skill>> += func(''jo9_traits_personality'', ''xp'', ''slave'', $target_skill, func(''jo9_traits_combat'', ''education_xp'', ''slave'', func(''jo9_learning_xp'', (skill_rise), slave[''jo9_learning_trait''], $target_skill), $target_skill))'
+! JO9 MOD END J9TP_GAIN_71
+! JO9 MOD END TRAITS_BODY_COMPETITION_SLAVE
+! JO9 MOD END COG_COMPETITION_SLAVE
+! JO9 MOD START COG_COMPETITION_ASSISTANT | 2026-10-16_innate_learning_traits
+! JO9 MOD START TRAITS_BODY_COMPETITION_ASSISTANT | 2026-10-17_traits_batch
+! JO9 MOD START J9TP_GAIN_70 | 2026-10-17_traits_personality
+  dynamic '<<$target_skill_two>> += func(''jo9_traits_personality'', ''xp'', ''assistant'', $target_skill_two, func(''jo9_traits_combat'', ''education_xp'', ''assistant'', func(''jo9_learning_xp'', (skill_rise), assistant[''jo9_learning_trait''], $target_skill_two), $target_skill_two))'
+! JO9 MOD END J9TP_GAIN_70
+! JO9 MOD END TRAITS_BODY_COMPETITION_ASSISTANT
+! JO9 MOD END COG_COMPETITION_ASSISTANT
+  res = slave["obedience"] - repulse
+  dynamic $diligence
+  dynamic $special_part
+!  gs '$calculate_attributes_fast'
+ END
+end
+
+
+
+! JO9 MOD START J9TP_ACTIVITY_FINISH | 2026-10-17_traits_personality
+gs 'jo9_traits_personality', 'finish', 'slave'
+gs 'jo9_traits_personality', 'finish', 'assistant'
+gs 'jo9_traits_personality', 'finish', 'room1'
+gs 'jo9_traits_personality', 'finish', 'room2'
+gs 'jo9_traits_personality', 'finish', 'room3'
+gs 'jo9_traits_personality', 'finish', 'room4'
+gs 'jo9_traits_personality', 'finish', 'cow'
+gs 'jo9_traits_personality', 'finish', 'prisoner'
+gs 'jo9_traits_personality', 'finish', 'farmhand'
+! JO9 MOD END J9TP_ACTIVITY_FINISH
+! JO9 MOD START VOICE_ARGON_CONFIRM_HISTORY | 2026-10-18_argon_revised_dialogue
+if interaction=1117 or interaction=1118:
+ jo9_vn_commit_allowed=0
+ if interaction=1117 and interaction_slave['res']>=0: jo9_vn_commit_allowed=1
+ if interaction=1118: jo9_vn_commit_allowed=1
+ if jo9_vn_commit_allowed=1: dynamic $voice_native_pending_commit
+ dynamic $voice_native_pending_clear
+ killvar 'jo9_vn_commit_allowed'
+end
+! JO9 MOD END VOICE_ARGON_CONFIRM_HISTORY
+gt 'interaction_screen'
+
+------------ interaction_result ------------

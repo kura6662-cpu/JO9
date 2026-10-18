@@ -1,0 +1,57 @@
+# slave_to_assistant
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2879 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'slave_to_assistant': gs 'snk_room_bridge', 'guard', 'slave_to_assistant'
+! JO9 MOD END J9M2879
+!move slave to assistant or vice versa (to be called with 'gt')
+
+if felicity = 1 and $quest12 ! 'fail' and active[$quest[12]] = 1 and slave_type = 2572: $quest12 = 'fail' & $quest12_failreason = '스펙터 경께서는 네게 구체적인 지시를 내리셨다. 그리고 그분 형제의 피후견인을 네 조수로 올리는 건 그 지시 안에 없었다.'
+
+if assistant_state > CONST_INT['no_slave'] and slave_state > CONST_INT['no_slave']:
+	! copy assistant-exclusive duties to new assistant
+	slave['supervise_rule'] = assistant['supervise_rule']
+	slave['washes_slave_rule'] = assistant['washes_slave_rule']
+	
+	slave['buy_alcohol'] = assistant['buy_alcohol']
+	slave['buy_cheese'] = assistant['buy_cheese']
+	slave['buy_flour'] = assistant['buy_flour']
+	slave['buy_spice'] = assistant['buy_spice']
+	slave['buy_vegetables'] = assistant['buy_vegetables']
+
+	slave['buy_cream'] = assistant['buy_cream']
+	slave['buy_eggs'] = assistant['buy_eggs']
+	slave['buy_milk'] = assistant['buy_milk']
+
+	slave['buy_mince'] = assistant['buy_mince']
+	slave['buy_meat'] = assistant['buy_meat']
+end
+
+! reset assistant appearance
+!$assistant['fullimage'] = $fullimage[assistant_type] & assistant['image_mode'] = 0
+
+dynamic $swap_slave_instances, 'slave', 'assistant'
+
+if get_initial_slave = 1 and assistant_state = CONST_INT['slave_exist']:
+	!Reset get initial slave variable to prevent loop
+	get_initial_slave = 0
+elseif sound_on = 1:
+	play 'content/snd/slave_to_assistant.wav', sound_volume
+end
+
+if slave['shift'] = 0: 
+	slave['shift'] = 1
+elseif slave['shift'] = 1:
+	slave['shift'] = 0
+end
+if assistant['shift'] = 0: 
+	assistant['shift'] = 1
+elseif assistant['shift'] = 1: 
+	assistant['shift'] = 0
+end
+
+
+if $return_lock = 'menu_form': menu_form = 0 & city_form = 0 &! city_form = 0 to bypass menu_form ESC intercept but still play door sound
+
+gt $return_lock
+
+------------ slave_to_assistant ------------

@@ -1,0 +1,198 @@
+# #quest_base
+! Readable view; authoritative fields are in ../locations.json.
+if snk_room_target > 0 and $curloc = '#quest_base': gs 'snk_room_bridge', 'guard', '#quest_base'
+gs 'snk_rm_dialogue_info', 'fame'
+!quests database (reloaded by master_stat when accessing objectives tab)
+$quest[0] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 0 & gt $curloc">Dem. 조합 가입 시험부터 통과해야 한다 ( 체험학습 도움말 )</a>'
+$quest[1] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 1 & gt $curloc">Str. 슬슬 내 홍보를 시작해야 한다</a>'
+$quest[2] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 2 & gt $curloc">Gld. 이 노예를 더 비싸게 팔 방법을 생각해보자</a>'
+$quest[3] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 3 & gt $curloc">Pat. 작위 취득도 좋은 방법이다</a>'
+$quest[4] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 4 & gt $curloc">Gld. 조합 중역이 되고싶다. 난 그럴만 하고, 할 수 있다.</a>'
+$quest[5] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 5 & gt $curloc">Sp. 정말 특별한 고객이 내게 접촉해왔다</a>'
+$quest[6] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 6 & gt $curloc">Sp. 장교 아라무스을 만족 시키려면 아레나 챔피언이 필요하다</a>'
+$quest[7] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 7 & gt $curloc">Sp. 부셴이 거래를 요구했는데, 경주 챔피언와 교환하고 싶다고 한다</a>'
+$quest[8] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 8 & gt $curloc">Sp. 가르시드에게 아주 완벽히 교육된 성노예를 데려가면, 뭔가와 교환해줄 것이다</a>'
+$quest[9] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 9 & gt $curloc">Sp. 술사 발리오스가 성장한 안개 괴물을 연구하고 싶다던데...</a>'
+$quest[10] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 10 & gt $curloc">Gld. 조합 의뢰 작업을 끝내고 전달하자</a>'
+$quest[11] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 11 & gt $curloc">* 전공 설명 및 전공표</a>'
+!Post Patrician Quest - crushboss
+$quest[12] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 12 & gt $curloc">Pat. 스펙터 경이, 형제의 딸을 타락시키면 엄청난걸 준다고...</a>'
+!New Quests - RedGreen3
+$quest[13] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 13 & gt curloc">Sp. 라니스타 그라쿠스를 위해 검투와 경주에서 성과를 보인 노예을 훈련시켜야 한다</a> <br>'
+$quest[14] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 14 & gt curloc">Sp. 황제 가이우스가 베네라를 자기에게 맞게 준비해 달라고 했다</a> <br>'
+$quest[15] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 15 & gt curloc">Sp. 바바리안 왕을 위해 펠라게야를 준비시켜야 한다</a> <br>'
+!Formerly #102
+$quest[16] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 16 & gt curloc">Sp. 두막은 처분이 안 되는 여자들을 사들일 준비가 되어 있다. 떨이 처분하기엔 나쁘지 않은 방법이다... </a> <br>'
+
+!Fogs Quest - RedGreen3
+$quest[17] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 17 & gt curloc">Sp. 살아 있는 인형 극장의 인형술사가 안개 지대 안의 포털에 대해 뭔가 알고 있다. 정확히 뭔지 알아내야 한다...  </a> <br>'
+$quest[18] = '<a href = "EXEC: quest_description_mode = 1 & choosen_quest = 18 & gt $curloc">Pat. 내 명성을 올리기 위해 접촉할 만한 지역들이 있다.</a> <br>'
+!CHECK: почему мертвым можно?
+if slave_state > CONST_INT['no_slave']:
+	if exam_in_progress = 1:
+		active[$quest[0]] = 1
+		active[$quest[2]] = 0
+	else
+		active[$quest[0]] = 0
+		active[$quest[2]] = iif(slave['brand'] = 4, 0, 1) &! do not show this objective for guild contract slaves - ImperatorAugustus
+	end
+else
+	active[$quest[0]] = 0
+	active[$quest[2]] = 0
+end
+
+$quest_description[0] = '길드 시험을 통과하려면, 내 노예의 등급을 최소한 <<$rating[4]>> 등급까지 올려야 한다.'
+if slave['obedience'] < 1:
+! JO9 MOD START J9M2486 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+	$quest_description[0] += '<br><br>노예는 복종을 배워야 한다'
+! JO9 MOD END J9M2486
+elseif slave['obedience'] < 6:
+! JO9 MOD START J9M2485 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+	$quest_description[0] += '<br><br>노예의 복종이 아직 충분하지 않다'
+! JO9 MOD END J9M2485
+end
+if slave['beauty'] < 2:
+! JO9 MOD START J9M2484 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+	$quest_description[0] += '<br><br>노예가 아직 충분히 아름답지 않다'
+! JO9 MOD END J9M2484
+	if slave['bruises'] > 0: $quest_description[0] += ', 하지만 멍이 낫고 나면 더 나아 보일지도 모른다'
+end
+! JO9 MOD START J9M2483 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+if slave['stamina'] < 3: $quest_description[0] += '<br><br>노예의 체력이 부족하다. 운동을 시켜서 체력 <b>C등급</b> 이상을 만들어 보자.'
+if slave['sex_sum'] < 4: $quest_description[0] += '<br><br>성교육을 더 시켜보자. 합계 4점 이상을 만들자.'
+if skill_sum < 18:       $quest_description[0] += '<br><br>일반기술을 더 교육해보자. 합계 18점 이상을 만들자.'
+if attribute_sum < 12:   $quest_description[0] += '<br><br>합계 12점 이상의 <a href=''EXEC: msg $атрибуты_справка''>기틀 속성</a>이 필요하다'
+if slave['moral'] < 1:   $quest_description[0] += '<br><br>충성심을 만들어 주자. 노예의 아우라에서 확인할 수 있는, 하나 이상의 <font color="#008080">헌신의 취옥</font>을 만들자.'
+! JO9 MOD END J9M2483
+$quest_description[0] += '<br><br><a href = "EXEC: quest_description_mode = 0 & gt $curloc"> 뒤 로</a>'
+
+$quest_description[1] = '<div style="font-size: 95%;"><<$brand_fame[brand_reputation]>><br><br>' + _
+'<<$korvus_fame[faction_fame["korvus"]]>>' + iif(faction_fame['serpis'] > 2 and npc_progress['pope'] < 2, ' 다만 언데드들이 내가 세르피스 가문과 거래한 일을 눈감아 주게 하려면 교황의 후원이 필요할 것이다.', '') + '<br><br>' + _
+'<<$taurus_fame[faction_fame["taurus"]]>>' + iif(faction_fame['kamira'] > 2 and npc_progress['pope'] < 2, ' 다만 타우루스 가문이 내가 카미라 가문과 거래한 일을 눈감아 주게 하려면 교황의 후원이 필요할 것이다.', '') + '<br><br>' + _
+'<<$serpis_fame[faction_fame["serpis"]]>>' + iif(faction_fame['korvus'] > 2 and npc_progress['pope'] < 2, ' 다만 뱀들이 내가 코르부스 가문과 거래한 일을 눈감아 주게 하려면 교황의 후원이 필요할 것이다.', '') + '<br><br>' + _
+'<<$kamira_fame[faction_fame["kamira"]]>>' + iif(faction_fame['taurus'] > 2 and npc_progress['pope'] < 2, ' 다만 비인간들이 내가 타우루스 가문과 거래한 일을 눈감아 주게 하려면 교황의 후원이 필요할 것이다.', '') + '<br><br>' + _
+'</div><a href = "EXEC: quest_description_mode = 0 & gt curloc">뒤로</a>'
+
+$quest_description[2] = '<br>상표를 확실히 표기하고, 화려한 모습을 갖추어야 한다.<br>멋진 복장은 고객에 인상을 심어주는데에 도움이 된다.<br><br>' + _
+'&nbsp&nbsp&nbsp- 판매 방법:<br><br>' + _
+'1. 조합이 주최하는 상표품 경매.<br> 매 주기마다 열리지만, 매매 가격 편차가 굉장히 넓다.<br>' + _
+'2. 일반 고객에게 직접 판매.<br> 그나마 쉬운 편이지만, 매매 가격에 변동을 줄 수 없다.<br>' + _
+'3. 장외거래 고객을 찾아서 판매.<br> 등급에 따른 가격이 자동으로 맞춰지고, 내 상표와 구매자 가문 내의 평판도 올릴 수 있다.<br> 그런 최적화가 가능한 장외 고객은, 중앙 집회장에서 정보를 수집해야 한다.<br> 난 이런 전공과 등급까지 맞추며, 이윤을 최대화 시켜주는 고객을 찾는 것이다!<br> 집회장의 <u>잠개고객 탐색</u>을 통해 가능하며, 탐색 시의 노예 등급과 연동된다.<br> 팔아야 할 때 찾는것이 좋다.<br>' + _
+'<br><a href = "EXEC: quest_description_mode = 0 & gt $curloc"> 뒤 로</a>'
+
+$quest_description[3] = '   로마에는 나에게 귀족 신분을 주고 명예 시민 계층으로 이끌 수 있는 인물이 다섯 있다:<br><br>' + _
+'교황 이오안은 나에게 백색 도시의 귀족 신분을 줄 수 있다. 그의 호의를 얻으려면 내 브랜드가 매우 유명해야 하고, 추기경들 중 한 명의 지지를 받아야 한다.<br><br>' + _
+'카미라 가문의 미스트리스가 나를 그녀의 용 무리에 받아들인다면, 나는 비인간들 사이에서 거물이 될 것이다. 그들의 타우루스 가문과의 불화를 잊지 말아야 한다.<br><br>' + _
+'세르피스 가문의 수장은 내가 뱀들의 신뢰를 얻으면 명예 시민으로 만들어 줄 수 있다. 중요한 건 코르부스 가문의 언데드들과 너무 가까워지지 않는 것이다.<br><br>' + _
+'타우루스 가문의 왕은 나를 기사로 서임해 줄 수 있다. 타우루스 가문은 비인간들을 좋아하지 않는다는 점을 기억해야 한다. 카미라 가문과 가까워지면 이 길은 막힌다.<br><br>' + _
+'마지막으로, 나는 코르부스 가문의 대공에게 갈 수 있다. 언데드에게서 받는 노블 블러드의 작위는 매우 중요한 수확이지만, 그러려면 세르피스 가문과 너무 가까워져서는 안 된다.<br><br>' + _
+'<br><a href = "EXEC: quest_description_mode = 0 & gt $curloc">뒤로</a>'
+! JO9 MOD START J9M2482 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$quest_description[6] = ' 아라무스, 타우루스 가문 군수 장교.<br><br> 마법깃든 고리와 나의 아레나 챔피언를 교환하자 제의했다.<br><br> 그의 말론, 반지 착용자의 전투 능력과 평소 아우라의 힘을 끌어올려 준다고.<br>' + _
+'<br> 장교 아라무스은 중앙 집회장에서 찾을 수 있다.<br>' + _
+'<br><a href = "EXEC: quest_description_mode = 0 & gt $curloc"> 뒤 로</a>'
+! JO9 MOD END J9M2482
+
+! JO9 MOD START J9M2481 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$quest_description[7] = ' 부셴, 세르피스 가문의 마법물품 제작자.<br><br> 경주 챔피언과 자신의 목걸이 교환을 제시했다.<br><br> 그의 말론, 목걸이 착용자 아우라에 자신감을 부여하고 체력은 물론, 전투 중 고통과 두려움을 견딜 능력과 투지를 불태워준다고.<br>' + _
+'<br> 부셴은 중앙 집회장 거닐기를 즐긴다. 거기서 찾으면 된다.<br>' + _
+'<br><a href = "EXEC: quest_description_mode = 0 & gt $curloc"> 뒤 로</a>'
+! JO9 MOD END J9M2481
+
+! JO9 MOD START J9M2480 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$quest_description[8] = ' 가르시드, 이상한 소리내며 중앙 집회장을 배회하는 괴생물.<br><br> 임신한 노예와 함께 다니며, 역겨운 행세로 집회장 사람들을 괴롭히고 다닌다.<br><br> 강인함 힘과 성욕, 매력을 증진시키고 혈액을 응고 시켜준다는 마법 물품과 완벽하게 준비된 성노예를 교환하고 싶어한다, <br><br> 더욱이 다른 기술은 상관 없다고 한다.<br><br> 그런 노예를 키워내는데는 제법 어렵기에, 다소 시간이 소요될 것이다. 하지만 시도할 가치는 있어 보인다.<br>' + _
+'<br> 완벽한 성노예가 준비되면, 집회장에 있는 가르시드에게 찾아갖자.<br>' + _
+'<br><a href = "EXEC: quest_description_mode = 0 & gt $curloc"> 뒤 로</a>'
+! JO9 MOD END J9M2480
+
+! JO9 MOD START J9M2479 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$quest_description[9] = ' 발리오스, 안개 괴물을 연구하는 강령술사.<br><br> 내 다 자란, 살아있는 안개 괴물과 자신의 마법깃든 물품의 교환을 제안했다.<br><br> 키워내기도 쉽지 않으며, 생명 주기가 끝날 무렵의 안개 괴물도 쓸모 없다.<br><br> 그래도 이 <u>큰까마귀 관</u>때문에 시도해볼만 하다. 그가 말하길, 영원한 아우스펙스를 부여하고, 아우라의 힘 또한 올려준다고.<br>' + _
+'<br> 안개 괴물을 레비아탄으로 키워내, 괴물이 살아있을 때, 집회장에 있는 발리오스에 찾아가자.<br>' + _
+'<br><a href = "EXEC: quest_description_mode = 0 & gt $curloc"> 뒤 로</a>'
+! JO9 MOD END J9M2479
+
+! JO9 MOD START J9M2478 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$quest_description[10] = '<br> 조합이 의뢰받은 상품을 내가 맡았으니, 책임지고 만들어야 한다.<br><br> 전공은 <font color="#0000D8"><<$slave_type_name[$specialisation[specialisation]]>></font>, 등급은 <<$rating[contract["level"]]>> 까지가 의뢰 요구치다.<br>' + _
+'<br><a href = "EXEC: msg $specialisation_help">전공자를 만드는 Tip</a><br>' + _
+'<br> 전공 계열 요구 기술별 B 달성 이전에, 노예의 체력을 확인하세요.<br>높은 체력의 노예가, 하루간 더 많이 행동하여 빨라질 수 있습니다.<br>노예 등급에 마우스를 올리면, 그 등급의 도움말을 볼 수 있습니다.<br>' + _
+'<br>' + _
+'목표 등급 <<$rating[1]>> : <<contract_time[1]>> 일    목표 등급 <<$rating[2]>> : <<contract_time[2]>> 일<br>' + _
+'목표 등급 <<$rating[3]>> : <<contract_time[3]>> 일    목표 등급 <<$rating[4]>> : <<contract_time[4]>> 일<br>' + _
+'목표 등급 <<$rating[5]>> : <<contract_time[5]>> 일    목표 등급 <<$rating[6]>> : <<contract_time[6]>> 일<br>' + _
+'목표 등급 <<$rating[7]>> : <<contract_time[7]>> 일    목표 등급 <<$rating[8]>> : <<contract_time[8]>> 일<br>' + _
+'목표 등급 <<$rating[9]>> : <<contract_time[9]>> 일    목표 등급 <<$rating[10]>> : <<contract_time[10]>> 일<br><br>일자 이내 조달하면 추가금을, 초과 조달하면 벌금을 냅니다.<br>' + _
+'<br><a href = "EXEC: quest_description_mode = 0 & gt $curloc"> 뒤 로</a>'
+! JO9 MOD END J9M2478
+
+! JO9 MOD START RNL126 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$quest_description[11] = '   전문화에 필요한 모든 기술과 능력치는 최소 B 단계여야 하며, 노예의 등급 이상이어야 한다. 조수가 있다면 내 노예가 전공 조건을 충족했을 때 알려 줄 것이다.<br><br>' + _
+'1. 시종 전문화 - 메이드와 요리<br>' + _
+'2. 비서 전문화 - 비서 업무와 화술<br>' + _
+'3. 치유술사 전문화 - 간호, 연금술, 마법<br>' + _
+'4. 여검투사 전문화 - 여검투사, 운동능력, 자아, 성격<br>' + _
+'5. 예술가 전문화 - 춤, 음악, 그림<br>' + _
+'6. 애완녀 전문화 - 애완녀, 경마녀<br>' + _
+'7. 젖소 전문화 - 노예는 젖소로 살아가는 데 익숙해져 있어야 하며, 이것은 젖소 "기술"로 표시된다(거창한 표현이긴 하지만).<br>' + _
+'8. 성노예 전문화 - 애무, 구강, 노출, 삽입<br>' + _
+'   성노예 노예를 원하는 대부분의 고객은 그녀가 마른 체형(모델 체형 또는 날씬함)이길 바란다. 또한 외모가 최소 B 이상이며, 그 단계가 노예의 등급보다 높기를 원한다.<br>' + _
+'<br><a href = "EXEC: quest_description_mode = 0 & gt $curloc">뒤로</a>'
+! JO9 MOD END RNL126
+
+!Post Patrician Quest - crushboss
+$quest_description[12] = '  순백색 대도시의 귀족이자 군주인 스펙터 경은 형의 딸인 펠리시티를 농략하고 노예로 바꾼것에 대한 대가로 미스릴 갑옷을 제공할 것이다. 스펙터 경은 중앙집회장에서 찾을 수 있다.' + _
+'<br><br> 요구 사항 요약 (아래 규칙 중 하나를 위반하면 퀘스트 실패): <div style="line-height:25%;"><br></div>' + _
+'1. 무재개빛 응석을 0으로 줄이고 개방적인 태도와 더불어 헌신의 취옥을 최대치로 해야한다. 또한, 이 여자를 데리고 오면 납품이 끝날때 까지 다른 노예를 데려오지 말아야 한다.<div style="line-height:25%;"><br></div>' + _
+'2. 그녀에게 색정광, 노출 집착증, 이상성욕 선호, 양성애자의 <i>특성</i>을 얻게 하고, <b>모든 성애기술</b>을 최대한 올려야 한다.<div style="line-height:25%;"><br></div>' + _
+'3. 그녀에게 안개 괴물의 정액을 매일같이 먹여야 하며, 항상 안개 괴물의 정액을 짜내도록 해야한다. <i>언제나 빠짐없이</i>.<div style="line-height:25%;"><br></div>' + _
+'4. 혀 분리시술과 흉터만들기를 포함한 모든 신체 변형을 해야하고 그녀에게 모든 노예 장식품과 아이템, 특히 유두사슬을 착용하게 해야한다.<div style="line-height:25%;"><br></div>' + _
+'5. 그녀는 보 아저씨가 제공하는 모든 문신을 해야한다. <i>상표 문신까지 전부</i>.  시술 순서에 주의. <div style="line-height:25%;"><br></div>' + _
+'6. 그녀를 S+ 등급의 노예로 만들어야 한다. 또한 다음과 같은 노예 규칙을 무조건 지켜야 한다. : 목욕노예, 펠라 자명종, 안개 괴물 착정, 바기나 비즈<div style="line-height:25%;"><br></div>' + _
+'7. 그녀가 120 일이되기 전에 경마 왕좌의 주인 이라는 특성을 획득하고, 임신하고 흥분등급이 최대치인 상태에서 스펙터 경에게 데려가야 한다.<br>' + _
+'<br> 퀘스트를 시작하고 지난 일 수: <<quest12_day_counter>><br>' + _
+'<br><a href = "EXEC: quest_description_mode = 0 & gt $curloc"> 뒤 로</a>'
+
+!New Quests - RedGreen3
+! JO9 MOD START J9M2477 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$quest_description[13] = ' 그라쿠스, 유명한 시합 주최자이자 검투사 조련사.<br><br> 투기장에서 활약할 뿐 아니라 말 역할도 훌륭히 해내는 노예 소녀와 맞바꾸는 대가로 마법 부적을 제안했다.<br><br> 그의 말에 따르면 이 부적은 착용자에게 힘을 부여하고 끔찍한 질병과 저주로부터 보호해 줄 수 있다고 한다.<br><br>아마도 투기장 2회승리, 경마장 1회승리 정도면 그의 조건에 들어 맞지 않을까?<br>' + _
+'<br> 필요하다면 중앙 포럼에서 그라쿠스를 찾을 수 있을 것이다.<br>' + _
+'<br><a href = "EXEC: quest_description_mode = 0 & gt $curloc"> 뒤 로</a>'
+! JO9 MOD END J9M2477
+
+
+! JO9 MOD START J9M2476 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$quest_description[9] = ' 발리오스, 안개 괴물을 연구하는 강령술사.<br><br> 내 다 자란, 살아있는 안개 괴물과 자신의 마법깃든 물품의 교환을 제안했다.<br><br> 키워내기도 쉽지 않으며, 생명 주기가 끝날 무렵의 안개 괴물도 쓸모 없다.<br><br> 그래도 이 <u>큰까마귀 관</u>때문에 시도해볼만 하다. 그가 말하길, 영원한 아우스펙스를 부여하고, 아우라의 힘 또한 올려준다고.<br>' + _
+'<br> 안개 괴물을 레비아탄으로 키워내, 괴물이 살아있을 때, 집회장에 있는 발리오스에 찾아가자.<br>' + _
+'<br><a href = "EXEC: quest_description_mode = 0 & gt $curloc"> 뒤 로</a>'
+! JO9 MOD END J9M2476
+
+
+! JO9 MOD START J9M2475 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$quest_description[14] = ' 가이우스가 내가 거절할 수 없는 제안을 해 왔다. 그는 자기 아내 펠라게야와 맞바꾸는 대가로 그녀의 자매 베네라를 원한다. 이런 기회는 일생에 한 번뿐이지만, 그냥 흘려보낼 수는 없다. 그리고 분명 쉬운 일도 아닐 것이다: 1. 베네라를 납치하는 문제로 발랄라이카와 협상해야 한다. 어쩌면 이 일은 그녀만이 도와줄 수 있을지도 모른다. 2. 베네라를 손에 넣고 나면, 남는 건 그녀를 길들여 가이우스에게 넘기는 일뿐이다. 그리고 이왕 하는 김에 그녀로 좀 재미를 봐도 나쁠 건 없지 않나? <a href = "EXEC: quest_description_mode = 0 & gt curloc">뒤로</a>'
+$quest_description[15] = ' 바바리안 왕은 펠라게야를 빌려 주면 막대한 보상을 약속했다. 내 왕실 창녀를 잠깐이라도 내주는 건 아쉽지만, 뭔가 큰일이 다가오고 있는 느낌이 든다. 그렇다면 나는 그쪽 편에 서 있어야 한다... 정말 내가 그 자매 둘 다 손에 넣을 수 있을까? 하지만 그러려면 조금 더 애써야 한다: 1. 모든 대가문에서 영향력을 얻고, 그 수장들과 바바리안 왕의 회담을 주선해야 한다. 2. 펠라게야는 헛소리가 빠질 때까지 두들겨 패고, 예술성도 손봐야 한다. 성적 기술도 완벽하게 다듬어야 한다. 왕실 창녀는 반드시 그 지위에 완전히 걸맞아야 한다... <a href = "EXEC: quest_description_mode = 0 & gt curloc">뒤로</a>'
+$quest_description[16] = ' 두막은 흉해진 노예, 허약한 노예, 혹은 정신이 꺾인 노예를 살 준비가 되어 있다. <a href = "EXEC: quest_description_mode = 0 & gt curloc">뒤로</a>'
+! JO9 MOD END J9M2475
+
+!Fogs Quest - RedGreen3
+! JO9 MOD START J9M2474 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$quest_description[17] = ' 그 인형술사는, 극장에 있는 모든 배우들의 임무를 내가 완수하면 포털에 관해 아는 것을 전부 말해 주겠다고 약속했다. <a href = "EXEC: quest_description_mode = 0 & gt curloc">뒤로</a>'
+! JO9 MOD END J9M2474
+
+if no_futa = 1:
+	$quest_description[18] = '<div style="font-size: 95%;"><<$centralkvartal_fame[faction_fame["centralkvartal"]]>><br><br>' + _
+	'<<$Redlight_fame[faction_fame["Redlight"]]>> <br><br>' + _
+	'<<$otchuzhdenie_fame[faction_fame["otchuzhdenie"]]>><br><br>' + _
+	'<<$russiankvartal_fame[faction_fame["russiankvartal"]]>><br><br>' + _
+	'</div><a href = "EXEC: quest_description_mode = 0 & gt curloc">Back</a>'
+else
+	$quest_description[18] = '<div style="font-size: 95%;"><<$centralkvartal_fame[faction_fame["centralkvartal"]]>><br><br>' + _
+	'<<$Redlight_fame[faction_fame["Redlight"]]>> <br><br>' + _
+	'<<$otchuzhdenie_fame[faction_fame["otchuzhdenie"]]>><br><br>' + _
+	'<<$russiankvartal_fame[faction_fame["russiankvartal"]]>><br><br>' + _
+	'<<$futaland_fame[faction_fame["futaland"]]>><br><br>' + _
+	'</div><a href = "EXEC: quest_description_mode = 0 & gt curloc">Back</a>'
+end
+
+!$quest[] = ''
+
+------------ #quest_base ------------

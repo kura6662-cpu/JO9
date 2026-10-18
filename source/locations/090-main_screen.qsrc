@@ -1,0 +1,986 @@
+# main_screen
+! Readable view; authoritative fields are in ../locations.json.
+ui_style = 2
+! JO9_SINGLE_GRIMDARK_UI_20261014
+! JO9 MOD START J9M1303 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'main_screen': gs 'snk_room_bridge', 'guard', 'main_screen'
+if snk_room_target > 0: gs 'snk_room_menu_screen' & exit
+! JO9 MOD END J9M1303
+! JO9_UI_V16_READABILITY
+$jo9_v16_fast_sex_S = ''
+$jo9_v16_fast_sex_A = ''
+$jo9_v16_fast_wash_master = ''
+$jo9_v16_fast_clean_master = ''
+$jo9_v16_fast_cook_master = ''
+$jo9_v16_fast_punish_slave = ''
+$jo9_v16_fast_reward_slave = ''
+$jo9_v16_fast_wash_slave = ''
+$jo9_v16_fast_slave_milking = ''
+$jo9_v16_fast_clean_slave = ''
+$jo9_v16_fast_cook_slave = ''
+$jo9_v16_fast_tentacle_slave = ''
+$jo9_v16_fast_assistant_milking = ''
+$jo9_v16_fast_clean_assistant = ''
+$jo9_v16_fast_cook_assistant = ''
+$jo9_v16_fast_tentacle_assistant = ''
+!main_screen, at home
+dynamic $home_sounds
+
+gs 'main_layout'
+presets_list = 0
+$info_text = '' &! reset stats screens bottom text
+$prisoner_info_text = '' &! reset prison bottom text
+$cow_info_text = '' &! reset barn screen bottom text
+$room1_info_text = ''
+$room2_info_text = ''
+$room3_info_text = ''
+$room4_info_text = ''
+
+! JO9 MOD START J9M1302 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+*p func('interior_change', 'jo9_html', '<div id = "large_image"><img src="content\pic\bg\<<$bg[$place]>>.png"></div>')
+! JO9 MOD END J9M1302
+*p '<div id = "main_screen"><<$text_display>></div>'
+! JO9 MOD START J9M1301 | 2026-10-15_css24_qsp_titles | changed block; context may be included
+*p '<div id="jo9_ui_home"></div><div id="jo9_master_card"><span class="jo9_card_title">주인공</span></div><div id="jo9_slave_card"><span class="jo9_card_title">노예</span></div><div id="jo9_assistant_card"><span class="jo9_card_title">조수</span></div>'
+! JO9 MOD END J9M1301
+
+if wizard_mode = 1:
+	*p '<div class="upper_container"><div id = "upper">일: <<day>> 금: <<sparks>>$ | 계약: <<contract["time"]>> 일 |  Cal: <<slave["calories"]>>  |  두: <<slave["fear"]>>/<<slave_rate["fear"]>>  |  자: <<slave["instinct"]>>/<<slave_rate["instinct"]>>  |  의: <<slave["rational"]>>/<<slave_rate["rational"]>>  |  길: <<slave["custom"]>>/<<slave_rate["custom"]>>  |  충: <<slave["moral"]>>/<<slave_rate["moral"]>>  |  결: <<slave["spoil"]>>/<<slave_rate["spoil"]>>  |  절: <<slave["angst"]>>/<<slave_rate["angst"]>></div></div>'
+else
+	$shedule_warn = ''
+	if exam_in_progress = 0:
+		if ride_count = 0:    $shedule_warn += '<font color="#ff5700"><b>!</b></font>'
+		if auction_count = 0: $shedule_warn += '<font color="#ff5700"><b>!</b></font>'
+		if gladi_count = 0:   $shedule_warn += '<font color="#ff5700"><b>!</b></font>'
+	end 
+	if exam_in_progress = 1:
+		$upper_info_bar = '경과 <<day>> 일 │ 소지금 <<sparks>>$'
+	else
+		$upper_info_bar = '경과 <<day>> 일 │ 소지금 <<sparks>>$'
+	end
+	if debt > 0: $upper_info_bar += ' │ 변제 <<debt>>$ <<debt_count>> 일'
+	if contract['time'] > 0: $upper_info_bar += ' │ 계약 <<contract["time"]>> 일'
+	if slave_state > CONST_INT['no_slave']: $upper_info_bar += ' │ '
+		*p '<div class="upper_container"><div id = "upper"><<$shedule_warn>>&nbsp;<<$upper_info_bar>></div>'
+	if slave_state > CONST_INT['no_slave']:
+		if difficulty_setting = 2 or slave['diet_portion'] ! 4:
+			*p '<div id="upper_calculator"><img src="content\pic\kalkulyator.png"></div>'
+			$upper_info_bar = ' <<IIF(slave["calories"] > 0, "+", " ")>><<slave["calories"]*100>> cal │ '	
+			*p '<div id = "upper_calories"><<$upper_info_bar>></div>'			
+		end
+		if header_clothing = 0:
+			if $item_name[$slave["cloth"]] ! '' and $item_name[$slave["cloth"]] ! '알몸':
+				$upper_info_bar = '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$item_name[$slave["cloth"]]>>"> <img src ="content\pic\ui overhaul\clothing bar small\<<$slave["cloth"]>>.png"></div>'
+			else
+				if slave['age'] = CONST_INT['young_age']: 
+					$upper_info_bar = '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="알몸"> <img src="content\pic\ui overhaul\clothing bar small\naked_young.png"></div>'
+				elseif slave['age'] = CONST_INT['loli_age']:
+					$upper_info_bar = '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="알몸"> <img src="content\pic\ui overhaul\clothing bar small\naked_loli.png"></div>'
+				else
+					$upper_info_bar = '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="알몸"> <img src="content\pic\ui overhaul\clothing bar small\naked_milf.png"></div>'
+				end
+			end
+		
+			if $item_name[$slave["headband"]] ! '' and $item_name[$slave["headband"]] ! '-':
+				$upper_info_bar += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$item_name[$slave["headband"]]>>"> <img src ="content\pic\ui overhaul\clothing bar small\<<$slave["headband"]>>.png"></div>'
+			else
+				$upper_info_bar += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="머리: -"> <img src ="content\pic\ui overhaul\clothing bar small\no_headband.png"></div>'
+			end
+		
+			if $item_name[$slave["earrings"]] ! '' and $item_name[$slave["earrings"]] ! '-':
+				$upper_info_bar += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$item_name[$slave["earrings"]]>>"> <img src ="content\pic\ui overhaul\clothing bar small\<<$slave["earrings"]>>.png"></div>'
+			else
+				$upper_info_bar += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="귀걸이: -"> <img src ="content\pic\ui overhaul\clothing bar small\no_earrings.png"></div>'
+			end
+		
+			if $item_name[$slave["collar"]] ! '' and $item_name[$slave["collar"]] ! '-':
+				$upper_info_bar += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$item_name[$slave["collar"]]>>"> <img src ="content\pic\ui overhaul\clothing bar small\<<$slave["collar"]>>.png"></div>'
+			else
+				$upper_info_bar += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="목: -"> <img src ="content\pic\ui overhaul\clothing bar small\no_collar.png"></div>'
+			end
+		
+			if $item_name[$slave["gloves"]] ! '' and $item_name[$slave["gloves"]] ! '-':
+				$upper_info_bar += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$item_name[$slave["gloves"]]>>"> <img src ="content\pic\ui overhaul\clothing bar small\<<$slave["gloves"]>>.png"></div>'
+			else
+				$upper_info_bar += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="장갑: -"> <img src ="content\pic\ui overhaul\clothing bar small\no_gloves.png"></div>'
+			end
+		
+			if $item_name[$slave["boots"]] ! '' and $item_name[$slave["boots"]] ! '-':
+				$upper_info_bar += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$item_name[$slave["boots"]]>>"> <img src ="content\pic\ui overhaul\clothing bar small\<<$slave["boots"]>>.png"></div>'
+			else
+				$upper_info_bar += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="신발: -"> <img src ="content\pic\ui overhaul\clothing bar small\no_boots.png"></div>'
+			end
+			
+			$upper_info_bar += '<a class="tooltip-bottom" tooltip-data="장비창" href="EXEC: header_clothing = 1 & gt ''main_screen''"> <img src="content\pic\ui overhaul\clothing bar\clothbar_right.png"></a>'
+		else
+			if $item_name[$slave["armor"]] ! '갑옷 없음' and $item_name[$slave["armor"]] ! '':
+				$upper_info_bar = '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$item_name[$slave["armor"]]>>"> <img src ="content\pic\ui overhaul\clothing bar small\<<$slave["armor"]>>.png"></div>'
+			else
+				$upper_info_bar = '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="갑옷: 갑옷 없음"> <img src ="content\pic\ui overhaul\clothing bar small\no_armor.png"></div>'
+			end
+		
+			if $item_name[$slave["left_wpn"]] ! 'безоружный' and $item_name[$slave["left_wpn"]] ! '' and $item_name[$slave["left_wpn"]] ! '맨주먹':
+				$upper_info_bar += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$item_name[$slave["left_wpn"]]>>"> <img src ="content\pic\ui overhaul\clothing bar small\<<$slave["left_wpn"]>>.png"></div>'
+			else
+				$upper_info_bar += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="왼손: 맨주먹"> <img src ="content\pic\ui overhaul\clothing bar small\no_leftwpn.png"></div>'
+			end
+		
+			if $item_name[$slave["right_wpn"]] ! 'безоружный' and $item_name[$slave["right_wpn"]] ! '' and $item_name[$slave["right_wpn"]] ! '맨주먹':
+				$upper_info_bar += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$item_name[$slave["right_wpn"]]>>"> <img src ="content\pic\ui overhaul\clothing bar small\<<$slave["right_wpn"]>>.png"></div>'
+			else
+				$upper_info_bar += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="오른손: 맨주먹"> <img src ="content\pic\ui overhaul\clothing bar small\no_rightwpn.png"></div>'
+			end
+		
+			if $item_name[$slave["back_wpn"]] ! 'безоружный' and $item_name[$slave["back_wpn"]] ! '':
+				$upper_info_bar += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$item_name[$slave["back_wpn"]]>>"> <img src ="content\pic\ui overhaul\clothing bar small\<<$slave["back_wpn"]>>.png"></div>'
+			else
+				$upper_info_bar += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="등뒤: -"> <img src ="content\pic\ui overhaul\clothing bar small\no_backwpn.png"></div>'
+			end
+			$upper_info_bar += '<a class="tooltip-bottom" tooltip-data="의류" href="EXEC: header_clothing = 0 & gt ''main_screen''"> <img src="content\pic\ui overhaul\clothing bar\clothbar_right.png"></a>'
+		end
+		*p '<div id = "upper_equipment"><<$upper_info_bar>></div>'
+	end
+	if assistant_state > CONST_INT['no_slave']:
+
+		*p '<div id="upper_calculator"><img src="content\pic\kalkulyator.png"></div>'
+		$upper_info_bar = ' <<IIF(assistant["calories"] > 0, "+", " ")>><<assistant["calories"]*100>> cal │ '		
+		*p '<div id = "upper_calories"><<$upper_info_bar>></div>'			
+	end	
+	*p '</div>'
+end
+
+!schedule <a style="color:red" href="EXEC: msg $shedule"></a>
+if ride_count > 2: $rideday = '<<ride_count>>일 뒤'
+if ride_count = 2: $rideday = '이틀 뒤'
+if ride_count = 1: $rideday = '내일'
+if ride_count = 0: $rideday = '오늘!'
+if auction_count > 2: $auctionday = '<<auction_count>>일 뒤'
+if auction_count = 2: $auctionday = '이틀 뒤'
+if auction_count = 1: $auctionday = '내일'
+if auction_count = 0: $auctionday = '오늘!'
+if gladi_count > 2: $gladiday = '<<gladi_count>>일 뒤'
+if gladi_count = 2: $gladiday = '이틀 뒤.'
+if gladi_count = 1: $gladiday = '내일'
+if gladi_count = 0: $gladiday = '오늘!'
+
+! JO9 MOD START J9M1300 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$shedule = '<br><center><u>행사 일정</u></center><br>' + _
+'콜로세움 경주 : <<$rideday>><br>' + _
+'콜로세움 투기 : <<$gladiday>><br>' + _
+'조합유치 경매 : <<$auctionday>><br>&nbsp&nbsp' + _
+'<br><center>각 순환주기 10일 입니다</center>'
+! JO9 MOD END J9M1300
+
+!option icon
+if exam_in_progress = 1:
+	*p '<div id="options_icon"><a class="tooltip-bottom" tooltip-data="게임 설정" href = "EXEC: menu_form = 2000 & gt ''demo_menu_form''"><img src="content\pic\buttons\gear.png"></a></div>'
+else
+	*p '<div id="options_icon"><a class="tooltip-bottom" tooltip-data="게임 설정" href = "EXEC: menu_form = 2000 & gt ''menu_form''"><img src="content\pic\ui\grimdark\buttons\gear.png"></a></div>'
+	if slave_state = CONST_INT['slave_exist'] and cheat_show = 1:
+		*p '<div id="options_cheats"><a class="tooltip-bottom" tooltip-data="치트 핫키" href = "EXEC: menu_form = 2101 & gt ''menu_form''"><img src="content\pic\buttons\gear_slave_editor.png"></a></div>'
+	end
+	if exam_in_progress = 0 and $master_head_gear = 'raven_crown':
+		if slave_state = CONST_INT['slave_exist']:
+			*p '<div id="refresh_database_icon"><a class="tooltip-bottom" tooltip-data="종합정보 갱신" href = "EXEC: gs ''interior_storage'' & gs ''refresh_database'' & gs ''interior_restore'' & play ''content/snd/kkm.wav'', sound_volume & gt $curloc"><img src="content\pic\buttons\gear_console.png"></a></div>'
+		else
+			p ''
+		end
+	end
+end
+
+!console button, only in developer versions
+*p '<div id="console_icon"><a class="tooltip-bottom" tooltip-data="콘솔 명령" href = "EXEC: dynamic $console"><img src="content\pic\buttons\gear_console.png"></a></div>'
+
+if sound_on = 1:
+	*p '<div id="sound_icon"><a class="tooltip-bottom" tooltip-data="사운드 켜짐" href = "EXEC: sound_on = 0 & close all & gt $curloc"><img src="content\pic\<<iif(ui_style = 2, ''ui\grimdark\buttons\sound_on.png'', ''buttons\sound_on.png'')>>"></a></div>'
+else
+	*p '<div id="sound_icon"><a class="tooltip-bottom" tooltip-data="사운드 꺼짐" href = "EXEC: sound_on = 1 & gt $curloc"><img src="content\pic\<<iif(ui_style = 2, ''ui\grimdark\buttons\sound_off.png'', ''buttons\sound_off.png'')>>"></a></div>'
+end
+
+!sound option
+if menu_form = 2000:
+	*p '<div style="position:absolute;top:595px;left:79px"><img src = "content/pic/소리.png"></div>'
+	*p '<div style="position:absolute;top:589px;left:95px;font-family:경기천년제목 Medium;"><table><tr><td style="width:100px"><font color="#FFD700" size="5">배경음악 :</font></td><td><a href = 1><img src="content/pic/buttons/Minus.png"></a></td><td><center><font color="#FFD700" size="5"><<music_volume>>%</font></center></td><td><a href = 2><img src="content/pic/buttons/Plus.png"></a></td><td><a href = 3><img src="content/pic/buttons/close_button.png"></a></td></tr>'
+	*nl '<tr><td style="width:100px"><font color="#FFD700" size="5">효과음악 :</font></td><td><a href = 4><img src="content/pic/buttons/Minus.png"></a></td><td><center><font color="#FFD700" size="5"><<sound_volume>>%</font></center></td><td><a href = 5><img src="content/pic/buttons/Plus.png"></a></td><td><a href = 6><img src="content/pic/buttons/close_button.png"></a></td></tr></table></div>'
+	dynamic $volume_controls
+end
+
+!Trophy Room feature - created by crushboss (relocated for readability -ImperatorAugustus)
+if exam_in_progress = 0:
+	*p '<div id="trophy_room"><a class="tooltip-left-small-button" tooltip-data="트로피 룸" href = "EXEC: gt ''trophy_room_screen''"><img src="content\pic\ui\approved_main_v1\header_trophy.png" style="width:23px;height:23px;"></a></div>'
+end
+
+!button for fast travel to cryo facility (relocated for readability, and use $transport_energy_drop instead of $master_energy_drop -ImperatorAugustus)
+if stasis_tank = 1:
+	*p '<div id = "cryobutton"><a class="tooltip-bottom" tooltip-data="크라이오 슬립" href = "EXEC: dynamic $transport_energy_drop, ''serpis_house'' & copyarr ''$display_options'', ''$stasis_options'' & skip_to = 2 & gt ''shop_general''"><img src="content\pic\ui\grimdark\buttons\cryobutton.png" style="width:32px;height:32px;"></a></div>'
+end
+
+!showing spell state
+$active_spell = ''
+if auspex = 1: $active_spell += '<a class="tooltip-left-down" tooltip-data="아우스펙스 사용중"><img src="content\pic\ui overhaul\auspex.png" style="width:34px;height:36px"></a><br>'
+if magna_magnifika > 0: $active_spell += '<a class="tooltip-left-down" tooltip-data="마그나 마그니피카 사용중"><img src="content\pic\ui overhaul\magna magnifika.png" style="width:34px;height:36px"></a><br>'
+if slave['domini_dictum'] = 1: $active_spell += '<a class="tooltip-left-down" tooltip-data="도미니 딕툼 사용중"><img src="content\pic\ui overhaul\domini dictum.png" style="width:34px;height:36px"></a><br>'
+if slave['sententia_veritas'] > 0: $active_spell += '<a class="tooltip-left-down" tooltip-data="센텐티아 베리타스 사용중"><img src="content\pic\ui overhaul\sententia veritas.png" style="width:34px;height:36px"></a>'
+$active_spell += '</div>'
+*p '<div id = "active_spell"><<$active_spell>></div>'
+
+!ImperatorAugustus: consolidated master avatar and status display, sync with city_screen
+*p '<div id = "master_short_ava"><a href = "EXEC: master_stat_screen = 0 & gt ''master_stat''"><img src = "<<$master_ava_color>>"></a></div>'
+! JO9_UI_V192_AP_master
+$energy_help = '<div>초록색 행동력 바는 대부분의 행동에 소비되며 수면, 캄라, 요정 꽃가루, 강장 영약, 숙련된 마사지로 회복됩니다.<br><br>빨간 칸은 피로입니다. 이 상태에서 행동력을 더 소비하면 근력이나 지구력에 해를 줍니다.<br>보라색은 운동 한계 경고입니다. 행동력이 남아 있어도 추가 운동은 해롭습니다.<br>사선 칸은 현재 체력으로 사용할 수 없는 영역이며, 반 칸은 행동력 0.5입니다.<br><br>녹색 화살표는 현재 한도를 넘는 초과 에너지를 뜻합니다. 운동 한계 상태에서는 화살표도 보라색입니다.<br>파란 별 아이콘은 휴식 적립입니다. 밤의 규칙 행동이나 다음 날을 위해 환급 및 이월되며, 이월에는 지구력 한도가 적용됩니다.<br><br>바와 아이콘에 마우스를 올리면 정확한 수치를 확인할 수 있습니다.</div>'
+jo9_ap_units = 2 * master_energy - master_half_action
+jo9_ap_cap = max(0, min(5, 5))
+jo9_ap_bonus = max(0, 0)
+jo9_ap_extra = max(0, jo9_ap_units - 2 * jo9_ap_cap)
+jo9_ap_base = min(jo9_ap_units, 2 * jo9_ap_cap)
+$jo9_ap_cells = ''
+for jo9_ap_i = 1 to 5 step 1:
+ $jo9_ap_kind = 'jo9_ap_empty'
+ if jo9_ap_units >= 0:
+  if jo9_ap_i > jo9_ap_cap: $jo9_ap_kind = 'jo9_ap_locked'
+  if jo9_ap_base >= 2 * jo9_ap_i: $jo9_ap_kind = 'jo9_ap_green'
+  if jo9_ap_base = 2 * jo9_ap_i - 1: $jo9_ap_kind = 'jo9_ap_green_half'
+  if master_moodlet['neg_master_overexerted'] > 0: $jo9_ap_kind = $replace($jo9_ap_kind, 'green', 'purple')
+ else
+  if -jo9_ap_units >= 2 * (6 - jo9_ap_i): $jo9_ap_kind = 'jo9_ap_red'
+  if -jo9_ap_units = 2 * (6 - jo9_ap_i) - 1: $jo9_ap_kind = 'jo9_ap_red_half'
+ end
+ $jo9_ap_cells += '<span class="jo9_ap_cell <<$jo9_ap_kind>>"></span>'
+end
+$jo9_ap_tip = '행동력 ' + iif(jo9_ap_units < 0, '-', '') + str(max(jo9_ap_units, -jo9_ap_units) / 2) + iif(max(jo9_ap_units, -jo9_ap_units) MOD 2 = 1, '.5', '') + ' · 현재 한도 ' + str(jo9_ap_cap) + ' / 기본 상한 5'
+$jo9_ap_extra_tip = '초과 에너지 ' + str(jo9_ap_extra / 2) + iif(jo9_ap_extra MOD 2 = 1, '.5', '')
+$jo9_ap_rest_tip = '휴식 적립 ' + str(jo9_ap_bonus) + ' · 밤 또는 다음 날 환급, 이월 한도 적용'
+$jo9_ap_tip += ' · ' + $jo9_ap_extra_tip + ' · 휴식 적립 ' + str(jo9_ap_bonus)
+if jo9_ap_units < 0: $jo9_ap_tip += ' · 피로: 추가 소비 시 근력 및 지구력에 악영향'
+if master_moodlet['neg_master_overexerted'] > 0: $jo9_ap_tip += ' · 운동 한계: 추가 운동 주의'
+$jo9_ap_arrow = 'jo9_extra_green'
+if master_moodlet['neg_master_overexerted'] > 0: $jo9_ap_arrow = 'jo9_extra_purple' & $jo9_ap_extra_tip += ' · 운동 한계: 추가 운동 주의'
+if jo9_ap_extra = 0: $jo9_ap_arrow += ' jo9_ap_inactive'
+$jo9_ap_star = 'jo9_rest_star'
+if jo9_ap_bonus = 0: $jo9_ap_star += ' jo9_ap_inactive'
+*p '<div id="jo9_ap_master" class="jo9_ap"><a tooltip-data="<<$jo9_ap_tip>>" href="EXEC: msg $energy_help"><span class="jo9_ap_cells"><<$jo9_ap_cells>></span></a></div><div id="jo9_extra_master" class="jo9_extra"><span class="jo9_extra_icon <<$jo9_ap_arrow>>" tooltip-data="<<$jo9_ap_extra_tip>>"></span><span class="jo9_extra_icon <<$jo9_ap_star>>" tooltip-data="<<$jo9_ap_rest_tip>>"></span></div><div id="master_short_stat">'
+	$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'mood', master_mood, 1)
+	*p '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $mood_chart"><<$mood[master_mood_plus]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'master_excitement', master_excitement, 1)
+	*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href = "EXEC: msg $excitement_chart"><<dyneval($vb_cycle_stat, IIF(max(master_moodlet["neg_boner"], master_moodlet["neg_blazing"]) = 0, 5 + master_excitement, 0), $excitement[master_excitement_plus])>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'hygiene', master_hygiene, -1)
+	*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href = "EXEC: msg $hygiene_chart"><<$personal_hygiene[master_hygiene]>></a>'
+*p '</div>'
+
+!ImperatorAugustus: consolidated assistant avatar and status display, moved energy to top, added : to fiend status
+if assistant_state = CONST_INT['slave_exist']:
+	*p '<div id = "assistant_short_ava"><a href = "EXEC: assistant_stat_screen = 0 & gt ''assistant_stat''"><img src = "<<$assistant[''ava_clear'']>>.png"></a></div>'
+	! JO9_UI_V192_AP_assistant
+jo9_ap_units = 2 * assistant['energy'] - assistant['half_action']
+jo9_ap_cap = max(0, min(5, assistant['stamina']))
+jo9_ap_bonus = max(0, assistant['well_rested'])
+jo9_ap_extra = max(0, jo9_ap_units - 2 * jo9_ap_cap)
+jo9_ap_base = min(jo9_ap_units, 2 * jo9_ap_cap)
+$jo9_ap_cells = ''
+for jo9_ap_i = 1 to 5 step 1:
+ $jo9_ap_kind = 'jo9_ap_empty'
+ if jo9_ap_units >= 0:
+  if jo9_ap_i > jo9_ap_cap: $jo9_ap_kind = 'jo9_ap_locked'
+  if jo9_ap_base >= 2 * jo9_ap_i: $jo9_ap_kind = 'jo9_ap_green'
+  if jo9_ap_base = 2 * jo9_ap_i - 1: $jo9_ap_kind = 'jo9_ap_green_half'
+  if assistant['neg_exhausted'] > 0: $jo9_ap_kind = $replace($jo9_ap_kind, 'green', 'purple')
+ else
+  if -jo9_ap_units >= 2 * (6 - jo9_ap_i): $jo9_ap_kind = 'jo9_ap_red'
+  if -jo9_ap_units = 2 * (6 - jo9_ap_i) - 1: $jo9_ap_kind = 'jo9_ap_red_half'
+ end
+ $jo9_ap_cells += '<span class="jo9_ap_cell <<$jo9_ap_kind>>"></span>'
+end
+$jo9_ap_tip = '행동력 ' + iif(jo9_ap_units < 0, '-', '') + str(max(jo9_ap_units, -jo9_ap_units) / 2) + iif(max(jo9_ap_units, -jo9_ap_units) MOD 2 = 1, '.5', '') + ' · 현재 한도 ' + str(jo9_ap_cap) + ' / 기본 상한 5'
+$jo9_ap_extra_tip = '초과 에너지 ' + str(jo9_ap_extra / 2) + iif(jo9_ap_extra MOD 2 = 1, '.5', '')
+$jo9_ap_rest_tip = '휴식 적립 ' + str(jo9_ap_bonus) + ' · 밤 또는 다음 날 환급, 이월 한도 적용'
+$jo9_ap_tip += ' · ' + $jo9_ap_extra_tip + ' · 휴식 적립 ' + str(jo9_ap_bonus)
+if jo9_ap_units < 0: $jo9_ap_tip += ' · 피로: 추가 소비 시 근력 및 지구력에 악영향'
+if assistant['neg_exhausted'] > 0: $jo9_ap_tip += ' · 운동 한계: 추가 운동 주의'
+$jo9_ap_arrow = 'jo9_extra_green'
+if assistant['neg_exhausted'] > 0: $jo9_ap_arrow = 'jo9_extra_purple' & $jo9_ap_extra_tip += ' · 운동 한계: 추가 운동 주의'
+if jo9_ap_extra = 0: $jo9_ap_arrow += ' jo9_ap_inactive'
+$jo9_ap_star = 'jo9_rest_star'
+if jo9_ap_bonus = 0: $jo9_ap_star += ' jo9_ap_inactive'
+*p '<div id="jo9_ap_assistant" class="jo9_ap"><a tooltip-data="<<$jo9_ap_tip>>" href="EXEC: msg $energy_help"><span class="jo9_ap_cells"><<$jo9_ap_cells>></span></a></div><div id="jo9_extra_assistant" class="jo9_extra"><span class="jo9_extra_icon <<$jo9_ap_arrow>>" tooltip-data="<<$jo9_ap_extra_tip>>"></span><span class="jo9_extra_icon <<$jo9_ap_star>>" tooltip-data="<<$jo9_ap_rest_tip>>"></span></div><div id="assistant_short_stat">'
+elseif assistant_state = CONST_INT['no_slave']:
+	*p '<div id = "assistant_short_ava"><img src = "content/pic/blank_ava.png"></div>'
+	*p '<div id = "assistant_short_stat">조수 없음'
+elseif assistant_state = CONST_INT['slave_faint']:
+	*p '<div id = "assistant_short_ava"><a href = "EXEC: assistant_stat_screen = 0 & gt ''assistant_stat''"><img src = "<<$assistant["ava"]>>.png"></a></div>'
+	*p '<div id = "assistant_short_stat">의식 없음'
+elseif assistant_state = CONST_INT['slave_dead']:
+	*p '<div id = "assistant_short_ava"><a href = "EXEC: assistant_stat_screen = 0 & gt ''assistant_stat''"><img src = "<<$assistant["ava_gray"]>>.png"></a></div>'
+	*p '<div id = "assistant_short_stat">사망'
+end
+if assistant_state = CONST_INT['slave_exist']:
+	$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'mood', assistant['mood'], 1)
+	*p '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $mood_chart"><<$mood[assistant_mood_plus]>></a>'
+end
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'house_mess', house_mess, -1)
+*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href = "EXEC: msg $house_mess_chart"><<$house_mess[house_mess]>></a>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'cooked_food', cooked_food_plus, 1)
+*nl '<div style="display:inline-block;position:relative;" class="tooltip-left" tooltip-data="<<$tooltip_text>>"><<$replace($replace($replace($cooked_food_label[cooked_food_plus], ''통조림 음식'', ''통조림''), ''음식찌꺼기'', ''남은음식''), ''음식 찌꺼기'', ''남은음식'')>></div>'
+if ate_already >= max(1, master_str) and cooked_food <= master_str:
+	$tooltip_text = '식사 질이 당신의 체력을 유지하기에 충분했다'
+	*p '<div id="master_info_hungry"><a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>"><<dyneval($vb_cycle_skill, ate_already, "배부름")>></a></div>'
+elseif ate_already > 0:
+	$tooltip_text = '식사 질이 당신의 체력을 유지하기에 충분하지 않았다'
+	*p '<div id="master_info_hungry"><a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>"><<dyneval($vb_cycle_skill, ate_already, "배고픔")>></a></div>'
+end
+*p '</div>'
+! JO9 MOD START MONSTER_STATUS_MAIN_SCREEN | 2026-10-17_zzzz_monster_status_icon
+! 조수 상태칸 밖에 괴물 상태 아이콘을 표시한다. 1=갈망, 2=만족. 성장 이름은 툴팁으로 표시한다.
+if pet_tentacle > 0 and (tentacle_state = 1 or tentacle_state = 2):
+	$tooltip_text = $strfind($tentacle_name[tentacle_size], '>([^<>]+)<', 1)
+	if $tooltip_text = '': $tooltip_text = $tentacle_name[tentacle_size]
+	$tooltip_text = '안개 괴물 · ' + $tooltip_text + ' / 현재 상태: ' + iif(tentacle_state = 1, '갈망', '만족')
+	*p '<div id="jo9_house_monster"><a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $tentacle_chart"><img src="content\pic\ui\monster_status\<<iif(tentacle_state = 1, "craving", "satisfied")>>.png" alt="안개 괴물"></a></div>'
+end
+! JO9 MOD END MONSTER_STATUS_MAIN_SCREEN
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+if cooked_food < 1 and kitchen > 0:
+	if slave_state = CONST_INT['slave_exist'] and slave['cooks_rule'] = 1:
+		$jo9_v16_fast_cook_slave = '<div id="fast_cook_slave"><a class="tooltip-left-small-button" tooltip-data="<<$slave_name>>, 저녁을 준비해라" href = "EXEC: interaction = menu_dinner_S & gt ''interaction''"><img src="content\pic\ui\approved_main_v1\action_cook.png"></a></div>'
+	elseif assistant_state = CONST_INT['slave_exist'] and assistant['cooks_rule'] = 1:
+		$jo9_v16_fast_cook_assistant = '<div id="fast_cook_assistant"><a class="tooltip-left-small-button" tooltip-data="<<$assistant_name>>, 저녁을 준비해라" href = "EXEC: interaction = 43 & gt ''interaction''"><img src="content\pic\ui\approved_main_v1\action_cook.png"></a></div>'
+	else
+		$jo9_v16_fast_cook_master = '<div id="fast_cook_master"><a class="tooltip-left-small-button" tooltip-data="직접 저녁을 준비한다" href = "EXEC: interaction = 35 & gt ''interaction''"><img src="content\pic\ui\approved_main_v1\action_cook.png"></a></div>'
+	end
+	!fixed state checks: a fainted or dead assistant cannot cook - ImperatorAugustus
+end
+
+!fast button for fiend
+if tentacle_state = 1:
+	if slave_state = CONST_INT['slave_exist'] and slave['tentacle_rule'] = 1:
+		$jo9_v16_fast_tentacle_slave = '<div id="fast_tentacle_slave"><a class="tooltip-left-small-button" tooltip-data="<<$slave_name>>, 안개 괴물을 착정해라" href = "EXEC: interaction = 59 & gt ''interaction''"><img src="content\pic\buttons\fast_button.png"></a></div>'
+	elseif assistant_state = CONST_INT['slave_exist']:
+		$jo9_v16_fast_tentacle_assistant = '<div id="fast_tentacle_assistant"><a class="tooltip-left-small-button" tooltip-data="<<$assistant_name>>, 안개 괴물을 착정해라" href = "EXEC: interaction = 45 & gt ''interaction''"><img src="content\pic\buttons\fast_button_assistant.png"></a></div>'
+	end
+end
+
+!fast button for cleaning
+if house_mess > 1:
+	if slave_state = CONST_INT['slave_exist'] and slave['cleans_rule'] = 1:
+		$jo9_v16_fast_clean_slave = '<div id="fast_clean_slave"><a class="tooltip-left-small-button" tooltip-data="<<$slave_name>>, 집을 청소해라" href = "EXEC: interaction = menu_tidy_S & gt ''interaction''"><img src="content\pic\ui\approved_main_v1\action_clean.png"></a></div>'
+	elseif assistant_state = CONST_INT['slave_exist'] and assistant['cleans_rule'] = 1:
+		$jo9_v16_fast_clean_assistant = '<div id="fast_clean_assistant"><a class="tooltip-left-small-button" tooltip-data="<<$assistant_name>>, 집을 청소해라" href = "EXEC: interaction = 42 & gt ''interaction''"><img src="content\pic\ui\approved_main_v1\action_clean.png"></a></div>'
+	else
+		$jo9_v16_fast_clean_master = '<div id="fast_clean_master"><a class="tooltip-left-small-button" tooltip-data="직접 집을 청소한다" href = "EXEC: interaction = 36 & gt ''interaction''"><img src="content\pic\ui\approved_main_v1\action_clean.png"></a></div>'
+	end
+	!fixed state checks: a fainted or dead assistant cannot clean - ImperatorAugustus
+end
+
+!ImperatorAugustus: consolidated slave avatar and status display, sync with city_screen
+if slave_state = CONST_INT['slave_exist']:
+	*p '<div id = "slave_short_ava"><a href = "EXEC: slave_stat_screen = 0 & gt ''slave_stat''"><img src = "<<$slave[''ava_clear'']>>.png"></a></div>'
+	! JO9_UI_V192_AP_slave
+jo9_ap_units = 2 * slave['energy'] - slave['half_action']
+jo9_ap_cap = max(0, min(5, slave['stamina']))
+jo9_ap_bonus = max(0, slave['well_rested'])
+jo9_ap_extra = max(0, jo9_ap_units - 2 * jo9_ap_cap)
+jo9_ap_base = min(jo9_ap_units, 2 * jo9_ap_cap)
+$jo9_ap_cells = ''
+for jo9_ap_i = 1 to 5 step 1:
+ $jo9_ap_kind = 'jo9_ap_empty'
+ if jo9_ap_units >= 0:
+  if jo9_ap_i > jo9_ap_cap: $jo9_ap_kind = 'jo9_ap_locked'
+  if jo9_ap_base >= 2 * jo9_ap_i: $jo9_ap_kind = 'jo9_ap_green'
+  if jo9_ap_base = 2 * jo9_ap_i - 1: $jo9_ap_kind = 'jo9_ap_green_half'
+  if slave['neg_exhausted'] > 0: $jo9_ap_kind = $replace($jo9_ap_kind, 'green', 'purple')
+ else
+  if -jo9_ap_units >= 2 * (6 - jo9_ap_i): $jo9_ap_kind = 'jo9_ap_red'
+  if -jo9_ap_units = 2 * (6 - jo9_ap_i) - 1: $jo9_ap_kind = 'jo9_ap_red_half'
+ end
+ $jo9_ap_cells += '<span class="jo9_ap_cell <<$jo9_ap_kind>>"></span>'
+end
+$jo9_ap_tip = '행동력 ' + iif(jo9_ap_units < 0, '-', '') + str(max(jo9_ap_units, -jo9_ap_units) / 2) + iif(max(jo9_ap_units, -jo9_ap_units) MOD 2 = 1, '.5', '') + ' · 현재 한도 ' + str(jo9_ap_cap) + ' / 기본 상한 5'
+$jo9_ap_extra_tip = '초과 에너지 ' + str(jo9_ap_extra / 2) + iif(jo9_ap_extra MOD 2 = 1, '.5', '')
+$jo9_ap_rest_tip = '휴식 적립 ' + str(jo9_ap_bonus) + ' · 밤 또는 다음 날 환급, 이월 한도 적용'
+$jo9_ap_tip += ' · ' + $jo9_ap_extra_tip + ' · 휴식 적립 ' + str(jo9_ap_bonus)
+if jo9_ap_units < 0: $jo9_ap_tip += ' · 피로: 추가 소비 시 근력 및 지구력에 악영향'
+if slave['neg_exhausted'] > 0: $jo9_ap_tip += ' · 운동 한계: 추가 운동 주의'
+$jo9_ap_arrow = 'jo9_extra_green'
+if slave['neg_exhausted'] > 0: $jo9_ap_arrow = 'jo9_extra_purple' & $jo9_ap_extra_tip += ' · 운동 한계: 추가 운동 주의'
+if jo9_ap_extra = 0: $jo9_ap_arrow += ' jo9_ap_inactive'
+$jo9_ap_star = 'jo9_rest_star'
+if jo9_ap_bonus = 0: $jo9_ap_star += ' jo9_ap_inactive'
+*p '<div id="jo9_ap_slave" class="jo9_ap"><a tooltip-data="<<$jo9_ap_tip>>" href="EXEC: msg $energy_help"><span class="jo9_ap_cells"><<$jo9_ap_cells>></span></a></div><div id="jo9_extra_slave" class="jo9_extra"><span class="jo9_extra_icon <<$jo9_ap_arrow>>" tooltip-data="<<$jo9_ap_extra_tip>>"></span><span class="jo9_extra_icon <<$jo9_ap_star>>" tooltip-data="<<$jo9_ap_rest_tip>>"></span></div><div id="slave_short_stat">'
+		$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'mood', slave['mood'], 1)
+		*p '<a class="tooltip-left" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $mood_chart"><<$mood[slave_mood_plus]>></a>'
+		if slave['virtue'] > 0 and slave['sin'] > 0:
+			$tooltip_text = '<<$slave_name>>는 죄책감과 공로감을 함께 느낀다 (<<slave[''virtue'']>>)'
+		elseif slave['virtue'] > 0:
+			$tooltip_text = '<<$slave_name>>는 공로감을 느낀다'
+		elseif slave['sin'] > 0:
+			$tooltip_text = '<<$slave_name>>는 죄책감을 느낀다'
+		else
+			$tooltip_text = '<<$slave_name>>는 죄책감도 공로감도 느끼지 않는다'
+		end
+		*nl '<div style="display:inline-block;position:relative;" class="tooltip-left" tooltip-data="<<$tooltip_text>>"><<$replace($replace($replace($replace($behavior_evaluation[eval], ''공 ['', ''공로[''), ''죄 ['', ''죄책[''), ''공['', ''공로[''), ''죄['', ''죄책['')>></div>'
+		$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'hygiene', slave['hygiene'], -1)
+		*nl '<a class="tooltip-left" tooltip-data="<<$tooltip_text>>" href = "EXEC: msg $hygiene_chart"><<$personal_hygiene[slave["hygiene"]]>></a>'
+	*p '</div>'
+
+	if exam_in_progress = 1:
+		*p  '<div id="fast_influence_tutorial"><a class="tooltip-left-down" tooltip-data="노예에게 영향 주기" href = "EXEC: menu_form = 112 & gt ''demo_menu_form''"><img src="content\pic\ui\approved_main_v1\action_influence.png"></a></div>'
+		*p  '<div id="fast_question_tutorial"><a class="tooltip-left-down" tooltip-data="노예에게 질문" href = "EXEC: menu_form = 111 & gt ''demo_menu_form''"><img src="content\pic\ui\approved_main_v1\action_question.png"></a></div>'
+		
+	else
+!		*p  {<div id="fast_social"><a style="text-decoration: none; padding-top: 14px;" class="victoriana wide" tooltip-data="Socialize" <a href = "EXEC: menu_form = 900 & gt 'menu_form'"><img src="content\pic\ui\approved_main_v1\action_social.png"></a></div>}
+		*p  '<div id="fast_social"><a class="tooltip-left-down" tooltip-data="노예 사회화" href = "EXEC: menu_form = 900 & gt ''menu_form''"><img src="content\pic\ui\approved_main_v1\action_social.png"></a></div>'
+		*p  '<div id="fast_influence"><a class="tooltip-left-down" tooltip-data="노예에게 영향 주기" href = "EXEC: menu_form = 112 & gt ''menu_form''"><img src="content\pic\ui\approved_main_v1\action_influence.png"></a></div>'
+		*p  '<div id="fast_question"><a class="tooltip-left-down" tooltip-data="노예에게 질문" href = "EXEC: menu_form = 111 & gt ''menu_form''"><img src="content\pic\ui\approved_main_v1\action_question.png"></a></div>'
+	end
+elseif slave_state = CONST_INT['no_slave']:
+! *p '<div id = "slave_short_ava"><img src = "content/pic/blank_ava.png"></div>'
+	*p '<div id = "slave_short_ava"><a href = "EXEC: menu_form = 3000 & gt ''menu_form''"><img src = "content/pic/blank_ava.png"></a></div>'
+	*p '<div id = "slave_short_stat">노예 없음</div>'
+elseif slave_state = CONST_INT['slave_faint']:
+	*p '<div id = "slave_short_ava"><a href = "EXEC: slave_stat_screen = 0 & gt ''slave_stat''"><img src = "<<$slave[''ava'']>>.png"></a></div>'
+	*p '<div id = "slave_short_stat">기절</div>'
+elseif slave_state = CONST_INT['slave_dead']:
+	*p '<div id = "slave_short_ava"><a href = "EXEC: slave_stat_screen = 0 & gt ''slave_stat''"><img src = "<<$slave[''ava_gray'']>>.png"></a></div>'
+	*p '<div id = "slave_short_stat">사망</div>'
+end
+
+!Debug Info Screen feature - created by crushboss
+!if exam_in_progress = 0:
+!	if $master_head_gear = 'raven_crown':
+!		if slave_state = CONST_INT['slave_exist']:
+!			*p '<div id="debug_info"><a class="tooltip-left-down" tooltip-data="Debug Info" href = "EXEC: gt ''debug_info''"><img src="content\pic\buttons\debug_button.png"></a></div>'
+!		end
+!		if assistant_state = CONST_INT['slave_exist']:
+!			*p '<div id="debug_info_assistant"><a class="tooltip-left-down" tooltip-data="Debug Info" href = "EXEC: gt ''debug_info_assistant''"><img src="content\pic\buttons\debug_button.png"></a></div>'
+!		end
+!	end
+!end
+
+if exam_in_progress = 1 and slave_state = CONST_INT['slave_exist']:
+	*p '<div id="debug_info"><a class="tooltip-left-down" tooltip-data="종합정보 : 노예" href = "EXEC: gs ''debug_info''"><img src="content\pic\ui\approved_main_v1\action_info_s.png"></a></div>'
+end
+
+if exam_in_progress = 0 and $master_head_gear = 'raven_crown':
+	if slave_state = CONST_INT['slave_exist']:
+		*p '<div id="debug_info"><a class="tooltip-left-down" tooltip-data="종합정보 : 노예" href = "EXEC: gs ''debug_info''"><img src="content\pic\ui\approved_main_v1\action_info_s.png"></a></div>'
+	end
+	if assistant_state = CONST_INT['slave_exist']:
+		*p '<div id="debug_info_assistant"><a class="tooltip-left-down" tooltip-data="종합정보 : 조수" href = "EXEC: gs ''debug_info_assistant''"><img src="content\pic\ui\approved_main_v1\action_info_a.png"></a></div>'
+	end
+end
+
+if slave_state = CONST_INT['slave_exist']:
+	if exam_in_progress = 1:
+		if slave['virtue'] > 0: $jo9_v16_fast_reward_slave = '<div id="fast_reward_slave"><a class="tooltip-left" tooltip-data="보상" href = "EXEC: menu_form = 15 & gt ''demo_menu_form''"><img src="content\pic\ui\approved_main_v1\action_reward.png"></a></div>'
+		if slave['sin'] > 0: $jo9_v16_fast_punish_slave = '<div id="fast_punish_slave"><a class="tooltip-left" tooltip-data="처벌" href = "EXEC: menu_form = 14 & gt ''demo_menu_form''"><img src="content\pic\ui\approved_main_v1\action_punish.png"></a></div>'
+		if slave['sin'] = 0 and slave['virtue'] = 0:
+			$jo9_v16_fast_punish_slave = '<div id="fast_punish_slave"><a class="tooltip-left-small-button" tooltip-data="처벌" href = "EXEC: menu_form = 14 & gt ''demo_menu_form''"><img src="content\pic\ui\approved_main_v1\action_punish.png"></a></div>' 
+			$jo9_v16_fast_reward_slave = '<div id="fast_reward_slave"><a class="tooltip-left-small-button" tooltip-data="보상" href = "EXEC: menu_form = 15 & gt ''demo_menu_form''"><img src="content\pic\ui\approved_main_v1\action_reward.png"></a></div>'
+		end
+	else
+		if slave['virtue'] > 0: $jo9_v16_fast_reward_slave = '<div id="fast_reward_slave"><a class="tooltip-left" tooltip-data="보상" href = "EXEC: menu_form = 15 & gt ''menu_form''"><img src="content\pic\ui\approved_main_v1\action_reward.png"></a></div>'
+		if slave['sin'] > 0: $jo9_v16_fast_punish_slave = '<div id="fast_punish_slave"><a class="tooltip-left" tooltip-data="처벌" href = "EXEC: menu_form = 14 & gt ''menu_form''"><img src="content\pic\ui\approved_main_v1\action_punish.png"></a></div>'
+		if slave['sin'] = 0 and slave['virtue'] = 0:
+			$jo9_v16_fast_punish_slave = '<div id="fast_punish_slave"><a class="tooltip-left-small-button" tooltip-data="처벌" href = "EXEC: menu_form = 14 & gt ''menu_form''"><img src="content\pic\ui\approved_main_v1\action_punish.png"></a></div>'
+			$jo9_v16_fast_reward_slave = '<div id="fast_reward_slave"><a class="tooltip-left-small-button" tooltip-data="보상" href = "EXEC: menu_form = 15 & gt ''menu_form''"><img src="content\pic\ui\approved_main_v1\action_reward.png"></a></div>'
+		end
+	end
+end
+!Bathe radio buttons - overhauled by crushboss, and again by i107760 and again by ImperatorAugustus
+if bath > 0:
+	!fast wash button for master - slave bathes master, assistant bathes master, or master bathes alone
+	if master_hygiene > 0:
+		if slave_state = CONST_INT['slave_exist'] and slave['washes_master_rule'] = 1: 
+			$jo9_v16_fast_wash_master = '<div id="fast_wash_master"><a class="tooltip-left-small-button" tooltip-data="씻는다" href = "EXEC: interaction = 5411 & gt ''interaction''"><img src="content\pic\ui\approved_main_v1\action_wash.png" width="18px" height="18px"></a></div>'
+		elseif assistant_state = CONST_INT['slave_exist'] and assistant['washes_master_rule'] = 1:
+			$jo9_v16_fast_wash_master = '<div id="fast_wash_master"><a class="tooltip-left-small-button" tooltip-data="씻는다" href = "EXEC: interaction = menu_assistant_washes_master & gt ''interaction''"><img src="content\pic\ui\approved_main_v1\action_wash_a.png" width="18px" height="18px"></a></div>'
+		else
+			$jo9_v16_fast_wash_master = '<div id="fast_wash_master"><a class="tooltip-left-small-button" tooltip-data="씻는다" href = "EXEC: interaction = 34 & gt ''interaction''"><img src="content\pic\ui\approved_main_v1\action_wash.png" width="18px" height="18px"></a></div>'
+		end
+	end
+	!fast wash button for slave - assistant bathes slave, slave bathes master (only if master is dirty), or slave bathes alone
+	if slave_state = CONST_INT['slave_exist'] and slave['hygiene'] > 0:
+		if assistant_state = CONST_INT['slave_exist'] and assistant['washes_slave_rule'] = 1:
+			$jo9_v16_fast_wash_slave = '<div id="fast_wash_slave"><a class="tooltip-left-small-button" tooltip-data="씻게 한다" href = "EXEC: interaction = menu_assistant_washes_slave & gt ''interaction''"><img src="content\pic\ui\approved_main_v1\action_wash_a.png" width="18px" height="18px"></a></div>'
+		elseif master_hygiene > 0 and slave_state = CONST_INT['slave_exist'] and slave['washes_master_rule'] = 1:
+			$jo9_v16_fast_wash_slave = '<div id="fast_wash_slave"><a class="tooltip-left-small-button" tooltip-data="씻게 한다" href = "EXEC: interaction = 5411 & gt ''interaction''"><img src="content\pic\ui\approved_main_v1\action_wash.png" width="18px" height="18px"></a></div>'
+		else
+			$jo9_v16_fast_wash_slave = '<div id="fast_wash_slave"><a class="tooltip-left-small-button" tooltip-data="씻게 한다" href = "EXEC: interaction = menu_bath_S & gt ''interaction''"><img src="content\pic\ui\approved_main_v1\action_wash.png" width="18px" height="18px"></a></div>'
+		end
+	end
+end
+
+if master_excitement >= 0:
+	if slave_state = CONST_INT['slave_exist']:
+		if exam_in_progress = 1:
+			$jo9_v16_fast_sex_S = '<div id="fast_sex_S"><a class="tooltip-left-small-button" tooltip-data="<<$slave_name>>와(과) 섹스한다" href = "EXEC: menu_form = 16 & gt ''demo_menu_form''"><img src="content\pic\ui\approved_main_v1\action_heart_s.png" style="width:19px;height:19px"></a></div>'
+		else
+			$jo9_v16_fast_sex_S = '<div id="fast_sex_S"><a class="tooltip-left-small-button" tooltip-data="<<$slave_name>>와(과) 섹스한다" href = "EXEC: menu_form = 16 & gt ''menu_form''"><img src="content\pic\ui\approved_main_v1\action_heart_s.png" style="width:19px;height:19px"></a></div>'
+		end
+	end
+	if assistant_state = CONST_INT['slave_exist']:
+		$jo9_v16_fast_sex_A = '<div id="fast_sex_A"><a style="font-family:Sandoll 미생" class="tooltip-left-small-button" tooltip-data="<<$assistant_name>>와(과) 섹스한다" href = "EXEC: menu_form = 4 & gt ''menu_form''"><img src="content\pic\ui\approved_main_v1\action_heart_a.png" style="width:19px;height:19px"></a></div>'
+	end
+end
+
+!exchange button for the slave and assistant (slave must be devoted or slave slot must be empty while there is an assistant)
+if exam_in_progress = 0:
+	if slave_state = CONST_INT['slave_exist'] and slave['moral'] >= 3:
+		*p  '<div id="exchange"><a class="tooltip-left-down" tooltip-data="위치변경 : 조수⇔노예" href = "EXEC: gt ''slave_to_assistant''"><img src="content\pic\buttons\exchange3.png" style="width:20px;height:55px;"></a></div>'
+	elseif slave_state = CONST_INT['no_slave'] and assistant_state ! CONST_INT['no_slave']:
+		*p  '<div id="exchange"><a class="tooltip-left-down" tooltip-data="위치변경 : 조수⇔노예" href = "EXEC: gt ''slave_to_assistant''"><img src="content\pic\buttons\exchange3.png" style="width:20px;height:55px;"></a></div>'
+	end
+end
+
+!Change rooms in apartment - crushboss
+if exam_in_progress = 0:
+	*p  '<div id="fast_interior"><a class="tooltip-bottom" tooltip-data="집 내부 방 전환" href = "EXEC: change_interior = 1 & gs ''interior_change'' & gt ''menu_form''"><img src="content\pic\ui\approved_main_v1\tool_room.png"></a></div>'
+	!bug fix: added missing closing </a> tag - ImperatorAugustus
+end
+
+!fast buttons for milking - Pianocat
+if slave_state = CONST_INT['slave_exist'] and slave['lactation'] > 0:
+	if slave['milk_summ'] >= 10:
+		$jo9_v16_fast_slave_milking = '<div id="fast_slave_milking"><a class="tooltip-left-down" tooltip-data="노예 착유" href = "EXEC: interaction = 591 & gt ''interaction''"><img src="content\pic\ui\approved_main_v1\action_milking.png" style="width:32px;height:34px"></a></div>'
+	else
+		$jo9_v16_fast_slave_milking = '<div id="fast_slave_milking"><a class="tooltip-left-down" tooltip-data="젖이 부족함"><img src="content\pic\ui\approved_main_v1\action_milking_gray.png" style="width:32px;height:34px"></a></div>'
+	end
+end
+if assistant_state = CONST_INT['slave_exist'] and assistant['lactation'] > 0 and assistant['milk_summ'] >= 10:
+	$jo9_v16_fast_assistant_milking = '<div id="fast_assistant_milking"><a class="tooltip-left-down" tooltip-data="조수 착유" href = "EXEC: interaction = 592 & gt ''interaction''"><img src="content\pic\ui\approved_main_v1\action_milking.png" style="width:32px;height:34px"></a></div>'
+end
+!if assistant_state = CONST_INT['slave_exist']:
+!	if assistant['virtue'] > 0: *p '<div id="fast_redeem_a"><a class="tooltip-left" tooltip-data="보상" href = "EXEC: menu_form = 5600 & gt ''menu_form''"><img src="content\pic\ui\approved_main_v1\action_reward.png"></a></div>'
+!	if assistant['sin'] > 0: *p '<div id="fast_redeem_a"><a class="tooltip-left" tooltip-data="처벌" href = "EXEC: menu_form = 5620 & gt ''menu_form''"><img src="content\pic\ui\approved_main_v1\action_punish.png"></a></div>'
+!	if assistant['sin'] = 0 and assistant['virtue'] = 0:
+!		*p '<div id="fast_redeem_a_1"><a class="tooltip-left-small-button" tooltip-data="보상" href = "EXEC: menu_form = 5620 & gt ''menu_form''"><img src="content\pic\ui\approved_main_v1\action_punish.png"></a></div>'
+!		*p '<div id="fast_redeem_a_2"><a class="tooltip-left-small-button" tooltip-data="처벌" href = "EXEC: menu_form = 5600 & gt ''menu_form''"><img src="content\pic\ui\approved_main_v1\action_reward.png"></a></div>'
+!	end
+!end
+!options
+*p '<div id = "settings"><<$setting_display>></div>'
+*p '<div id = "settings_ex" style="left:<<iif(menu_form = 2000,570,100)>>px"><<$setting_display_c>></div>'
+*p '<div id = "settings_ex2"><<$setting_display_c2>></div>'
+*p '<div id = "settings_2r"><<$setting_display_r>></div>'
+
+
+!buttons/icons disabled in option menu and cheat menus
+if menu_form < 2000 or menu_form > 2110:
+	if exam_in_progress = 0:
+		if ride_count = 0:
+			*p '<div id = "ride_counting"><a class="tooltip-left-down" tooltip-data="오늘은 경주가 열리는 날!" href = "EXEC: city_district = 1 & dynamic $transport_energy_drop, ''white_house'' & interaction_city = 12 & gt ''interaction_city''"><img src="content\pic\ui overhaul\watch the race.png"></a></div>'
+		else
+			*p '<div id = "ride_counting"><a class="tooltip-left-down" tooltip-data="경주는 <<ride_count>>일 후 시작"><img src="content\pic\ui overhaul\watch the race_gray.png"></a></div>'
+		end
+		if gladi_count = 0:
+			*p '<div id = "gladi_counting"><a class="tooltip-left-down" tooltip-data="오늘은 경기가 열리는 날!" href = "EXEC: city_district = 1 & dynamic $transport_energy_drop, ''white_house'' & interaction_city = 12 & gt ''interaction_city''"><img src="content\pic\ui overhaul\watch the battle.png"></a></div>'
+		else
+			*p '<div id = "gladi_counting"><a class="tooltip-left-down" tooltip-data="콜로세움 경기는 <<gladi_count>>일 후 시작"><img src="content\pic\ui overhaul\watch the battle_gray.png"></a></div>'
+		end
+		if auction_count > 0:
+			*p '<div id = "auction_counting"><a class="tooltip-left-down" tooltip-data="길드의 낙인 노예 경매는 <<auction_count>>일<<iif(auction_count > 1, {s}, {})>> 후"><img src="content\pic\ui overhaul\auction_gray.png"></a></div>'
+		elseif slave_state ! CONST_INT['no_slave']:
+			if slave['brand'] = 0:
+				*p '<div id = "auction_counting"><a class="tooltip-left-down" tooltip-data="길드 경매에서는 낙인 찍힌 노예만 팔 수 있다"><img src="content\pic\ui overhaul\auction_gray.png"></a></div>'
+			else
+				*p '<div id = "auction_counting"><a class="tooltip-left-down" tooltip-data="길드의 낙인 노예 경매에 노예를 내놓기" href =  "EXEC: city_district = 1 & dynamic $transport_energy_drop, ''white_house'' & interaction_city = 93 & gt ''interaction_city''"><img src="content\pic\ui overhaul\auction.png"></a></div>'
+			end
+		else
+			*p '<div id = "auction_counting"><a class="tooltip-left-down" tooltip-data="오늘은 길드의 낙인 노예 경매가 열리는 날"><img src="content\pic\ui overhaul\auction_gray.png"></a></div>'
+		end
+	end
+	
+	if slave_state = CONST_INT['slave_exist']:
+		*p '<div id = "teach"><a class="tooltip-left-large" tooltip-data="노예와 개인 훈련" href = "EXEC: teach_stat_screen = 0 & gt ''teach_screen''"><img src="content\pic\<<iif(ui_style = 2, ''ui\grimdark\buttons\teach.png'', ''buttons\teach.png'')>>" width=''31px'' height=''31px''></a></div>'
+		if assistant_state = CONST_INT['slave_exist']:
+			*p '<div id = "teach_a"><a class="tooltip-bottom" tooltip-data="<<$assistant_name>>, 수업을 진행해라" href = "EXEC: teach_stat_screen = 1 & gt ''teach_screen''"><img src="content\pic\<<iif(ui_style = 2, ''ui\grimdark\buttons\teach_a.png'', ''buttons\teach_a.png'')>>"></a></div>'
+			if sparks >= school_price[0]: *p '<div id = "teach_s"><a class="tooltip-bottom" tooltip-data="<<$slave_name>>, 수업에 가라…" href = "EXEC: teach_stat_screen = 2 & gt ''teach_screen''"><img src="content\pic\<<iif(ui_style = 2, ''ui\grimdark\buttons\teach_s.png'', ''buttons\teach_s.png'')>>"></a></div>'
+			if sparks >= coach_price[0]: *p '<div id = "teach_r"><a class="tooltip-bottom" tooltip-data="<<$slave_name>>를 위해 개인 교사 초청" href = "EXEC: teach_stat_screen = 3 & gt ''teach_screen''"><img src="content\pic\<<iif(ui_style = 2, ''ui\grimdark\buttons\teach_r.png'', ''buttons\teach_r.png'')>>"></a></div>'
+		else
+			if sparks >= school_price[0] and exam_in_progress ! 1: *p '<div id = "teach_s_noa"><a class="tooltip-bottom" tooltip-data="<<$slave_name>>, 수업에 가라…" href = "EXEC: teach_stat_screen = 2 & gt ''teach_screen''"><img src="content\pic\<<iif(ui_style = 2, ''ui\grimdark\buttons\teach_s.png'', ''buttons\teach_s.png'')>>"></a></div>'
+			if sparks >= coach_price[0]: *p '<div id = "teach_r_noa"><a class="tooltip-bottom" tooltip-data="<<$slave_name>>를 위해 개인 교사 초청" href = "EXEC: teach_stat_screen = 3 & gt ''teach_screen''"><img src="content\pic\<<iif(ui_style = 2, ''ui\grimdark\buttons\teach_r.png'', ''buttons\teach_r.png'')>>"></a></div>'
+		end
+	end
+
+	if lab > 0 and (slave_state = CONST_INT['slave_exist'] or assistant_state = CONST_INT['slave_exist']):
+		if assistant['alchemist_rule'] = 1: 
+			$rule_subject = '<<$assistant_name>>'
+		else
+			$rule_subject = '<<$slave_name>>'
+		end
+		*p '<div id = "lab"><a class="wide tooltip-left-large" tooltip-data="<<$rule_subject>>, 물약을 조제해라…" href = "EXEC: interaction = 21 & gt ''interaction''"><img src="content\pic\<<iif(ui_style = 2, ''ui\grimdark\buttons\lab.png'', ''buttons\lab.png'')>>" width=''31px'' height=''31px''></a></div>'
+	end	
+
+	if dungeon > 0 or barn > 0 or stasis_tank > 0:
+
+		if cell_state = 0:
+			if dungeon > 0:
+				cell_state = 1
+			elseif barn > 0:
+				cell_state = 2
+			else
+				cell_state = 3
+			end
+		end
+
+		if dungeon > 0: 
+			*p '<div id = "show_cell"><a href="EXEC: cell_state = 1 & gt ''main_screen''"><img src="content/pic/ui overhaul/dungeon.png" width="46" height="51"></a></div>'
+		end
+
+		if barn > 0: 
+			*p '<div id = "show_barn"><a href="EXEC: cell_state = 2 & gt ''main_screen''"><img src="content/pic/ui overhaul/barn.png" width="46" height="51"></a></div>'
+			if farmhand_state = CONST_INT['slave_exist']:
+				*p '<div id="fast_cow_check_inner"><a class="tooltip-left-down" tooltip-data="우유량을 확인한다" href = "EXEC: gs ''#var_base'' & msg $cow_milk_quantity"><img src="content\pic\buttons\milk_drop_large.png" style="width:32px;height:34px"></a></div>'
+				if cow['milk_summ'] >= 10:
+					if farmhand_state = CONST_INT['slave_exist']:
+						*p '<div id="fast_cow_milking_inner"><a class="tooltip-left-down" tooltip-data="<<$farmhand_name>>에게 착유를 명령한다" href = "EXEC: interaction = menu_farmhand_milking & gt ''interaction''"><img src="content\pic\ui\approved_main_v1\action_milking.png" style="width:32px;height:34px"></a></div>'
+					else
+						*p '<div id="fast_cow_milking_inner"><a class="tooltip-left-down" tooltip-data="직접 착유한다" href = "EXEC: interaction = menu_C_milking & gt ''interaction''"><img src="content\pic\ui\approved_main_v1\action_milking.png" style="width:32px;height:34px"></a></div>'
+					end
+					if cow['milk_summ'] < 10:
+						*p '<div id="fast_cow_milking_inner"><a class="tooltip-left-down" tooltip-data="우유가 나오지 않는다." href = "empty"><img src="content\pic\ui overhaul\milking_gray.png" style="width:32px;height:34px"></a></div>'
+					end
+				end
+			end
+		end
+
+		if stasis_tank > 0:
+			! double clicking un-selects any cryo cell, making the avatar disappear but keeping the buttons visible - ImperatorAugustus
+			*p '<div id = "show_cryo"><a href="EXEC: cryo_cell_selected = iif(cell_state = 3, 0, cryo_cell_selected) & cell_state = 3 & gt ''main_screen''"><img src="content/pic/ui overhaul/cell rent.png" width="46" height="51"></a></div>'
+		end
+
+		if cell_state = 1:
+			!ImperatorAugustus: show clear avatar image for awake prisoner, regular avatar for fainted prisoner (was used for all except no_slave), gray avatar for dead prisoner
+			if prisoner_state = CONST_INT['no_slave']:
+				*p '<div id = "cage"><img src = "content/pic/blank_ava.png"></div>'
+			elseif prisoner_state = CONST_INT['slave_exist']:
+				*p '<div id = "cage"><img src = "<<$prisoner["ava_clear"]>>.png"></div>'
+			elseif prisoner_state = CONST_INT['slave_faint']:
+				*p '<div id = "cage"><img src = "<<$prisoner["ava"]>>.png"></div>'
+			elseif prisoner_state = CONST_INT['slave_dead']:
+				*p '<div id = "cage"><img src = "<<$prisoner["ava_gray"]>>.png"></div>'
+			end
+			*p '<div id = "cage"><a class="tooltip-left-huge" tooltip-data="지하 감옥 감방" href = "EXEC: gt ''prison_cell''"><img src="content\pic\cage.png"></a></div>'
+
+			!ImperatorAugustus: show fast swap button when prison is selected
+			if prisoner_state ! CONST_INT['no_slave']:
+				if slave_state = CONST_INT['no_slave']:
+					*p '<div id = "show_cell"><a class="tooltip-left-down" tooltip-data="<<$prisoner_name>> 석방" href = "EXEC: killvar ''$prisoner_info_text'' & gt ''slave_to_cage''"><img src="content\pic\buttons\release.png" width="46" height="51"></a></div>'
+				else
+					*p '<div id = "show_cell"><a class="tooltip-left-down" tooltip-data="<<$slave_name>>와 <<$prisoner_name>> 교체" href = "EXEC: killvar ''$prisoner_info_text'' & gt ''slave_to_cage''"><img src="content\pic\buttons\cell_exchange.png" width="46" height="51"></a></div>'
+				end
+			elseif slave_state > CONST_INT['no_slave']:
+				*p '<div id = "show_cell"><a class="tooltip-left-down" tooltip-data="<<$slave_name>> 감금" href = "EXEC: killvar ''$prisoner_info_text'' & gt ''slave_to_cage''"><img src="content\pic\buttons\imprison.png" width="46" height="51"></a></div>'
+			end
+		end
+		
+		if cell_state = 2:
+			if farmhand_state = CONST_INT['no_slave']:
+				*p '<div id = "barn"><img src = "content/pic/blank_ava.png"></div>'
+			elseif farmhand_state = CONST_INT['slave_exist']:
+				*p '<div id = "barn"><img src = "<<$farmhand["ava_clear"]>>.png"></div>'
+			elseif farmhand_state = CONST_INT['slave_faint']:
+				*p '<div id = "barn"><img src = "<<$farmhand["ava"]>>.png"></div>'
+			elseif farmhand_state = CONST_INT['slave_dead']:
+				*p '<div id = "barn"><img src = "<<$farmhand["ava_gray"]>>.png"></div>'
+			end
+			*p '<div id = "barn"><a class="tooltip-left-huge" tooltip-data="외양간을 관리한다" href = "EXEC: gt ''barn''"><img src="content\pic\barn2.png"></a></div>'
+			if cow_state = CONST_INT['no_slave']:
+				*p '<div id = "barn_cow"><img src = "content/pic/blank_ava.png" style="width:50px;height:50px"></div>'
+			elseif cow_state = CONST_INT['slave_exist']:
+				*p '<div id = "barn_cow"><img src = "<<$cow["ava_clear"]>>.png" style="width:50px;height:50px"></div>'		
+			elseif cow_state = CONST_INT['slave_faint']:
+				*p '<div id = "barn_cow"><img src = "<<$cow["ava"]>>.png" style="width:50px;height:50px"></div>'
+			elseif cow_state = CONST_INT['slave_dead']:
+				*p '<div id = "barn_cow"><img src = "<<$cow["ava_gray"]>>.png" style="width:50px;height:50px"></div>'  
+			end  
+			*p '<div id = "barn_cow"><a class="tooltip-left-small-button" tooltip-data="외양간 젖소"><img src="content\pic\maidroom.png" style="width:50px;height:50px"></a></div>'        
+			if harpy_state = CONST_INT['no_slave']:
+				*p '<div id = "barn_harpy"><img src = "content/pic/blank_ava.png" style="width:50px;height:50px"></div>'
+			elseif harpy_state = CONST_INT['slave_exist']:
+				*p '<div id = "barn_harpy"><img src = "<<$harpy["ava_clear"]>>.png" style="width:50px;height:50px"></div>'		
+			elseif harpy_state = CONST_INT['slave_faint']:
+				*p '<div id = "barn_harpy"><img src = "<<$harpy["ava"]>>.png" style="width:50px;height:50px"></div>'
+			elseif harpy_state = CONST_INT['slave_dead']:
+				*p '<div id = "barn_harpy"><img src = "<<$harpy["ava_gray"]>>.png" style="width:50px;height:50px"></div>'  
+			end  
+			*p '<div id = "barn_harpy"><a class="tooltip-left-small-button" tooltip-data="외양간 닭"><img src="content\pic\maidroom.png" style="width:50px;height:50px"></a></div>'          
+			if pig_state = CONST_INT['no_slave']:
+				*p '<div id = "barn_pig"><img src = "content/pic/blank_ava.png" style="width:50px;height:50px"></div>'
+			elseif pig_state = CONST_INT['slave_exist']:
+				*p '<div id = "barn_pig"><img src = "<<$pig["ava_clear"]>>.png" style="width:50px;height:50px"></div>'		
+			elseif pig_state = CONST_INT['slave_faint']:
+				*p '<div id = "barn_pig"><img src = "<<$pig["ava"]>>.png" style="width:50px;height:50px"></div>'
+			elseif pig_state = CONST_INT['slave_dead']:
+				*p '<div id = "barn_pig"><img src = "<<$pig["ava_gray"]>>.png" style="width:50px;height:50px"></div>'  
+			end
+			*p '<div id = "barn_pig"><a class="tooltip-left-small-button" tooltip-data="외양간 돼지"><img src="content\pic\maidroom.png" style="width:50px;height:50px"></a></div>'   
+			
+		end
+
+		if cell_state = 3:
+			!Cryo Storage - new buttons on main menu feature - crushboss (converted to #dynamic - ImperatorAugustus)
+			dynamic $show_main_screen_cryo_cell_button, 'iced_1'
+			dynamic $show_main_screen_cryo_cell_button, 'iced_2'
+			dynamic $show_main_screen_cryo_cell_button, 'iced_3'
+			if cells_unlocked >= 1:
+				dynamic $show_main_screen_cryo_cell_button, 'iced_4'
+				dynamic $show_main_screen_cryo_cell_button, 'iced_5'
+				dynamic $show_main_screen_cryo_cell_button, 'iced_6'
+			end
+			!dynamic $do_for_each_slave_in_list, '$show_main_screen_cryo_cell_button', '$iced_slave_characters' &! disabled and replaced with code above because this only shows buttons for cells that are in use - ImperatorAugustus
+			!Cryo Storage - selected cell - crushboss (converted to #dynamic - ImperatorAugustus)
+			if cryo_cell_selected ! 0: dynamic $show_main_screen_selected_cryo_cell_avatar
+		end
+	end
+	
+! JO9 MOD START J9M1299 | 2026-10-10_restore_room_portrait_navigation | changed block; context may be included
+! JO9_20261010: room portrait navigation retained; deprecated overlay icons and cycle badges omitted.
+if $estate = 'white_house' and kulaconstruct >= 1:
+ if room1_state = CONST_INT['no_slave']:
+  $jo9_room_nav_image = 'content/pic/blank_ava.png'
+ elseif room1_state = CONST_INT['slave_exist']:
+  $jo9_room_nav_image = $room1['ava_clear'] + '.png'
+ elseif room1_state = CONST_INT['slave_dead']:
+  $jo9_room_nav_image = $room1['ava_gray'] + '.png'
+ else
+  $jo9_room_nav_image = $room1['ava'] + '.png'
+ end
+ *p '<div id="maidroom"><a class="tooltip-bottom" tooltip-data="개인실 1: <<$room1_name>>" href="EXEC: gt ''slave_private_room1''"><img src="<<$jo9_room_nav_image>>" style="width:50px;height:50px;box-sizing:border-box;border:2px solid #ad874a;"></a></div>'
+end
+if $estate = 'white_house' and kulaconstruct >= 2:
+ if room2_state = CONST_INT['no_slave']:
+  $jo9_room_nav_image = 'content/pic/blank_ava.png'
+ elseif room2_state = CONST_INT['slave_exist']:
+  $jo9_room_nav_image = $room2['ava_clear'] + '.png'
+ elseif room2_state = CONST_INT['slave_dead']:
+  $jo9_room_nav_image = $room2['ava_gray'] + '.png'
+ else
+  $jo9_room_nav_image = $room2['ava'] + '.png'
+ end
+ *p '<div id="maidroom2"><a class="tooltip-bottom" tooltip-data="개인실 2: <<$room2_name>>" href="EXEC: gt ''slave_private_room2''"><img src="<<$jo9_room_nav_image>>" style="width:50px;height:50px;box-sizing:border-box;border:2px solid #ad874a;"></a></div>'
+end
+if $estate = 'white_house' and kulaconstruct >= 3:
+ if room3_state = CONST_INT['no_slave']:
+  $jo9_room_nav_image = 'content/pic/blank_ava.png'
+ elseif room3_state = CONST_INT['slave_exist']:
+  $jo9_room_nav_image = $room3['ava_clear'] + '.png'
+ elseif room3_state = CONST_INT['slave_dead']:
+  $jo9_room_nav_image = $room3['ava_gray'] + '.png'
+ else
+  $jo9_room_nav_image = $room3['ava'] + '.png'
+ end
+ *p '<div id="maidroom3"><a class="tooltip-bottom" tooltip-data="개인실 3: <<$room3_name>>" href="EXEC: gt ''slave_private_room3''"><img src="<<$jo9_room_nav_image>>" style="width:50px;height:50px;box-sizing:border-box;border:2px solid #ad874a;"></a></div>'
+end
+if $estate = 'white_house' and kulaconstruct >= 4:
+ if room4_state = CONST_INT['no_slave']:
+  $jo9_room_nav_image = 'content/pic/blank_ava.png'
+ elseif room4_state = CONST_INT['slave_exist']:
+  $jo9_room_nav_image = $room4['ava_clear'] + '.png'
+ elseif room4_state = CONST_INT['slave_dead']:
+  $jo9_room_nav_image = $room4['ava_gray'] + '.png'
+ else
+  $jo9_room_nav_image = $room4['ava'] + '.png'
+ end
+ *p '<div id="maidroom4"><a class="tooltip-bottom" tooltip-data="개인실 4: <<$room4_name>>" href="EXEC: gt ''slave_private_room4''"><img src="<<$jo9_room_nav_image>>" style="width:50px;height:50px;box-sizing:border-box;border:2px solid #ad874a;"></a></div>'
+end
+killvar '$jo9_room_nav_image'
+! JO9 MOD END J9M1299
+end &! Close the outer home facilities block; only legacy room shortcuts were removed.
+
+! JO9 MOD START TRAITS_EDITOR_MAIN_GUARD | 2026-10-17_traits_batch
+if menu_form ! 2000 and menu_form ! 2020 and menu_form ! 2022 and exam_in_progress = 0 and menu_form ! 2100 and menu_form ! 2101 and menu_form ! 2102 and menu_form ! 2103 and menu_form ! 2104 and menu_form ! 2105 and menu_form ! 2107 and menu_form ! 2110:
+! JO9 MOD END TRAITS_EDITOR_MAIN_GUARD
+	if sound_on = 1:
+		*p '<div id = "back_home"><a class="tooltip-left-up" tooltip-data="집 나가기" href = "EXEC: gs ''$newloc'' & city_form = estate_location[$estate] & play ''content/snd/door.wav'' & gt ''city_menu_form''"><img src="content\pic\buttons\home_button.png"></a></div>'
+	else
+		*p '<div id = "back_home"><a class="tooltip-left-up" tooltip-data="집 나가기" href = "EXEC: gs ''$newloc'' & city_form = estate_location[$estate] & gt ''city_menu_form''"><img src="content\pic\buttons\home_button.png"></a></div>'
+	end
+end
+
+!for decade count
+if decadecount >= 10:
+	gs 'billing'
+	msg '<<$bill_message>>'
+	barn_report_available = 0
+	if barn_total_profit ! 0:
+		msg '<<$barn_accounts>>'
+		barn_report_available = 1
+	end
+	if assistant_quiet_rule = 1 and $produce_msg ! '': msg $produce_msg
+
+	decadecount = 0
+	decade += 1
+	decadesave = 1
+
+	sparks += barn_total_profit
+	if final_payment > sparks and exam_in_progress ! 1:
+		dynamic $death, '당신은 청구서를 낼 수 없었고, 재정 문제를 해결하지 못한 탓에 조련사 길드에서 추방되었다.'
+	else
+		sparks -= final_payment
+	end
+
+	!Refresh all databases - crushboss
+	gs 'interior_storage'
+	gs 'refresh_database'
+	gs 'interior_restore'
+	gt 'menu_form' &! refresh menus and mood to reflect potential changes from billing
+end
+
+if search['active'] = 2:
+	search['active'] = 3
+! JO9 MOD START J9M1298 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+	msg '<br> 기뻐하십쇼, <<$master_name>>!</center><br>' + _
+	'가까스로 주문한 조건에 맞는 노예를 찾을 수 있었습니다.<br><br>주문한 물건은 이미 내 개인용 동면실에 넣어두었습니다.<br><br>이 노예를 교육할만 한 공간이 생기거든 조합에서 날 찾으십시오.' + _
+	'<br>                          스컵스가'
+! JO9 MOD END J9M1298
+end
+
+if sbros = 1:
+	sbros = 0
+	if exam_in_progress = 1:
+		gt 'demo_menu_form'
+	else
+		gt 'menu_form'
+	end
+end
+
+!출산관리.
+if dynslave_type ! 2572 and slave['pregnant'] >= 150:
+	interaction = 9911
+	slave['pregnant'] = 0
+	slave['아기'] += 1		
+	gt 'interaction'
+end
+
+if assistant['pregnant'] >= 150:
+	interaction = 9912
+	assistant['pregnant'] = 0
+	assistant['아기'] += 1		
+	gt 'interaction'
+end
+
+if prisoner['pregnant'] >= 150:
+	interaction = 9913
+	prisoner['pregnant'] = 0
+	prisoner['아기'] += 1		
+	gt 'interaction'
+end
+
+if room1['pregnant'] >= 150:
+	interaction = 9914
+	room1['pregnant'] = 0
+	room1['아기'] += 1		
+	gt 'interaction'
+end
+if room2['pregnant'] >= 150:
+	interaction = 9915
+	room2['pregnant'] = 0
+	room2['아기'] += 1		
+	gt 'interaction'
+end
+if room3['pregnant'] >= 150:
+	interaction = 9916
+	room3['pregnant'] = 0
+	room3['아기'] += 1		
+	gt 'interaction'
+end
+if room4['pregnant'] >= 150:
+	interaction = 9917
+	room4['pregnant'] = 0
+	room4['아기'] += 1		
+	gt 'interaction'
+end
+
+!100
+
+if slave['pregnant'] = 100 and day100 = 0:
+    interaction = 9951
+    day100 = 1 
+    gt 'interaction'
+end
+
+
+if slave['pregnant'] = 200 and day200 = 0:
+    interaction = 9952
+    day200 = 1
+    gt 'interaction'
+end
+
+if assistant['pregnant'] = 100 and day100 = 0:
+    interaction = 9951
+    day100 = 1 
+    gt 'interaction'
+end
+
+
+if assistant['pregnant'] = 200 and day200 = 0:
+    interaction = 9952
+    day200 = 1
+    gt 'interaction'
+end
+
+
+!신버에 있던데 왼쪽위에 희미하게 뜨는 이상한 버그 있고, 왜있는지 모르겠어서 뺌.
+!*p '
+<<$girl_mood[slave_mood_plus]>>
+<<$replace($replace($replace($replace($behavior_evaluation[eval], ''공 ['', ''공로[''), ''죄 ['', ''죄책[''), ''공['', ''공로[''), ''죄['', ''죄책['')>>
+<<$girl_hygiene[slave["hygiene"]]>>
+</div>'
+
+IF assistant_state = CONST_INT['slave_exist']:
+	*p  {<div id="fast_social_a"><a style="text-decoration: none; padding-top: 14px;" class="victoriana wide" tooltip-data="사회화" <a href = "EXEC: menu_form = 832 & gt 'menu_form'"><img src="content\pic\ui\approved_main_v1\action_social.png"></a></div>}
+	*p  {<div id="fast_influence_a"><a style="text-decoration: none; padding-top: 14px;" class="victoriana wide" tooltip-data="영향 주기" <a href = "EXEC: menu_form = 833 & gt 'menu_form'"><img src="content\pic\ui\approved_main_v1\action_influence.png"></a></div>}
+	*p  {<div id="fast_question_a"><a style="text-decoration: none; padding-top: 14px;" class="victoriana wide" tooltip-data="대화" <a href = "EXEC: menu_form = 831 & gt 'menu_form'"><img src="content\pic\ui\approved_main_v1\action_question.png"></a></div>}
+END
+
+*p '<div id="jo9_v16_master_actions" class="jo9_v16_actions"><<$jo9_v16_fast_sex_S>><<$jo9_v16_fast_sex_A>><<$jo9_v16_fast_wash_master>><<$jo9_v16_fast_clean_master>><<$jo9_v16_fast_cook_master>></div>'
+*p '<div id="jo9_v16_slave_actions" class="jo9_v16_actions"><<$jo9_v16_fast_punish_slave>><<$jo9_v16_fast_reward_slave>><<$jo9_v16_fast_wash_slave>><<$jo9_v16_fast_slave_milking>><<$jo9_v16_fast_clean_slave>><<$jo9_v16_fast_cook_slave>><<$jo9_v16_fast_tentacle_slave>></div>'
+*p '<div id="jo9_v16_assistant_actions" class="jo9_v16_actions"><<$jo9_v16_fast_assistant_milking>><<$jo9_v16_fast_clean_assistant>><<$jo9_v16_fast_cook_assistant>><<$jo9_v16_fast_tentacle_assistant>></div>'
+killvar '$jo9_v16_fast_sex_S'
+killvar '$jo9_v16_fast_sex_A'
+killvar '$jo9_v16_fast_wash_master'
+killvar '$jo9_v16_fast_clean_master'
+killvar '$jo9_v16_fast_cook_master'
+killvar '$jo9_v16_fast_punish_slave'
+killvar '$jo9_v16_fast_reward_slave'
+killvar '$jo9_v16_fast_wash_slave'
+killvar '$jo9_v16_fast_slave_milking'
+killvar '$jo9_v16_fast_clean_slave'
+killvar '$jo9_v16_fast_cook_slave'
+killvar '$jo9_v16_fast_tentacle_slave'
+killvar '$jo9_v16_fast_assistant_milking'
+killvar '$jo9_v16_fast_clean_assistant'
+killvar '$jo9_v16_fast_cook_assistant'
+killvar '$jo9_v16_fast_tentacle_assistant'
+!autosave
+if autosave = 1:
+	autosave = 0
+	if autosave_day = 1:
+		savegame 'save/auto_day.sav'
+	end
+end
+if decadesave = 1:
+	decadesave = 0
+	if autosave_decade = 1:
+		savegame 'save/auto_decade.sav'
+	end
+end
+
+hunting_prize = 0
+
+!Strec - jon_UIadds addition (begin)
+!Added logic to fix the Travel buttons from displaying in the Game Options and other locations - crushboss (changed to menu_form < 2000 or menu_form > 2110 to exclude settings and cheat menus instead of a long list of not-checks - ImperatorAugustus)
+if (menu_form < 2000 or menu_form > 2110) and sex_num ! 100 and exam_in_progress = 0:
+	$quick_move_action = "show"
+else
+	$quick_move_action = "none"
+end
+
+gs 'sjm_UI_UIadds'
+
+!Strec - jon_UIadds addition (end)
+
+!Debug code for tracking variables
+!msg '<<slave_rate["stamina"]>>'
+
+------------ main_screen ------------

@@ -1,0 +1,14 @@
+node_modules/
+__pycache__/
+*.pyc
+runtime/
+backups/
+qa-output/
+local.config.json
+.env
+.env.*
+*.sav
+*.bak
+*.bak_*
+*.log
+*.zip

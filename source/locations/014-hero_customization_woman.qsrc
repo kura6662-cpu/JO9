@@ -1,0 +1,36 @@
+# hero_customization_woman
+! Readable view; authoritative fields are in ../locations.json.
+if snk_room_target > 0 and $curloc = 'hero_customization_woman': gs 'snk_room_bridge', 'guard', 'hero_customization_woman'
+! JO9 MOD START J9M3017 | 2026-10-14_hide_outer_frame_on_startup | changed block; context may be included
+*p '<style id="jo9_startup_no_outer_frame">body:before,body:after{display:none!important;}</style>'
+! JO9 MOD END J9M3017
+get_initial_slave = 1
+*p '<div id = "big_title_scroll"><img src = "content\pic\big_scroll_large.png"></div>'
+*p '<div id = "center_text_column_4"> <center><b>여주인 선택</center></b></div>'
+
+*p {<div id = "ava_choice_2_1"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 119 & gt "hero_description"'><img src = "content\pic\master\master_scarlett_sepia.png"></a></div>}
+*p {<div id = "ava_choice_5_1"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 120 & gt "hero_description"'><img src = "content\pic\master\master_adreana_sepia.png"></a></div>}
+*p {<div id = "ava_choice_1_1"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 121 & gt "hero_description"'><img src = "content\pic\master\master_mila_sepia.png"></a></div>}
+*p {<div id = "ava_choice_3_1"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 113 & gt "hero_description"'><img src = "content\pic\master\master_freya_sepia.png"></a></div>}
+*p {<div id = "ava_choice_4_1"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 114 & gt "hero_description"'><img src = "content\pic\master\master_alcina_sepia.png"></a></div>}
+*p {<div id = "ava_choice_6_1"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 122 & gt "hero_description"'><img src = "content\pic\master\master_victoria_sepia.png"></a></div>}
+*p {<div id = "ava_choice_1_2"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 101 & gt "hero_description"'><img src = "content\pic\master\master_vasilisa_sepia.png"></a></div>}
+*p {<div id = "ava_choice_1_3"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 107 & gt "hero_description"'><img src = "content\pic\master\master_nicolle_sepia.png"></a></div>}
+*p {<div id = "ava_choice_2_2"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 102 & gt "hero_description"'><img src = "content\pic\master\master_celina_sepia.png"></a></div>}
+*p {<div id = "ava_choice_2_3"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 108 & gt "hero_description"'><img src = "content\pic\master\master_tina_sepia.png"></a></div>}
+*p {<div id = "ava_choice_3_2"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 103 & gt "hero_description"'><img src = "content\pic\master\master_beatriche_sepia.png"></a></div>}
+*p {<div id = "ava_choice_3_3"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 109 & gt "hero_description"'><img src = "content\pic\master\master_irina_sepia.png"></a></div>}
+*p {<div id = "ava_choice_4_2"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 104 & gt "hero_description"'><img src = "content\pic\master\master_colette_sepia.png"></a></div>}
+*p {<div id = "ava_choice_4_3"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 110 & gt "hero_description"'><img src = "content\pic\master\master_lola_sepia.png"></a></div>}
+*p {<div id = "ava_choice_5_2"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 105 & gt "hero_description"'><img src = "content\pic\master\master_gina_sepia.png"></a></div>}
+*p {<div id = "ava_choice_5_3"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 111 & gt "hero_description"'><img src = "content\pic\master\master_diana_sepia.png"></a></div>}
+*p {<div id = "ava_choice_6_2"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 106 & gt "hero_description"'><img src = "content\pic\master\master_gretta_sepia.png"></a></div>}
+*p {<div id = "ava_choice_6_3"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 112 & gt "hero_description"'><img src = "content\pic\master\master_sofia_sepia.png"></a></div>}
+*p {<div id = "ava_choice_3_4"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 115 & gt "hero_description"'><img src = "content\pic\master\master_genevieve_sepia.png"></a></div>}
+*p {<div id = "ava_choice_4_4"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 116 & gt "hero_description"'><img src = "content\pic\master\master_candace_sepia.png"></a></div>}
+*p {<div id = "ava_choice_2_4"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 117 & gt "hero_description"'><img src = "content\pic\master\master_marfa_sepia.png"></a></div>}
+*p {<div id = "ava_choice_5_4"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 118 & gt "hero_description"'><img src = "content\pic\master\master_silvia_sepia.png"></a></div>}
+*p {<div id = "ava_choice_1_4"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 123 & gt "hero_description"'><img src = "content\pic\master\master_natalia_sepia.png"></a></div>}
+*p {<div id = "ava_choice_6_4"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 124 & gt "hero_description"'><img src = "content\pic\master\master_nadya_sepia.png"></a></div>}
+*p {<div id = "hero_choice_close_scroll"><a href = 'EXEC: gt "main_menu"'><img src = "content\pic\buttons\close_button.png"></a></div>}
+------------ hero_customization_woman ------------

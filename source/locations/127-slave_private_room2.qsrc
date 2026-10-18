@@ -1,0 +1,407 @@
+# slave_private_room2
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2984 | 2026-10-15_zz_meiki_state, 2026-10-10_restore_private_room_ui_corrections, 2026-10-15_private_room_diet_selection | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'slave_private_room2': gs 'snk_room_bridge', 'guard', 'slave_private_room2'
+gs 'jo9_meiki_state', 'slave', 0
+gs 'jo9_meiki_state', 'assistant', 0
+gs 'jo9_meiki_state', 'room1', 0
+gs 'jo9_meiki_state', 'room2', 0
+gs 'jo9_meiki_state', 'room3', 0
+gs 'jo9_meiki_state', 'room4', 0
+gs 'snk_room_diet_migrate'
+$snk_room_view = $args[0]
+! JO9_PRIVATE_DIET_SELECTION_20261015
+if $snk_room_view = 'diet_set':
+ if room2_state > CONST_INT['no_slave'] and args[1] >= 0 and args[1] <= 2:
+  if room2_ration ! args[1]: room2['special_diet_days'] = 0
+  room2_ration = args[1]
+ end
+ $snk_room_view = 'diet'
+end
+if $snk_room_view = 'diet':
+ if room2_ration = 1: $room2_info_text = $room2_ration[2]
+ if room2_ration = 0: $room2_info_text = $room2_ration[3]
+ if room2_ration = 2: $room2_info_text = $room2_ration[4]
+end
+! JO9 MOD END J9M2984
+$place = "slave_private_room2"
+gs '_layout'
+gs '$newloc'
+gs '$slave_traits'
+killvar 'menu_form'
+killvar '$info_bar'
+
+dynamic $room2_pass_out
+dynamic $master_pass_out &! master should be last
+
+room2_mood_plus = IIF(room2['mood'] < 0, 5 - room2['mood'], room2['mood'])
+
+if $room2_info_text = '':
+	if room2_state = CONST_INT['slave_exist']: dynamic $replace("$room2_info_text = '<<$psy_status[$room2_psy_status]>>'", 'dyn'+'slave', 'room2') &! evaluate delayed sub-expressions with substitution
+	if room2_state = CONST_INT['slave_faint']: $room2_info_text = '<br> <<$room2_name>>의 낮은 신음이 터지며 몸이 고꾸라졌다. 상태가 좋지 않은 모양이다, 쉬게하고 검진을 받아보게 하는게 좋을 것이다.'
+	if room2_state = CONST_INT['slave_dead']: $room2_info_text = '<br> <<$room2_name>>(이)가 .. 죽었다. 생기없는 사체가 바닥에서 뒹굴고 있다.'
+	if room2_state = CONST_INT['no_slave']: $room2_info_text = '<br> 개인실이 비어있다.'
+end
+
+$return_lock = 'slave_private_room2'
+*p '<div id="snk_private_room">'
+*p func('interior_change', 'jo9_html', '<div id="snk_room_bg"><img src="content/pic/bg/sboudoir.png"></div>')
+if room2_state = CONST_INT['slave_exist'] and nsfw = 0:
+*p func('interior_change', 'jo9_html', '<div id="snk_room_character"><img src="content/pic/<<$room2["fullimage"]>>.png"></div>')
+end
+! JO9 MOD START J9M2983 | 2026-10-15_css24_qsp_titles | changed block; context may be included
+*p '<div id="jo9_master_card"><span class="jo9_card_title">주인공</span></div><div id="jo9_slave_card"><span class="jo9_card_title"></span></div>'
+! JO9 MOD END J9M2983
+*p '<div id="snk_room_slave_name">개인실2:<<$room2_name>></div>'
+*p '<div id = "master_short_ava"><a href = "EXEC: gs ''snk_room_bridge'', ''master'', 2"><img src = "<<$master_ava_color>>"></a></div>'
+! JO9_UI_V192_AP_master
+$energy_help = '<div>초록색 행동력 바는 대부분의 행동에 소비되며 수면, 캄라, 요정 꽃가루, 강장 영약, 숙련된 마사지로 회복됩니다.<br><br>빨간 칸은 피로입니다. 이 상태에서 행동력을 더 소비하면 근력이나 지구력에 해를 줍니다.<br>보라색은 운동 한계 경고입니다. 행동력이 남아 있어도 추가 운동은 해롭습니다.<br>사선 칸은 현재 체력으로 사용할 수 없는 영역이며, 반 칸은 행동력 0.5입니다.<br><br>녹색 화살표는 현재 한도를 넘는 초과 에너지를 뜻합니다. 운동 한계 상태에서는 화살표도 보라색입니다.<br>파란 별 아이콘은 휴식 적립입니다. 밤의 규칙 행동이나 다음 날을 위해 환급 및 이월되며, 이월에는 지구력 한도가 적용됩니다.<br><br>바와 아이콘에 마우스를 올리면 정확한 수치를 확인할 수 있습니다.</div>'
+jo9_ap_units = 2 * master_energy - master_half_action
+jo9_ap_cap = max(0, min(5, 5))
+jo9_ap_bonus = max(0, 0)
+jo9_ap_extra = max(0, jo9_ap_units - 2 * jo9_ap_cap)
+jo9_ap_base = min(jo9_ap_units, 2 * jo9_ap_cap)
+$jo9_ap_cells = ''
+for jo9_ap_i = 1 to 5 step 1:
+ $jo9_ap_kind = 'jo9_ap_empty'
+ if jo9_ap_units >= 0:
+  if jo9_ap_i > jo9_ap_cap: $jo9_ap_kind = 'jo9_ap_locked'
+  if jo9_ap_base >= 2 * jo9_ap_i: $jo9_ap_kind = 'jo9_ap_green'
+  if jo9_ap_base = 2 * jo9_ap_i - 1: $jo9_ap_kind = 'jo9_ap_green_half'
+  if master_moodlet['neg_master_overexerted'] > 0: $jo9_ap_kind = $replace($jo9_ap_kind, 'green', 'purple')
+ else
+  if -jo9_ap_units >= 2 * (6 - jo9_ap_i): $jo9_ap_kind = 'jo9_ap_red'
+  if -jo9_ap_units = 2 * (6 - jo9_ap_i) - 1: $jo9_ap_kind = 'jo9_ap_red_half'
+ end
+ $jo9_ap_cells += '<span class="jo9_ap_cell <<$jo9_ap_kind>>"></span>'
+end
+$jo9_ap_tip = '행동력 ' + iif(jo9_ap_units < 0, '-', '') + str(max(jo9_ap_units, -jo9_ap_units) / 2) + iif(max(jo9_ap_units, -jo9_ap_units) MOD 2 = 1, '.5', '') + ' · 현재 한도 ' + str(jo9_ap_cap) + ' / 기본 상한 5'
+$jo9_ap_extra_tip = '초과 에너지 ' + str(jo9_ap_extra / 2) + iif(jo9_ap_extra MOD 2 = 1, '.5', '')
+$jo9_ap_rest_tip = '휴식 적립 ' + str(jo9_ap_bonus) + ' · 밤 또는 다음 날 환급, 이월 한도 적용'
+$jo9_ap_tip += ' · ' + $jo9_ap_extra_tip + ' · 휴식 적립 ' + str(jo9_ap_bonus)
+if jo9_ap_units < 0: $jo9_ap_tip += ' · 피로: 추가 소비 시 근력 및 지구력에 악영향'
+if master_moodlet['neg_master_overexerted'] > 0: $jo9_ap_tip += ' · 운동 한계: 추가 운동 주의'
+$jo9_ap_arrow = 'jo9_extra_green'
+if master_moodlet['neg_master_overexerted'] > 0: $jo9_ap_arrow = 'jo9_extra_purple' & $jo9_ap_extra_tip += ' · 운동 한계: 추가 운동 주의'
+if jo9_ap_extra = 0: $jo9_ap_arrow += ' jo9_ap_inactive'
+$jo9_ap_star = 'jo9_rest_star'
+if jo9_ap_bonus = 0: $jo9_ap_star += ' jo9_ap_inactive'
+*p '<div id="jo9_ap_master" class="jo9_ap"><a tooltip-data="<<$jo9_ap_tip>>" href="EXEC: msg $energy_help"><span class="jo9_ap_cells"><<$jo9_ap_cells>></span></a></div><div id="jo9_extra_master" class="jo9_extra"><span class="jo9_extra_icon <<$jo9_ap_arrow>>" tooltip-data="<<$jo9_ap_extra_tip>>"></span><span class="jo9_extra_icon <<$jo9_ap_star>>" tooltip-data="<<$jo9_ap_rest_tip>>"></span></div><div id="master_short_stat">'
+	$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'mood', master_mood, 1)
+	*p '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $mood_chart"><<$mood[master_mood_plus]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'master_excitement', master_excitement, 1)
+	*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href = "EXEC: msg $excitement_chart"><<dyneval($vb_cycle_stat, IIF(max(master_moodlet["neg_boner"], master_moodlet["neg_blazing"]) = 0, 5 + master_excitement, 0), $excitement[master_excitement_plus])>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'hygiene', master_hygiene, -1)
+	*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href = "EXEC: msg $hygiene_chart"><<$personal_hygiene[master_hygiene]>></a>'
+*p '</div>'
+
+$active_spell = ''
+if auspex = 1: $active_spell += '<a class="tooltip-left-down" tooltip-data="아우스펙스 사용중"><img src="content/pic/ui overhaul/auspex.png" style="width:34px;height:36px"></a><br>'
+if magna_magnifika > 0: $active_spell += '<a class="tooltip-left-down" tooltip-data="마그나 마그니피카 사용중"><img src="content/pic/ui overhaul/magna magnifika.png" style="width:34px;height:36px"></a><br>'
+if room2['domini_dictum'] = 1: $active_spell += '<a class="tooltip-left-down" tooltip-data="도미니 딕툼 사용중"><img src="content/pic/ui overhaul/domini dictum.png" style="width:34px;height:36px"></a><br>'
+if room2['sententia_veritas'] > 0: $active_spell += '<a class="tooltip-left-down" tooltip-data="센텐티아 베리타스 사용중"><img src="content/pic/ui overhaul/sententia veritas.png" style="width:34px;height:36px"></a>'
+
+*p '<div id = "active_spell"><<$active_spell>></div>'
+
+if master_wounds ! 0:
+	*p '<div id = "master_info_wounds" class="tooltip-left-small-button" tooltip-data="<<$master_name>>: 상처"><a href = "EXEC: interaction_city = 331 & gt ''interaction_city''"><img src="content/pic/buttons/z_wounds.png"></a></div>'
+end
+if master_ill ! 0:
+	if master_medic > 2 or assistant['nurse'] > 2:
+		*p '<div id = "master_info_ill" class="tooltip-left-small-button" tooltip-data="<<$master_name>>: 질병"><a href = "EXEC: interaction_city = 331 & gt ''interaction_city''"><img src="content/pic/buttons/z_ill.png"></a></div>'
+	end
+end
+if room2_state = CONST_INT['slave_exist']:
+*p '<div id="slave_short_ava"><a href="EXEC: gs ''snk_room_bridge'', ''portrait'', 2"><img src="<<$room2[''ava_clear'']>>.png"></a></div>'
+! JO9_UI_V192_AP_slave
+jo9_ap_units = 2 * room2['energy'] - room2['half_action']
+jo9_ap_cap = max(0, min(5, room2['stamina']))
+jo9_ap_bonus = max(0, room2['well_rested'])
+jo9_ap_extra = max(0, jo9_ap_units - 2 * jo9_ap_cap)
+jo9_ap_base = min(jo9_ap_units, 2 * jo9_ap_cap)
+$jo9_ap_cells = ''
+for jo9_ap_i = 1 to 5 step 1:
+ $jo9_ap_kind = 'jo9_ap_empty'
+ if jo9_ap_units >= 0:
+  if jo9_ap_i > jo9_ap_cap: $jo9_ap_kind = 'jo9_ap_locked'
+  if jo9_ap_base >= 2 * jo9_ap_i: $jo9_ap_kind = 'jo9_ap_green'
+  if jo9_ap_base = 2 * jo9_ap_i - 1: $jo9_ap_kind = 'jo9_ap_green_half'
+  if room2['neg_exhausted'] > 0: $jo9_ap_kind = $replace($jo9_ap_kind, 'green', 'purple')
+ else
+  if -jo9_ap_units >= 2 * (6 - jo9_ap_i): $jo9_ap_kind = 'jo9_ap_red'
+  if -jo9_ap_units = 2 * (6 - jo9_ap_i) - 1: $jo9_ap_kind = 'jo9_ap_red_half'
+ end
+ $jo9_ap_cells += '<span class="jo9_ap_cell <<$jo9_ap_kind>>"></span>'
+end
+$jo9_ap_tip = '행동력 ' + iif(jo9_ap_units < 0, '-', '') + str(max(jo9_ap_units, -jo9_ap_units) / 2) + iif(max(jo9_ap_units, -jo9_ap_units) MOD 2 = 1, '.5', '') + ' · 현재 한도 ' + str(jo9_ap_cap) + ' / 기본 상한 5'
+$jo9_ap_extra_tip = '초과 에너지 ' + str(jo9_ap_extra / 2) + iif(jo9_ap_extra MOD 2 = 1, '.5', '')
+$jo9_ap_rest_tip = '휴식 적립 ' + str(jo9_ap_bonus) + ' · 밤 또는 다음 날 환급, 이월 한도 적용'
+$jo9_ap_tip += ' · ' + $jo9_ap_extra_tip + ' · 휴식 적립 ' + str(jo9_ap_bonus)
+if jo9_ap_units < 0: $jo9_ap_tip += ' · 피로: 추가 소비 시 근력 및 지구력에 악영향'
+if room2['neg_exhausted'] > 0: $jo9_ap_tip += ' · 운동 한계: 추가 운동 주의'
+$jo9_ap_arrow = 'jo9_extra_green'
+if room2['neg_exhausted'] > 0: $jo9_ap_arrow = 'jo9_extra_purple' & $jo9_ap_extra_tip += ' · 운동 한계: 추가 운동 주의'
+if jo9_ap_extra = 0: $jo9_ap_arrow += ' jo9_ap_inactive'
+$jo9_ap_star = 'jo9_rest_star'
+if jo9_ap_bonus = 0: $jo9_ap_star += ' jo9_ap_inactive'
+*p '<div id="jo9_ap_slave" class="jo9_ap"><a tooltip-data="<<$jo9_ap_tip>>" href="EXEC: msg $energy_help"><span class="jo9_ap_cells"><<$jo9_ap_cells>></span></a></div><div id="jo9_extra_slave" class="jo9_extra"><span class="jo9_extra_icon <<$jo9_ap_arrow>>" tooltip-data="<<$jo9_ap_extra_tip>>"></span><span class="jo9_extra_icon <<$jo9_ap_star>>" tooltip-data="<<$jo9_ap_rest_tip>>"></span></div><div id="slave_short_stat">'
+snk_room_eval = 0
+if room2['virtue'] > 0: snk_room_eval = room2['virtue']
+if room2['sin'] > 0: snk_room_eval = 5 + room2['sin']
+
+		$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'mood', room2['mood'], 1)
+		*p '<a class="tooltip-left" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $mood_chart"><<$mood[room2_mood_plus]>></a>'
+		if room2['virtue'] > 0 and room2['sin'] > 0:
+			$tooltip_text = '<<$room2_name>>는 죄책감과 공로감을 함께 느낀다 (<<room2[''virtue'']>>)'
+		elseif room2['virtue'] > 0:
+			$tooltip_text = '<<$room2_name>>는 공로감을 느낀다'
+		elseif room2['sin'] > 0:
+			$tooltip_text = '<<$room2_name>>는 죄책감을 느낀다'
+		else
+			$tooltip_text = '<<$room2_name>>는 죄책감도 공로감도 느끼지 않는다'
+		end
+		*nl '<div style="display:inline-block;position:relative;" class="tooltip-left" tooltip-data="<<$tooltip_text>>"><<$replace($replace($replace($replace($behavior_evaluation[snk_room_eval], ''공 ['', ''공로[''), ''죄 ['', ''죄책[''), ''공['', ''공로[''), ''죄['', ''죄책['')>></div>'
+		$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'hygiene', room2['hygiene'], -1)
+		*nl '<a class="tooltip-left" tooltip-data="<<$tooltip_text>>" href = "EXEC: msg $hygiene_chart"><<$personal_hygiene[room2["hygiene"]]>></a>'
+	*p '</div>'
+
+elseif room2_state = CONST_INT['no_slave']:
+*p '<div id="slave_short_ava"><img src="content/pic/blank_ava.png"></div><div id="slave_short_stat">빈 개인실</div>'
+elseif room2_state = CONST_INT['slave_faint']:
+*p '<div id="slave_short_ava"><img src="<<$room2[''ava'']>>.png"></div><div id="slave_short_stat">기절</div>'
+elseif room2_state = CONST_INT['slave_dead']:
+*p '<div id="slave_short_ava"><img src="<<$room2[''ava_gray'']>>.png"></div><div id="slave_short_stat">사망</div>'
+end
+if room2_state > CONST_INT['no_slave']:
+*p '<div id="slinfo_block">'
+*p '<a class="snk_button " tooltip-data="소지품창" href="EXEC: gs ''snk_room_bridge'', ''inventory'', 2"><img src="content/pic/ui/equipment.png"></a>'
+	if room2['virginity'] = 1:
+		*p '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="복원된 처녀막"><img src="content\pic\ui\Vir_restored.png"></div>'
+	elseif room2['virginity'] = 3:
+! JO9 MOD START J9M2982 | 2026-10-15_zzzzz_cherry_frame_size | changed block; context may be included
+		*p '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="경험 많음"><img style="width:28px;height:30px" src="content\pic\ui\Vir_black.png"></div>'
+! JO9 MOD END J9M2982
+	elseif room2['virginity'] = 4:
+! JO9 MOD START J9M2981 | 2026-10-15_zzzzz_cherry_frame_size | changed block; context may be included
+		*p '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="명기"><img style="width:28px;height:30px" src="content\pic\ui\Vir_golden.png"></div>'
+! JO9 MOD END J9M2981
+	elseif room2['virginity'] < 2:
+		*p '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="경험 없음"><img src="content\pic\ui\Vir_Ocr.png"></div>'
+	else
+		*p '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="경험 있음"><img src="content\pic\ui\Vir_Xcr.png"></div>'
+	end
+$jo9_room_preg_label = func('sjm_UI_UIadds', 'preg_label', room2['pregnant'], room2['pregnant_revealed'], room2['fertility'], room2['vaginal_modification'], room2['parasite'])
+if $jo9_room_preg_label ! '':
+ $snk_fertility_image = 'z_pregnant' & $snk_fertility_tip = $jo9_room_preg_label
+elseif room2['fertility'] < 0 and room2['fertility_revealed'] > 0 and (room2['fertility'] = -1 or room2['fertility'] = -3):
+ $snk_fertility_image = 'Fer_PregX' & $snk_fertility_tip = '임신 불가'
+elseif room2['fertility'] = -2:
+ $snk_fertility_image = 'Fer_Mi' & $snk_fertility_tip = '임신 불가'
+elseif room2['fertility'] = -1 and room2['fertility_revealed'] < 1:
+ $snk_fertility_image = 'Fer_PregS' & $snk_fertility_tip = '안전일'
+elseif room2['fertility'] = -3:
+ $snk_fertility_image = 'Fer_Milk' & $snk_fertility_tip = '착유용 젖소'
+elseif room2['fertility'] < 0:
+ $snk_fertility_image = 'Fer_Normal' & $snk_fertility_tip = '임신률 저하'
+elseif room2['fertility'] = 1 and room2['fertility_revealed'] > 0:
+ $snk_fertility_image = 'Fer_PregEg' & $snk_fertility_tip = '산란기'
+elseif (master_medic > 3 or assistant['nurse'] > 3) and room2['pregnant'] <= 9 and room2['ovulation'] > 2:
+ $snk_fertility_image = 'Fer_PregS' & $snk_fertility_tip = '안전일'
+elseif (master_medic > 3 or assistant['nurse'] > 3) and room2['pregnant'] <= 9 and room2['ovulation'] >= 0 and room2['ovulation'] <= 2:
+ $snk_fertility_image = 'Fer_PregO' & $snk_fertility_tip = '배란기'
+else
+ $snk_fertility_image = 'Fer_Normal' & $snk_fertility_tip = '평시'
+end
+if $snk_fertility_image = 'z_pregnant': *p '<div class="snk_fertility tooltip-left-small-button" tooltip-data="<<$snk_fertility_tip>>"><img src="content/pic/ui/z_pregnant.png"></div>'
+if $snk_fertility_image = 'Fer_PregX': *p '<div class="snk_fertility tooltip-left-small-button" tooltip-data="<<$snk_fertility_tip>>"><img src="content/pic/ui/Fer_PregX.png"></div>'
+if $snk_fertility_image = 'Fer_Mi': *p '<div class="snk_fertility tooltip-left-small-button" tooltip-data="<<$snk_fertility_tip>>"><img src="content/pic/ui/Fer_Mi.png"></div>'
+if $snk_fertility_image = 'Fer_PregS': *p '<div class="snk_fertility tooltip-left-small-button" tooltip-data="<<$snk_fertility_tip>>"><img src="content/pic/ui/Fer_PregS.png"></div>'
+if $snk_fertility_image = 'Fer_Milk': *p '<div class="snk_fertility tooltip-left-small-button" tooltip-data="<<$snk_fertility_tip>>"><img src="content/pic/ui/Fer_Milk.png"></div>'
+if $snk_fertility_image = 'Fer_Normal': *p '<div class="snk_fertility tooltip-left-small-button" tooltip-data="<<$snk_fertility_tip>>"><img src="content/pic/ui/Fer_Normal.png"></div>'
+if $snk_fertility_image = 'Fer_PregEg': *p '<div class="snk_fertility tooltip-left-small-button" tooltip-data="<<$snk_fertility_tip>>"><img src="content/pic/ui/Fer_PregEg.png"></div>'
+if $snk_fertility_image = 'Fer_PregO': *p '<div class="snk_fertility tooltip-left-small-button" tooltip-data="<<$snk_fertility_tip>>"><img src="content/pic/ui/Fer_PregO.png"></div>'
+	if room2['arousal'] = 0:
+		*p '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content/pic/ui/jon-UIadds/Arouse0.png"></div>'
+	elseif room2['arousal'] = 1:
+		*p '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content/pic/ui/jon-UIadds/Arouse1.png"></div>'
+	elseif room2['arousal'] = 2:
+		*p '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content/pic/ui/jon-UIadds/Arouse2.png"></div>'
+	elseif room2['arousal'] = 3:
+		*p '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content/pic/ui/jon-UIadds/Arouse3.png"></div>'
+	elseif room2['arousal'] = 4:
+		*p '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content/pic/ui/jon-UIadds/Arouse4.png"></div>'
+	elseif room2['arousal'] = 5:
+		*p '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content/pic/ui/jon-UIadds/Arouse5.png"></div>'
+	end
+	if room2['lactation'] > 0:
+		*p '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="모유 분비함" href = "EXEC: gs ''#var_base'' & msg $room2_milk_quantity"><img src="content\pic\ui\milk_drop.png" style="width:28px;height:29px"></div>'
+	else
+		*p '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="모유 안나옴"><img src="content\pic\ui\milk_drop_no.png" style="width:28px;height:29px"></div>'
+	end
+*p '</div>'
+	$tmpbrand_s = '<div id = "slinfo_brand">'
+	if room2['brand'] = 4:
+		$tmpbrand_s += '<a class="tooltip-left-small-button" tooltip-data="조합상표"><font color="#F08080">의뢰</font></a></div>'
+	elseif room2['brand'] = 3:
+		$tmpbrand_s += '<a class="tooltip-left-small-button" tooltip-data="<<$master_name>> 마법상표"><font color="#006400">마법</font></a></div>'
+	elseif room2['brand'] = 2:
+		$tmpbrand_s += '<a class="tooltip-left-small-button" tooltip-data="<<$master_name>> 문신상표"><font color="#00008B">문신</font></a></div>'
+	elseif room2['brand'] = 1:
+		$tmpbrand_s += '<a class="tooltip-left-small-button" tooltip-data="<<$master_name>> 인장상표"><font color="#FF0000">인장</font></a></div>'
+	else
+		$tmpbrand_s += '<a class="tooltip-left-small-button" tooltip-data="상표 없음"><font color="white">없음</font></a></div>'
+	end
+	*p '<<$tmpbrand_s>>'
+gs '$slave_price', 'room2'
+*p '<div id="slinfo_rank" tooltip-data="등급"><<$rating[rating]>></div>'
+if room2['ill'] ! 0 and (master_medic > 2 or assistant['nurse'] > 2):
+*p '<div id="slinfo_ill" tooltip-data="질병"><img src="content/pic/buttons/z_ill.png"></div>'
+end
+if room2['wounds'] ! 0:
+*p '<div id="slinfo_wounds" tooltip-data="상처"><img src="content/pic/buttons/z_wounds.png"></div>'
+end
+end
+*p '<div id="snk_room_quick">'
+*p '<a class="snk_button " tooltip-data="식사 설정" href="EXEC: gt $curloc, ''diet''"><img src="content/pic/buttons/room_diet.png"></a>'
+if room2_state = CONST_INT['slave_exist']:
+*p '<a class="snk_button " tooltip-data="보상" href="EXEC: gs ''snk_room_bridge'', ''enter'', 2, 15 & gt ''menu_form''"><img src="content/pic/ui/action_reward.png"></a>'
+else
+*p '<span class="snk_button snk_disabled" tooltip-data="행동할 수 있는 노예가 없습니다." aria-disabled="true"><img src="content/pic/ui/action_reward.png"></span>'
+end
+if room2_state > CONST_INT['no_slave'] and room2['hygiene'] > 0:
+*p '<a class="snk_button " tooltip-data="씻게 한다" href="EXEC: interaction = menu_bath_R2 & gt ''interaction''"><img src="content/pic/ui/action_wash.png"></a>'
+else
+*p '<span class="snk_button snk_disabled" tooltip-data="씻기가 필요한 개인실 노예가 없습니다." aria-disabled="true"><img src="content/pic/ui/action_wash.png"></span>'
+end
+if room2_state = CONST_INT['slave_exist'] and room2['lactation'] > 0:
+if room2['milk_summ'] >= 10:
+*p '<a class="snk_button " tooltip-data="노예 착유" href="EXEC: interaction = 597 & gt ''interaction''"><img src="content/pic/ui/action_milking.png"></a>'
+else
+*p '<span class="snk_button snk_disabled" tooltip-data="젖이 부족함" aria-disabled="true"><img src="content/pic/ui/action_milking_gray.png"></span>'
+end
+end
+*p '</div>'
+if (exam_in_progress = 1 or (exam_in_progress = 0 and $master_head_gear = 'raven_crown')) and room2_state = CONST_INT['slave_exist']:
+*p '<div id="debug_info"><a class="snk_button " tooltip-data="종합정보 : 개인실 노예" href="EXEC: gs ''snk_room_bridge'', ''summary'', 2"><img src="content/pic/ui/action_info_s.png"></a></div>'
+end
+if room2_state = CONST_INT['slave_exist']:
+*p '<div id="snk_room_header_actions"><a class="snk_button " tooltip-data="질문" href="EXEC: gs ''snk_room_bridge'', ''enter'', 2, 111 & gt ''menu_form''"><img src="content/pic/ui/action_question.png"></a></div>'
+end
+$text_display = ''
+func('$menu', '===BEGIN===', 'column_0')
+
+if room2_state = CONST_INT['no_slave']:
+	if slave_state > CONST_INT['no_slave']:
+		func('$menu', 'goto', $menu_item_allocate, menu_allocate2, 'interaction', 'interaction', '방 배정하기', '방 바꾸기.')
+	else
+		func('$menu', 'exec', $menu_item_allocate_gray, empty, '노예 ⇒ 1호실불가', '노예가 없다.')
+	end
+else
+	if slave_state = CONST_INT['no_slave']:
+		func('$menu', 'goto', $menu_item_allocate, menu_retroom2, 'interaction', 'interaction', '방 비우기', '조교하러가기.')
+	else
+		func('$menu', 'exec', $menu_item_allocate_gray, empty, '조수실 ⇒ 노예 불가', '데려올 자리가 없다.')
+	end
+end
+if $snk_room_view = 'talk':
+$text_display += $menu_item_talk + '<a class="snk_menu_label" tooltip-data="원작 질문 메뉴" href="EXEC: gs ''snk_room_bridge'', ''enter'', 2, 111 & gt ''menu_form''">질문</a></li>'
+$text_display += $menu_item_slave_act + '<a class="snk_menu_label" tooltip-data="개인실 활동 지시" href="EXEC: gt $curloc, ''''">활동 지시로</a></li>'
+else
+$text_display += $menu_item_talk + '<a class="snk_menu_label" tooltip-data="개인실 회화 메뉴" href="EXEC: gt $curloc, ''talk''">회화한다</a></li>'
+if room2_state > CONST_INT['no_slave'] and master_excitement >= 0:
+$text_display += $menu_item_sex + '<a class="snk_menu_label" tooltip-data="기존 개인실 상호작용" href="EXEC: interaction = 1028 & gt ''interaction''">섹스한다</a></li>'
+else
+$text_display += $replace($menu_item_sex_gray, '<li', '<li class="snk_disabled"') + '<span class="snk_menu_label" aria-disabled="true" tooltip-data="기존 상호작용 조건이 충족되지 않았습니다.">섹스 불가</span></li>'
+end
+if room2_state = CONST_INT['slave_exist'] and room2['energy'] > -4:
+$text_display += $menu_item_lesson + '<a class="snk_menu_label" tooltip-data="기존 교육 활동 메뉴" href="EXEC: gs ''snk_room_bridge'', ''enter'', 2, 12 & gt ''menu_form''">교육 활동</a></li>'
+else
+$text_display += $replace($menu_item_lesson, '<li', '<li class="snk_disabled"') + '<span class="snk_menu_label" aria-disabled="true" tooltip-data="행동 가능한 대상·행동력·비용 조건이 필요합니다.">교육 활동</span></li>'
+end
+if room2_state = CONST_INT['slave_exist'] and room2['energy'] > -4:
+$text_display += $menu_item_sex_edu + '<a class="snk_menu_label" tooltip-data="기존 성교육 메뉴" href="EXEC: gs ''snk_room_bridge'', ''enter'', 2, 13 & gt ''menu_form''">성교육</a></li>'
+else
+$text_display += $replace($menu_item_sex_edu, '<li', '<li class="snk_disabled"') + '<span class="snk_menu_label" aria-disabled="true" tooltip-data="행동 가능한 대상·행동력·비용 조건이 필요합니다.">성교육</span></li>'
+end
+if room2_state = CONST_INT['slave_exist'] and room2['energy'] > -4 and sparks >= coach_price[0]:
+$text_display += $menu_item_tutor + '<a class="snk_menu_label" tooltip-data="기존 가정교사 메뉴" href="EXEC: gs ''snk_room_bridge'', ''enter'', 2, 17 & gt ''menu_form''">가정교사</a></li>'
+else
+$text_display += $replace($menu_item_tutor, '<li', '<li class="snk_disabled"') + '<span class="snk_menu_label" aria-disabled="true" tooltip-data="행동 가능한 대상·행동력·비용 조건이 필요합니다.">가정교사</span></li>'
+end
+if room2_state = CONST_INT['slave_exist']:
+$text_display += $menu_item_reward + '<a class="snk_menu_label" tooltip-data="기존 칭찬 메뉴" href="EXEC: gs ''snk_room_bridge'', ''enter'', 2, 15 & gt ''menu_form''">칭찬</a></li>'
+else
+$text_display += $replace($menu_item_reward, '<li', '<li class="snk_disabled"') + '<span class="snk_menu_label" aria-disabled="true" tooltip-data="행동 가능한 대상·행동력·비용 조건이 필요합니다.">칭찬</span></li>'
+end
+end
+func('$menu', '===END===')
+*p '<div id="snk_room_menu"><<$text_display>></div>'
+*p '<div id="snk_room_notice">'
+if snk_room_notice_open = 1:
+*p '<img class="snk_notice_image" src="content/pic/ui/private_room_notice.png">'
+*p '<div class="snk_close"><a class="snk_button " tooltip-data="안내 닫기" href="EXEC: snk_room_notice_open = 0 & gt $curloc"><img src="content/pic/buttons/close_button.png"></a></div>'
+else
+*p '<div class="snk_close"><a class="snk_button " tooltip-data="개인실 주요 변경사항" href="EXEC: snk_room_notice_open = 1 & gt $curloc"><img src="content/pic/buttons/debug_button.png"></a></div>'
+end
+*p '</div>'
+if $snk_room_view = 'diet':
+! JO9 MOD START J9M2980 | 2026-10-15_z_private_diet_state_and_font | changed block; context may be included
+*p '<style id="jo9_private_diet_style">#snk_room_diet{z-index:2147483100!important;font-family:"경기천년제목 Medium";font-size:20px;line-height:32px;}#snk_room_diet h2{font-family:inherit;font-size:24px;line-height:36px;margin-bottom:22px;}#snk_room_diet .snk_diet_row{margin:12px 0;line-height:32px;}#snk_room_diet .jo9_diet_option{display:block;position:relative;box-sizing:border-box;min-height:44px;padding:6px 7px 6px 46px;border:0;background:transparent;color:#211a11;text-decoration:none;pointer-events:auto;font-family:inherit;font-size:20px;}#snk_room_diet .jo9_diet_option img{position:absolute;left:7px;top:6px;width:30px;height:30px;}#snk_room_diet .jo9_diet_title{display:block;font-family:inherit;font-size:20px;line-height:32px;white-space:nowrap;}#snk_room_diet .jo9_diet_selected{color:#70430c;}#snk_room_diet .jo9_diet_option:hover{color:#70430c;background:rgba(245,218,158,.25);}#snk_room_diet .snk_close{z-index:1;}</style>'
+! JO9 MOD END J9M2980
+*p '<div class="snk_room_overlay" id="snk_room_diet"><h2>식사 설정</h2>'
+*p '<div class="snk_close"><a class="snk_button" title="식사 설정 닫기" href="EXEC: gt ''slave_private_room2''"><img src="content/pic/buttons/close_button.png"></a></div>'
+if room2_state > CONST_INT['no_slave']:
+*p '<div class="snk_diet_row">'
+if room2_ration = 1:
+! JO9 MOD START J9M2979 | 2026-10-15_z_private_diet_state_and_font | changed block; context may be included
+*p '<a class="jo9_diet_option jo9_diet_selected" role="button" aria-pressed="true" href="EXEC: gt ''slave_private_room2'', ''diet_set'', 1"><img src="content/pic/buttons/sel_button.png"><span class="jo9_diet_title">일반식 · 2$/일</span><!-- JO9_DIET_HELP_BELOW_1 --></a>'
+! JO9 MOD END J9M2979
+else
+! JO9 MOD START J9M2978 | 2026-10-15_z_private_diet_state_and_font | changed block; context may be included
+*p '<a class="jo9_diet_option" role="button" aria-pressed="false" href="EXEC: gt ''slave_private_room2'', ''diet_set'', 1"><img src="content/pic/buttons/unsel_button.png"><span class="jo9_diet_title">일반식 · 2$/일</span><!-- JO9_DIET_HELP_BELOW_1 --></a>'
+! JO9 MOD END J9M2978
+end
+*p '</div>'
+*p '<div class="snk_diet_row">'
+if room2_ration = 0:
+! JO9 MOD START J9M2977 | 2026-10-15_z_private_diet_state_and_font | changed block; context may be included
+*p '<a class="jo9_diet_option jo9_diet_selected" role="button" aria-pressed="true" href="EXEC: gt ''slave_private_room2'', ''diet_set'', 0"><img src="content/pic/buttons/sel_button.png"><span class="jo9_diet_title">고열량식 · 4$/일</span><!-- JO9_DIET_HELP_BELOW_2 --></a>'
+! JO9 MOD END J9M2977
+else
+! JO9 MOD START J9M2976 | 2026-10-15_z_private_diet_state_and_font | changed block; context may be included
+*p '<a class="jo9_diet_option" role="button" aria-pressed="false" href="EXEC: gt ''slave_private_room2'', ''diet_set'', 0"><img src="content/pic/buttons/unsel_button.png"><span class="jo9_diet_title">고열량식 · 4$/일</span><!-- JO9_DIET_HELP_BELOW_2 --></a>'
+! JO9 MOD END J9M2976
+end
+*p '</div>'
+*p '<div class="snk_diet_row">'
+if room2_ration = 2:
+! JO9 MOD START J9M2975 | 2026-10-15_z_private_diet_state_and_font | changed block; context may be included
+*p '<a class="jo9_diet_option jo9_diet_selected" role="button" aria-pressed="true" href="EXEC: gt ''slave_private_room2'', ''diet_set'', 2"><img src="content/pic/buttons/sel_button.png"><span class="jo9_diet_title">특별식단 · 8$/일</span><!-- JO9_DIET_HELP_BELOW_3 --></a>'
+! JO9 MOD END J9M2975
+else
+! JO9 MOD START J9M2974 | 2026-10-15_z_private_diet_state_and_font | changed block; context may be included
+*p '<a class="jo9_diet_option" role="button" aria-pressed="false" href="EXEC: gt ''slave_private_room2'', ''diet_set'', 2"><img src="content/pic/buttons/unsel_button.png"><span class="jo9_diet_title">특별식단 · 8$/일</span><!-- JO9_DIET_HELP_BELOW_3 --></a>'
+! JO9 MOD END J9M2974
+end
+*p '</div>'
+else
+*p '<p>개인실이 비어 있습니다.</p>'
+end
+*p '</div>'
+end
+$snk_room_last_text[2] = $room2_info_text
+! JO9 MOD START J9M2973 | 2026-10-15_z_inline_text_prefix | changed block; context may be included
+! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($room2_info_text, '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $room2_info_text = $mid($room2_info_text, len($jo9_leading_empty) + 1, len($room2_info_text))
+! JO9 MOD END J9M2973
+*p '<div id="text"><<$room2_info_text>></div>'
+$room2_info_text = ''
+if cheat_no_starve = 0 and room2['starvation_warning'] = 1:
+	room2['starvation_warning'] = 2 &! will be reset in next_day when no longer starving
+	msg '<<$경고>>노예가 굶주려 있다, 식사량이 부족한 모양이다.<br><br>당장 집으로 데려와 먹여두는 방법도 있다.'
+end
+
+*p '<div id="snk_room_home"><a class="snk_button " tooltip-data="1층으로 돌아가기" href="EXEC: menu_form = 0 & gt ''menu_form''"><img src="content/pic/ui/home.png"></a></div></div>'
+
+------------ slave_private_room2 ------------

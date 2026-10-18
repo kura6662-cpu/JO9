@@ -1,0 +1,150 @@
+# #simple_npc
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2680 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '#simple_npc': gs 'snk_room_bridge', 'guard', '#simple_npc'
+! JO9 MOD END J9M2680
+!this location partially conflicts with #npc_base and should be loaded earlier to allow #npc_base to prevail where different
+!replace for npc copypasta
+!TODO: проверить внешние связи
+$sn_cycle = {
+    $_sn_cycle_name = $args[0]
+    $npc_name[$_sn_cycle_name] = $args[1]
+    npc_participation_chance[$_sn_cycle_name] = args[2]
+    demand_rating[$_sn_cycle_name] = args[3]
+    $interesting_specialisation[$_sn_cycle_name] = $args[4]
+    npc_cap_rise[$_sn_cycle_name] = args[5]
+    npc_money_cap[$_sn_cycle_name] = args[6]
+
+    killvar '$_sn_cycle_name'
+}
+
+
+!example
+
+!$npc_name['cardinal_de_mujlon'] = 'Gerard De Muzhlon'
+!npc_participation_chance['cardinal_de_mujlon'] = 0
+!demand_rating['cardinal_de_mujlon'] = 4
+!$interesting_specialisation['cardinal_de_mujlon'] = 'refferent'
+!npc_cap_rise['cardinal_de_mujlon'] = 0
+!npc_money_cap['cardinal_de_mujlon'] = 1000
+
+! replaces to:
+
+!dynamic $sn_cycle, 'cardinal_de_mujlon', 'Gerard De Muzhlon', 0, 4, 'refferent', 0, 1000
+
+killvar 'npc_participation_chance' &! fix for auction variability - ImperatorAugustus
+
+!lillimerge need aditional translations
+!-----Замена для копипасты NPC-----
+!dynamic $sn_cycle, 'oberstleutenant_dorward', 'Lieutenant Colonel Durward', 8, 3, 'concubine', 5, 1000 &! conflicts with #npc_base (npc_participation_chance 0)
+dynamic $sn_cycle, 'cardinal_de_mujlon', '제라르 드 무즐론', 5, 4, 'refferent', 5, 1000
+dynamic $sn_cycle, 'bishop_shaitana', '비숍 샤이타나', 5, 4, 'witchdoctor', 5, 1000
+dynamic $sn_cycle, 'bullhorn', '황소뿔', 10, 2, 'gladiatrix', 5, 500 &! was demand rating 5 and max 1000
+dynamic $sn_cycle, 'colonel_akbars', '아크바르 대령', 8, 4, 'gladiatrix', 5, 1000
+dynamic $sn_cycle, 'countess_bathory', '바토리 백작부인', 8, 3, 'none', 5, 1000
+dynamic $sn_cycle, 'garsid', '가르시드', iif(active[$quest[8]] = 3, 0, 12), 2, 'witchdoctor', 5, 1000 &! 안개 경계에서 공격받으면 더 이상 참가하지 않음
+dynamic $sn_cycle, 'gloth_prisonguard', '간수 글롯', 12, 2, 'pet', 5, 500 &! was demand rating 4 and max 1000
+dynamic $sn_cycle, 'jarik', '야릭', 12, 4, 'pet', 5, 1000
+dynamic $sn_cycle, 'kratos', '크라토스', 10, 2, 'concubine', 5, 1000
+dynamic $sn_cycle, 'kurfilinn', '쿠르필린', 8, 3, 'artist', 5, 1000
+dynamic $sn_cycle, 'lady_mordhulla', '레이디 모르둘라', 8, 4, 'pet', 5, 1000
+dynamic $sn_cycle, 'lord_pira', '로드 파이라', 8, 3, 'concubine', 5, 1000
+dynamic $sn_cycle, 'magnaga', '마그나가', 10, 2, 'concubine', 5, 1000
+dynamic $sn_cycle, 'mikkey', '메리 미키', 10, 4, 'pet', 5, 1000
+dynamic $sn_cycle, 'pretor_tifaret', '법무관 티파렛', 5, 4, 'servant', 5, 1000
+dynamic $sn_cycle, 'prince_charming', '프린스 차밍', 8, 3, 'artist', 5, 1000
+dynamic $sn_cycle, 'sfinga', '스핑기', 10, 2, 'witchdoctor', 5, 1000
+dynamic $sn_cycle, 'shooliba', '슐리바', 10, 2, 'witchdoctor', 50, 1000
+dynamic $sn_cycle, 'baron_imladis', '바론 임라디스', 8, 3, 'servant', 200, 1000
+dynamic $sn_cycle, 'bishop_nerilis', '비숍 네릴리스', 5, 4, 'witchdoctor', 200, 1000
+dynamic $sn_cycle, 'blackwing', '블랙윙', 8, 3, 'witchdoctor', 200, 1000
+dynamic $sn_cycle, 'count_albin', '알빈 백작', 8, 3, 'artist', 200, 1000
+dynamic $sn_cycle, 'donna_venturi', '도나 벤투리', 8, 3, 'servant', 200, 1000
+dynamic $sn_cycle, 'faceless', '페이스리스', 8, 3, 'artist', 200, 1000
+dynamic $sn_cycle, 'hand_of_the_knyaz', '왕자의 손', 5, 4, 'artist', 200, 1000
+dynamic $sn_cycle, 'lady_yasmenia', '레이디 야스메니아', 8, 3, 'servant', 200, 1000
+dynamic $sn_cycle, 'lihomanka', '피버', 12, 2, 'none', 90, 1000
+dynamic $sn_cycle, 'mad_baron', '미친 남작', 8, 3, 'witchdoctor', 90, 1000
+dynamic $sn_cycle, 'magister_vailos', '마기스테르 바일로스', 8, 3, 'witchdoctor', 90, 1000
+dynamic $sn_cycle, 'paral_itch', '파라 라이시스', 10, 2, 'concubine', 90, 1000
+dynamic $sn_cycle, 'pretor_kamael', '법무관 카마엘', 5, 4, 'witchdoctor', 90, 1000
+dynamic $sn_cycle, 'wight', '와이트', 12, 2, 'witchdoctor', 90, 1000
+dynamic $sn_cycle, 'archdeakon_frolo', '대부제 프롤로', 10, 2, 'artist', 90, 1000
+dynamic $sn_cycle, 'archmage_zephiros', '대마법사 제피로스', 8, 3, 'witchdoctor', 90, 1000
+dynamic $sn_cycle, 'avek_plesir', '아벡 플레지르', 8, 3, 'concubine', 90, 1000
+dynamic $sn_cycle, 'bishop_abbaton', '비숍 아바톤', 5, 4, 'servant', 90, 1000
+dynamic $sn_cycle, 'dofine_tutti', '투티 후계자', 5, 4, 'witchdoctor', 200, 1000
+dynamic $sn_cycle, 'earl_gray', '얼 그레이', 8, 3, 'artist', 90, 1000
+dynamic $sn_cycle, 'edgar_baldhead', '대머리 에드가', 10, 2, 'concubine', 90, 1000
+dynamic $sn_cycle, 'frogger', '프로거', 8, 3, 'artist', 90, 1000
+dynamic $sn_cycle, 'green_mamba', '그린 맘바', 10, 4, 'pet', 90, 1000
+dynamic $sn_cycle, 'hivenet', '하이브넷', 5, 4, 'witchdoctor', 90, 1000
+dynamic $sn_cycle, 'krull', '크룰', 12, 2, 'concubine', 90, 1000
+dynamic $sn_cycle, 'leonid_alexandriatos', '레오니드 알렉산드리아토스', 8, 3, 'artist', 90, 1000
+dynamic $sn_cycle, 'lucius_patricius', '루키우스 파트리키우스', 8, 3, 'artist', 90, 1000
+dynamic $sn_cycle, 'Zhuge_Liang', '제갈량', 10, 4, 'pet', 90, 1000
+dynamic $sn_cycle, 'mister_lardbag', '미스터 라드백', 10, 2, 'concubine', 90, 1000
+dynamic $sn_cycle, 'piter_viabu', '피터 비아부', 12, 2, 'concubine', 200, 1000
+dynamic $sn_cycle, 'pretor_diabaz', '법무관 디아바즈', 5, 4, 'artist', 90, 1000
+dynamic $sn_cycle, 'bishop_porter', '비숍 포터', 8, 3, 'servant', 90, 1000
+dynamic $sn_cycle, 'shihuan', '시환', 10, 2, 'artist', 90, 1000
+dynamic $sn_cycle, 'shraik', '슈라이크', 10, 2, 'concubine', 90, 1000
+dynamic $sn_cycle, 'singh_khan', '싱 칸', 8, 4, 'gladiatrix', 90, 1000
+dynamic $sn_cycle, 'titus', '귀족 티투스', 10, 2, 'artist', 90, 1000
+dynamic $sn_cycle, 'zashemitsu', '자셰미츠', 12, 2, 'witchdoctor', 90, 1000
+dynamic $sn_cycle, 'bishop_molaru', '비숍 몰라루', 5, 4, 'servant', 200, 1000
+dynamic $sn_cycle, 'don_bobrit', '돈 보브릿', 10, 2, 'artist', 90, 1000
+dynamic $sn_cycle, 'don_castilio', '돈 카스티요', 8, 3, 'refferent', 90, 1000
+dynamic $sn_cycle, 'don_diego', '돈 디에고', 10, 2, 'concubine', 90, 1000
+dynamic $sn_cycle, 'don_karbolio', '돈 카르빌리오', 8, 3, 'artist', 90, 1000
+dynamic $sn_cycle, 'don_mladio', '돈 믈라디오', 8, 3, 'servant', 90, 1000
+dynamic $sn_cycle, 'don_sedos', '돈 세도스', 10, 2, 'witchdoctor', 90, 1000
+dynamic $sn_cycle, 'don_sigismund', '돈 지기스문트', 8, 3, 'servant', 90, 1000
+dynamic $sn_cycle, 'don_sorino', '돈 소리노', 10, 2, 'artist', 90, 1000
+dynamic $sn_cycle, 'general_drago', '제너럴 드라고', 5, 4, 'gladiatrix', 90, 1000
+dynamic $sn_cycle, 'lady_edna', '레이디 에드나', 10, 2, 'servant', 90, 1000
+dynamic $sn_cycle, 'lady_suinton', '은둔중인 귀부인', 8, 4, 'pet', 200, 1000
+dynamic $sn_cycle, 'magister_gilmeritus', '학자 길메리투스', 8, 3, 'witchdoctor', 90, 1000
+dynamic $sn_cycle, 'pastor_shlang', '파스토르 슐랑', 12, 2, 'servant', 90, 1000
+dynamic $sn_cycle, 'pretor_siegfrid', '법무관 지크프리트', 5, 4, 'concubine', 90, 1000
+!dynamic $sn_cycle, 'sir_shelly', 'Sir Shelley', 8, 3, 'servant', 90, 1000 &! conflicts with #npc_base (demand_rating 6, concubine)
+dynamic $sn_cycle, 'sir_toughbar', '서 터프바', 10, 2, 'concubine', 90, 1000
+!dynamic $sn_cycle, 'ester', 'Reverend Esther Blanchett', 8, 3, 'refferent', 5, 1000 &! conflicts with #npc_base (npc_participation_chance 0)
+dynamic $sn_cycle, 'doctor', '닥터', 12, 3, 'witchdoctor', 5, 1000 &! demand_rating increased from 2 to 3
+dynamic $sn_cycle, 'kerulis_veil', '케룰리스 베일', 8, 3, 'witchdoctor', 5, 1000
+dynamic $sn_cycle, 'brina', '적발의 브리나', 12, 4, 'gladiatrix', 5, 1000
+dynamic $sn_cycle, 'менхантер', '맨헌터', 12, 3, 'refferent', 5, 1000 &! demand_rating increased from 2 to 3
+dynamic $sn_cycle, 'kagami_san', '카가미상', 12, 3, 'refferent', 5, 1000 &! demand_rating increased from 2 to 3
+dynamic $sn_cycle, 'azura', '아주라 ', 12, 3, 'refferent', 5, 1000 &! demand_rating increased from 2 to 3
+dynamic $sn_cycle, 'servilia_quinta', '세르빌리아 퀸타 ', 12, 3, 'refferent', 5, 1000 &! demand_rating increased from 2 to 3
+dynamic $sn_cycle, 'estelindel', '이스텔린딜', 12, 3, 'refferent', 5, 1000 &! demand_rating increased from 2 to 3
+! JO9 MOD START J9M2679 | 2026-10-09_joffrey_name_unification | changed block; context may be included
+dynamic $sn_cycle, 'madame_jofre', '마담 조프리', 12, 3, 'concubine', 5, 1000 &! demand_rating increased from 2 to 3
+! JO9 MOD END J9M2679
+dynamic $sn_cycle, 'yôhanan_stiven', '마스터 요하난 스티븐', 12, 2, 'refferent', 5, 1000
+dynamic $sn_cycle, 'poison', '포이즌', 12, 3, 'witchdoctor', 5, 1000 &! demand_rating increased from 2 to 3
+! Russian Quarter Buyers
+dynamic $sn_cycle, 'nastia', '나스탸', 2, 4, 'concubine', 5, 1000
+dynamic $sn_cycle, 'Alenushka', '알레누시카', 3, 4, 'pet', 5, 1000
+
+
+
+
+!Интерес покупателей (relocated from npc_progress for auction consistency - ImperatorAugustus)
+z = arrsize('$auction_buyer')
+retail_buyers_number = 0
+b = 10 + ((day + z) mod 11) &! pseudo-rand(10,20)
+
+for i = 1 to z:
+	a = 1 + ((day * b * i) mod z) &! deterministic pseudo-random numbers instead of rand(1,z)
+	if npc_participation_chance[$auction_buyer[a]] > 0:
+		if retail_buyers_number > b:
+			npc_participation_chance[$auction_buyer[a]] = 0
+		else
+			npc_participation_chance[$auction_buyer[a]] = 100
+			retail_buyers_number += 1
+		end
+	end
+end
+
+------------ #simple_npc ------------

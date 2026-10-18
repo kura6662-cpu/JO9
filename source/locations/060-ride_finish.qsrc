@@ -1,0 +1,91 @@
+# $ride_finish
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2839 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$ride_finish': gs 'snk_room_bridge', 'guard', '$ride_finish'
+! JO9 MOD END J9M2839
+!end of the chariot race
+dynamic $city_sounds
+ride_count = 10
+sp_txt = 0
+
+!Creating a route to the next race
+$trace[1] = 'ride_start'
+i = 1
+:loop
+	i += 1
+	a = rand(1,12)
+	$trace[i] = $trace_type[a]
+if i < 11: jump 'loop'
+
+$trace[12] = 'ride_finish'
+
+!Racehorse injuries
+if (slave['stamina'] - chariot['pony_health']) > 0:
+	slave_rate['wounds'] += 11 + ((48271 * (day + slave_type)) mod 65537)/(65537/49) &! pseudo-rand(11,59)
+end
+slave['energy'] = -3
+pony_dead = 0
+if chariot['pony_health'] = 0:
+!CHECK: почему no_slave а не slave_dead?
+	dynamic $clear_slave_instance, 'slave'
+	pony_dead = 1
+	sparks += 5
+end
+
+!1 =  chariot broke
+if args[0] = 1:
+	interaction_city = 121
+	gt 'interaction_city'
+end
+
+!2 = wheel flew off
+if args[0] = 2:
+	interaction_city = 121
+	gt 'interaction_city'
+end
+
+!3 = steed fell
+if args[0] = 3:
+	interaction_city = 123
+	gt 'interaction_city'
+end
+
+!4 = reached the the finish line
+if args[0] = 4:
+	$race_winner = $participant[1]
+	interaction_city = 124
+	slave_rate['stamina'] += 10
+	slave_rate['temper'] += 10
+	slave_rate['ego'] -= 10 &! opposite of arena battle
+	if slave['pride'] > 1: slave_rate['pride'] -= 10 &! opposite of arena battle
+	slave_rate['instinct'] += 10
+! JO9 MOD START COG_DIRECT_5 | 2026-10-16_innate_learning_traits
+	slave_rate['dressage'] += func('jo9_learning_xp', (25), slave['jo9_learning_trait'], 'dressage')
+! JO9 MOD END COG_DIRECT_5
+	if $race_winner = 'master':
+		race_win_ratio += 1
+		slave_rate['fame'] += 11
+		if brand_reputation < 3: brand_rate += 5
+		master_moodlet['pos_master_winner'] = max(master_moodlet['pos_master_winner'], 5)
+		master_moodlet['neg_master_loser'] = 0
+		slave['pos_slave_winner'] = max(slave['pos_slave_winner'], slave['temper'])
+		slave['neg_slave_loser'] = 0
+		if slave['mood'] > 0: slave_rate['moral'] += 5
+		slave['virtue'] = 5
+		slave['sin'] = 0
+		slave['has_ride_win'] += 1
+	else
+		race_win_ratio -= 1
+		slave_rate['fame'] += 1
+		brand_rate -= 1
+		master_moodlet['pos_master_winner'] = 0
+		master_moodlet['neg_master_loser'] = max(master_moodlet['neg_master_loser'], 3)
+		slave['neg_slave_loser'] = max(slave['neg_slave_loser'], slave['temper'])
+		slave['pos_slave_winner'] = 0
+		slave['virtue'] = 0
+		dynamic $sin_gained_now, 'slave'
+	end
+	gt 'interaction_city'
+end
+
+------------ $ride_finish ------------

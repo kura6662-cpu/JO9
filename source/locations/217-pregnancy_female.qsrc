@@ -1,0 +1,53 @@
+# $pregnancy_female
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2939 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$pregnancy_female': gs 'snk_room_bridge', 'guard', '$pregnancy_female'
+! JO9 MOD END J9M2939
+!Pregnancy calculation - Created by crushboss
+!setting vars
+female_pregnancy_chance = 0
+days_diff = 0
+!pregnancy_random = 0
+!female Pregnancy Chance
+if female['pregnant'] = 0 and female['parasite'] = 0: female["pregnant_revealed"] = 0
+IF female['cycle_day'] < 9:
+	days_diff = 9 - female['cycle_day']
+ELSEIF female['cycle_day'] > 15:
+	days_diff = female['cycle_day'] - 15
+END
+IF female['pregnant'] < 1 and female['fertility'] ! -1 and female['fertility'] ! -2 and female['parasite'] = 0:
+	IF female['fertility'] = 1 and female_vaginal_modification = 4 and parasite_prob = 0:
+		IF female['ovulation'] > 0:
+			female_pregnancy_chance = RAND(0,15 - master_energy)
+			if pregnancy_chance < 5: female['pregnant'] = 1
+		ELSE
+			female_pregnancy_chance = RAND(0,15 - master_energy + days_diff * 5)
+			if pregnancy_chance < 5: female['pregnant'] = 1
+		END
+	ELSEIF parasite_prob = 0:
+		IF female['ovulation'] > 0:
+			female_pregnancy_chance = RAND(0,20)
+			IF pregnancy_chance < master_energy:
+				female['pregnant'] = 1
+				female["pregnant_revealed"] = 0
+			END
+		ELSE
+			female_pregnancy_chance = RAND(0,20 + days_diff * 5)
+			IF female_pregnancy_chance < master_energy * RAND(1,4):
+				female['pregnant'] = 1
+				female["pregnant_revealed"] = 0
+			END
+		END
+	ELSEIF parasite_prob > 0:
+		IF female['ovulation'] > 0:
+			female_pregnancy_chance = RAND(0,15 - parasite_prob)
+			if female_pregnancy_chance < 5: female['parasite'] = 1
+		ELSE
+			female_pregnancy_chance = RAND(0,15 + days_diff * (10 - parasite_prob))
+			if female_pregnancy_chance < 5: female['parasite'] = 1
+		END
+	END
+END
+parasite_prob = 0
+!!!!!!
+------------ $pregnancy_female ------------

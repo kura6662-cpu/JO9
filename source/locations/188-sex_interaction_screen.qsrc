@@ -1,0 +1,45 @@
+# sex_interaction_screen
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1446 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'sex_interaction_screen': gs 'snk_room_bridge', 'guard', 'sex_interaction_screen'
+! JO9 MOD END J9M1446
+
+gs '_layout'
+npc = 0
+
+! JO9 MOD START J9M1445 | 2026-10-08_persistent_image_cycle, 2026-10-15_z_inline_text_prefix | changed block; context may be included
+*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\<<$bg[$place]>>.png"></div>')
+! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($text[txt], '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $text[txt] = $mid($text[txt], len($jo9_leading_empty) + 1, len($text[txt]))
+! JO9 MOD END J9M1445
+*p '<div id = "text"><<$text[txt]>></div>'
+! JO9 MOD START J9M1444 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+if nsfw = 0: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$bg_path>>.png"></div>')
+! JO9 MOD END J9M1444
+
+$info_bar = ''
+*nl '<div id = "side_panel"><br><br><Br>'
+! JO9 MOD START J9M1443 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+*nl '<u>행동 점수표 -</u><br>'
+! JO9 MOD END J9M1443
+*nl ' 행위 참신함 : <<sex["girl_newness"]>>'
+*nl ' 행위 참여도 : <<diligence>>'
+*nl ' 기술 향상도 : <<skill>>'
+*nl ' 기술 품질도 : <<quality>>'
+*nl ' 자극의 강도 : <<diff>>'
+*nl ' 자극의 균형 : <<balance>></div>'
+
+if sound_on = 1 and $play_sound[txt] ! '': play 'content\snd\<<$play_sound[txt]>>.wav', sound_volume
+if $play_sound[txt] ! '': $play_sound[txt] = ''
+
+if txt > 1:
+	addobj '<img src = "content\pic\buttons\back_button.png">'
+else
+	addobj '<img src = "content\pic\buttons\noback_button.png">'
+end
+addobj '<img src = "content\pic\buttons\forward_button.png">'
+
+if $msg_txt ! '': msg '<<$msg_txt>>'
+
+------------ sex_interaction_screen ------------

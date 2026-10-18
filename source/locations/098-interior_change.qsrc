@@ -1,0 +1,2031 @@
+# interior_change
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1249 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'interior_change': gs 'snk_room_bridge', 'guard', 'interior_change'
+! JO9 MOD END J9M1249
+! JO9 image-cycle: saved choices are keyed by original image path.
+! JO9 MOD START WINDOWS_IMAGE_SLOTS_PATH | 2026-10-18_windows_image_slots
+if $args[0] = 'jo9_path':
+ local $jo9_base, $jo9_input, $jo9_path, $jo9_saved_path, $jo9_candidates, jo9_candidate_ids, $jo9_active_paths, jo9_active_ids
+ local $jo9_candidate, $jo9_candidate_key, $jo9_ext, $jo9_stem, jo9_count, jo9_selected, jo9_i, jo9_j, jo9_exists, jo9_duplicate, jo9_active_count, jo9_selected_at, jo9_slot
+ $jo9_base = $lcase($replace($args[1], '\', '/'))
+ $jo9_input = $jo9_base
+ $jo9_path = $jo9_base
+ $jo9_saved_path = $jo9_base
+ $jo9_candidates[0] = $jo9_base
+ jo9_candidate_ids[0] = 0
+ jo9_count = 1
+ jo9_selected = jo9_cut_choice[$jo9_base]
+ ! Registry positions are compact; jo9_candidate_ids keeps saved selection IDs stable.
+! JO9 WINDOWS IMAGE SLOT REGISTRY START
+if $jo9_base = 'content/pic/bg/beach.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/beach.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/beach (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/beauty_shop.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/beauty_shop.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/beauty_shop (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/brothel.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/brothel.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/brothel (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/centralkvartal.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/centralkvartal.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/centralkvartal (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/centralkvartal_large.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/centralkvartal_large.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/centralkvartal_large (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/centralkvartal_street.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/centralkvartal_street.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/centralkvartal_street (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/city.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/city.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/city (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/city_small.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/city_small.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/city_small (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/class_common.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/class_common.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/class_common (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/class_music.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/class_music.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/class_music (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/class_sport.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/class_sport.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/class_sport (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/classroom.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/classroom.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/classroom (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/club.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/club.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/club (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/colosseum.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/colosseum.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/colosseum (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/computer.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/computer.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/computer (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/eastkvartal.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/eastkvartal.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/eastkvartal (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/eastkvartal_residences.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/eastkvartal_residences.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/eastkvartal_residences (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/edge_of_mists2.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/edge_of_mists2.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/edge_of_mists2 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/farm.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/farm.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/farm (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/forum.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/forum.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/forum (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/garden.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/garden.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/garden (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/gates_of_mists.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/gates_of_mists.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/gates_of_mists (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/gates_of_mists_small.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/gates_of_mists_small.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/gates_of_mists_small (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/guard_citadel.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/guard_citadel.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/guard_citadel (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/guard_palace.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/guard_palace.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/guard_palace (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/guard_spire.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/guard_spire.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/guard_spire (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/guard_tower.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/guard_tower.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/guard_tower (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/guard_vatican.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/guard_vatican.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/guard_vatican (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/guild.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/guild.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/guild (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/high_view.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/high_view.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/high_view (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/jeweler.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/jeweler.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/jeweler (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/kamira_street.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/kamira_street.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/kamira_street (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/kamira_street_large.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/kamira_street_large.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/kamira_street_large (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/kamira_street_small.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/kamira_street_small.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/kamira_street_small (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/market.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/market.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/market (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/market_small.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/market_small.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/market_small (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/milk_cooperative.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/milk_cooperative.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/milk_cooperative (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/moneylender.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/moneylender.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/moneylender (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/necropolis.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/necropolis.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/necropolis (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/necropolis_small.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/necropolis_small.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/necropolis_small (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/necropolis_street.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/necropolis_street.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/necropolis_street (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/necropolis_street_small.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/necropolis_street_small.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/necropolis_street_small (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/onsen.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/onsen.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/onsen (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/piercing_shop.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/piercing_shop.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/piercing_shop (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/realtor_office.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/realtor_office.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/realtor_office (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/restaurant.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/restaurant.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/restaurant (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/roooom.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/roooom.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/roooom (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/russiankvartal_forest.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/russiankvartal_forest.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/russiankvartal_forest (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/serpis.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/serpis.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/serpis (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/serpis_small.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/serpis_small.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/serpis_small (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/serpis_street.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/serpis_street.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/serpis_street (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/shop_wpn.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/shop_wpn.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/shop_wpn (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/slave_stage.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/slave_stage.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/slave_stage (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/taurus.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/taurus.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/taurus (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/taurus_small.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/taurus_small.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/taurus_small (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/taurus_street.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/taurus_street.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/taurus_street (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/tavern.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/tavern.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/tavern (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/tavern_breast.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/tavern_breast.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/tavern_breast (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/tavern_food.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/tavern_food.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/tavern_food (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/tavern_gyro.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/tavern_gyro.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/tavern_gyro (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/tavern_hip.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/tavern_hip.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/tavern_hip (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/tavern_kitchen.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/tavern_kitchen.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/tavern_kitchen (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/tavern_pussy.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/tavern_pussy.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/tavern_pussy (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/technodrom.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/technodrom.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/technodrom (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/technodrom_small.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/technodrom_small.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/technodrom_small (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/throne_room.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/throne_room.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/throne_room (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/uncle_bo.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/uncle_bo.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/uncle_bo (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/white_city.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/white_city.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/white_city (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/white_city_small.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/white_city_small.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/white_city_small (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/white_city_street.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/white_city_street.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/white_city_street (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/white_city_street_small.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/white_city_street_small.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/white_city_street_small (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/witch_shop.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/witch_shop.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/witch_shop (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/bg/zakritiy_klub.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/bg/zakritiy_klub.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/bg/zakritiy_klub (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/archmage_zephiros.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/archmage_zephiros.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/archmage_zephiros (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/avek_plesir.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/avek_plesir.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/avek_plesir (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/barman.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/barman.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/barman (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/baron_imladis.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/baron_imladis.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/baron_imladis (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/biker.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/biker.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/biker (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/bishop_molaru.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/bishop_molaru.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/bishop_molaru (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/bishop_nerilis.png':
+ jo9_count = 3
+ $jo9_candidates[0] = 'content/pic/characters/bishop_nerilis.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/bishop_nerilis (2).png'
+ jo9_candidate_ids[1] = 1
+ $jo9_candidates[2] = 'content/pic/characters/bishop_nerilis (3).png'
+ jo9_candidate_ids[2] = 2
+end
+if $jo9_base = 'content/pic/characters/bishop_porter.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/bishop_porter.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/bishop_porter (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/bishop_shaitana.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/bishop_shaitana.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/bishop_shaitana (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/brina_the_red.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/brina_the_red.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/brina_the_red (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/bullhorn.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/bullhorn.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/bullhorn (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/chief.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/chief.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/chief (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/deming.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/deming.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/deming (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/don_bobrit.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/don_bobrit.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/don_bobrit (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/don_castilio.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/don_castilio.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/don_castilio (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/don_diego.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/don_diego.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/don_diego (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/don_karbolio.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/don_karbolio.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/don_karbolio (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/don_sedos.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/don_sedos.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/don_sedos (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/don_sigismund.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/don_sigismund.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/don_sigismund (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/don_sorino.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/don_sorino.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/don_sorino (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/donna_venturi.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/donna_venturi.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/donna_venturi (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/draugr.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/draugr.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/draugr (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/garsid.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/garsid.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/garsid (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/general_barabas.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/general_barabas.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/general_barabas (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/gloth_prisonguard.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/gloth_prisonguard.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/gloth_prisonguard (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/jarik.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/jarik.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/jarik (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/kagami_san.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/kagami_san.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/kagami_san (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/kerulis_veil.png':
+ jo9_count = 3
+ $jo9_candidates[0] = 'content/pic/characters/kerulis_veil.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/kerulis_veil (2).png'
+ jo9_candidate_ids[1] = 1
+ $jo9_candidates[2] = 'content/pic/characters/kerulis_veil (3).png'
+ jo9_candidate_ids[2] = 2
+end
+if $jo9_base = 'content/pic/characters/krull.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/krull.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/krull (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/kurfilinn.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/kurfilinn.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/kurfilinn (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/lady_edna.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/lady_edna.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/lady_edna (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/lady_suinton.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/lady_suinton.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/lady_suinton (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/leonid_alexandriatos.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/leonid_alexandriatos.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/leonid_alexandriatos (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/leshiy.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/leshiy.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/leshiy (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/lilly.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/lilly.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/Lilly (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/mad_baron.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/mad_baron.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/mad_baron (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/magister_gilmeritus.png':
+ jo9_count = 3
+ $jo9_candidates[0] = 'content/pic/characters/magister_gilmeritus.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/magister_gilmeritus (2).png'
+ jo9_candidate_ids[1] = 1
+ $jo9_candidates[2] = 'content/pic/characters/magister_gilmeritus (3).png'
+ jo9_candidate_ids[2] = 2
+end
+if $jo9_base = 'content/pic/characters/magister_vailos.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/magister_vailos.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/magister_vailos (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/manhunter.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/Manhunter.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/Manhunter (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/mister_lardbag.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/mister_lardbag.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/mister_lardbag (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/mistress_angelika.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/mistress_angelika.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/mistress_angelika (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/pope.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/pope.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/pope (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/pretor_diabaz.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/pretor_diabaz.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/pretor_diabaz (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/pretor_kamael.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/pretor_kamael.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/pretor_kamael (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/pretor_siegfrid.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/pretor_siegfrid.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/pretor_siegfrid (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/pretor_tifaret.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/pretor_tifaret.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/pretor_tifaret (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/prince_charming.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/prince_charming.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/prince_charming (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/scarlet.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/scarlet.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/scarlet (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/sfinga.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/sfinga.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/sfinga (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/singh_khan.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/singh_khan.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/singh_khan (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/sir_aramus.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/sir_aramus.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/sir_aramus (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/sir_shelly.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/sir_shelly.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/sir_shelly (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/sir_toughbar.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/sir_toughbar.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/sir_toughbar (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/slaver_fharid.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/slaver_fharid.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/slaver_fharid (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/stableman.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/stableman.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/stableman (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/taurus_king.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/taurus_king.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/taurus_king (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/tiamath.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/tiamath.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/tiamath (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/tsyuansu.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/Tsyuansu.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/Tsyuansu (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/uzeji.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/uzeji.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/uzeji (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/wujen.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/wujen.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/wujen (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/characters/yôhanan_stiven.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/characters/yôhanan_stiven.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/characters/yôhanan_stiven (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/16.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/16.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/16 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/21.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/21.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/21 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/24.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/24.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/24 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/25.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/25.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/25 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/26.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/26.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/26 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/28.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/28.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/28 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/30.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/30.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/30 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/31.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/31.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/31 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/32.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/32.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/32 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/36.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/36.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/36 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/37.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/37.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/37 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/38.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/38.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/38 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/40.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/40.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/40 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/41.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/41.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/41 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/47.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/47.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/47 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/48.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/48.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/48 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/5.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/5.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/5 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/50.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/50.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/50 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/53.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/53.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/53 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/56.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/56.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/56 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/59.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/59.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/59 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/69.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/69.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/69 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/7.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/7.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/7 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/70.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/70.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/70 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/71.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/71.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/71 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/72.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/72.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/72 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/73.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/73.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/73 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/74.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/74.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/74 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/75.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/75.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/75 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/77.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/77.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/77 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/78.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/78.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/78 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/80.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/80.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/80 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/82.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/82.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/82 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/1.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/1.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/1 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/10.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/10.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/10 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/11.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/11.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/11 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/12.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/12.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/12 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/13.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/13.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/13 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/14.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/14.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/14 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/15.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/15.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/15 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/16.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/16.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/16 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/17.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/17.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/17 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/18.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/18.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/18 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/19.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/19.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/19 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/2.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/2.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/2 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/20.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/20.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/20 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/21.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/21.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/21 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/22.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/22.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/22 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/23.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/23.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/23 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/24.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/24.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/24 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/25.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/25.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/25 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/26.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/26.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/26 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/27.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/27.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/27 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/28.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/28.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/28 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/29.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/29.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/29 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/3.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/3.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/3 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/30.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/30.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/30 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/31.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/31.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/31 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/32.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/32.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/32 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/33.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/33.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/33 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/34.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/34.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/34 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/35.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/35.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/35 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/36.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/36.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/36 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/37.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/37.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/37 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/38.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/38.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/38 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/39.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/39.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/39 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/4.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/4.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/4 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/40.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/40.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/40 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/5.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/5.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/5 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/6.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/6.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/6 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/7.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/7.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/7 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/8.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/8.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/8 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/9.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/9.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/9 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/after/base.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/after/Base.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/after/Base (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/1.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/1.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/1 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/10.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/10.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/10 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/14.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/14.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/14 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/15.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/15.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/15 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/17.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/17.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/17 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/18.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/18.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/18 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/19.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/19.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/19 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/2.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/2.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/2 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/20.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/20.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/20 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/22.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/22.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/22 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/23.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/23.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/23 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/27.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/27.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/27 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/3.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/3.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/3 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/34.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/34.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/34 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/35.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/35.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/35 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/43.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/43.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/43 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/44.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/44.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/44 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/46.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/46.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/46 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/51.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/51.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/51 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/52.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/52.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/52 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/54.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/54.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/54 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/55.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/55.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/55 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/57.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/57.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/57 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/58.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/58.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/58 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/60.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/60.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/60 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/61.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/61.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/61 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/63.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/63.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/63 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/64.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/64.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/64 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/65.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/65.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/65 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/66.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/66.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/66 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/67.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/67.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/67 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/68.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/68.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/68 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/76.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/76.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/76 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/81.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/81.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/81 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/reserve/bg/db_bg/b/9.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/reserve/bg/DB_BG/b/9.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/reserve/bg/DB_BG/b/9 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/scene/arena_end.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/scene/arena_end.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/scene/arena_end (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/scene/arena_fight.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/scene/arena_fight.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/scene/arena_fight (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/scene/blindfold_4.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/scene/blindfold_4.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/scene/blindfold_4 (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/scene/others/rally.png':
+ jo9_count = 5
+ $jo9_candidates[0] = 'content/pic/scene/others/rally.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/scene/others/rally (2).png'
+ jo9_candidate_ids[1] = 1
+ $jo9_candidates[2] = 'content/pic/scene/others/rally (3).png'
+ jo9_candidate_ids[2] = 2
+ $jo9_candidates[3] = 'content/pic/scene/others/rally (4).png'
+ jo9_candidate_ids[3] = 3
+ $jo9_candidates[4] = 'content/pic/scene/others/rally (5).png'
+ jo9_candidate_ids[4] = 4
+end
+if $jo9_base = 'content/pic/scene/public_use.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/scene/public_use.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/scene/public_use (2).png'
+ jo9_candidate_ids[1] = 1
+end
+if $jo9_base = 'content/pic/scene/witch/witch.png':
+ jo9_count = 2
+ $jo9_candidates[0] = 'content/pic/scene/Witch/witch.png'
+ jo9_candidate_ids[0] = 0
+ $jo9_candidates[1] = 'content/pic/scene/Witch/witch (2).png'
+ jo9_candidate_ids[1] = 1
+end
+! JO9 WINDOWS IMAGE SLOT REGISTRY END
+ jo9_active_count = 0
+ jo9_selected_at = -1
+ jo9_i = 0
+ :jo9_slot_registered_check
+ if jo9_i < jo9_count:
+  $jo9_candidate = $jo9_candidates[jo9_i]
+  if jo9_selected = jo9_candidate_ids[jo9_i]: $jo9_saved_path = $jo9_candidate
+  jo9_exists = 0
+  dynamic 'jo9_exists = %<<$jo9_candidate>>%'
+  if jo9_exists = 1:
+   $jo9_active_paths[jo9_active_count] = $jo9_candidate
+   jo9_active_ids[jo9_active_count] = jo9_candidate_ids[jo9_i]
+   if jo9_selected = jo9_candidate_ids[jo9_i]: jo9_selected_at = jo9_active_count
+   jo9_active_count += 1
+  end
+  jo9_i += 1
+  jump 'jo9_slot_registered_check'
+ end
+ ! Only the three Windows-copy siblings are discovered at runtime.
+ $jo9_ext = $strfind($jo9_input, '(\.[^./]+)$', 1)
+ if $jo9_ext ! '': $jo9_stem = $mid($jo9_input, 1, len($jo9_input) - len($jo9_ext))
+ if $jo9_ext ! '' and $strfind($jo9_stem, ' \([0-9]+\)$') = '':
+  jo9_slot = 2
+  :jo9_slot_windows_check
+  if jo9_slot <= 4:
+   $jo9_candidate = $jo9_stem + ' (' + str(jo9_slot) + ')' + $jo9_ext
+   if jo9_selected = 10000 + jo9_slot: $jo9_saved_path = $jo9_candidate
+   $jo9_candidate_key = $lcase($replace($jo9_candidate, '\', '/'))
+   jo9_duplicate = 0
+   jo9_j = 0
+   :jo9_slot_duplicate_check
+   if jo9_j < jo9_count:
+    if $lcase($replace($jo9_candidates[jo9_j], '\', '/')) = $jo9_candidate_key: jo9_duplicate = 1
+    jo9_j += 1
+    jump 'jo9_slot_duplicate_check'
+   end
+   if jo9_duplicate = 0:
+    jo9_exists = 0
+    dynamic 'jo9_exists = %<<$jo9_candidate>>%'
+    if jo9_exists = 1:
+     $jo9_active_paths[jo9_active_count] = $jo9_candidate
+     jo9_active_ids[jo9_active_count] = 10000 + jo9_slot
+     if jo9_selected = 10000 + jo9_slot: jo9_selected_at = jo9_active_count
+     jo9_active_count += 1
+    end
+   end
+   jo9_slot += 1
+   jump 'jo9_slot_windows_check'
+  end
+ end
+ ! Mode 2 identifies the image already rendered, even if its file was removed.
+ if args[2] = 2:
+  jo9_image_count = jo9_active_count
+  $result = $jo9_saved_path
+  exit
+ end
+ ! A missing saved choice returns to A (or the first surviving path if A is absent).
+ if jo9_selected_at < 0:
+  jo9_selected_at = 0
+  jo9_cut_choice[$jo9_base] = 0
+ end
+ if jo9_active_count > 0:
+  if args[2] = 1: jo9_selected_at = (jo9_selected_at + 1) mod jo9_active_count
+  $jo9_path = $jo9_active_paths[jo9_selected_at]
+  jo9_cut_choice[$jo9_base] = jo9_active_ids[jo9_selected_at]
+ end
+ jo9_image_count = jo9_active_count
+ $result = $jo9_path
+ exit
+end
+! JO9 MOD END WINDOWS_IMAGE_SLOTS_PATH
+if $args[0] = 'jo9_html':
+ local $jo9_html, $jo9_tail, $jo9_src, $jo9_attr, $jo9_newsrc, $jo9_saved_html, jo9_at, jo9_next
+ $jo9_html = $args[1]
+ ! JO9 paired cutscene tools: exclude home dashboard and combat.
+ if $curloc = 'main_screen' or $curloc = 'demo_estate' or $curloc = 'боевой_интерфейс' or $curloc = 'конец_боя' or $curloc = 'colosseum_fight' or instr($jo9_html, 'fight_bg') > 0 or instr($jo9_html, 'bg_right') > 0:
+  $result = $jo9_html
+  exit
+ end
+ if instr($jo9_html, '<img') = 0:
+  $result = $jo9_html
+  exit
+ end
+ ! Reset image-only mode on a fresh scene; preserve layered pictures within one render.
+ jo9_clean_hidden = 0
+ if $jo9_clean_overlay ! '':
+  $jo9_saved_html = $replace($maintxt, $jo9_clean_overlay, '')
+  if $jo9_saved_html ! $maintxt:
+   *clr
+   *p $jo9_saved_html
+  end
+ end
+ $jo9_clean_overlay = ''
+ ! Remove the previous layer switch, but retain its selected picture.
+ if $jo9_last_button ! '':
+  $jo9_saved_html = $replace($maintxt, $jo9_last_button, '')
+  if $jo9_saved_html ! $maintxt:
+   *clr
+   *p $jo9_saved_html
+  end
+ end
+ $jo9_last_button = ''
+ $jo9_visible_top = ''
+ jo9_at = 1
+ :jo9_image_scan
+ jo9_next = instr($mid($jo9_html, jo9_at), '<img')
+ if jo9_next > 0:
+  jo9_next += jo9_at - 1
+  $jo9_tail = $mid($jo9_html, jo9_next)
+  $jo9_src = $strfind($jo9_tail, 'src\s*=\s*"([^"]+)"', 1)
+  if $jo9_src ! '':
+   $jo9_visible_top = $lcase($replace($jo9_src, '\', '/'))
+   $jo9_newsrc = func('interior_change', 'jo9_path', $jo9_src)
+   $jo9_attr = $strfind($jo9_tail, 'src\s*=\s*"([^"]+)"')
+   $jo9_html = $replace($jo9_html, $jo9_attr, 'src="' + $jo9_newsrc + '"')
+  end
+  jo9_at = jo9_next + 4
+  jump 'jo9_image_scan'
+ end
+ if $jo9_visible_top ! '':
+  $jo9_newsrc = func('interior_change', 'jo9_path', $jo9_visible_top)
+  if jo9_image_count >= 1:
+! JO9 MOD START J9M1248 | 2026-10-08_image_cycle_tooltip_right, 2026-10-08_image_cycle_top_left | changed block; context may be included
+   $jo9_last_button = '<div id="jo9_image_cycle" style="position:absolute;left:7px;right:auto;top:4px;width:62px;height:28px;z-index:2147483600;"><a class="tooltip-right" tooltip-data="이미지 전환" title="이미지 전환" style="display:block;position:relative;width:26px;height:26px;" href="EXEC: gs ''interior_change'', ''jo9_toggle''"><img style="width:26px;height:26px;" src="content/pic/ui/approved_main_v1/tool_room.png"></a><a id="jo9_cutscene_view" class="tooltip-right" tooltip-data="컷신만 보기 / UI 복원" title="컷신만 보기 / UI 복원" style="display:block;position:absolute;left:32px;top:0;width:26px;height:26px;line-height:26px;text-align:center;background:#202820;color:#e8d39c;border:1px solid #b59d62;border-radius:3px;font-size:20px;" href="EXEC: gs ''interior_change'', ''jo9_clean_toggle''">◉</a></div>'
+! JO9 MOD END J9M1248
+! JO9 MOD START WINDOWS_IMAGE_SLOTS_DISABLED | 2026-10-18_windows_image_slots
+   if jo9_image_count = 1:
+    $jo9_last_button = $replace($jo9_last_button, 'tooltip-data="이미지 전환" title="이미지 전환"', 'tooltip-data="이미지 전환 · 추가 컷 없음" title="이미지 전환 · 추가 컷 없음"')
+    $jo9_last_button = $replace($jo9_last_button, 'display:block;position:relative;width:26px;height:26px;', 'display:block;position:relative;width:26px;height:26px;opacity:0.45;')
+    $jo9_last_button = $replace($jo9_last_button, 'href="EXEC: gs ''interior_change'', ''jo9_toggle''"', 'aria-disabled="true"')
+   end
+! JO9 MOD END WINDOWS_IMAGE_SLOTS_DISABLED
+! JO9 MOD START J9M1247 | 2026-10-10_restore_private_room_ui_corrections | changed block; context may be included
+   if instr($jo9_html, 'id="snk_room_bg"') > 0 or instr($jo9_html, 'id="snk_room_character"') > 0:
+    $jo9_html += $jo9_last_button
+   else
+   $jo9_html = $replace($jo9_html, '</div>', $jo9_last_button + '</div>')
+   end
+! JO9 MOD END J9M1247
+  end
+ end
+ $result = $jo9_html
+ exit
+end
+! JO9 MOD START WINDOWS_IMAGE_SLOTS_TOGGLE | 2026-10-18_windows_image_slots
+if $args[0] = 'jo9_toggle':
+ local $jo9_before, $jo9_after, $jo9_current_html, $jo9_before_attr, $jo9_after_attr, jo9_match, jo9_searchpos, jo9_last_match, jo9_before_choice, jo9_saved_choice, $jo9_before_button
+ if $jo9_visible_top = '': exit
+ jo9_saved_choice = jo9_cut_choice[$jo9_visible_top]
+ $jo9_before = func('interior_change', 'jo9_path', $jo9_visible_top, 2)
+ $jo9_after = func('interior_change', 'jo9_path', $jo9_visible_top)
+ jo9_before_choice = jo9_cut_choice[$jo9_visible_top]
+ if jo9_saved_choice = jo9_before_choice and jo9_image_count > 1:
+  $jo9_after = func('interior_change', 'jo9_path', $jo9_visible_top, 1)
+ end
+ $jo9_current_html = $replace($maintxt, $jo9_clean_overlay, '')
+ $jo9_before_attr = 'src="' + $jo9_before + '"'
+ $jo9_after_attr = 'src="' + $jo9_after + '"'
+ jo9_searchpos = 1
+ jo9_last_match = 0
+ :jo9_find_top_attribute
+ jo9_match = instr($mid($jo9_current_html, jo9_searchpos), $jo9_before_attr)
+ if jo9_match > 0:
+  jo9_last_match = jo9_searchpos + jo9_match - 1
+  jo9_searchpos = jo9_last_match + len($jo9_before_attr)
+  jump 'jo9_find_top_attribute'
+ end
+ if jo9_last_match = 0:
+  jo9_cut_choice[$jo9_visible_top] = jo9_before_choice
+  exit
+ end
+ $jo9_current_html = $mid($jo9_current_html, 1, jo9_last_match - 1) + $jo9_after_attr + $mid($jo9_current_html, jo9_last_match + len($jo9_before_attr))
+ if jo9_image_count < 2 and $jo9_last_button ! '':
+  $jo9_before_button = $jo9_last_button
+  $jo9_last_button = $replace($jo9_last_button, 'tooltip-data="이미지 전환" title="이미지 전환"', 'tooltip-data="이미지 전환 · 추가 컷 없음" title="이미지 전환 · 추가 컷 없음"')
+  $jo9_last_button = $replace($jo9_last_button, 'display:block;position:relative;width:26px;height:26px;', 'display:block;position:relative;width:26px;height:26px;opacity:0.45;')
+  $jo9_last_button = $replace($jo9_last_button, 'href="EXEC: gs ''interior_change'', ''jo9_toggle''"', 'aria-disabled="true"')
+  $jo9_current_html = $replace($jo9_current_html, $jo9_before_button, $jo9_last_button)
+ end
+ if jo9_clean_hidden = 1:
+  $jo9_clean_overlay = func('interior_change', 'jo9_clean_html')
+  $jo9_current_html += $jo9_clean_overlay
+ end
+ *clr
+ *p $jo9_current_html
+ refint
+ exit
+end
+! JO9 MOD END WINDOWS_IMAGE_SLOTS_TOGGLE
+! End JO9 image-cycle; original home room switching follows.
+! JO9 image-only viewing never re-enters a game location.
+if $args[0] = 'jo9_clean_html':
+ ! Hide real UI nodes without cloning or resizing any pictures.
+! JO9 MOD START J9M1246 | 2026-10-12_zzz_hide_choice_controls | changed block; context may be included
+ $result = '<style id="jo9_clean_style">.menu,.tooltip,#main_screen,#sparks_display,#snk_room_menu,#approve,#deny{visibility:hidden!important;pointer-events:none!important}'
+! JO9 MOD END J9M1246
+ if $curloc = 'city_screen': $result += '#settings,#settings_2r,#settings_ex,#settings_ex2,#back_home{visibility:hidden!important;pointer-events:none!important}'
+ $result += '</style>'
+ exit
+end
+
+if $args[0] = 'jo9_clean_toggle':
+ local $jo9_view_html
+ if $jo9_last_button = '' or instr($maintxt, $jo9_last_button) = 0: exit
+ $jo9_view_html = $replace($maintxt, $jo9_clean_overlay, '')
+ jo9_clean_hidden = 1 - jo9_clean_hidden
+ $jo9_clean_overlay = ''
+ if jo9_clean_hidden = 1:
+  $jo9_clean_overlay = func('interior_change', 'jo9_clean_html')
+  $jo9_view_html += $jo9_clean_overlay
+ end
+ *clr
+ *p $jo9_view_html
+ refint
+ exit
+end
+
+!Move to a different room in your apartment
+!Created by crushboss
+
+!gs 'main_layout'
+
+if change_interior = 1: interior_num += 1
+if interior_num > 7: interior_num = 1
+if interior_num = 1: $place = 'bedroom_lux'
+if interior_num = 2 and bath > 0:
+	$place = 'bathroom_lux'
+elseif interior_num = 2 and bath = 0:
+	interior_num += 1
+end
+if interior_num = 3 and dungeon > 0:
+	$place = 'dungeon_lux'
+elseif interior_num = 3 and dungeon = 0:
+	interior_num += 1
+end
+if interior_num = 4 and kitchen > 0:
+	$place = 'kitchen_lux'
+elseif interior_num = 4 and kitchen = 0:
+	interior_num += 1
+end
+if interior_num = 5 and lab > 0:
+	$place = 'lab_lux'
+elseif interior_num = 5 and lab = 0:
+	interior_num += 1
+end
+if interior_num = 6 and boudoir > 0:
+	$place = 'boudoir_lux'
+elseif interior_num = 6 and boudoir = 0:
+	interior_num += 1
+end
+if interior_num = 7: $place = 'home_lux'
+
+change_interior = 0
+
+------------ interior_change ------------

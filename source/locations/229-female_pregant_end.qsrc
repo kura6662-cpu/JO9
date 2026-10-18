@@ -1,0 +1,18 @@
+# female_pregant_end
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2657 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'female_pregant_end': gs 'snk_room_bridge', 'guard', 'female_pregant_end'
+! JO9 MOD END J9M2657
+!Экран завершения сюжетной миссии
+$backimage = 'content/pic/title.png'
+MAINDESC_X = 1
+MAINDESC_Y = 1
+MAINDESC_W = 1278
+MAINDESC_H = 798
+$yes = {gt 'Start'}
+'<div id = "title_scroll"><img src = "content\pic\scroll_large.png"></div>'
+! JO9 MOD START J9M2656 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+'<div id = "title_scroll_text"> 교구에서의 긴 체류와, 출산을 기다리는 고통스러운 시간, 그리고 출산 그 자체가 당신을 무너뜨렸다. 다시 일터로 돌아갈 힘도, 의지도 남아 있지 않았다. 그래서 당신은 자신을 전적으로 아이에게 바치기로 했다. 모아 둔 저축은 오랫동안 버틸 것이다. 정 안 되면, 영원한 도시에는 언제나 손쉬운 수입원이 있다: 홍등가와 도시 항구는 언제나 사람들을 즐겁게 할 여자들을 필요로 하니까... </div>'
+! JO9 MOD END J9M2656
+*p {<div id = "approve_low"><a href = 'EXEC: dynamic $yes'><img src="content\pic\buttons\approve.png"></a></div>}
+------------ female_pregant_end ------------

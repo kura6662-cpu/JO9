@@ -1,0 +1,14 @@
+# sjm_UI_UIadds_buystethoscope
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2817 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'sjm_UI_UIadds_buystethoscope': gs 'snk_room_bridge', 'guard', 'sjm_UI_UIadds_buystethoscope'
+! JO9 MOD END J9M2817
+
+if inventory['stethoscope'] < 1: inventory['stethoscope'] = 0
+inventory['stethoscope'] += 1
+sparks -= 100
+if sound_on = 1: play $large_money_sound, sound_volume
+copyarr '$display_options', '$hospital_options'
+gt 'shop_general'
+
+------------ sjm_UI_UIadds_buystethoscope ------------

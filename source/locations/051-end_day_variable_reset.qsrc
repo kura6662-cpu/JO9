@@ -1,0 +1,131 @@
+# $end_day_variable_reset
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2832 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$end_day_variable_reset': gs 'snk_room_bridge', 'guard', '$end_day_variable_reset'
+! JO9 MOD END J9M2832
+!Clean slate for new day - sanity check - crushboss (called from main_menu and end_day_screen)
+!Created by crushboss
+
+$end_day_variable_reset_for_all_slaves = {
+	!do not reset daily reward count here; it is handled in next_day - ImperatorAugustus
+
+	!reset arena participation flag so characters iced on arena day and thawed on next arena day can fight - ImperatorAugustus
+	dynslave['gladiatrix_contest'] = 0
+
+	!reset daily interaction counters
+	killvar 'dynslave_already_done_today'
+	killvar 'dynslave_already_sex_today'
+
+	!reset daily accumulated rest rewards
+	dynslave['well_rested'] = 0
+
+	!reset daily rule following counters
+	dynslave['num_rules_broken'] = 0
+	dynslave['num_rules_wanttobreak'] = 0
+	dynslave['silence_rule_broken'] = 0
+	dynslave['humility_rule_broken'] = 0
+	dynslave['no_shit_rule_broken'] = 0
+	dynslave['pet_rule_broken'] = 0
+	dynslave['blowjob_rule_broken'] = 0
+	dynslave['urinal_rule_broken'] = 0
+	dynslave['toilet_rule_broken'] = 0
+	dynslave['v_balls_rule_broken'] = 0
+
+	!reset not-more-than-once-a-day notification flags
+	dynslave['nearly_fainted'] = 0
+	dynslave['stamina_fainted'] = 0
+	dynslave['exhaustion_fainted'] = 0
+
+	!reset time_in_barn counter for non-livestock characters (farmhand included)
+	if arrpos('$livestock_slave_characters', 'dynslave') = -1: dynslave['time_in_barn'] = 0
+}
+
+dynamic $do_for_each_slave_in_list, '$end_day_variable_reset_for_all_slaves', '$all_slave_characters'
+
+!Reset tasks already performed (household global counters, not person-specific)
+killvar 'already_done_today'
+killvar 'city_already_done_today'
+
+cheer_effect = 0
+cheer_rate = 0
+reasoning_effect = 0
+reasoning_rate = 0
+
+free_time = 0
+!removed unnecessary rules_count variable clearing (it is reset before use, in next_day/$difficulty_setting) - ImperatorAugustus
+slave_will_masturbate = 0
+slave_masturbating_anyway = 0
+room1_will_masturbate = 0
+room2_will_masturbate = 0
+room3_will_masturbate = 0
+room4_will_masturbate = 0
+!removed unnecessary *_rule_res variable clearing (they are reset before use, in next_day) - ImperatorAugustus
+
+a = 0
+b = 0
+c = 0
+g = 0
+i = 0
+s = 0
+aaa = 0
+
+npc = 0
+skip_to = 0
+multiple = 0
+
+stock_sold = 0
+auction_phase = 0
+haggling_stage = 0
+menu_form = 0
+
+fear_resistance = slave["ego"] + rebell[$slave_psy_basic]
+
+interaction = 0
+interaction_city = 0
+$interaction_type = ''
+
+!add_slave_mood = 0 - globally unused variable - ImperatorAugustus
+sin_gained = 0
+angst_rise = 0
+moral_app = 0
+moral_basis = 0
+moral_boost = 0
+arousal_modifier = 0
+slave_fights_back = 0
+
+previous_slave_sin = 0
+previous_slave_virtue = 0
+sin_gain = 0
+sin_gained = 0
+slave_beg_for_sex = 0
+assistant_beg_for_sex = 0
+fog_battle = 0
+gladiatrix_contest_count = 1
+arena_mode = 0
+
+$special_part = ''
+
+faction_purchase_kamira = 0
+faction_purchase_serpis = 0
+faction_purchase_taurus = 0
+faction_purchase_korvus = 0
+faction_purchase_neutral = 0
+
+killvar 'play_sound'
+killvar 'sex'
+killvar 'sex_num'
+killvar 'sex_done_today'
+killvar 'sex_done_thisperson'
+
+killvar 'суперудар_сделан'
+!killvar '$text'
+killvar '$race_winner'
+killvar '$fight_return'
+killvar '$return_lock'
+
+!sl_txt = 0
+!sp_txt = 0
+!$refuse_txt = ''
+!$msg_txt = ''
+
+------------ $end_day_variable_reset ------------

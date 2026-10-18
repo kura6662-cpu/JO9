@@ -1,0 +1,296 @@
+# master_stat
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1566 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'master_stat': gs 'snk_room_bridge', 'guard', 'master_stat'
+! JO9 MOD END J9M1566
+gs '$newloc' &! ensure all stats are updated before displaying them
+gs 'stats_layout'
+gs '$furniture_list'
+
+if slot = 0: $equip_choice = ''
+slot = 0
+
+buyers_list = 0
+
+*p '<div id = "bookmark_one">보관함</div>'
+*p '<div id = "bookmark_two">목표</div>'
+*p '<div id = "bookmark_three">장비</div>'
+*p '<div id = "bookmark_four">일지</div>'
+
+! JO9 MOD START J9M1565 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if $snk_master_return ! '':
+*p '<div id="close"><a href="EXEC: gs ''snk_room_bridge'', ''master_close''"><img src="content/pic/buttons/close_button.png"></a></div>'
+elseif exam_in_progress = 1:
+ 	*p '<div id = "close"><a href = "EXEC: $equip_choice = '''' & gt ''demo_menu_form''"><img src = "content/pic/buttons/close_button.png"></a></div>'
+! JO9 MOD END J9M1565
+elseif is_home = 1:
+ 	*p '<div id = "close"><a href = "EXEC: $equip_choice = '''' & gt ''menu_form''"><img src = "content\pic\buttons\close_button.png"></a></div>'
+else
+ 	*p '<div id = "close"><a href = "EXEC: $equip_choice = '''' & gt ''city_menu_form''"><img src = "content\pic\buttons\close_button.png"></a></div>'
+end
+
+!Формируем список на обучение
+$left_text_list = ''
+$middle_text_list = ''
+$right_text_list = ''
+
+if kitchen > 0: 
+! JO9 MOD START J9M1564 | 2026-10-15_restore_personal_equipment_emoji | changed block; context may be included
+	$left_text_list += '<div style="line-height:50%"></div><u><img src="content/pic/ui/dialogue_emoji/bread.png" width="19" height="19" style="vertical-align:-4px">식품 저장고</u> : [<<fridge_items>>/<<estate_size[$estate]>>]<br><div style="line-height:50%"></div>' + _
+	'신선한 달걀 *<<fridge["eggs"]>><br>' + _
+	'신선한 우유 *<<fridge["milk"]>><br>' + _
+	'농축된 크림 *<<fridge["cream"]>><br>' + _
+	'숙성 치즈/버터 *<<fridge["cheese"]>><br><br>' + _
+	'신선한 야채류 *<<fridge["vegetables"]>><br>' + _
+	'시리얼/곡물류 *<<fridge["grain"]>><br>' + _
+	'허브류/향신료 *<<fridge["spice"]>><br>' + _
+	'도수높은 주류 *<<fridge["alcohol"]>><br><br>' + _
+	'고기/간 고기 *<<fridge["mince"]>><br>' + _
+	'안심 살코기 *<<fridge["meat"]>><br>' + _
+	'처녀 고깃살 *<<fridge["virgin_meat"]>><br>' + _
+	'촉수 산란액 *<<spawn_semen>><br>'
+! JO9 MOD END J9M1564
+end
+
+if lab > 0:
+! JO9 MOD START J9M1563 | 2026-10-15_restore_personal_equipment_emoji | changed block; context may be included
+	$middle_text_list += '<u><img src="content/pic/ui/dialogue_emoji/potion.png" width="24" height="24" style="vertical-align:-5px">연구실</u> [<<lab_items>>]:<br>' + _
+	'안개 괴물 점액질 *<<lab_store["slime"]>><br>' + _
+	'삼나무 진액 *<<lab_store["koffe"]>><br>' + _
+	'낙원의 독말풀 *<<lab_store["kanabis"]>><br>' + _
+	'요정의 가루 *<<lab_store["meth"]>><br>' + _
+	'망각의 정수 *<<lab_store["opium"]>><br><br>' + _
+	'바커스의 술 *<<вакхический_нектар>><br>' + _
+	'자양 강장제 *<<тонизируюзщий_эликсир>><br>' + _
+	'기적의 향유 *<<целительный_бальзам>><br>' + _
+	'최음제 *<<афродизиак>><br>' + _
+	'배란 유발제 *<<мощный_афодизиак>><br>' + _
+	'순애의 미약 *<<приворотное_зелье>><br>' + _
+	'저승의 강물 *<<вода_леты>><br>' + _
+	'각인의 물약 *<<brainwashing_potion>><br>' + _		
+	'미스트라의 비약 *<<potion_of_mystra>><br>' + _
+	'와그의 어금니 *<<molar_of_wolf>><br>' + _
+	'지방+ *<<жир_плюс>><br>' + _
+	'지방- *<<xжир_минус>><br>' + _
+	'대사+ *<<метаболизм_плюс>><br>' + _
+	'대사- *<<метаболизм_минус>>'
+! JO9 MOD END J9M1563
+else
+	$middle_text_list += '<u>물질:</u><br>' + _
+	'안개 괴물 점액질 *<<lab_store["slime"]>><br>' + _
+	'삼나무 진액 *<<lab_store["koffe"]>><br>' + _
+	'낙원의 독말풀 *<<lab_store["kanabis"]>><br>' + _
+	'요정의 가루 *<<lab_store["meth"]>><br>' + _
+	'망각의 정수 *<<lab_store["opium"]>><br><br>' + _
+	'바커스의 술 *<<вакхический_нектар>><br>' + _
+	'자양 강장제 *<<тонизируюзщий_эликсир>><br>' + _
+	'기적의 향유 *<<целительный_бальзам>><br>' + _
+	'최음제 *<<афродизиак>><br>' + _
+	'배란 유발제 *<<мощный_афодизиак>><br>' + _
+	'순애의 미약 *<<приворотное_зелье>><br>' + _
+	'저승의 강물 *<<вода_леты>><br>' + _
+	'각인의 물약 *<<brainwashing_potion>><br>' + _		
+	'미스트라의 비약 *<<potion_of_mystra>><br>' + _
+	'와그의 어금니 *<<molar_of_wolf>><br>' + _
+	'지방+ *<<жир_плюс>><br>' + _
+	'지방- *<<xжир_минус>><br>' + _
+	'대사+ *<<метаболизм_плюс>><br>' + _
+	'대사- *<<метаболизм_минус>>'
+end
+
+! JO9 MOD START J9M1562 | 2026-10-15_restore_personal_equipment_emoji | changed block; context may be included
+$right_text_list += '<u><img src="content/pic/ui/dialogue_emoji/chest.png" width="19" height="19" style="vertical-align:-4px">가구 및 용품</u> [<<house_items>>]:<br><<$furniture_list>><br>'
+! JO9 MOD END J9M1562
+
+!STORAGE TAB
+if master_stat_screen = 0:
+	*p '<div id = "mark_one"><img src = "content\pic\buttons\sel_button.png"></div>'
+	*p '<div id = "mark_two"><a href = "EXEC: master_stat_screen = 1 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_three"><a href = "EXEC: master_stat_screen = 2 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_four"><a href = "EXEC: master_stat_screen = 3 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	if ui_style = 2:
+		*p '<div id="center_image"><img src = "content\pic\ui\grimdark\bg\page_blank.png"></div>'
+	else
+		*p '<div id="center_image"><img src = "content\pic\page_blank.png"></div>'
+	end
+	*p '<div id = "left_text"><<$left_text_list>></div>'
+	*p '<div id = "middle_text"><<$middle_text_list>></div>'
+	*p '<div id = "right_text"><<$right_text_list>></div>'
+
+	if barn < 1 and milk_can = 1:
+		*p '<div id = "milkcan_masterstat"><img src="content\pic\milk_can.png"></div>'
+		*p '<div id = "milkcan_masterstat"><br><br><center><<milk_stock>></center></div>'
+	end
+end
+
+*p '<div id="left_column_master">'
+	*nl '<br>&nbsp<font style="font-size:23px;"><u>N. 노예상인 이름</u></font><br><br>&nbsp&nbsp: &nbsp<<$master_name>><br>'
+	*nl '&nbsp<u><font style="font-size:23px;"><a style="color:black" href = "EXEC: msg $rank_help_2">C. 노예상인 속성</a></font></u>&nbsp&nbsp'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_str', master_str, 1)
+	*nl '<font style="font-size:12px;"><br>&nbsp 힘   </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $strength_chart & $info_text = $strength_help & gt $curloc">    <<$master_str[master_str]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_cha', master_cha, 1)
+	*nl '<font style="font-size:12px;"><br>&nbsp 통솔</font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $charisma_chart & $info_text = $charisma_help & gt $curloc">    <<$master_cha[master_cha]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_style', master_style, 1)
+	*nl '<font style="font-size:12px;"><br>&nbsp 매력</font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $allure_chart & $info_text = $allure_help & gt $curloc">    <<$master_style[master_style]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_libido', master_libido, 1)
+	*nl '<font style="font-size:12px;"><br>&nbsp 욕정</font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $libido_chart & $info_text = $libido_help & gt $curloc">    <<$master_libido[master_libido]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_domination', master_domination, 1)
+	*nl '<font style="font-size:12px;"><br>&nbsp 지배</font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $dominance_chart & $info_text = $dominance_help & gt $curloc">    <<$master_domination[master_domination]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'brand_reputation', brand_reputation, 1)
+	*nl '<font style="font-size:12px;"><br>&nbsp 평판</font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $brand_chart & $info_text = $brand_help & gt $curloc">    <<$brand[brand_reputation]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'guild_reputation', guild_reputation, 1)
+	*nl '<font style="font-size:12px;"><br>&nbsp 계급</font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $guild_brand_chart & $info_text = $guild_brand_help & gt $curloc">    <<$guild_brand[guild_reputation]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_wealth', master_wealth, 1)
+	*nl '<font style="font-size:12px;"><br>&nbsp 생활</font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $wealth_chart & $info_text = $wealth_help & gt $curloc">    <<$master_wealth[master_wealth]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'hygiene', master_hygiene, -1)
+	*nl '<font style="font-size:12px;"><br>&nbsp 청결</font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $hygiene_chart & $info_text = $hygiene_help & gt $curloc">    <<$personal_hygiene[master_hygiene]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'mood', master_mood, 1)
+	*nl '<font style="font-size:12px;"><br>&nbsp 기분</font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $mood_chart & $info_text = $mood_help & gt $curloc">    <<$mood[master_mood_plus]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_wounds', master_wounds, -1)
+	*nl '<font style="font-size:12px;"><br>&nbsp 건강</font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $wounds_chart & $info_text = $wounds_help & gt $curloc">    <<$wounds[master_wounds]>></a>'
+*p '</div>'
+
+*p '<div id="left_column_master_rules">'
+*nl' <font style="font-size:23px;"><u>M. 자동 마법사용</u></font><br>'
+*nl '     아우스펙스'
+*nl '     마그나 마그니피카'
+*nl '     센텐티아 베리타스'
+*nl
+*nl '     시전장면 스킵<br><br><font style="font-size:15px;">  매일 스파크가 소모됩니다</font></div></div>'
+
+if $master_head_gear = 'raven_crown':
+	*p '<div id="chekbox_200"><a href = "EXEC: msg ''   까마귀 왕관이 있으면 오라를 읽기 위해 아우스펙스를 시전할 필요가 없습니다.''"><img src="content\pic\buttons\unactive_button.png"></a></div>'
+elseif auspex_auto_cast = 1:
+	*p '<div id="chekbox_200"><a href = "EXEC: auspex_auto_cast = 0 & $info_text = $auspex_help[1] & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+else
+	*p '<div id="chekbox_200"><a href = "EXEC: auspex_auto_cast = 1 & $info_text = $auspex_help[1] & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+end
+
+if $master_head_gear = 'raven_crown':
+	*p '<div id="chekbox_201"><a href = "EXEC: msg ''   까마귀 왕관이 있으면 마그나 마그니피카를 시전할 필요가 없습니다.''"><img src="content\pic\buttons\unactive_button.png"></a></div>'
+elseif master_mage < 1:
+	magna_magnifika_auto_cast = 0
+	*p '<div id="chekbox_201"><a href = "EXEC: msg $no_magic_skill & gt $curloc"><img src="content\pic\buttons\unactive_button.png"></a></div>'
+elseif magna_magnifika_auto_cast = 1:
+	*p '<div id="chekbox_201"><a href = "EXEC: magna_magnifika_auto_cast = 0 & $info_text = $magna_help[1] & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+else
+	*p '<div id="chekbox_201"><a href = "EXEC: magna_magnifika_auto_cast = 1 & $info_text = $magna_help[1] & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+end
+
+if master_mage < 2:
+	sententia_auto_cast = 0
+	*p '<div id="chekbox_202"><a href = "EXEC: msg $no_magic_skill & gt $curloc"><img src="content\pic\buttons\unactive_button.png"></a></div>'
+elseif sententia_auto_cast = 1:
+	*p '<div id="chekbox_202"><a href = "EXEC: sententia_auto_cast = 0 & $info_text = $sententia_help[1] & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+else
+	*p '<div id="chekbox_202"><a href = "EXEC: sententia_auto_cast = 1 & $info_text = $sententia_help[1] & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+end
+
+if silent_auto_cast = 1:
+	*p '<div id="chekbox_203"><a href = "EXEC: silent_auto_cast = 0 & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+else
+	*p '<div id="chekbox_203"><a href = "EXEC: silent_auto_cast = 1 & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+end
+
+*p '<div id="right_column_master">'
+*nl '<u><br><font style="font-size:23px;"><u> 교육 기술 .T</u> </font><br></u>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_tutor', master_tutor)
+*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $учитель_справка & $info_text = $учитель_совет & gt $curloc"><<$master_tutor[master_tutor]>></a><font style="font-size:12px;line-height: 32px;">  지도  </font>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_butler', master_butler)
+*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $дворецкий_справка & $info_text = $дворецкий_совет & gt $curloc"><<$master_butler[master_butler]>></a><font style="font-size:12px; line-height: 32px;">  관리  </font>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_artdirector', master_artdirector)
+*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $артдиректор_справка & $info_text = $артдиректор_совет & gt $curloc"><<$master_artdirector[master_artdirector]>></a><font style="font-size:12px; line-height: 32px;">  예술  </font>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_medic', master_medic)
+*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $медик_справка & $info_text = $медик_совет & gt $curloc"><<$master_medic[master_medic]>></a><font style="font-size:12px; line-height: 32px;">  의학  </font>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_fighter', master_fighter)
+*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $боец_справка & $info_text = $боец_совет & gt $curloc"><<$master_fighter[master_fighter]>></a><font style="font-size:12px; line-height: 32px;">  전투  </font>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_mage', master_mage)
+*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $маг_справка & $info_text = $маг_совет & gt $curloc"><<$master_mage[master_mage]>></a><font style="font-size:12px; line-height: 32px;">  마력  </font>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_flagelation', master_flagelation)
+*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $флагеляция_справка & $info_text = $флагеляция_совет & gt $curloc"><<$master_flagelation[master_flagelation]>></a><font style="font-size:12px; line-height: 32px;">  채찍  </font>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_torture', master_torture)
+*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $палач_справка & $info_text = $палач_совет & gt $curloc"><<$master_torture[master_torture]>></a><font style="font-size:12px; line-height: 32px;">  고문  </font>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_bondage', master_bondage)
+*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $бондаж_справка & $info_text = $бондаж_совет & gt $curloc"><<$master_bondage[master_bondage]>></a><font style="font-size:12px; line-height: 32px;">  속박  </font><br><br>'
+*nl '<br><font style="font-size:23px;"><u> 성적 기술 .F</u> </font><br>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_petting', master_petting)
+*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $master_petting_chart & $info_text = $master_petting_help & gt $curloc"><<$master_petting[master_petting]>> </a><font style="font-size:12px; line-height: 32px;">  애무  </font>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_oral', master_oral)
+*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $master_oral_chart & $info_text = $master_oral_help & gt $curloc"><<$master_oral[master_oral]>> </a><font style="font-size:12px; line-height: 32px;">  구강  </font>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_penetration', master_penetration)
+*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $master_penetration_chart & $info_text = $master_penetration_help & gt $curloc"><<$master_penetration[master_penetration]>> </a><font style="font-size:12px; line-height: 32px;">  삽입  </font>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'master_fetish', master_fetish)
+*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $master_fetish_chart & $info_text = $master_fetish_help & gt $curloc"><<$master_fetish[master_fetish]>> </a><font style="font-size:12px; line-height: 32px;">  이상  </font></div>'
+
+!OBJECTIVES TAB
+if master_stat_screen = 1:
+	gs '#quest_base' &! update dynamic quest status and text
+	if city_already_done_today[$str(menu_findcustomers)]: gs '$appropriate_buyers_list'
+	gs '$quest_list' &! update quest list for objectives tab
+	*p '<div id = "mark_one"><a href = "EXEC: master_stat_screen = 0 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_two"><img src = "content\pic\buttons\sel_button.png"></div>'
+	*p '<div id = "mark_three"><a href = "EXEC: master_stat_screen = 2 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_four"><a href = "EXEC: master_stat_screen = 3 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	if ui_style = 2:
+		*p '<div id="center_image"><img src = "content\pic\ui\grimdark\bg\page_blank.png"></div>'
+	else
+		*p '<div id="center_image"><img src = "content\pic\page_blank.png"></div>'
+	end
+
+	*p '<div id = "bg_blue_script_right"><br><<$quest_list>></div>'
+end
+
+!EQUIP TAB
+if master_stat_screen = 2:
+	gs '$calculate_attributes' &! TODO: is this needed?
+	*p '<div id = "mark_one"><a href = "EXEC: master_stat_screen = 0 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_two"><a href = "EXEC: master_stat_screen = 1 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_three"><img src = "content\pic\buttons\sel_button.png"></div>'
+	*p '<div id = "mark_four"><a href = "EXEC: master_stat_screen = 3 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	if ui_style = 2:
+		*p '<div id="center_image"><img src = "content\pic\ui\grimdark\bg\page_blank.png"></div>'
+	else
+		*p '<div id="center_image"><img src = "content\pic\page_blank.png"></div>'
+	end
+	*p '<div id = "center_text_column_1">'
+! JO9 MOD START J9M1561 | 2026-10-15_restore_personal_equipment_emoji, 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+		*p '<img src="content/pic/ui/dialogue_emoji/armor.png" width="19" height="19" style="vertical-align:-4px">착용 중 장비'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $master_armor_list"><u>갑 옷</u> : <<$item_name[$master_armor]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $master_wpn_list_large"><u>등 뒤</u> : <<$item_name[$master_back_wpn]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $master_wpn_list"><u>왼 손</u> : <<$item_name[$master_left_wpn]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $master_wpn_list_2"><u>오 른 손</u> : <<$item_name[$master_right_wpn]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $master_wpn_list_small"><u>팔 뚝</u> : <<$item_name[$master_arm_wpn]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $master_wpn_list_small_2"><u>허 벅 지</u> : <<$item_name[$master_leg_wpn]>></a></div>'
+! JO9 MOD END J9M1561
+		*p '<br>'
+! JO9 MOD START J9M1560 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $master_cloth_list"><u>평 상 복</u> : <<$item_name[$master_cloth]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $master_head_list"><u>투 구</u> : <<$item_name[$master_head_gear]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $master_ears_list"><u>귀 걸 이</u> : <<$item_name[$master_earring]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $master_neck_list"><u>목 걸 이</u> : <<$item_name[$master_amulet]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $master_ring_list"><u>반 지</u> : <<$item_name[$master_ring]>></a></div>'
+! JO9 MOD END J9M1560
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $master_karman_list"><u>주 머 니</u> :  <<$item_name[$master_karman]>></a></div>'
+	*p '</div>'
+! JO9 MOD START J9M1559 | 2026-10-15_restore_personal_equipment_emoji | changed block; context may be included
+	*p '<div id = "center_text_column_2"><u><img src="content/pic/ui/dialogue_emoji/arrow.png" width="19" height="19" style="vertical-align:-4px">착용 가능 장비</u><br><font size="5"><<$equip_choice>></font></div>'
+! JO9 MOD END J9M1559
+end
+
+!DIARY TAB
+if master_stat_screen = 3:
+	*p '<div id = "mark_one"><a href = "EXEC: master_stat_screen = 0 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_two"><a href = "EXEC: master_stat_screen = 1 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_three"><a href = "EXEC: master_stat_screen = 2 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_four"><img src = "content\pic\buttons\sel_button.png"></div>'
+	if ui_style = 2:
+		*p '<div id="center_image"><img src = "content\pic\ui\grimdark\bg\page_blank.png"></div>'
+	else
+		*p '<div id="center_image"><img src = "content\pic\page_blank.png"></div>'
+	end
+	*p '<div id = "bg_blue_script_right"><br><u><<day>>일:</u><br><<$master_mood_list>></div>'
+end
+
+*p '<div id="info"><<$info_text>></div>'
+
+------------ master_stat ------------

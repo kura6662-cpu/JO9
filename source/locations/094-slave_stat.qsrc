@@ -1,0 +1,739 @@
+# slave_stat
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1573 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'slave_stat': gs 'snk_room_bridge', 'guard', 'slave_stat'
+! JO9 MOD END J9M1573
+! JO9_UI_V16_READABILITY
+!SLAVE STAT SCREEN
+gs '$newloc' &! ensure all stats are updated before displaying them
+
+if slave_state = CONST_INT['slave_faint']:
+	$info_text = '  <<$slave_name>>는 지쳐서 조용히 신음한다. 상태가 매우 좋지 않아 보인다. 쉬게 하거나, 심하면 의료 처치까지 해 주어야 한다.'
+elseif slave_state = CONST_INT['slave_dead']:
+	$info_text = '  <<$slave_name>>는 죽었다. 생기 없는 시체가 바닥에 누워 있다.'
+elseif $info_text = '':
+	dynamic $replace("$info_text = '<<$psy_status[$slave_psy_status]>>'", 'dyn'+'slave', 'slave') &! evaluate delayed sub-expressions with substitution
+end
+
+!Fix blank screen bug - crushboss
+if slave_state ! CONST_INT['no_slave']:
+	if $slave["wpn"] = '': $slave["wpn"] = 'безоружный'
+	if $slave["armor"] = '': $slave["armor"] = 'без_брони'
+	if $slave["cloth"] = '': $slave["cloth"] = 'голая'
+end
+
+stat_importance['stamina'] = 1
+stat_importance['sensitivity'] = 1
+stat_importance['temper'] = 1
+stat_importance['intellect'] = 1
+stat_importance['ego'] = 1
+stat_importance['exotic'] = 1
+stat_importance['fat'] = 1
+
+stat_importance['obedience'] = 1
+stat_importance['moral'] = 1
+stat_importance['custom'] = 1
+stat_importance['instinct'] = 1
+stat_importance['rational'] = 1
+stat_importance['pride'] = 1
+stat_importance['spoil'] = 1
+
+stat_importance['expression'] = 1
+stat_importance['pet'] = 1
+stat_importance['dressage'] = 1
+stat_importance['nurse'] = 1
+stat_importance['service'] = 1
+stat_importance['cook'] = 1
+stat_importance['gladiatrix'] = 1
+stat_importance['alchemy'] = 1
+stat_importance['enchanter'] = 1
+stat_importance['calisthenics'] = 1
+stat_importance['art'] = 1
+stat_importance['cowSK'] = 1
+stat_importance['music'] = 1
+stat_importance['secretary'] = 1
+
+stat_importance['oral'] = 1
+stat_importance['penetration'] = 1
+stat_importance['petting'] = 1
+stat_importance['orgy'] = 1
+stat_importance['roleplay'] = 1
+stat_importance['xenophily'] = 1
+stat_importance['fetishism'] = 1
+stat_importance['nipplefuck'] = 1
+stat_importance['lesbiansex'] = 1
+
+gs '$slave_price'
+gs 'stats_layout'
+
+*p '<div id = "bookmark_one">규칙</div>'
+*p '<div id = "bookmark_two">신체</div>'
+*p '<div id = "bookmark_three">장비</div>'
+*p '<div id = "bookmark_four">오라</div>'
+! JO9 MOD START J9M1572 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_inventory = 1:
+*p '<div id="close"><a href="EXEC: gs ''snk_room_bridge'', ''inventory_close''"><img src="content/pic/buttons/close_button.png"></a></div>'
+elseif exam_in_progress = 1:
+	*p '<div id = "close"><a href = "EXEC: $equip_choice = '''' & gt ''demo_menu_form''"><img src = "content/pic/buttons/close_button.png"></a></div>'
+! JO9 MOD END J9M1572
+elseif is_home = 1:
+	*p '<div id = "close"><a href = "EXEC: $equip_choice = '''' & gt ''menu_form''"><img src = "content\pic\buttons\close_button.png"></a></div>'
+else
+	*p '<div id = "close"><a href = "EXEC: $equip_choice = '''' & gt ''city_menu_form''"><img src = "content\pic\buttons\close_button.png"></a></div>'
+end
+
+gs '$slave_traits'
+gs '$addon_custom_data'
+gs '$addon', 'info_box'
+
+!lillimerge add more tooltips?
+
+
+*p '<div id="left_column"><br>'
+*nl '호 칭 : &nbsp<<$slave_name>>'
+*nl '연 령 대 : &nbsp;<<$slave_age_name[slave["age"]]>>'
+if slave['age_count'] = 1:
+	*nl '소 유 일 수 : &nbsp;1 일'
+elseif slave['age_count'] < 1000:
+	*nl '소 유 일 수 : &nbsp;<<slave["age_count"]>> 일'
+else
+	*nl '소 유 주 기 : &nbsp;<<slave["age_count"]/10>> 주기'
+end
+*nl ''
+*nl '<a style="font-size:30px" class="tooltip-right" tooltip-data="등급을 올리는 방법" href="EXEC: msg $rating_help"><<$rating[rating]>></a>  노예 속성정보 <a class="tooltip-right" tooltip-data="속성에 대하여" style="color:black" href = "EXEC: msg $rank_help & msg $rank_help_2"><img style="width:15px;height:15px;" src="content/pic/chart.png"></a><br>' 
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'beauty', slave['beauty'], 1)
+*nl '<font style="font-size:12px;">외모 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $красота_справка & dynamic $msg, $красота_справка_2 & $info_text = $красота_совет & gt $curloc"><<$beauty[slave["beauty"]]>></a>'
+$tooltip_text = func('$addon', 'stat_tooltip_text', 'stamina')
+*nl '<font style="font-size:12px;">체력 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $здоровье_справка & dynamic $msg, $здоровье_справка_2 & $info_text = $здоровье_совет & gt $curloc"><<$stamina[slave["stamina"]]>></a>'
+$tooltip_text = func('$addon', 'stat_tooltip_text', 'sensitivity')
+*nl '<font style="font-size:12px;">감수성 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $чувствительность_справка & dynamic $msg, $чувствительность_справка_2 & $info_text = $чувствительность_совет & gt $curloc"><<$sensitivity[slave["sensitivity"]]>></a><div style="line-height:25%"><br></div>'
+$tooltip_text = func('$addon', 'stat_tooltip_text', 'temper')
+*nl '<font style="font-size:12px;">성격 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $темперамент_справка & dynamic $msg, $темперамент_справка_2 & $info_text = $темперамент_совет & gt $curloc"><<$temper[slave["temper"]]>></a>'
+$tooltip_text = func('$addon', 'stat_tooltip_text', 'intellect')
+*nl '<font style="font-size:12px;">지성 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $ум_справка & dynamic $msg, $ум_справка_2 & $info_text = $ум_совет & gt $curloc"><<$intellect[slave["intellect"]]>></a>'
+$tooltip_text = func('$addon', 'stat_tooltip_text', 'ego')
+*nl '<font style="font-size:12px;">자아 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $характер_справка & dynamic $msg, $характер_справка_2 & $info_text = $характер_совет & gt $curloc"><<$ego[slave["ego"]]>></a><div style="line-height:25%"><br></div>'
+$tooltip_text = func('$addon', 'stat_tooltip_text', 'pride', -1)
+*nl '<font style="font-size:12px;">태도 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $гордыня_справка & dynamic $msg, $гордыня_справка_2 & $info_text = $гордыня_совет & gt $curloc"><<$pride[slave["pride"]]>></a>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'exotic', slave['exotic'], 1)
+*nl '<font style="font-size:12px;">독특함 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $экзотичность_справка & dynamic $msg, $экзотичность_справка_2 & $info_text = $экзотичность_совет & gt $curloc"><<$exotic[slave["exotic"]]>></a>'
+$tooltip_text = func('$addon', 'physique_tooltip_text', 'fat', slave['fat'])
+*nl '<font style="font-size:12px;">체형 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $жыр_справка & dynamic $msg, $жыр_справка_2 & $info_text = $жыр_совет & gt $curloc"><<$fat[slave["fat"]]>></a><div style="line-height:25%"><br></div>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'style', slave['style'], 1)
+*nl '<font style="font-size:12px;">세련됨 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $стиль_справка & dynamic $msg, $стиль_справка_2 & $info_text = $стиль_совет & gt $curloc"><<$style[slave["style"]]>></a>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'fame', slave['fame'], 1)
+*nl '<font style="font-size:12px;">인지도 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $слава_справка & dynamic $msg, $слава_справка_2 & $info_text = $слава_совет & gt $curloc"><<$girl_fame[slave["fame"]]>></a>'
+$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'mood', slave['mood'], 1)
+*nl '<font style="font-size:12px;">기분 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $mood_chart & $info_text = $slave_mood_help & gt $curloc"><<$mood[slave_mood_plus]>></a><div style="line-height:25%"><br></div>'
+*p '<div style="line-height:25%"><br></div>노예의 특성<div style="line-height:5%"><br></div><<$slave_features_list>></div>'
+
+!calculation of the food cost (all of this code is unused)
+!food_cost = 2
+!if slave_ration = -2: food_cost = 1 - slave_ration is never non-zero, so this is always false - ImperatorAugustus
+!if slave_ration > -2: food_cost = 2 - slave_ration is never non-zero, so this is always true (therefore set food_cost = 2 above, instead of = 0)
+!if slave_ration = 1: food_cost = 5 - slave_ration is never non-zero, so this is always false
+!if double_ration = 1: food_cost += food_cost - double_ration is never set, so this is always false
+!if enable_dessert = 1: food_cost += 2 - enable_dessert is never non-zero, so this is always false
+!if slave["diet_supplements"] = 1: food_cost += 1
+!daily_cost = food_cost
+
+if slave_stat_screen = 0:
+	*p '<div id = "mark_one"><img src = "content\pic\buttons\sel_button.png"></div>'
+	*p '<div id = "mark_two"><a href = "EXEC: slave_stat_screen = 1 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_three"><a href = "EXEC: slave_stat_screen = 2 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_four"><a href = "EXEC: slave_stat_screen = 3 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	if is_home = 1:
+		*p '<div id="center_image"><img src = "content\pic\bg\<<$interior_study[$study]>>.png"></div>'
+	else
+	  	*p '<div id="center_image"><img src = "content\pic\bg\<<$bg[$place]>>_small.png"></div>'
+	end
+	if nsfw = 0: *p func('display_fullimage', 'slave', 'center_image', 'psy')
+	if presets_list = 0:
+		*p '<div style="line-height:71%;font-family:Sandoll 미생;font-size:22px;" id="left_padding"><br>&nbsp&nbsp - 잠자리 -<br>'
+		*nl '&nbsp&nbsp&nbsp&nbsp&nbsp지하 감옥<br>'
+		*nl '&nbsp&nbsp&nbsp&nbsp&nbsp바닥<br>'
+		*nl '&nbsp&nbsp&nbsp&nbsp&nbsp침낭<br>'
+		*nl '&nbsp&nbsp&nbsp&nbsp&nbsp내 침대<br>'
+! JO9 MOD START J9M1571 | 2026-10-10_restore_private_room_ui_corrections | changed block; context may be included
+		*nl '&nbsp&nbsp&nbsp&nbsp&nbsp개인침대<br>'
+! JO9 MOD END J9M1571
+		*nl '&nbsp&nbsp- 식단 -<br>'
+		*nl '&nbsp&nbsp&nbsp&nbsp&nbsp건조식<br>'
+		*nl '&nbsp&nbsp&nbsp&nbsp&nbsp통조림<br>'
+		*nl '&nbsp&nbsp&nbsp&nbsp&nbsp산란액<br>'
+		*nl '&nbsp&nbsp&nbsp&nbsp&nbsp남은음식<br>'
+		*nl '&nbsp&nbsp&nbsp&nbsp&nbsp보조식품<br>'
+		*nl '&nbsp&nbsp- 식사량 조절 -<br>'
+		*nl '&nbsp&nbsp&nbsp&nbsp&nbsp소량<br>'
+		*nl '&nbsp&nbsp&nbsp&nbsp&nbsp보통<br>'
+		*nl '&nbsp&nbsp&nbsp&nbsp&nbsp가득<br>'
+		if max(master_medic, assistant['nurse']) > 3:
+			*nl '&nbsp&nbsp&nbsp&nbsp&nbsp열량 계산식<br>'
+		else
+			*nl '&nbsp&nbsp&nbsp&nbsp&nbsp조합 영양사<br>'
+		end
+		if difficulty_setting = 2 or slave['diet_portion'] ! 4:
+			*nl '<br>&nbsp&nbsp- 위 식단 총 열량 -'
+			*p '<center><<IIF(slave["calories"] > 0, "<br>+", "<br>")>><<slave["calories"]*100>> cal</center>'
+		end
+		*p '</div>'
+
+	else
+		*p '<div style="line-height:71%;font-family:Sandoll 미생;font-size:22px;" id="left_padding"><br>&nbsp&nbsp - 저장 및 설정 -</div>'
+		*p '<br><div style="line-height:71%;font-family:Sandoll 미생;font-size:22px;" id="left_rules"><br>'
+		*nl '<br><a style = "color: #FFD700;" href = "EXEC: i = 1 & dynamic $name_preset & gt $curloc"><<$preset_name[1]>></a>&nbsp<a style = "color: #FFD700;" href = "EXEC: i = 1 & dynamic $save_preset & gt $curloc">[저장]</a>'
+		*nl '<br><a style = "color: #FFD700;" href = "EXEC: i = 2 & dynamic $name_preset & gt $curloc"><<$preset_name[2]>></a>&nbsp<a style = "color: #FFD700;" href = "EXEC: i = 2 & dynamic $save_preset & gt $curloc">[저장]</a>'
+		*nl '<br><a style = "color: #FFD700;" href = "EXEC: i = 3 & dynamic $name_preset & gt $curloc"><<$preset_name[3]>></a>&nbsp<a style = "color: #FFD700;" href = "EXEC: i = 3 & dynamic $save_preset & gt $curloc">[저장]</a>'
+		*nl '<br><a style = "color: #FFD700;" href = "EXEC: i = 4 & dynamic $name_preset & gt $curloc"><<$preset_name[4]>></a>&nbsp<a style = "color: #FFD700;" href = "EXEC: i = 4 & dynamic $save_preset & gt $curloc">[저장]</a>'
+		*nl '<br><a style = "color: #FFD700;" href = "EXEC: i = 5 & dynamic $name_preset & gt $curloc"><<$preset_name[5]>></a>&nbsp<a style = "color: #FFD700;" href = "EXEC: i = 5 & dynamic $save_preset & gt $curloc">[저장]</a><br>'
+		*nl '<br><a style = "color: #FFD700;" href = "EXEC: preset = 0 & dynamic $purge_preset & gt $curloc"><br><u>초기화</u></a>&nbsp<a style = "color: #FFD700;" href = "EXEC: dynamic $msg, $presets_help & gt $curloc">[?]</a>'
+		*nl '<br><a style = "color: #FFD700;" href = "EXEC: presets_list = 0 & gt $curloc"><u>닫기</u></a></div>'
+	end
+
+	*p '<div style="line-height:71%;font-family:Sandoll 미생;" id="right_padding">'
+	*nl '<br>식사 준비&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>'
+	*nl '잡일과 청소 명령&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>'
+	*nl '목욕 명령&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>'
+	*nl '펠라 자명종&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>'
+	*nl '예의 강요&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>'
+	*nl '펫 강요&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>'
+	*nl '재갈 물리기&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>'
+	*nl '육변기 강요&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>'
+	*nl '소변기 강요&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>'
+	*nl '절정 금지&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>'
+	*nl '배변 금지&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>'
+	*nl '안개 괴물 착정&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>'
+	*nl '자위 금지&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>'
+	*nl '바기나 비즈&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>'
+	*nl '(보유시)도구 사용&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</div>'
+		if $slave['rules_explanations'] ! '':
+			if slave['rules_broken'] = 0:
+				*nl '<div id = "chekbox_15r" style="display:block">'
+				*p '<a class="tooltip-left-down" tooltip-data="규칙을 잘 따르고 있다." href="EXEC: dynamic $msgsmallfont, $slave[''rules_explanations'']"><<$rules_obedience[slave["rules_broken"]]>></a></div>'
+			elseif slave['rules_broken'] = 1:
+				*nl '<div id = "chekbox_15r" style="display:block">'
+				*p '<a class="tooltip-left-down" tooltip-data="주인에게 대항한다!" href="EXEC: dynamic $msgsmallfont, $slave[''rules_explanations'']"><<$rules_obedience[slave["rules_broken"]]>></a></div>'
+			end
+		else
+			*nl '<div id = "chekbox_15r" style="color:white;display:block;">'
+			*p '  규칙 설정 가능<a class="tooltip-bottom" tooltip-data="노예의 조교 방향을 생각해보자."></a></div>'
+		end
+		*nl '<div id = "chekbox_16r"><a style="color: #FFD700;" href = "EXEC: presets_list = 1 & gt $curloc"><br><u>사용중인 규칙 목록화</u>&nbsp&nbsp&nbsp</a></div>'
+	if presets_list = 0:
+		if dungeon > 0:
+			if slave["sleep_condition"] = -2:
+				*p '<div id="chekbox_1l"><img src="content\pic\buttons\sel_button.png"></div>'
+			else
+				*p '<div id="chekbox_1l"><a href = "EXEC: slave[''sleep_condition''] = -2 & $info_text = $slave_sleep_condition[1] & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+			end
+		else
+			*p '<div id="chekbox_1l"><a href = "EXEC: dynamic $msg, $no_dungeon & gt $curloc"><img src="content\pic\buttons\unactive_button.png"></a></div>'
+		end
+		if slave["sleep_condition"] = -1:
+			*p '<div id="chekbox_2l"><img src="content\pic\buttons\sel_button.png"></div>'
+		else
+			*p '<div id="chekbox_2l"><a href = "EXEC: slave[''sleep_condition''] = -1 & $info_text = $slave_sleep_condition[2] & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+		end
+		if slave["sleep_condition"] = 0:
+			*p '<div id="chekbox_3l"><img src="content\pic\buttons\sel_button.png"></div>'
+		else
+			*p '<div id="chekbox_3l"><a href = "EXEC: slave[''sleep_condition''] = 0 & $info_text = $slave_sleep_condition[3] & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+		end
+		if slave["sleep_condition"] = 1:
+			*p '<div id="chekbox_4l"><img src="content\pic\buttons\sel_button.png"></div>'
+		else
+			*p '<div id="chekbox_4l"><a href = "EXEC: slave[''sleep_condition''] = 1 & $info_text = $slave_sleep_condition[4] & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+		end
+		if boudoir > 0:
+			if slave["sleep_condition"] = 2:
+				*p '<div id="chekbox_5l"><img src="content\pic\buttons\sel_button.png"></div>'
+			else
+				*p '<div id="chekbox_5l"><a href = "EXEC: slave[''sleep_condition''] = 2 & $info_text = $slave_sleep_condition[5] & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+			end
+		else
+			*p '<div id="chekbox_5l"><a href = "EXEC: dynamic $msg, $no_boudoir & gt $curloc"><img src="content\pic\buttons\unactive_button.png"></a></div>'
+		end
+		if slave["diet_food_type"] = 0:
+			*p '<div id="chekbox_6l"><a href = "EXEC: slave[''diet_food_type''] = -1 & slave[''diet_portion''] = 0 & $info_text = $slave_no_food & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+		else
+			*p '<div id="chekbox_6l"><a href = "EXEC: slave[''diet_food_type''] = 0 & $info_text = $slave_dry_food & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+		end
+		if slave["diet_food_type"] = 1:
+			*p '<div id="chekbox_7l"><a href = "EXEC: slave[''diet_food_type''] = -1 & slave[''diet_portion''] = 0 & $info_text = $slave_no_food & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+		else
+			*p '<div id="chekbox_7l"><a href = "EXEC: slave[''diet_food_type''] = 1 & $info_text = $slave_cane_food & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+		end
+		if spawn_semen < 5 and kitchen = 0 and exam_in_progress = 0:
+			! made this available outside the Slums and tutorial, because if he has a kitchen (stasis chamber) he can buy and store even if he does not have a fiend of his own - ImperatorAugustus
+			*p '<div id="chekbox_8l"><a href = "EXEC: dynamic $msg, $no_spawn_semen & gt $curloc"><img src="content\pic\buttons\unactive_button.png"></a></div>'
+		elseif slave["diet_food_type"] = 2:
+			*p '<div id="chekbox_8l"><a href = "EXEC: slave[''diet_food_type''] = -1 & slave[''diet_portion''] = 0 & $info_text = $slave_no_food & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+		else
+			*p '<div id="chekbox_8l"><a href = "EXEC: slave[''diet_food_type''] = 2 & $info_text = $slave_semen_food & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+		end
+		if slave["diet_leftovers"] = 1:
+			*p '<div id="chekbox_9l"><a href = "EXEC: slave[''diet_leftovers''] = 0 & $info_text = $slave_no_leftovers & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+		else
+			*p '<div id="chekbox_9l"><a href = "EXEC: slave[''diet_leftovers''] = 1 & $info_text = $slave_eats_leftovers & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+		end
+		if slave["diet_supplements"] = 1:
+			*p '<div id="chekbox_10l"><a href = "EXEC: slave[''diet_supplements''] = 0 & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+		else
+			*p '<div id="chekbox_10l"><a href = "EXEC: slave[''diet_supplements''] = 1 & $info_text = $slave_diet_supplements & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+		end
+
+		if slave['diet_food_type'] = -1:
+			*p '<div id="chekbox_11l"><a href = "EXEC: slave[''diet_portion''] = 0 & $info_text = $slave_no_food & gt $curloc"><img src="content\pic\buttons\unactive_button.png"></a></div>'
+			*p '<div id="chekbox_12l"><a href = "EXEC: slave[''diet_portion''] = 0 & $info_text = $slave_no_food & gt $curloc"><img src="content\pic\buttons\unactive_button.png"></a></div>'
+			*p '<div id="chekbox_13l"><a href = "EXEC: slave[''diet_portion''] = 0 & $info_text = $slave_no_food & gt $curloc"><img src="content\pic\buttons\unactive_button.png"></a></div>'
+			*p '<div id="chekbox_14l"><a href = "EXEC: slave[''diet_portion''] = 0 & $info_text = $slave_no_food & gt $curloc"><img src="content\pic\buttons\unactive_button.png"></a></div>'
+		else
+			if slave['diet_portion'] = 1:
+				*p '<div id="chekbox_11l"><a href = "EXEC: slave[''diet_portion''] = 0 & $info_text = $slave_no_food & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+			else
+				*p '<div id="chekbox_11l"><a href = "EXEC: slave[''diet_portion''] = 1 & $info_text = $slave_min_portion & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+			end
+			if slave['diet_portion'] = 2:
+				*p '<div id="chekbox_12l"><a href = "EXEC: slave[''diet_portion''] = 0 & $info_text = $slave_no_food & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+			else
+				*p '<div id="chekbox_12l"><a href = "EXEC: slave[''diet_portion''] = 2 & $info_text = $slave_normal_portion & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+			end
+			if slave['diet_portion'] = 3:
+				*p '<div id="chekbox_13l"><a href = "EXEC: slave[''diet_portion''] = 0 & $info_text = $slave_no_food & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+			else
+				*p '<div id="chekbox_13l"><a href = "EXEC: slave[''diet_portion''] = 3 & $info_text = $slave_max_portion & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+			end
+			if slave['diet_portion'] = 4:
+				*p '<div id="chekbox_14l"><a href = "EXEC: slave[''diet_portion''] = 0 & $info_text = $slave_no_food & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+			elseif master_medic > 3:
+				*p '<div id="chekbox_14l"><a href = "EXEC: slave[''diet_portion''] = 4 & $info_text = $slave_nutritionist_master & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+			elseif assistant_state = CONST_INT['slave_exist'] and assistant['nurse'] > 3:
+				*p '<div id="chekbox_14l"><a href = "EXEC: slave[''diet_portion''] = 4 & $info_text = $slave_nutritionist_assistant & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+			else
+				*p '<div id="chekbox_14l"><a href = "EXEC: slave[''diet_portion''] = 4 & $info_text = $slave_nutritionist & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+			end
+		end
+
+		if difficulty_setting = 2 or slave['diet_portion'] ! 4: *p '<div id="chekbox_133l"><a href="EXEC: $info_text = $калории_совет & gt $curloc"><img src="content\pic\kalkulyator.png"></a></div>'
+	else
+		if slave["selected_rules_preset"] = 1:
+			*p '<div id="chekbox_1l"><a href = "EXEC: slave[''selected_rules_preset''] = 0 & dynamic $purge_preset & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+		else
+			*p '<div id="chekbox_1l"><a href = "EXEC: slave[''selected_rules_preset''] = 1 & i = 1 & dynamic $use_preset & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+		end
+		if slave["selected_rules_preset"] = 2:
+			*p '<div id="chekbox_2l"><a href = "EXEC: slave[''selected_rules_preset''] = 0 & dynamic $purge_preset & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+		else
+			*p '<div id="chekbox_2l"><a href = "EXEC: slave[''selected_rules_preset''] = 2 & i = 2 & dynamic $use_preset & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+		end
+		if slave["selected_rules_preset"] = 3:
+			*p '<div id="chekbox_3l"><a href = "EXEC: slave[''selected_rules_preset''] = 0 & dynamic $purge_preset & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+		else
+			*p '<div id="chekbox_3l"><a href = "EXEC: slave[''selected_rules_preset''] = 3 & i = 3 & dynamic $use_preset & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+		end
+		if slave["selected_rules_preset"] = 4:
+			*p '<div id="chekbox_4l"><a href = "EXEC: slave[''selected_rules_preset''] = 0 & dynamic $purge_preset & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+		else
+			*p '<div id="chekbox_4l"><a href = "EXEC: slave[''selected_rules_preset''] = 4 & i = 4 & dynamic $use_preset & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+		end
+		if slave["selected_rules_preset"] = 5:
+			*p '<div id="chekbox_5l"><a href = "EXEC: slave[''selected_rules_preset''] = 0 & dynamic $purge_preset & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+		else
+			*p '<div id="chekbox_5l"><a href = "EXEC: slave[''selected_rules_preset''] = 5 & i = 5 & dynamic $use_preset & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+		end
+	end
+
+	overnight_rules_count = 0
+	if kitchen <= 0:
+		*p '<div id="chekbox_1r"><a href = "EXEC: dynamic $msg, $no_kitchen & gt $curloc"><img src="content\pic\buttons\unactive_button.png"></a></div>'
+	elseif slave["cooks_rule"] = 1:
+		overnight_rules_count += 1
+		*p '<div id="chekbox_1r"><a href = "EXEC: slave[''cooks_rule''] = 0 & $info_text = $slave_cooks_rule_abort & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_1r"><a href = "EXEC: slave[''cooks_rule''] = 1 & $info_text = $slave_cooks_rule & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+
+	if slave["cleans_rule"] = 1:
+		overnight_rules_count += 1
+		*p '<div id="chekbox_2r"><a href = "EXEC: slave[''cleans_rule''] = 0 & $info_text = $slave_cleans_rule_abort & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_2r"><a href = "EXEC: slave[''cleans_rule''] = 1 & $info_text = $slave_cleans_rule & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+
+	if bath <= 0:
+		*p '<div id="chekbox_3r"><a href = "EXEC: dynamic $msg, $no_bath & gt $curloc"><img src="content\pic\buttons\unactive_button.png"></a></div>'
+	elseif slave["washes_master_rule"] = 1:
+		overnight_rules_count += 1
+		*p '<div id="chekbox_3r"><a href = "EXEC: slave[''washes_master_rule''] = 0 & $info_text = $slave_washes_master_rule_abort & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_3r"><a href = "EXEC: slave[''washes_master_rule''] = 1 & $info_text = $slave_washes_master_rule & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+
+	if slave["blowjob_rule"] = 1:
+		overnight_rules_count += 1
+		*p '<div id="chekbox_4r"><a href = "EXEC: slave[''blowjob_rule''] = 0 & $info_text = $blowjob_rule_abort & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_4r"><a href = "EXEC: slave[''blowjob_rule''] = 1 & $info_text = $blowjob_rule & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+
+	if slave["humility_rule"] = 1:
+		overnight_rules_count += 1
+		*p '<div id="chekbox_5r"><a href = "EXEC: slave[''humility_rule''] = 0 & $info_text = $humility_rule_abort & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_5r"><a href = "EXEC: slave[''humility_rule''] = 1 & $info_text = $humility_rule & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+
+	if slave["pet_rule"] = 1:
+		overnight_rules_count += 1
+		*p '<div id="chekbox_6r"><a href = "EXEC: slave[''pet_rule''] = 0 & $info_text = $pet_rule_abort & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_6r"><a href = "EXEC: slave[''pet_rule''] = 1 & $info_text = $pet_rule & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+
+	if slave["silence_rule"] = 1:
+		overnight_rules_count += 1
+		*p '<div id="chekbox_7r"><a href = "EXEC: slave[''silence_rule''] = 0 & $info_text = $silence_rule_abort & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_7r"><a href = "EXEC: slave[''silence_rule''] = 1 & $info_text = $silence_rule & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+
+	if slave["toilet_rule"] = 1:
+		overnight_rules_count += 1
+		*p '<div id="chekbox_8r"><a href = "EXEC: slave[''toilet_rule''] = 0 & $info_text = $toilet_rule_abort & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_8r"><a href = "EXEC: slave[''toilet_rule''] = 1 & $info_text = $toilet_rule & slave[''urinal_rule''] = 0 & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+
+	if slave["urinal_rule"] = 1:
+		overnight_rules_count += 1
+		*p '<div id="chekbox_9r"><a href = "EXEC: slave[''urinal_rule''] = 0 & $info_text = $urinal_rule_abort & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_9r"><a href = "EXEC: slave[''urinal_rule''] = 1 & $info_text = $urinal_rule & slave[''toilet_rule''] = 0 & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+
+	if slave["no_orgasm_rule"] = 1:
+		overnight_rules_count += 1
+		*p '<div id="chekbox_9_5r"><a href = "EXEC: slave[''no_orgasm_rule''] = 0 & $info_text = $orgasm_prohibited_abort & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_9_5r"><a href = "EXEC: slave[''no_orgasm_rule''] = 1 & $info_text = $orgasm_prohibited & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+
+	if slave["no_shit_rule"] = 1:
+		overnight_rules_count += 1
+		*p '<div id="chekbox_10r"><a href = "EXEC: slave[''no_shit_rule''] = 0 & $info_text = $shit_prohibited_abort & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_10r"><a href = "EXEC: slave[''no_shit_rule''] = 1 & $info_text = $shit_prohibited & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+
+	if pet_tentacle <= 0:
+		*p '<div id="chekbox_11r"><a href = "EXEC: dynamic $msg, $no_tentacle & gt $curloc"><img src="content\pic\buttons\unactive_button.png"></a></div>'
+	elseif slave["tentacle_rule"] = 1:
+		overnight_rules_count += 1
+		*p '<div id="chekbox_11r"><a href = "EXEC: slave[''tentacle_rule''] = 0 & $info_text = $slave_tentacle_rule_abort & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_11r"><a href = "EXEC: slave[''tentacle_rule''] = 1 & $info_text = $slave_tentacle_rule & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+
+	if slave["masturbation_rule"] = 1:
+		overnight_rules_count += 1
+		*p '<div id="chekbox_12r"><a href = "EXEC: slave[''masturbation_rule''] = 0 & $info_text = $masturbation_rule_abort & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_12r"><a href = "EXEC: slave[''masturbation_rule''] = 1 & $info_text = $masturbation_rule & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+
+	if inventory['vaginal_balls'] > 0 and slave["virginity"] > 1:
+		if slave["v_balls_rule"] = 1:
+			overnight_rules_count += 1
+			*p '<div id="chekbox_13r"><a href = "EXEC: slave[''v_balls_rule''] = 0 & $info_text = $v_balls_rule_abort & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+		else
+			*p '<div id="chekbox_13r"><a href = "EXEC: slave[''v_balls_rule''] = 1 & $info_text = $v_balls_rule & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+		end
+	else
+		*p '<div id="chekbox_13r"><a href = "EXEC: dynamic $msg, $no_vballs & gt $curloc"><img src="content\pic\buttons\unactive_button.png"></a></div>'
+		if slave["virginity"] < 2 and inventory['vaginal_balls'] > 0: *p '<div id="chekbox_13r"><a href = "EXEC: dynamic $msg, $no_vballs_virgin & gt $curloc"><img src="content\pic\buttons\unactive_button.png"></a></div>'
+	end
+
+	if slave["force_rules"] = 1:
+		*p '<div id="chekbox_14r"><a href = "EXEC: slave[''force_rules''] = 0 & $info_text = $force_rules_abort & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_14r"><a href = "EXEC: slave[''force_rules''] = 1 & $info_text = $force_rules & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+
+	! display rules heading with count obtained above
+! JO9 MOD START J9M1570 | 2026-10-10_restore_ui_format_after_dialogue_normalization | changed block; context may be included
+	*p '<div id="right_rules_heading">-규칙- (<<iif(overnight_rules_count < iif(difficulty_setting = 2, 3, 2), "<div style=''display:inline-block;position:relative;line-height:110%'' class=''tooltip-left'' tooltip-data=''규칙이 없으면 노예를 망칠수도 있습니다.''>" + dyneval($vb_cycle, 0, $str(overnight_rules_count)) + "</div>", overnight_rules_count)>>):</div>'
+! JO9 MOD END J9M1570
+
+	!lillimerge quick preset switch buttons
+	if slave["selected_rules_preset"] = 1:
+		*p '<div id="chekbox_17r_1"><a href = "EXEC: slave[''selected_rules_preset''] = 0 & dynamic $purge_preset & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_17r_1"><a href = "EXEC: slave[''selected_rules_preset''] = 1 & i = 1 & dynamic $use_preset & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+	if slave["selected_rules_preset"] = 2:
+		*p '<div id="chekbox_17r_2"><a href = "EXEC: slave[''selected_rules_preset''] = 0 & dynamic $purge_preset & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_17r_2"><a href = "EXEC: slave[''selected_rules_preset''] = 2 & i = 2 & dynamic $use_preset & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+	if slave["selected_rules_preset"] = 3:
+		*p '<div id="chekbox_17r_3"><a href = "EXEC: slave[''selected_rules_preset''] = 0 & dynamic $purge_preset & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_17r_3"><a href = "EXEC: slave[''selected_rules_preset''] = 3 & i = 3 & dynamic $use_preset & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+	if slave["selected_rules_preset"] = 4:
+		*p '<div id="chekbox_17r_4"><a href = "EXEC: slave[''selected_rules_preset''] = 0 & dynamic $purge_preset & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_17r_4"><a href = "EXEC: slave[''selected_rules_preset''] = 4 & i = 4 & dynamic $use_preset & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+	if slave["selected_rules_preset"] = 5:
+		*p '<div id="chekbox_17r"><a href = "EXEC: slave[''selected_rules_preset''] = 0 & dynamic $purge_preset & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_17r"><a href = "EXEC: slave[''selected_rules_preset''] = 5 & i = 5 & dynamic $use_preset & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+
+end
+
+!ANATOMY TAB
+!removed hairstyle_demo hardcode
+if slave_stat_screen = 1:
+	*p '<div id = "mark_one"><a href = "EXEC: slave_stat_screen = 0 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_two"><img src = "content\pic\buttons\sel_button.png"></div>'
+	*p '<div id = "mark_three"><a href = "EXEC: slave_stat_screen = 2 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_four"><a href = "EXEC: slave_stat_screen = 3 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	if ui_style = 2:
+		*p '<div id="center_image"><img src = "content\pic\ui\grimdark\bg\page_blank.png"></div>'
+	else
+		*p '<div id="center_image"><img src = "content\pic\page_blank.png"></div>'
+	end
+	if nsfw = 0: *p '<div id="upper_image"><img src = "content\pic\girls\body\<<$slave["boobs_img"]>>.png" width="370"></div>'
+	if nsfw = 0: *p '<div id="lower_image"><img src = "content\pic\girls\body\<<$slave["pussy_img"]>>.png" width="370"></div>'
+	*p '<div id = "stat_text"><center>'
+! JO9 MOD START TBV_BEAUTY_FORMULA_slave | 2026-10-17_trait_value
+		*p '<<$красота[slave["beauty"]]>> = <<$природная_красота[slave["base_beauty"]]>> + <<$пластика[slave["beauty_enhanced"]]>><<iif(slave[''jo9_peerless''] = 1, '' + 절세미인'', '''')>> - (<<$шрамы[slave["scars"]]>> + <<$синяки[slave["bruises"]]>> + <<$beauty_physique[slave["fat"]]>>)'
+! JO9 MOD END TBV_BEAUTY_FORMULA_slave
+		*nl '<<$стиль[slave["style"]]>> = <<$wear_st[slave["st_count"]]>> + <<$slave_makeup[slave["makeup"]]>> + <<$hair_style[slave["hairstyle"]]>> + <<$мейкап[slave["makeup_count"]]>> + <<$грация[slave["grace_count"]]>> - <<$гигиена[slave["hygiene"]]>>'
+		*nl '<<$экзотика[slave["exotic"]]>> = <<$природная_экзотика[slave["base_exotic"]]>> + <<$slave_tattoo[slave["tattoo"]]>> + <<$пирсинг[slave["piercing_count"]]>> + <<$wear_ex[slave["ex_count"]]>>'
+		if auspex = 1:
+			*nl '<<$charm_aura[max(0, 5 + charm_from_aura)]>> = <<$charm_moral[slave["moral"]]>> - (<<$charm_angst[slave["angst"]]>> + <<$charm_spoil[slave["spoil"]]>>)'
+			*nl '<a href = "EXEC: msg $charm_help"><<$charm_stat>>&nbsp;<img src="content/pic/chart.png"></a> = <<$brand[brand_reputation]>> + <<$girl_fame[slave["fame"]]>> + <<$стиль[slave["style"]]>> + <<$экзотика[slave["exotic"]]>> <<iif(charm_from_aura < 0, "-", "+")>> <<$charm_aura[max(0, 5 + charm_from_aura)]>> <<iif(slave["fat"] ! 1, "-", "+")>> <<$charm_physique[slave["fat"]]>> - <<$шрамы[slave["scars"]]>> - <<$синяки[slave["bruises"]]>>' &! $charm_stat is updated by $slave_price call earlier
+		else
+			*nl '<font color="black">노예의 오라와 매혹 등급을 보려면 아우스펙스를 시전해야 한다</font>&nbsp;<a href = "EXEC: msg $charm_help & gt $curloc"><img src="content/pic/chart.png"></a>'
+		end
+	*p '</center></div>'
+	*p '<div id = "upper_text">'
+		*p '<<$slave_boobs>><<$slave_boobsx>>'
+		if slave['lactation'] > 0:
+			*nl '<<$slave_lactation[slave["lactation"]]>>  <<$impregnation_rate[slave["impregnation"]]>> &nbsp;<a href = "EXEC: gs ''#var_base'' & msg $slave_milk_quantity"><img src="content\pic\ui\jon-UIadds\milk_drop.png"></a>'
+		else
+			*nl '<<$slave_lactation[slave["lactation"]]>>'
+		end
+		*nl '<<$nipple_piercing[slave["nipple_piercing"]]>>'
+		*nl '<<$boobs_modification[slave["breast_enhanced"]]>>'
+		*nl '<<$slave_age_name[slave["age"]]>>'
+	*p '</div>'
+	*p '<div id = "lower_text">'
+		*p '<<$virginity[slave["virginity"]]>>'
+		*nl '<<$slave_anal_description[slave["anal_stretch"]]>>'
+		*nl '<<$clit_piercing[slave["clit_piercing"]]>>'
+		*nl '<<$vaginal_modification[slave["vaginal_modification"]]>>'
+		if slave['brand'] = 0:
+			*nl '<a href = "EXEC: interaction = 1811 & gt ''interaction''"><font color="#000000"><u><b><<$slave_brand[0]>></b></u></font></a>'
+		else
+			*nl '<<$slave_brand[slave["brand"]]>>'
+		end
+	*p '</div>'
+end
+
+!EQUIPMENT TAB
+if slave_stat_screen = 2:
+	$earrings_plural = ''
+	if $item_name[$slave["earrings"]] ! '' and $item_name[$slave["earrings"]] ! '-': $earrings_plural = ' 한 쌍'
+	$nipplerings_plural = ''
+	if $item_name[$slave["nipplerings"]] ! '' and $item_name[$slave["nipplerings"]] ! '-' and $slave["nipplerings"] ! 'nipple_chain': $nipplerings_plural = ' 한 쌍'
+	*p '<div id = "mark_one"><a href = "EXEC: slave_stat_screen = 0 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_two"><a href = "EXEC: slave_stat_screen = 1 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_three"><img src = "content\pic\buttons\sel_button.png"></div>'
+	*p '<div id = "mark_four"><a href = "EXEC: slave_stat_screen = 3 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	if ui_style = 2:
+		*p '<div id="center_image"><img src = "content\pic\ui\grimdark\bg\page_blank.png"></div>'
+	else
+		*p '<div id="center_image"><img src = "content\pic\page_blank.png"></div>'
+	end
+	*p '<div id = "center_text_column_1">'
+! JO9 MOD START J9M1569 | 2026-10-15_z_restore_personal_equipment_text, 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+	*p '<img src="content/pic/ui/dialogue_emoji/armor.png" width="19" height="19" style="vertical-align:-4px">착용 중 장비'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $slave_armor_list"><u>갑 옷</u> : <<$item_name[$slave["armor"]]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $slave_wpn_list_large"><u>등 뒤</u> :&nbsp&nbsp<<$item_name[$slave["back_wpn"]]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $slave_wpn_list"><u>왼 손</u> : <<$item_name[$slave["left_wpn"]]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $slave_wpn_list_2"><u>오 른 손</u> : <<$item_name[$slave["right_wpn"]]>></a></div>'
+		*nl '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $slave_cloth_list"><u>복 장</u> : <<$item_name[$slave["cloth"]]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $slave_head_list"><u>머 리</u> : <<$item_name[$slave["headband"]]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $slave_neck_list"><u>목 걸 이</u> : <<$item_name[$slave["collar"]]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $slave_hands_list"><u>장 갑</u> : <<$item_name[$slave["gloves"]]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $slave_feet_list"><u>신 발</u> : <<$item_name[$slave["boots"]]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $slave_ring_list"><u>반 지１</u> : <<$item_name[$slave["ring_left"]]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $slave_ring_list_2"><u>반 지２</u> : <<$item_name[$slave["ring_right"]]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $slave_ears_list"><u>귀 걸 이</u> : <<$item_name[$slave["earrings"]]>><<$earrings_plural>></a></div>'
+! JO9 MOD END J9M1569
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $slave_tongue_list"><u>혓 바 닥</u>:  <<$item_name[$slave["tongue"]]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $slave_nipples_list"><u>젖 꼭 지</u> :  <<$item_name[$slave["nipplerings"]]>><<$nipplerings_plural>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $slave_navel_list"><u>배   꼽</u>  :  <<$item_name[$slave["navel"]]>></a></div>'
+		*p '<div class="inventory_item"><a style = "color: black;" href = "EXEC: dynamic $slave_clitor_list"><u>음   핵</u>  :  <<$item_name[$slave["clitring"]]>></a></div>'
+	*p '</div>'
+
+	!reset equipment selection when switching tabs
+	if slot = 0: $equip_choice = $dyneval($replace($show_item_effects, 'dyn'+'slave', 'slave'))
+	if slot >= 0:
+! JO9 MOD START J9M1568 | 2026-10-15_z_restore_personal_equipment_text | changed block; context may be included
+		*p '<div id = "center_text_column_2"><u><img src="content/pic/ui/dialogue_emoji/arrow.png" width="19" height="19" style="vertical-align:-4px">착용 가능 장비</u>&nbsp;<a href = "EXEC: dynamic $replace($equip_set_manager, ''dyn''+''slave'', ''slave'')"><img src="content\pic\ui\jon-UIadds\equipment.png"></a><br><font size="5"><<$equip_choice>></font></div>'
+! JO9 MOD END J9M1568
+	else
+! JO9 MOD START J9M1567 | 2026-10-15_z_restore_personal_equipment_text | changed block; context may be included
+		*p '<div id = "center_text_column_2"><u><img src="content/pic/ui/dialogue_emoji/arrow.png" width="19" height="19" style="vertical-align:-4px">착용 가능 장비</u><br><font size="5"><<$equip_choice>></font></div>'
+! JO9 MOD END J9M1567
+	end
+	!reset slot (global var shared with #static_base and #dynamic)
+	slot = 0
+end
+
+!Slave Aura Tab
+if slave_stat_screen = 3:
+	*p '<div id = "mark_one"><a href = "EXEC: slave_stat_screen = 0 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_two"><a href = "EXEC: slave_stat_screen = 1 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_three"><a href = "EXEC: slave_stat_screen = 2 & $info_text = '''' & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_four"><img src = "content\pic\buttons\sel_button.png"></div>'
+	if ui_style = 2:
+		*p '<div id="center_image"><img src = "content\pic\ui\grimdark\page_aura.png"></div>'
+	else
+		*p '<div id="center_image"><img src = "content\pic\page_aura.png"></div>'
+	end
+ 	assistant_aura = 0
+	gs 'auspex_list'
+	*p '<div id = "center_text_compact_auspex"><<$auspex_list>></div>'
+	!Testing Code - crushboss
+	!dynamic $msg, 'Exhibitionism: <<slave["exhibitionism_xp"]>><br>masochism: <<slave["masochism_xp"]>><br>Nymphomania: <<slave["nymphomania_xp"]>><br>Perversion: <<slave["perversion_xp"]>><br>Lesbian: <<slave["lesbian_xp"]>><br><<slave_type>><br><<rating>><br><<slave["sex_sum"]>><br><<slave["pride"]>><br><<slave["spoil"]>><br><<slave["moral"]>><br><<slave["has_ride_win"]>><br>Tattoo: <<slave["tattoo"]>><br>'
+	!end of Testing Code - crushboss
+end
+
+!수정작업
+!집 노에 우측 스킬칸.
+if slave_state = CONST_INT['slave_exist'] and is_home = 1:
+	!ImperatorAugustus: added is_home check to disable skill training links when not at home
+	$skill_text = ''
+	$skill_text += '<div style="line-height:25%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 하녀 수업을 진행한다" href = "EXEC: interaction = 1211 & gt ''interaction''"><<$slave_service[slave["service"]]>></a><br>'
+	$skill_text += '<a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 요리 수업을 진행한다" href = "EXEC: interaction = 1212 & gt ''interaction''"><<$slave_cook[slave["cook"]]>></a><br>'
+	$skill_text += '<div style="line-height:25%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 비서 수업을 진행한다" href = "EXEC: interaction = 1214 & gt ''interaction''"><<$slave_secretary[slave["secretary"]]>></a><br>'
+	$skill_text += '<a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 화술 수업을 진행한다" href = "EXEC: interaction = 1231 & gt ''interaction''"><<$slave_expression[slave["expression"]]>></a><br>'
+	$skill_text += '<div style="line-height:25%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 간호 수업을 진행한다" href = "EXEC: interaction = 1213 & gt ''interaction''"><<$slave_nurse[slave["nurse"]]>></a><br>'
+	if exam_in_progress = 1:
+		$skill_text += '<a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 연금술 수업을 진행한다" href = "EXEC: msg $no_services_exam & gt $curloc"><<$slave_alchemy[slave["alchemy"]]>></a><br>'
+	elseif lab < 1:
+		$skill_text += '<a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 연금술 수업을 진행한다" href = "EXEC: msg $no_lab & gt $curloc"><<$slave_alchemy[slave["alchemy"]]>></a><br>'
+	else
+		$skill_text += '<a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 연금술 수업을 진행한다" href = "EXEC: interaction = 1243 & gt ''interaction''"><<$slave_alchemy[slave["alchemy"]]>></a><br>'
+	end
+	if library >= 0:
+		$skill_text += '<a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 마법력 수업을 진행한다" href = "EXEC: interaction = 1244 & gt ''interaction''"><<$slave_enchanter[slave["enchanter"]]>></a><br>'
+	end
+	$skill_text += '<div style="line-height:25%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 체육 수업을 진행한다" href = "EXEC: interaction = 1221 & gt ''interaction''"><<$gym_lesson[slave["stamina"]]>></a><br>'
+	if slave['stamina'] >= 2:
+		$skill_text += '<a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 검투 수업을 진행한다" href = "EXEC: interaction = 1223 & gt ''interaction''"><<$slave_gladiatrix[slave["gladiatrix"]]>></a><br>'
+	else
+		$skill_text += '<a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 검투 수업을 진행한다" href = "EXEC: msg $no_slave_stamina & gt $curloc"><<$slave_gladiatrix[slave["gladiatrix"]]>></a><br>'
+	end
+	if slave['stamina'] >= 2:
+		$skill_text += '<div style="line-height:25%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 무용 수업을 진행한다" href = "EXEC: interaction = 1222 & gt ''interaction''"><<$slave_calisthenics[slave["calisthenics"]]>></a><br>'
+	else
+		$skill_text += '<a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 무용 수업을 진행한다" href = "EXEC: msg $no_slave_stamina & gt $curloc"><<$slave_calisthenics[slave["calisthenics"]]>></a><br>'
+	end
+	$skill_text += '<a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 음악 수업을 진행한다" href = "EXEC: menu_form = 1233 & $place = ''home_lux'' & gt ''menu_form''"><<$slave_music[slave["music"]]>></a><br>'
+	$skill_text += '<a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 미술 수업을 진행한다" href = "EXEC: interaction = 1234 & gt ''interaction''"><<$slave_art[slave["art"]]>></a><br>'
+	$skill_text += '<div style="line-height:25%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 애완동물 수업을 진행한다" href = "EXEC: interaction = 1241 & gt ''interaction''"><<$slave_pet[slave["pet"]]>></a><br>'
+	if slave['stamina'] >= iif(slave['dressage'] < 3, 2, 3):
+		$skill_text += '<a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 조랑말 레이싱 수업을 진행한다" href = "EXEC: interaction = 1224 & gt ''interaction''"><<$slave_dressage[slave["dressage"]]>></a><br>'
+	else
+		$skill_text += '<a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 조랑말 레이싱 수업을 진행한다" href = "EXEC: msg $no_slave_stamina & gt $curloc"><<$slave_dressage[slave["dressage"]]>></a><br>'
+	end
+	if slave['stamina'] >= 2:
+		$skill_text += '<a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 젖소 수업을 진행한다" href = "EXEC: interaction = 1226 & gt ''interaction''"><<$slave_cowSK[slave["cowSK"]]>></a><br>'
+	else
+		$skill_text += '<a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 젖소 수업을 진행한다" href = "EXEC: msg $no_slave_stamina & gt $curloc"><<$slave_cowSK[slave["cowSK"]]>></a><br>'
+	end
+	*p '<div class="right_column">'
+		*nl '<div class="column_title">지식 / SKILLS&nbsp</div>'
+		*p '<<$skill_text>>'
+		*p '<div class="column_title">성애기술 / S.T</div>'
+		*p '<div style="line-height:10%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 애무 수업을 진행한다" href = "EXEC: menu_form = 131 & $place = ''home_lux'' & gt ''menu_form''"><<$slave_petting[slave["petting"]]>></a>'
+		*nl '<div style="line-height:10%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 오럴 수업을 진행한다" href = "EXEC: menu_form = 132 & $place = ''home_lux'' & gt ''menu_form''"><<$slave_oral[slave["oral"]]>></a>'
+		*nl '<div style="line-height:10%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 삽입 수업을 진행한다" href = "EXEC: menu_form = 133 & $place = ''home_lux'' & gt ''menu_form''"><<$slave_penetration[slave["penetration"]]>></a>'
+		if exam_in_progress = 1:
+			*nl '<div style="line-height:10%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 그룹 섹스 수업을 진행한다" href = "EXEC: msg $no_services_exam & gt $curloc"><<$slave_orgy[slave["orgy"]]>></a>'
+		else
+			*nl '<div style="line-height:10%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 그룹 섹스 수업을 진행한다" href = "EXEC: menu_form = 134 & $place = ''home_lux'' & gt ''menu_form''"><<$slave_orgy[slave["orgy"]]>></a>'
+		end
+		*nl '<div style="line-height:10%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 노출 수업을 진행한다" href = "EXEC: menu_form = 137 & $place = ''home_lux'' & gt ''menu_form''"><<$slave_roleplay[slave["roleplay"]]>></a>'
+		*nl '<div style="line-height:10%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 페티시즘 수업을 진행한다" href = "EXEC: menu_form = 136 & $place = ''home_lux'' & gt ''menu_form''"><<$slave_fetishism[slave["fetishism"]]>></a>'
+		if exam_in_progress = 1:
+			*nl '<div style="line-height:10%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 이종성애 수업을 진행한다" href = "EXEC: msg $no_services_exam & gt $curloc"><<$slave_xenophily[slave["xenophily"]]>></a>'
+			*nl '<div style="line-height:10%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 유두 성교 수업을 진행한다" href = "EXEC: msg $no_services_exam & gt $curloc"><<$slave_nipplefuck[slave["nipplefuck"]]>></a>'
+			*nl '<div style="line-height:10%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 레즈비언 섹스 수업을 진행한다" href = "EXEC: msg $no_services_exam & gt $curloc"><<$slave_lesbiansex[slave["lesbiansex"]]>></a>'
+		else
+			*nl '<div style="line-height:10%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 이종성애 수업을 진행한다" href = "EXEC: menu_form = 135 & $place = ''home_lux'' & gt ''menu_form''"><<$slave_xenophily[slave["xenophily"]]>></a>'
+			*nl '<div style="line-height:10%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 유두 성교 수업을 진행한다" href = "EXEC: menu_form = 138 & $place = ''home_lux'' & gt ''menu_form''"><<$slave_nipplefuck[slave["nipplefuck"]]>></a>'
+			*nl '<div style="line-height:10%"><br></div><a style="line-height:110%" class="tooltip-left" tooltip-data="<<$slave_name>>에게 레즈비언 섹스 수업을 진행한다" href = "EXEC: menu_form = 139 & $place = ''home_lux'' & gt ''menu_form''"><<$slave_lesbiansex[slave["lesbiansex"]]>></a>'
+
+	end
+	*p '</div>'
+else
+	*p '<div class="right_column">'
+		*nl '<div class="column_title">지식 / SKILLS&nbsp</div>'
+			*p '<div style="line-height:10%"><br></div>'
+			*p  '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''service'']>> 등급"><<$slave_service[slave["service"]]>></div>'
+			*nl '<div style="display:inline-block;position:relative;" class="tooltip-left" tooltip-data="<<$atr_name[''cook'']>> 등급"><<$slave_cook[slave["cook"]]>></div>'
+			*p '<div style="line-height:25%"><br></div>'
+			*p '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''secretary'']>> 등급"><<$slave_secretary[slave["secretary"]]>></div>'
+			*nl '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''expression'']>> 등급"><<$slave_expression[slave["expression"]]>></div>'
+			*p '<div style="line-height:25%"><br></div>'
+			*p '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''nurse'']>> 등급"><<$slave_nurse[slave["nurse"]]>></div>'
+			*nl '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''alchemy'']>> 등급"><<$slave_alchemy[slave["alchemy"]]>></div>'
+			*nl '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''enchanter'']>> 등급"><<$slave_enchanter[slave["enchanter"]]>></div>'
+			*p '<div style="line-height:25%"><br></div>'
+			*p '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="체육 등급"><<$gym_lesson[slave["stamina"]]>></div>'
+			*nl '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''gladiatrix'']>> 등급"><<$slave_gladiatrix[slave["gladiatrix"]]>></div>'
+			*p '<div style="line-height:25%"><br></div>'
+			*p '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''calisthenics'']>> 등급"><<$slave_calisthenics[slave["calisthenics"]]>></div>'
+			*nl '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''music'']>> 등급"><<$slave_music[slave["music"]]>></div>'
+			*nl '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''art'']>> 등급"><<$slave_art[slave["art"]]>></div>'
+			*p '<div style="line-height:25%"><br></div>'
+			*p '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''pet'']>> 등급"><<$slave_pet[slave["pet"]]>></div>'
+			*nl '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''dressage'']>> 등급"><<$slave_dressage[slave["dressage"]]>></div>'
+			*nl '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''cowSK'']>> 등급"><<$slave_cowSK[slave["cowSK"]]>></div>'
+		*p '<div class="column_title">성애기술 / S.T</div>'
+		*p  '<div style="line-height:10%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="핸드잡, 풋잡, 비비기, 파이즈리"><<$slave_petting[slave["petting"]]>></div>'
+		*nl '<div style="line-height:10%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="키스, 핥기, 블로우잡, 딥스로트, 리밍"><<$slave_oral[slave["oral"]]>></div>'
+		*nl '<div style="line-height:10%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="질 섹스, 피스팅, 애널 섹스, 애널 피스팅"><<$slave_penetration[slave["penetration"]]>></div>'
+		*nl '<div style="line-height:10%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="쓰리섬, 붓카케, 양구멍 삽입, 세구멍 삽입, 난교"><<$slave_orgy[slave["orgy"]]>></div>'
+		*nl '<div style="line-height:10%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="유혹, 자위, 딜도, 굴욕, 노출증"><<$slave_roleplay[slave["roleplay"]]>></div>'
+		*nl '<div style="line-height:10%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="관장, 마조히즘, 자학, 골든 샤워, 식분증"><<$slave_fetishism[slave["fetishism"]]>></div>'
+		*nl '<div style="line-height:10%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="개 교미, 돼지 교미, 말 교미, 거미 교미, 바다 촉수 교미, 안개 괴물 착정"><<$slave_xenophily[slave["xenophily"]]>></div>'
+		*nl '<div style="line-height:10%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="유두 성교"><<$slave_nipplefuck[slave["nipplefuck"]]>></div>'
+		*nl '<div style="line-height:10%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="레즈비언, 커닐링구스, 주도적 레즈비언, 그룹 레즈비언"><<$slave_lesbiansex[slave["lesbiansex"]]>></div>'
+	*p '</div>'
+
+
+end
+
+*p '<div id = "info"><<$info_text>></div>'
+
+!Used for debugging variables I need to track - crushboss
+
+!dynamic $msg, 'Cooking: <<$cooking[slave_type]>><br>Slave Type: <<slave_type>><br>'
+!dynamic $msg, 'Ovulation: <<slave["ovulation"]>><br>Menstruation: <<slave["menstruation"]>><br>Pregnant: <<slave["pregnant"]>><br>Fertility: <<slave["fertility"]>><br>Vaginal Modification: <<slave["vaginal_modification"]>><br>'
+!dynamic $msg, '<<модификатор_колющий>><br>'
+!dynamic $msg, '<<slave_rate["rational"]>>'
+!dynamic $msg, '<<$slave[''ava'']>>.png'
+!dynamic $msg, 'Charm: <<charm>>'
+!if slave_stat_screen = 1:
+	!dynamic $msg, 'Obedience: <<slave["obedience"]>><br>Fear: <<slave["fear"]>><br>Fear Rate: <<slave_rate["fear"]>><br>Despair-Angst: <<slave["angst"]>><br>Despair-Angst Rate: <<slave_rate["angst"]>><br>Spoil: <<slave["spoil"]>><br>Spoil Rate: <<slave_rate["spoil"]>><br>Mood: <<slave["mood"]>><br>Arousal: <<slave["arousal"]>><br>Arousal Rate: <<slave_rate["arousal"]>><br>'
+!end
+------------ slave_stat ------------

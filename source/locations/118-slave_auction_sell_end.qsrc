@@ -1,0 +1,15 @@
+# slave_auction_sell_end
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2872 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'slave_auction_sell_end': gs 'snk_room_bridge', 'guard', 'slave_auction_sell_end'
+! JO9 MOD END J9M2872
+! JO9 MOD START TBV_FARID_REWARD | 2026-10-17_trait_value
+if guild_reputation <= (rating/2): guild_reputation_rate += func('jo9_traits_value', 'reward', 'slave', 5 + rating) &! sold to Farid a slave ranked at or above guild level
+! JO9 MOD END TBV_FARID_REWARD
+dynamic $sold_clothing
+dynamic $clear_slave_instance, 'slave'
+
+sparks += sell_price
+gt 'city_menu_form'
+
+------------ slave_auction_sell_end ------------

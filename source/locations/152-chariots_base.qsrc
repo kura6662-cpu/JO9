@@ -1,0 +1,302 @@
+# #chariots_base
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2890 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '#chariots_base': gs 'snk_room_bridge', 'guard', '#chariots_base'
+! JO9 MOD END J9M2890
+!Chariot racing database
+!Refreshed before each race to reset the riders and master - includes some randomization
+$trace_type[1] = 'straight'
+$trace_type[2] = 'straight'
+$trace_type[3] = 'straight'
+$trace_type[4] = 'curve'
+$trace_type[5] = 'curve'
+$trace_type[6] = 'curve'
+$trace_type[7] = 'russian_road'
+$trace_type[8] = 'russian_road'
+$trace_type[9] = 'dragon_teeth'
+$trace_type[10] = 'dragon_teeth'
+$trace_type[11] = 'concrete_jungle'
+$trace_type[12] = 'bladestrings'
+
+$trace_name['ride_start'] = '출발선 경로'
+$trace_name['straight'] = '직선 질주로'
+$trace_name['curve'] = '급선회 경로'
+$trace_name['russian_road'] = '러시아 도로'
+$trace_name['dragon_teeth'] = '용들의 이빨'
+$trace_name['concrete_jungle'] = '콘크리트 숲'
+$trace_name['bladestrings'] = '철사 칼날'
+$trace_name['ride_finish'] = '결승선 지점'
+
+! Why the double affectations to the index "2" ?? - Slaver
+! ImperatorAugustus: only indices 1 and 2 are used in the code, and the redefinitions of index 2 overwrite - I commented out the inactive lines for clarity
+$frame[1] = '<font color="#cd0000">골　조 : 약한 상태</font>'
+! $frame[2] = '<font color="#0000CD">Fragile Frame</font>'
+$frame[2] = '<font color="#008000">골　조 : 텅스텐강</font>'
+
+$boards[1] = '<font color="#cd0000">측　면 : 약한 상태</font>'
+! $boards[2] = '<font color="#0000CD">Durable Sides</font>'
+$boards[2] = '<font color="#008000">측　면 : 방어용</font>'
+
+$chassis[1] = '<font color="#cd0000">바　닥 : 약한 상태</font>'
+! $chassis[2] = '<font color="#0000CD">Working Suspension</font>'
+$chassis[2] = '<font color="#008000">바　닥 : 강화 바닥면</font>'
+
+$wheels[1] = '<font color="#cd0000">바　퀴 : 약한 상태</font>'
+! $wheels[2] = '<font color="#0000CD">Reinforced Wheels</font>'
+$wheels[2] = '<font color="#008000">바　퀴 : 강화 합금철</font>'
+
+$rider[1] = 'master'
+$rider[2] = 'ride_avgia'
+$rider[3] = 'ride_geralt'
+$rider[4] = 'ride_ippolita'
+$rider[5] = 'ride_jeevs'
+$rider[6] = 'ride_morrigan'
+$rider[7] = 'ride_angelika'
+
+rider_structure['master'] = 100
+
+$rider_description['crashed'] = '<br><center>이 상대는 경주를 지속할 수 없다. 당신은 더 이상 신경 쓸 필요가 없다.</center>'
+$rider_ava['crashed'] = 'content/pic/blank_ava.png'
+rider_structure['crashed'] = 100
+$race_startline['crashed'] = {}
+$race_straight['crashed'] = {}
+$race_curve['crashed'] = {}
+$race_bladestrings['crashed'] = {}
+$race_concrete['crashed'] = {}
+$race_dragonteeth['crashed'] = {}
+$race_russianroad['crashed'] = {}
+$race_finishline['crashed'] = {}
+
+$rider_description['master'] = '<br><center>당신의 전차는 아직 괜찮다 - 경주를 계속 할 필요가 있다.</center>'
+$race_startline['master'] = {}
+$race_straight['master'] = {}
+$race_curve['master'] = {}
+$race_bladestrings['master'] = {}
+$race_concrete['master'] = {}
+$race_dragonteeth['master'] = {}
+$race_russianroad['master'] = {}
+$race_finishline['master'] = {}
+
+$rider_name['ride_angelika'] = '안젤리카'
+$rider_ava['ride_angelika'] = 'content/pic/mob/ride_angelika.png'
+rider_structure['ride_angelika'] = 4
+$rider_description['ride_angelika'] = '안젤리카에게 경주는 그저 노예를 훈련시킬 기회일 뿐이다. 그녀의 말은 완벽하게 길들여져 있지만 체격 면에서 두드러지지는 않는다. 그녀의 전차는 무겁고 방호가 잘 되어 있다.'
+$race_startline['ride_angelika'] = {
+	speed_points['ride_angelika'] += 12 + ((48271 * (day + 1)) mod 65537)/(65537/3) &! pseudo-rand(12,14)
+}
+$race_straight['ride_angelika'] = {
+	speed_points['ride_angelika'] += 13 + ((48271 * (day + 2)) mod 65537)/(65537/4) &! pseudo-rand(13,16)
+}
+$race_curve['ride_angelika'] = {
+	speed_points['ride_angelika'] += 10 + ((48271 * (day + 3)) mod 65537)/(65537/3) &! pseudo-rand(10,12)
+	a = 1 + ((48271 * (day + 4)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 9: rider_structure['ride_angelika'] -= 1
+}
+$race_bladestrings['ride_angelika'] = {
+	speed_points['ride_angelika'] += 10 + ((48271 * (day + 5)) mod 65537)/(65537/3) &! pseudo-rand(10,12)
+	a = 1 + ((48271 * (day + 6)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 9: rider_structure['ride_angelika'] = 0
+}
+$race_concrete['ride_angelika'] = {
+	speed_points['ride_angelika'] += 10 + ((48271 * (day + 7)) mod 65537)/(65537/3) &! pseudo-rand(10,12)
+	a = 1 + ((48271 * (day + 8)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 9: rider_structure['ride_angelika'] = 0
+}
+$race_dragonteeth['ride_angelika'] = {
+	speed_points['ride_angelika'] += 10 + ((48271 * (day + 9)) mod 65537)/(65537/3) &! pseudo-rand(10,12)
+}
+$race_russianroad['ride_angelika'] = {
+	speed_points['ride_angelika'] += 8 + ((48271 * (day + 10)) mod 65537)/(65537/3) &! pseudo-rand(8,10)
+	a = 1 + ((48271 * (day + 11)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 7: rider_structure['ride_angelika'] -= 1
+}
+$race_finishline['ride_angelika'] = {
+	speed_points['ride_angelika'] += 14 + ((48271 * (day + 12)) mod 65537)/(65537/4) &! pseudo-rand(14,17)
+}
+
+$rider_name['ride_avgia'] = '아우게아스'
+$rider_ava['ride_avgia'] = 'content/pic/mob/ride_avgia.png'
+rider_structure['ride_avgia'] = 2
+$rider_description['ride_avgia'] = '아우게아스는 매우 위험한 상대다. 그녀의 경주마는 고도로 훈련되어 있고 체격도 훌륭하다. 그녀의 전차는 가볍고 기동성이 뛰어나다.'
+$race_startline['ride_angelika'] = {
+	speed_points['ride_avgia'] += 15 + ((48271 * (day + 13)) mod 65537)/(65537/3) &! pseudo-rand(15,17)
+}
+$race_straight['ride_avgia'] = {
+	speed_points['ride_avgia'] += 16 + ((48271 * (day + 14)) mod 65537)/(65537/4) &! pseudo-rand(16,19)
+}
+$race_curve['ride_avgia'] = {
+	speed_points['ride_avgia'] += 13 + ((48271 * (day + 15)) mod 65537)/(65537/3) &! pseudo-rand(13,15)
+	a = 1 + ((48271 * (day + 16)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 8: rider_structure['ride_avgia'] -= 1
+}
+$race_bladestrings['ride_avgia'] = {
+	speed_points['ride_avgia'] += 13 + ((48271 * (day + 17)) mod 65537)/(65537/3) &! pseudo-rand(13,15)
+	a = 1 + ((48271 * (day + 18)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 8: rider_structure['ride_avgia'] = 0
+}
+$race_concrete['ride_avgia'] = {
+	speed_points['ride_avgia'] += 13 + ((48271 * (day + 19)) mod 65537)/(65537/3) &! pseudo-rand(13,15)
+	a = 1 + ((48271 * (day + 20)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 8: rider_structure['ride_avgia'] = 0
+}
+$race_dragonteeth['ride_avgia'] = {
+	speed_points['ride_avgia'] += 13 + ((48271 * (day + 21)) mod 65537)/(65537/3) &! pseudo-rand(13,15)
+}
+$race_russianroad['ride_avgia'] = {
+	speed_points['ride_avgia'] += 11 + ((48271 * (day + 22)) mod 65537)/(65537/3) &! pseudo-rand(11,13)
+	a = 1 + ((48271 * (day + 23)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 6: rider_structure['ride_avgia'] -= 1
+}
+$race_finishline['ride_avgia'] = {
+	speed_points['ride_avgia'] += 17 + ((48271 * (day + 24)) mod 65537)/(65537/4) &! pseudo-rand(17,20)
+}
+
+$rider_name['ride_geralt'] = '게랄트'
+$rider_ava['ride_geralt'] = 'content/pic/mob/ride_geralt.png'
+rider_structure['ride_geralt'] = 5
+$rider_description['ride_geralt'] = '게랄트는 경주자라기보다 전사에 가깝다. 그녀는 경주마로 그다지 빠르진 않지만 엄청나게 강한 여성 오크를 사용한다. 그녀의 전차는 극도로 강화되어 있고 무게 중심도 높다.'
+$race_startline['ride_geralt'] = {
+	speed_points['ride_geralt'] += 11 + ((48271 * (day + 25)) mod 65537)/(65537/3) &! pseudo-rand(11,13)
+}
+$race_straight['ride_geralt'] = {
+	speed_points['ride_geralt'] += 12 + ((48271 * (day + 26)) mod 65537)/(65537/4) &! pseudo-rand(12,15)
+}
+$race_curve['ride_geralt'] = {
+	speed_points['ride_geralt'] += 10 + ((48271 * (day + 27)) mod 65537)/(65537/4) &! pseudo-rand(10,13)
+	a = 1 + ((48271 * (day + 28)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 6: rider_structure['ride_geralt'] -= 1
+}
+$race_bladestrings['ride_geralt'] = {
+	speed_points['ride_geralt'] += 9 + ((48271 * (day + 29)) mod 65537)/(65537/3) &! pseudo-rand(9,11)
+	a = 1 + ((48271 * (day + 30)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 7: rider_structure['ride_geralt'] = 0
+}
+$race_concrete['ride_geralt'] = {
+	speed_points['ride_geralt'] += 9 + ((48271 * (day + 31)) mod 65537)/(65537/3) &! pseudo-rand(9,11)
+	a = 1 + ((48271 * (day + 32)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 7: rider_structure['ride_geralt'] = 0
+}
+$race_dragonteeth['ride_geralt'] = {
+	speed_points['ride_geralt'] += 9 + ((48271 * (day + 33)) mod 65537)/(65537/3) &! pseudo-rand(9,11)
+}
+$race_russianroad['ride_geralt'] = {
+	speed_points['ride_geralt'] += 10 + ((48271 * (day + 34)) mod 65537)/(65537/3) &! pseudo-rand(10,12)
+	a = 1 + ((48271 * (day + 35)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 4: rider_structure['ride_geralt'] -= 1
+}
+$race_finishline['ride_geralt'] = {
+	speed_points['ride_geralt'] += 13 + ((48271 * (day + 36)) mod 65537)/(65537/4) &! pseudo-rand(13,16)
+}
+
+$rider_name['ride_ippolita'] = '히폴리타'
+$rider_ava['ride_ippolita'] = 'content/pic/mob/ride_ippolita.png'
+rider_structure['ride_ippolita'] = 3
+$rider_description['ride_ippolita'] = '히폴리타는 알아주는 경마광이다. 마차 무게와 속도를 균형있게 했지만, 사용하는 경마가 매우 잘 단련되어 있다.'
+$race_startline['ride_ippolita'] = {
+	speed_points['ride_ippolita'] += 14 + ((48271 * (day + 37)) mod 65537)/(65537/3) &! pseudo-rand(14,16)
+}
+$race_straight['ride_ippolita'] = {
+	speed_points['ride_ippolita'] += 15 + ((48271 * (day + 38)) mod 65537)/(65537/4) &! pseudo-rand(15,18)
+}
+$race_curve['ride_ippolita'] = {
+	speed_points['ride_ippolita'] += 12 + ((48271 * (day + 39)) mod 65537)/(65537/3) &! pseudo-rand(12,14)
+	a = 1 + ((48271 * (day + 40)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 8: rider_structure['ride_ippolita'] -= 1
+}
+$race_bladestrings['ride_ippolita'] = {
+	speed_points['ride_ippolita'] += 12 + ((48271 * (day + 41)) mod 65537)/(65537/3) &! pseudo-rand(12,14)
+	a = 1 + ((48271 * (day + 42)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 8: rider_structure['ride_ippolita'] = 0
+}
+$race_concrete['ride_ippolita'] = {
+	speed_points['ride_ippolita'] += 12 + ((48271 * (day + 43)) mod 65537)/(65537/3) &! pseudo-rand(12,14)
+	a = 1 + ((48271 * (day + 44)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 8: rider_structure['ride_ippolita'] = 0
+}
+$race_dragonteeth['ride_ippolita'] = {
+	speed_points['ride_ippolita'] += 12 + ((48271 * (day + 45)) mod 65537)/(65537/3) &! pseudo-rand(12,14)
+}
+$race_russianroad['ride_ippolita'] = {
+	speed_points['ride_ippolita'] += 10 + ((48271 * (day + 46)) mod 65537)/(65537/3) &! pseudo-rand(10,12)
+	a = 1 + ((48271 * (day + 47)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 6: rider_structure['ride_ippolita'] -= 1
+}
+$race_finishline['ride_ippolita'] = {
+	speed_points['ride_ippolita'] += 16 + ((48271 * (day + 48)) mod 65537)/(65537/4) &! pseudo-rand(16,19)
+}
+
+$rider_name['ride_jeevs'] = '지브스'
+$rider_ava['ride_jeevs'] = 'content/pic/mob/ride_jeeves.png'
+rider_structure['ride_jeevs'] = 4
+$rider_description['ride_jeevs'] = '지브스는 균형 잡히고 신중한 결정을 선호한다. 그의 노예는 잘 훈련되어 있지만, 경주에 특화된 타입은 아니다. 그의 전차는 잘 보호되어 있으면서도 지나치게 무겁진 않다.'
+$race_startline['ride_jeevs'] = {
+	speed_points['ride_jeevs'] += 10 + ((48271 * (day + 49)) mod 65537)/(65537/3) &! pseudo-rand(10,12)
+}
+$race_straight['ride_jeevs'] = {
+	speed_points['ride_jeevs'] += 11 + ((48271 * (day + 50)) mod 65537)/(65537/4) &! pseudo-rand(11,14)
+}
+$race_curve['ride_jeevs'] = {
+	speed_points['ride_jeevs'] += 8 + ((48271 * (day + 51)) mod 65537)/(65537/3) &! pseudo-rand(8,10)
+	a = 1 + ((48271 * (day + 52)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 9: rider_structure['ride_jeevs'] -= 1
+}
+$race_bladestrings['ride_jeevs'] = {
+	speed_points['ride_jeevs'] += 9 + ((48271 * (day + 53)) mod 65537)/(65537/3) &! pseudo-rand(9,11)
+	a = 1 + ((48271 * (day + 54)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 9: rider_structure['ride_jeevs'] = 0
+}
+$race_concrete['ride_jeevs'] = {
+	speed_points['ride_jeevs'] += 9 + ((48271 * (day + 55)) mod 65537)/(65537/3) &! pseudo-rand(9,11)
+	a = 1 + ((48271 * (day + 56)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 9: rider_structure['ride_jeevs'] = 0
+}
+$race_dragonteeth['ride_jeevs'] = {
+	speed_points['ride_jeevs'] += 9 + ((48271 * (day + 57)) mod 65537)/(65537/3) &! pseudo-rand(9,11)
+}
+$race_russianroad['ride_jeevs'] = {
+	speed_points['ride_jeevs'] += 7 + ((48271 * (day + 58)) mod 65537)/(65537/3) &! pseudo-rand(7,9)
+	a = 1 + ((48271 * (day + 59)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 7: rider_structure['ride_jeevs'] -= 1
+}
+$race_finishline['ride_jeevs'] = {
+	speed_points['ride_jeevs'] += 12 + ((48271 * (day + 60)) mod 65537)/(65537/4) &! pseudo-rand(12,15)
+}
+
+$rider_name['ride_morrigan'] = '모리건'
+$rider_ava['ride_morrigan'] = 'content/pic/mob/ride_morrigan.png'
+rider_structure['ride_morrigan'] = 1
+$rider_description['ride_morrigan'] = '모리건은 미친 듯한 속도를 사랑하며 언제나 과감한 위험을 감수한다. 그녀의 경주마는 평범한 편이지만, 그녀의 전차는 한계까지 최적화되어 있다.'
+$race_startline['ride_morrigan'] = {
+	speed_points['ride_morrigan'] += 16 + ((48271 * (day + 61)) mod 65537)/(65537/3) &! pseudo-rand(16,18)
+}
+$race_straight['ride_morrigan'] = {
+	speed_points['ride_morrigan'] += 17 + ((48271 * (day + 62)) mod 65537)/(65537/4) &! pseudo-rand(17,20)
+}
+$race_curve['ride_morrigan'] = {
+	speed_points['ride_morrigan'] += 14 + ((48271 * (day + 63)) mod 65537)/(65537/3) &! pseudo-rand(14,16)
+	a = 1 + ((48271 * (day + 64)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 8: rider_structure['ride_morrigan'] -= 1
+}
+$race_bladestrings['ride_morrigan'] = {
+	speed_points['ride_morrigan'] += 14 + ((48271 * (day + 65)) mod 65537)/(65537/3) &! pseudo-rand(14,16)
+	a = 1 + ((48271 * (day + 66)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 8: rider_structure['ride_morrigan'] = 0
+}
+$race_concrete['ride_morrigan'] = {
+	speed_points['ride_morrigan'] += 14 + ((48271 * (day + 67)) mod 65537)/(65537/3) &! pseudo-rand(14,16)
+	a = 1 + ((48271 * (day + 68)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 8: rider_structure['ride_morrigan'] = 0
+}
+$race_dragonteeth['ride_morrigan'] = {
+	speed_points['ride_morrigan'] += 14 + ((48271 * (day + 69)) mod 65537)/(65537/3) &! pseudo-rand(14,16)
+}
+$race_russianroad['ride_morrigan'] = {
+	speed_points['ride_morrigan'] += 8 + ((48271 * (day + 70)) mod 65537)/(65537/3) &! pseudo-rand(8,10)
+	a = 1 + ((48271 * (day + 71)) mod 65537)/(65537/10) &! pseudo-rand(1,10)
+	if a > 6: rider_structure['ride_morrigan'] -= 1
+}
+$race_finishline['ride_morrigan'] = {
+	speed_points['ride_morrigan'] += 18 + ((48271 * (day + 72)) mod 65537)/(65537/4) &! pseudo-rand(18,21)
+}
+
+------------ #chariots_base ------------

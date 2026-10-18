@@ -1,0 +1,137 @@
+# billing
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2850 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'billing': gs 'snk_room_bridge', 'guard', 'billing'
+! JO9 MOD END J9M2850
+!Billing at the end of each decade (called from main_screen, TODO: move to next_day? - ImperatorAugustus)
+
+rental_cost = 0
+if owner = 0 and demo_game = 0: rental_cost += estate_cost_main[$estate]
+if barn > 0: rental_cost += estate_cost_barn[$estate]
+if boudoir > 0: rental_cost += estate_cost_boudoir[$estate] &! zero for some estates
+if dungeon > 0: rental_cost += estate_cost_dungeon[$estate] &! zero for some estates
+if lab > 0: rental_cost += estate_cost_lab[$estate]
+if pen > 0: rental_cost += 10 + tentacle_size*5 &! rental cost scales up with size of fiend [0,4] from 10 to 30 - ImperatorAugustus
+
+food_bill = total_food_cost + autobuy_cost
+total_food_cost = 0
+autobuy_cost = 0
+
+master_wealth = master_wealth_target
+
+if master_wealth = 0: other_bills = 0
+if master_wealth = 1: other_bills = 20  + ((48271 * day) mod 65537)/(65537/11)  &! pseudo-rand(20,30)
+if master_wealth = 2: other_bills = 40  + ((48271 * day) mod 65537)/(65537/21)  &! pseudo-rand(40,60)
+if master_wealth = 3: other_bills = 80  + ((48271 * day) mod 65537)/(65537/41)  &! pseudo-rand(80,120)
+if master_wealth = 4: other_bills = 200 + ((48271 * day) mod 65537)/(65537/101) &! pseudo-rand(200,300)
+if master_wealth = 5: other_bills = 400 + ((48271 * day) mod 65537)/(65537/201) &! pseudo-rand(400,600)
+if master_wealth = 6: other_bills = 800 + ((48271 * day) mod 65537)/(65537/401) &! pseudo-rand(800,1200)
+if day = 10 or demo_game = 1: other_bills = 0
+
+other_bills += decade_cryo_costs
+decade_cryo_costs = 0
+
+revised_payment = food_bill + other_bills
+
+account_skill = 0
+
+$do_accounting = {
+	if dynslave_state = CONST_INT['slave_exist'] and dynslave['account_rule'] = 1 and dynslave['energy'] >= 0:
+! JO9 MOD START COG_DIRECT_6 | 2026-10-16_innate_learning_traits
+		dynslave_rate['intellect'] += func('jo9_learning_xp', (5), dynslave['jo9_learning_trait'], 'intellect')
+! JO9 MOD END COG_DIRECT_6
+! JO9 MOD START COG_DIRECT_7 | 2026-10-16_innate_learning_traits
+		dynslave_rate['secretary'] += func('jo9_learning_xp', (15), dynslave['jo9_learning_trait'], 'secretary')
+! JO9 MOD END COG_DIRECT_7
+		account_skill = max(account_skill, dynslave['secretary'] + dynslave['intellect'])
+		if dynslave['obedience'] < 0: account_skill += dynslave['obedience']
+		if dynslave['secretary_affinity'] > 0:
+			account_skill += 2
+			dynslave['pos_job'] = max(dynslave['pos_job'], 3)
+		elseif dynslave['secretary_affinity'] < 0:
+			account_skill -= 2
+			dynslave['neg_job'] = max(dynslave['neg_job'], 3)
+		end
+		dynamic $dynslave_energy_drop &! energy cost is deducted after nightly refresh, so accountants start the decade slightly fatigued in exchange for the benefits - ImperatorAugustus
+	end
+}
+
+dynamic $replace($do_accounting, 'dyn'+'slave', 'slave')
+dynamic $replace($do_accounting, 'dyn'+'slave', 'assistant')
+
+fine = 0
+discount = 0
+
+if account_skill ! 0:
+	percent = revised_payment/20
+	fine_chance = 2 + ((48271 * day) mod 65537)/(65537/9) &! pseudo-rand(2,10)
+	if account_skill < 4: fine_chance += 5
+	a = fine_chance - account_skill
+	if a > 0: fine = a*percent
+	discount_chance = 2 + ((48271 * (day + 1)) mod 65537)/(65537/9) &! pseudo-rand(2,10)
+	if account_skill > 7: discount_chance -= 5
+	a = account_skill - discount_chance
+	if a > 0: discount = a*percent
+else
+	master_moodlet['neg_accounts'] = 1 + master_cha
+end
+
+final_payment = rental_cost + revised_payment + fine - discount
+
+!barn_report_cow_profit = barn_milk_profit + barn_cream_profit
+barn_report_food_cost = barn_cow_food + barn_harpy_food + barn_pig_food
+barn_total_profit = barn_egg_profit + barn_pig_profit + decade_consume - barn_report_food_cost
+$barn_accounts = '<center>축사 장부</center><br>' + _
+'닭 소득: + <<barn_egg_profit>> $<br>' + _
+'돼지 소득: + <<barn_pig_profit>> $<br>' + _
+'돼지 식비: - <<barn_pig_food>> $<br>' + _
+'소 식비: - <<barn_cow_food>> $<br>' + _
+'닭 식비: - <<barn_harpy_food>> $<br>' + _
+'--------------------------<br>' + _
+' 절약 식비: <<decade_consume>> $<br>' + _
+' 이윤 총계: <<barn_total_profit>> $'
+barn_cow_food = 0
+barn_harpy_food = 0
+barn_pig_food = 0
+barn_milk_profit = 0
+barn_cream_profit = 0
+barn_egg_profit = 0
+barn_pig_profit = 0
+
+$bill_message = '<center>지난 주기 지출내역</center><br>' + _
+'시설비: - <<rental_cost>> $<br>' + _
+'식품비: - <<food_bill>> $<br>' + _
+'부대비: - <<other_bills>> $<br>' + _
+'회계 이익: + <<discount>> $<br>' + _
+'회계 손실: - <<fine>> $<br>' + _
+'--------------------------<br>' + _
+'         총계: <<final_payment>> $'
+
+
+tmp_liters_milk = decade_milk / 10
+tmp_part_liters_milk = decade_milk - (tmp_liters_milk * 10)
+tmp_liters_cream = decade_cream  / 10
+tmp_part_liters_cream = decade_cream  - (tmp_liters_cream * 10)
+tmp_part_liters_cream = (tmp_part_liters_cream * 10) / 10
+
+if decade_milk + decade_cream + decade_eggs + decade_semen + decade_mince > 0:
+$produce_msg = '<center>음식 생산량</center><br>'
+	if decade_eggs > 0: $produce_msg += '달걀: <<decade_eggs>> 개<br>'
+	if decade_milk > 0: $produce_msg = += '우유: <<decade_milk/5>> 병 (<<tmp_liters_milk>>.<<tmp_part_liters_milk>> litres)<br>'
+	if decade_cream > 0: $produce_msg += '크림: <<decade_cream/5>> 병 (<<tmp_liters_cream>>.<<tmp_part_liters_cream>> litres)<br>'
+	if decade_mince > 0: $produce_msg += '다진육: <<decade_mince>><br>안심살: <<decade_meat>><br>처녀육: <<decade_virgin>>'
+	if decade_semen > 0: $produce_msg += '산란액: <<decade_semen>> 병<br>'
+else
+	$produce_msg = ''
+end
+
+decade_eggs = 0
+decade_milk = 0
+decade_cream = 0
+decade_semen = 0
+decade_consume = 0
+decade_mince = 0
+decade_meat = 0
+decade_virgin = 0
+
+------------ billing ------------

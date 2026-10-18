@@ -1,0 +1,25 @@
+# safari.info
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2948 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'safari.info': gs 'snk_room_bridge', 'guard', 'safari.info'
+! JO9 MOD END J9M2948
+IF safari.play >= 60:
+ safari.res = rand(1,6)
+ sparks.res = 350
+ IF safari.res = 1: $safari.res_txt = ' 숲 쪽으로.'
+ IF safari.res = 2: $safari.res_txt = ' 숲 가장자리에 있는 낡고 허름한 작은 집 쪽으로.'
+ IF safari.res = 3: $safari.res_txt = '. 하지만 그녀의 모든 시도는 실패로 끝난다.'
+ IF safari.res = 4: $safari.res_txt = ' 비명을 지르며 자비를 빈다.'
+ IF safari.res = 5: $safari.res_txt = '. 그러다 눈치채지 못한 채 비틀거리며 땅에 쓰러진다.'
+ IF safari.res = 6: $safari.res_txt = ' 그리고 우연히 덤불에 잠시 걸려 버린다.'
+ IF slave_state = CONST_INT['slave_exist']:
+  sparks += sparks.res
+  safari.slave = -1
+  $safari.win_txt = ' 성공적으로 붙잡은 보상으로 참가비인 <<sparks.res>> 스파크를 돌려받는다'
+ ELSEIF slave_state = CONST_INT['no_slave']:
+  sparks += sparks.res
+  safari.slave = -1
+  $safari.win_txt = ' 성공적으로 붙잡은 보상으로 참가비인 <<sparks.res>> 스파크를 돌려받는다'
+ END
+END
+------------ safari.info ------------

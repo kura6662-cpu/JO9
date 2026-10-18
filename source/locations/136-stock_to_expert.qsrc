@@ -1,0 +1,10 @@
+# stock_to_expert
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2883 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'stock_to_expert': gs 'snk_room_bridge', 'guard', 'stock_to_expert'
+! JO9 MOD END J9M2883
+!expert stashes a matched slave for a master
+
+dynamic $swap_slave_instances, 'stock', 'selected'
+
+------------ stock_to_expert ------------

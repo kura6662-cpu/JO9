@@ -1,0 +1,15 @@
+# раскладка_бой
+! Readable view; authoritative fields are in ../locations.json.
+ui_style = 2
+! JO9_SINGLE_GRIMDARK_UI_20261014
+! JO9 MOD START J9M2898 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'раскладка_бой': gs 'snk_room_bridge', 'guard', 'раскладка_бой'
+! JO9 MOD END J9M2898
+!FIGHT UI
+if ui_style = 1:$backimage = 'content/pic/ui/old/bg_fight_old.png'
+if ui_style = 2:$backimage = 'content/pic/ui/grimdark/bg_fight.png'
+if ui_style = 0:$backimage = 'content/pic/ui/classic/bg_fight.png'
+
+
+MSG_X = 350
+------------ раскладка_бой ------------

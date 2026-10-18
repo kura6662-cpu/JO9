@@ -1,0 +1,529 @@
+# $addon_custom_data
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1254 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$addon_custom_data': gs 'snk_room_bridge', 'guard', '$addon_custom_data'
+! JO9 MOD END J9M1254
+!called from main_menu, Start, and slave_stat
+
+if $args[0] = 'toggle':
+	if use_custom_data ! 1:
+		inclib 'jack_custom.qsp'
+		gs '#custom_slave_base'
+		gs 'custom_slave_id'
+		freelib
+		gs '$addon_custom_data', 'update_active'
+		use_custom_data = 1
+	else
+		use_custom_data = 0
+		gs '$addon_custom_data', 'purge_slave_base'
+		gs '$addon', 'update', 'full'
+		gs '$addon_custom_data', 'update_active'
+		gs '$addon_custom_data'
+	end
+end
+
+if $args[0] = 'update_active':
+
+	if assistant_state = CONST_INT['slave_exist'] and assistant_type > 0:
+		gs '$addon_custom_data', 'update_current', 'assistant'
+	end
+	if slave_state = CONST_INT['slave_exist'] and slave_type > 0:
+		gs '$addon_custom_data', 'update_current', 'slave'
+	end
+	if prisoner_state = CONST_INT['slave_exist'] and prisoner_type > 0:
+		gs '$addon_custom_data', 'update_current', 'prisoner'
+	end
+	if iced_1_state = CONST_INT['slave_exist'] and iced_1_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_1'
+	end
+	if iced_2_state = CONST_INT['slave_exist'] and iced_2_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_2'
+	end
+	if iced_3_state = CONST_INT['slave_exist'] and iced_3_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_3'
+	end
+	if iced_4_state = CONST_INT['slave_exist'] and iced_4_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_4'
+	end
+	if iced_5_state = CONST_INT['slave_exist'] and iced_5_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_5'
+	end
+	if iced_6_state = CONST_INT['slave_exist'] and iced_6_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_6'
+	end
+	if iced_7_state = CONST_INT['slave_exist'] and iced_7_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_7'
+	end
+	if iced_8_state = CONST_INT['slave_exist'] and iced_8_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_8'
+	end
+	if iced_9_state = CONST_INT['slave_exist'] and iced_9_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_9'
+	end
+	if iced_10_state = CONST_INT['slave_exist'] and iced_10_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_10'
+	end
+	if iced_11_state = CONST_INT['slave_exist'] and iced_11_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_11'
+	end
+	if iced_12_state = CONST_INT['slave_exist'] and iced_12_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_12'
+	end
+	if iced_13_state = CONST_INT['slave_exist'] and iced_13_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_13'
+	end
+	if iced_14_state = CONST_INT['slave_exist'] and iced_14_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_14'
+	end
+	if iced_15_state = CONST_INT['slave_exist'] and iced_15_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_15'
+	end
+	if iced_16_state = CONST_INT['slave_exist'] and iced_16_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_16'
+	end
+	if iced_17_state = CONST_INT['slave_exist'] and iced_17_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_17'
+	end
+	if iced_18_state = CONST_INT['slave_exist'] and iced_18_type > 0:
+		gs '$addon_custom_data', 'update_current', 'iced_18'
+	end
+	if cow_state = CONST_INT['slave_exist'] and cow_type > 0:
+		gs '$addon_custom_data', 'update_current', 'cow'
+	end
+	if farmhand_state = CONST_INT['slave_exist'] and farmhand_type > 0:
+		gs '$addon_custom_data', 'update_current', 'farmhand'
+	end
+	if harpy_state = CONST_INT['slave_exist'] and harpy_type > 0:
+		gs '$addon_custom_data', 'update_current', 'harpy'
+	end
+	if pig_state = CONST_INT['slave_exist'] and pig_type > 0:
+		gs '$addon_custom_data', 'update_current', 'pig'
+	end
+	! checks for cow, farmhand, harpy, pig were incorrect (e.g., cow_state > 0 instead of cow_type) - ImperatorAugustus
+
+end
+
+
+if $args[0] = 'update_current':
+
+	killvar 'temp_current'
+	killvar 'temp_type'
+
+	if $args[1] = 'assistant':
+		temp_type = assistant_type
+		if $seed_name[temp_type] ! '': $assistant_name = $seed_name[temp_type]
+		copyarr 'temp_current','assistant'
+		copyarr '$temp_current','$assistant'
+	end
+	if $args[1] = 'slave':
+		temp_type = slave_type
+		if $seed_name[temp_type] ! '': $slave_name = $seed_name[temp_type]
+		copyarr 'temp_current','slave'
+		copyarr '$temp_current','$slave'
+	end
+	if $args[1] = 'prisoner':
+		temp_type = prisoner_type
+		if $seed_name[temp_type] ! '': $prisoner_name = $seed_name[temp_type]
+		copyarr 'temp_current','prisoner'
+		copyarr '$temp_current','$prisoner'
+	end
+	if $args[1] = 'iced_1':
+		temp_type = iced_1_type
+		if $seed_name[temp_type] ! '': $iced_1_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_1'
+		copyarr '$temp_current','$iced_1'
+	end
+	if $args[1] = 'iced_2':
+		temp_type = iced_2_type
+		if $seed_name[temp_type] ! '': $iced_2_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_2'
+		copyarr '$temp_current','$iced_2'
+	end
+	if $args[1] = 'iced_3':
+		temp_type = iced_3_type
+		if $seed_name[temp_type] ! '': $iced_3_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_3'
+		copyarr '$temp_current','$iced_3'
+	end
+	if $args[1] = 'iced_4':
+		temp_type = iced_4_type
+		if $seed_name[temp_type] ! '': $iced_4_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_4'
+		copyarr '$temp_current','$iced_4'
+	end
+	if $args[1] = 'iced_5':
+		temp_type = iced_5_type
+		if $seed_name[temp_type] ! '': $iced_5_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_5'
+		copyarr '$temp_current','$iced_5'
+	end
+	if $args[1] = 'iced_6':
+		temp_type = iced_6_type
+		if $seed_name[temp_type] ! '': $iced_6_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_6'
+		copyarr '$temp_current','$iced_6'
+	end
+	if $args[1] = 'iced_7':
+		temp_type = iced_7_type
+		if $seed_name[temp_type] ! '': $iced_7_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_7'
+		copyarr '$temp_current','$iced_7'
+	end
+	if $args[1] = 'iced_8':
+		temp_type = iced_8_type
+		if $seed_name[temp_type] ! '': $iced_8_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_8'
+		copyarr '$temp_current','$iced_8'
+	end
+	if $args[1] = 'iced_9':
+		temp_type = iced_9_type
+		if $seed_name[temp_type] ! '': $iced_9_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_9'
+		copyarr '$temp_current','$iced_9'
+	end
+	if $args[1] = 'iced_10':
+		temp_type = iced_10_type
+		if $seed_name[temp_type] ! '': $iced_10_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_10'
+		copyarr '$temp_current','$iced_10'
+	end
+	if $args[1] = 'iced_11':
+		temp_type = iced_11_type
+		if $seed_name[temp_type] ! '': $iced_11_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_11'
+		copyarr '$temp_current','$iced_11'
+	end
+	if $args[1] = 'iced_12':
+		temp_type = iced_12_type
+		if $seed_name[temp_type] ! '': $iced_12_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_12'
+		copyarr '$temp_current','$iced_12'
+	end
+	if $args[1] = 'iced_13':
+		temp_type = iced_13_type
+		if $seed_name[temp_type] ! '': $iced_13_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_13'
+		copyarr '$temp_current','$iced_13'
+	end
+	if $args[1] = 'iced_14':
+		temp_type = iced_14_type
+		if $seed_name[temp_type] ! '': $iced_14_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_14'
+		copyarr '$temp_current','$iced_14'
+	end
+	if $args[1] = 'iced_15':
+		temp_type = iced_15_type
+		if $seed_name[temp_type] ! '': $iced_15_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_15'
+		copyarr '$temp_current','$iced_15'
+	end
+	if $args[1] = 'iced_16':
+		temp_type = iced_16_type
+		if $seed_name[temp_type] ! '': $iced_16_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_16'
+		copyarr '$temp_current','$iced_16'
+	end
+	if $args[1] = 'iced_17':
+		temp_type = iced_17_type
+		if $seed_name[temp_type] ! '': $iced_17_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_17'
+		copyarr '$temp_current','$iced_17'
+	end
+	if $args[1] = 'iced_18':
+		temp_type = iced_18_type
+		if $seed_name[temp_type] ! '': $iced_18_name = $seed_name[temp_type]
+		copyarr 'temp_current','iced_18'
+		copyarr '$temp_current','$iced_18'
+	end
+	if $args[1] = 'cow':
+		temp_type = cow_type
+		if $seed_name[temp_type] ! '': $cow_name = $seed_name[temp_type]
+		copyarr 'temp_current','cow'
+		copyarr '$temp_current','$cow'
+	end
+	if $args[1] = 'farmhand':
+		temp_type = farmhand_type
+		if $seed_name[temp_type] ! '': $farmhand_name = $seed_name[temp_type]
+		copyarr 'temp_current','farmhand'
+		copyarr '$temp_current','$farmhand'
+	end
+	if $args[1] = 'harpy':
+		temp_type = harpy_type
+		if $seed_name[temp_type] ! '': $harpy_name = $seed_name[temp_type]
+		copyarr 'temp_current','harpy'
+		copyarr '$temp_current','$harpy'
+	end
+	if $args[1] = 'pig':
+		temp_type = pig_type
+		if $seed_name[temp_type] ! '': $pig_name = $seed_name[temp_type]
+		copyarr 'temp_current','pig'
+		copyarr '$temp_current','$pig'
+	end
+
+	temp_current["age"] = seed_age[temp_type]
+
+	if temp_current["age"] = CONST_INT['loli_age']: temp_current['fertility'] = -2
+
+	temp_current["boobs"] = seed_boobs[temp_type]
+	$temp_current['boobs_img'] = $seed_boobs_img[temp_type]
+	$temp_current['pussy_img'] = $seed_pussy_img[temp_type]
+
+	$temp_current['fullimage'] = $fullimage[temp_type]
+	$temp_current['ava'] = $seed_ava[temp_type]
+	$temp_current['ava_gray'] = $seed_ava_gray[temp_type]
+	$temp_current['ava_clear'] = $seed_ava_clear[temp_type]
+
+	if $args[1] = 'assistant':
+		copyarr 'assistant', 'temp_current'
+		copyarr '$assistant', '$temp_current'
+	end
+	if $args[1] = 'slave':
+		copyarr 'slave', 'temp_current'
+		copyarr '$slave', '$temp_current'
+	end
+	if $args[1] = 'prisoner':
+		copyarr 'prisoner', 'temp_current'
+		copyarr '$prisoner', '$temp_current'
+	end
+	if $args[1] = 'iced_1':
+		copyarr 'iced_1', 'temp_current'
+		copyarr '$iced_1', '$temp_current'
+	end
+	if $args[1] = 'iced_2':
+		copyarr 'iced_2', 'temp_current'
+		copyarr '$iced_2', '$temp_current'
+	end
+	if $args[1] = 'iced_3':
+		copyarr 'iced_3', 'temp_current'
+		copyarr '$iced_3', '$temp_current'
+	end
+	if $args[1] = 'iced_4':
+		copyarr 'iced_4', 'temp_current'
+		copyarr '$iced_4', '$temp_current'
+	end
+	if $args[1] = 'iced_5':
+		copyarr 'iced_5', 'temp_current'
+		copyarr '$iced_5', '$temp_current'
+	end
+	if $args[1] = 'iced_6':
+		copyarr 'iced_6', 'temp_current'
+		copyarr '$iced_6', '$temp_current'
+	end
+	if $args[1] = 'iced_7':
+		copyarr 'iced_7', 'temp_current'
+		copyarr '$iced_7', '$temp_current'
+	end
+	if $args[1] = 'iced_8':
+		copyarr 'iced_8', 'temp_current'
+		copyarr '$iced_8', '$temp_current'
+	end
+	if $args[1] = 'iced_9':
+		copyarr 'iced_9', 'temp_current'
+		copyarr '$iced_9', '$temp_current'
+	end
+	if $args[1] = 'iced_10':
+		copyarr 'iced_10', 'temp_current'
+		copyarr '$iced_10', '$temp_current'
+	end
+	if $args[1] = 'iced_11':
+		copyarr 'iced_11', 'temp_current'
+		copyarr '$iced_11', '$temp_current'
+	end
+	if $args[1] = 'iced_12':
+		copyarr 'iced_12', 'temp_current'
+		copyarr '$iced_12', '$temp_current'
+	end
+	if $args[1] = 'iced_13':
+		copyarr 'iced_13', 'temp_current'
+		copyarr '$iced_13', '$temp_current'
+	end
+	if $args[1] = 'iced_14':
+		copyarr 'iced_14', 'temp_current'
+		copyarr '$iced_14', '$temp_current'
+	end
+	if $args[1] = 'iced_15':
+		copyarr 'iced_15', 'temp_current'
+		copyarr '$iced_15', '$temp_current'
+	end
+	if $args[1] = 'iced_16':
+		copyarr 'iced_16', 'temp_current'
+		copyarr '$iced_16', '$temp_current'
+	end
+	if $args[1] = 'iced_17':
+		copyarr 'iced_17', 'temp_current'
+		copyarr '$iced_17', '$temp_current'
+	end
+	if $args[1] = 'iced_18':
+		copyarr 'iced_18', 'temp_current'
+		copyarr '$iced_18', '$temp_current'
+	end
+	if $args[1] = 'cow':
+		copyarr 'cow', 'temp_current'
+		copyarr '$cow', '$temp_current'
+	end
+	if $args[1] = 'farmhand':
+		copyarr 'farmhand', 'temp_current'
+		copyarr '$farmhand', '$temp_current'
+	end
+	if $args[1] = 'harpy':
+		copyarr 'harpy', 'temp_current'
+		copyarr '$harpy', '$temp_current'
+	end
+	if $args[1] = 'pig':
+		copyarr 'pig', 'temp_current'
+		copyarr '$pig', '$temp_current'
+	end
+
+	killvar 'temp_current'
+	killvar 'temp_type'
+
+end
+
+
+if $args[0] = 'purge_slave_base':
+
+	killvar '$fullimage'
+	killvar '$fullmade'
+	killvar '$fullmistress'
+	killvar '$fullsecretary'
+	killvar '$seed_ava'
+	killvar '$seed_ava_gray'
+	killvar '$seed_ava_clear'
+	killvar 'seed_age'
+	killvar 'seed_boobs'
+	killvar '$seed_boobs_img'
+	killvar '$seed_pussy_img'
+	killvar '$seed_psy_basic'
+	killvar '$seed_world'
+	killvar 'seed_hair'
+	killvar '$bathing_alone'
+	killvar '$percussion'
+	killvar '$cleaning'
+	killvar '$cooking'
+	killvar '$dance'
+	killvar '$desertag'
+	killvar '$enchanting'
+	killvar '$fighting'
+	killvar '$woodwind'
+	killvar '$strings'
+	killvar '$gymnastics'
+	killvar '$lesbo_bath'
+	killvar '$nurse'
+	killvar '$piano'
+	killvar '$rest'
+	killvar '$secretary'
+	killvar '$student'
+	killvar '$painting'
+	killvar '$singing'
+	killvar '$washing'
+	killvar '$analfisting'
+	killvar '$analsex'
+	killvar '$bondage'
+	killvar '$bdsm'
+	killvar '$bj'
+	killvar '$bukkake'
+	killvar '$cowSK'  
+	killvar '$disgrace'
+	killvar '$defloration'
+	killvar '$deprivation_suit'
+	killvar '$dog_sex'
+	killvar '$dildo'
+	killvar '$dt'
+	killvar '$enema'
+	killvar '$exhibit'
+	killvar '$fisting'
+	killvar '$fj'
+	killvar '$gangbang'
+	killvar '$hj'
+	killvar '$horse_sex'
+	killvar '$hug'
+	killvar '$kiss'
+	killvar '$kopro'
+	killvar '$kuni'
+	killvar '$lesbian'
+	killvar '$masturbation'
+	killvar '$paizuri'
+	killvar '$petplay'
+	killvar '$petting'
+	killvar '$pig_sex'
+	killvar '$ponyplay'
+	killvar '$rimming'
+	killvar '$seduce'
+	killvar '$sex_vaginal'
+	killvar '$spider'
+	killvar '$tongue'
+	killvar '$tentacles'
+	killvar '$spider'
+	killvar '$urine_drink'
+	killvar '$branding'
+	killvar '$cane'
+	killvar '$ear_grab'
+	killvar '$ironmaiden'
+	killvar '$fireswing'
+	killvar '$fist_hit'
+	killvar '$leash'
+	killvar '$needle'
+	killvar '$pins'
+	killvar '$slap'
+	killvar '$spank'
+	killvar '$strappado'
+	killvar '$verminpit'
+	killvar '$water'
+	killvar '$wax'
+	killvar '$woodenhorse'
+	killvar '$whip'
+	killvar '$impregnation'
+	killvar '$milking'
+
+end
+
+
+if $args[0] = 'menu_form' or $args[0] = 'city_menu_form' and args[1] ! 0 and args[2] ! 0:
+
+	$setting_display += {<br><div id="under_gray">{ { { 커스텀 데이터 사용 } } }<br></div>}
+	if use_custom_data ! 1:
+		$setting_display += '<br><div id="under">아니오<br><div id = "clear"><a href = ''EXEC: gs "$addon_custom_data", "toggle" & gt "<<$args[0]>>"''><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$setting_display += '<br><div id="under">예<br><div id = "clear"><a href = ''EXEC: gs "$addon_custom_data", "toggle" & gt "<<$args[0]>>"''><img src = "content\pic\clear.png"></a></div></div>'
+	end
+
+	if loli_last < 199: $setting_display_r += '<br><div id="under_gray">{ 미성숙 분류 미사용 ID: <<loli_last+1>> - 199 }<br><div id = "clear"><a href = ''EXEC: temp_slave_id = INPUT ("노예 ID 입력 (1 - <<loli_last>>)!") & if temp_slave_id > 0 and temp_slave_id <= loli_last: gs "$addon_custom_data", "display_slave_id", temp_slave_id, "<<$args[0]>>", <<args[1]>>''><img src = "content\pic\clear.png"></a></div></div>'
+	if young_last < 499: $setting_display_r += '<br><div id="under_gray">{ 젊은 분류 미사용 ID: <<young_last+1>> - 499 }<br><div id = "clear"><a href = ''EXEC: temp_slave_id = INPUT ("노예 ID 입력 (201 - <<young_last>>)!") & if temp_slave_id > 200 and temp_slave_id <= young_last: gs "$addon_custom_data", "display_slave_id", temp_slave_id, "<<$args[0]>>", <<args[1]>>''><img src = "content\pic\clear.png"></a></div></div>'
+	if milf_last < 699: $setting_display_r += '<br><div id="under_gray">{ 밀프 분류 미사용 ID: <<milf_last+1>> - 699 }<br><div id = "clear"><a href = ''EXEC: temp_slave_id = INPUT ("노예 ID 입력 (501 - <<milf_last>>)!") & if temp_slave_id > 500 and temp_slave_id <= milf_last: gs "$addon_custom_data", "display_slave_id", temp_slave_id, "<<$args[0]>>", <<args[1]>>''><img src = "content\pic\clear.png"></a></div></div>'
+	killvar 'temp_slave_id'
+
+	if $args[0] = 'city_menu_form':
+		$setting_display_c += '<br><div id="under">이전 <br><div id = "clear"><a href = ''EXEC: city_form = <<args[2]>> & gt "<<$args[0]>>"''><img src = "content\pic\clear.png"></a></div></div>'
+		if args[3] ! 0:
+			$setting_display_c2 += '<br><div id="under">다음 <br><div id = "clear"><a href = ''EXEC: city_form = <<args[3]>> & gt "<<$args[0]>>"''><img src = "content\pic\clear.png"></a></div></div>'
+		else
+			$setting_display_c2 += {<br><div id="under_gray"> 다음 <br></div>}
+		end
+	else
+		$setting_display_c += '<br><div id="under">이전 <br><div id = "clear"><a href = ''EXEC: <<$args[0]>> = <<args[2]>> & gt "<<$args[0]>>"''><img src = "content\pic\clear.png"></a></div></div>'
+		if args[3] ! 0:
+			$setting_display_c2 += '<br><div id="under">다음 <br><div id = "clear"><a href = ''EXEC: <<$args[0]>> = <<args[3]>> & gt "<<$args[0]>>"''><img src = "content\pic\clear.png"></a></div></div>'
+		else
+			$setting_display_c2 += {<br><div id="under_gray"> 다음 <br></div>}
+		end
+	end
+
+end
+
+
+if $args[0] = 'display_slave_id':
+
+	cls
+	gs '_layout'
+! JO9 MOD START J9M1253 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$fullimage[args[1]]>>.png"></div>')
+! JO9 MOD END J9M1253
+	if $args[4] ! '':
+		*p '<div id = "close_far"><a href = "EXEC: <<$args[2]>> = <<args[3]>> & gt ''<<$args[4]>>''"><img src = "content\pic\buttons\close_button.png"></a></div>'
+	else
+		*p '<div id = "close_far"><a href = "EXEC: <<$args[2]>> = <<args[3]>> & gt ''<<$args[2]>>''"><img src = "content\pic\buttons\close_button.png"></a></div>'
+	end
+
+end
+
+------------ $addon_custom_data ------------

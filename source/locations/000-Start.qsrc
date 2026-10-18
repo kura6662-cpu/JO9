@@ -1,0 +1,31 @@
+# Start
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2806 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'Start': gs 'snk_room_bridge', 'guard', 'Start'
+! JO9 MOD END J9M2806
+! EVERYTHING BELOW SHOULD BE REPLICATED IN start_refresh
+
+killall &! THIS DELETES EVERY VARIABLE IN THE GAME
+
+usehtml = 1
+debug = 0
+sound_on = 1
+music_volume = 100
+sound_volume = 100
+
+SHOWOBJS 0
+SHOWACTS 0
+SHOWINPUT 0
+SHOWSTAT 0
+
+INTEGRATED_ACTIONS = 1
+HIDE_SCROLL_ARROWS = 1
+DISABLESCROLL = 1
+
+$FNAME = 'Sandoll 미생'
+
+! END OF REPLICATED SECTION FOR start_refresh
+! THERE SHOULD BE NOTHING BELOW EXCEPT gt 'main_menu'
+gt 'main_menu'
+
+------------ Start ------------

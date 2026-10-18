@@ -1,0 +1,117 @@
+# $objsel
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2825 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$objsel': gs 'snk_room_bridge', 'guard', '$objsel'
+! JO9 MOD END J9M2825
+!Location handler objects
+
+if $selobj = '@':
+	!
+	!if slave_fights_back = 1:
+	!	gt 'slave_fights_back'
+	!end
+	unsel
+	txt_count = arrsize('$text') - 1
+	if txt < txt_count:
+		txt += 1
+	else
+		delobj '@'
+		if $msg_txt ! '' and txt_count = txt:
+			msg '<<$msg_txt>>'
+			$msg_txt = ''
+		end
+		killvar '$text'
+		if exam_in_progress = 1:
+			gt 'demo_menu_form'
+		elseif is_home ! 1:
+			gt 'city_menu_form'
+		else
+			gt 'menu_form'
+		end
+	end
+	gt $curloc
+end
+
+
+if $selobj = '<img src = "content\pic\buttons\forward_button.png">':
+	unsel
+	killobj
+	if sound_on = 1: play 'content/snd/page_right.wav', sound_volume
+	txt_count = arrsize('$text') - 1
+	if txt < txt_count:
+		txt += 1
+	else
+		if $msg_txt ! '' and txt_count = txt:
+			msg '<<$msg_txt>>'
+			$msg_txt = ''
+		end
+		killvar '$text'
+		if $return_lock ! '':
+			gt $return_lock
+		elseif exam_in_progress = 1:
+			gt 'demo_menu_form'
+		elseif is_home ! 1:
+			gt 'city_menu_form'
+		else
+			gt 'menu_form'
+		end
+	end
+	gt $curloc
+end
+
+if $selobj = '<img src = "content\pic\buttons\back_button.png">':
+	unsel
+	killobj
+	if sound_on = 1: play 'content/snd/page_left.wav', sound_volume
+	txt -= 1
+	gt $curloc
+end
+
+if $selobj = '<img src = "content\pic\buttons\demo_forward_button.png">':
+	unsel
+	killobj
+	if sound_on = 1: play 'content/snd/page_right.wav', sound_volume
+	txt_count = arrsize('$text') - 1
+	if txt < txt_count:
+		txt += 1
+	else
+		if $msg_txt ! '' and txt_count = txt:
+			msg '<<$msg_txt>>'
+			$msg_txt = ''
+		end
+		killvar '$text'
+		gt 'demo_menu_form'
+	end
+	gt $curloc
+end
+
+if $selobj = '<img src = "content\pic\buttons\demo_back_button.png">':
+	unsel
+	killobj
+	if sound_on = 1: play 'content/snd/page_left.wav', sound_volume
+	txt -= 1
+	gt $curloc
+end
+
+if $selobj = '<img src = "content\pic\buttons\demo_forward.png">':
+	unsel
+	killobj
+	if sound_on = 1: play 'content/snd/page_right.wav', sound_volume
+	txt_count = arrsize('$text') - 1
+	if txt < txt_count:
+		txt += 1
+	else
+		killvar '$text'
+		lecture = 100
+		txt = 1
+	end
+	gt $curloc
+end
+
+if $selobj = '<img src = "content\pic\buttons\auk_fwrd.png">':
+	unsel
+	killobj
+	gt 'slave_auction_pass'
+end
+
+------------ $objsel ------------

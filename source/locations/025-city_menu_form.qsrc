@@ -1,0 +1,1163 @@
+# city_menu_form
+! Readable view; authoritative fields are in ../locations.json.
+ui_style = 2
+! JO9_SINGLE_GRIMDARK_UI_20261014
+! JO9 MOD START J9M0005 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'city_menu_form': gs 'snk_room_bridge', 'guard', 'city_menu_form'
+! JO9 MOD END J9M0005
+!return to tutorial if the player somehow escapes
+if exam_in_progress = 1: gt 'demo_menu_form'
+gs '$newloc' &! ensure all stats are updated before displaying them
+
+dynamic $slave_pass_out
+dynamic $prisoner_pass_out
+dynamic $assistant_pass_out
+dynamic $cow_pass_out
+dynamic $master_pass_out &! master should be last
+
+$text_display = ''
+$setting_display = ''
+$setting_display_c = ''
+$setting_display_c2 = ''
+$setting_display_r = ''
+$return_lock  = 'city_menu_form'
+sp_txt = 0
+get_girl = 0
+is_home = 0
+!обнуление
+buyer_from_house = 0
+
+
+!Energy loss will occur with the regular menu now instead of only with the quick travel buttons - crushboss
+if city_form = 0:
+	$place = 'city'
+	func('$menu', 'spacer', 1)
+
+	func('$menu', '===BEGIN===', 'column_0')
+
+	func('$menu', 'exec_options', $menu_item_town, 'city_form = 1 & $quick_move_action = "go" & gt "sjm_UI_UIadds"', '백색 도시')
+	func('$menu', 'exec_options', $menu_item_Necropolis, 'city_form = 5 & $quick_move_action = "go" & gt "sjm_UI_UIadds"', '네크로폴리스')
+	func('$menu', 'exec_options', $menu_item_Bull, 'city_form = 2 & $quick_move_action = "go" & gt "sjm_UI_UIadds"', '황소 구역')
+	func('$menu', 'exec_options', $menu_item_Serpentine, 'city_form = 3 & $quick_move_action = "go" & gt "sjm_UI_UIadds"', '뱀자리 구역')
+
+	func('$menu', 'exec_options', $menu_item_Outcasts, 'city_form = 4 & $quick_move_action = "go" & gt "sjm_UI_UIadds"', '추방자 구역')
+	FUNC('$menu', 'exec_options', $menu_item_eastkvartal, 'city_form = 121 & $quick_move_action = "go" & gt "sjm_UI_UIadds"', '동부 구역')
+	FUNC('$menu', 'exec_options', $menu_item_redlight, 'city_form = 117 & $quick_move_action = "go" & gt "sjm_UI_UIadds"', '홍등가')
+	FUNC('$menu', 'exec_options', $menu_item_centralkvartal, 'city_form = 118 & $quick_move_action = "go" & gt "sjm_UI_UIadds"', '중앙 구역')
+	!func('$menu', 'exec_options', $menu_item_Slums, 'city_form = 6 & $quick_move_action = "go" & gt "sjm_UI_UIadds"', 'The Slums')
+	func('$menu', 'exec_options', $menu_item_city_gate, 'city_form = 61 & $quick_move_action = "go" & gt "sjm_UI_UIadds"', '도시 관문으로')
+	func('$menu', '===END===')
+end
+
+
+
+if city_form = 1:
+	city_district = 1
+	$place = 'white_city'
+	func('$menu', 'spacer', 1)
+
+	func('$menu', '===BEGIN===', 'column_0')
+
+	func('$menu', 'city_form', $menu_item_ResidencesWhiteTown, menu_ResidencesWhiteTown, '팔라틴 저택가')
+	func('$menu', 'city_form', $menu_item_square, menu_square, '교역 광장')
+	func('$menu', 'interaction_city', $menu_item_guild, menu_guild, '노예상 길드')
+	func('$menu', 'interaction_city', $menu_item_Colosseum, menu_Colosseum, '콜로세움')
+	func('$menu', 'interaction_city', $menu_item_Central, menu_Central, '중앙 포럼')
+	func('$menu', 'interaction_city', $menu_item_Vatican, menu_Vatican, '바티칸')
+	func('$menu', 'city_form', $menu_item_Leavewhite, menu_Leavewhite, '구역을 떠난다')
+
+	func('$menu', '===END===')
+end
+
+if city_form = 11:
+	$place = 'market'
+
+	func('$menu', '===BEGIN===', 'column_0')
+
+	if slave_state = CONST_INT['no_slave']:
+		func('$menu', 'goto_city', $menu_item_marketbuy, menu_market, 'txt = 1', 'slave_auction_buy', '노예 시장')
+	elseif slave_state ! CONST_INT['no_slave']:
+		func('$menu', 'goto_city', $menu_item_marketsell, menu_market, 'txt = 1', 'slave_auction_sell', '노예 시장')
+	else
+		func('$menu', 'city_form', $menu_item_nomarket, empty, '노예 시장')
+	end
+	func('$menu', 'interaction_city', $menu_item_Gastronomicon, menu_Gastronomicon, '식품점 -미식가들-')
+	func('$menu', 'interaction_city', $menu_item_laid, menu_laid, '미용실 -누워있는 엘프-')
+	func('$menu', 'interaction_city', $menu_item_Quint, menu_Quint, '양품점 -세르빌리아 퀸타-')
+	func('$menu', 'interaction_city', $menu_item_treasury, menu_treasury, '패물점 -아주라-')
+	func('$menu', 'interaction_city', $menu_item_armory, menu_armory, '무구점 -맨 헌터의 무기점-')
+	func('$menu', 'interaction_city', $menu_item_office, menu_office, '부동산 사무소')
+	func('$menu', 'city_form', $menu_item_Leavesquare, menu_Leavesquare, '교역 광장을 떠난다')
+
+	func('$menu', '===END===')
+end
+
+if city_form = 111:
+	$place = 'white_street'
+
+	func('$menu', '===BEGIN===', 'column_0')
+
+	if $estate = 'white_house':
+! JO9 MOD START J9M0004 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+		func('$menu', 'goto_city', $menu_item_apartmentwhite_house, 0, 'menu_form = 0 & city_form', 'menu_form', '내가 사는 집')
+! JO9 MOD END J9M0004
+	end
+! JO9 MOD START J9M0003 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+	func('$menu', 'interaction_city', $menu_item_KulaShop, menu_KulaShop, '쿨라의 비밀상점')
+	func('$menu', 'city_form', $menu_item_town, menu_town, '중앙 거리로')
+! JO9 MOD END J9M0003
+	
+	func('$menu', '===END===')
+end
+
+
+
+if city_form = 2:
+	city_district = 2
+	$place = 'taurus_district'
+	func('$menu', 'spacer', 1)
+
+	func('$menu', '===BEGIN===', 'column_0')
+
+	func('$menu', 'city_form', $menu_item_ResidencesBull, menu_ResidencesBull, '타우루스 저택가')
+! JO9 MOD START J9M0002 | 2026-10-09_restore_joffrey_personal_text | changed block; context may be included
+	func('$menu', 'interaction_city', $menu_item_Salon, menu_Salon, '마담 조프리의 살롱')
+! JO9 MOD END J9M0002
+	func('$menu', 'interaction_city', $menu_item_club, menu_club, '신사 클럽')
+	FUNC('$menu', 'interaction_city', $menu_item_vampire_hunter, menu_vampire_hunter, '흡혈귀 사냥꾼')  
+	func('$menu', 'interaction_city', $menu_item_palace, menu_palace, '백색 궁전')
+	func('$menu', 'city_form', $menu_item_Leavetaurus_district, menu_Leavetaurus_district, '구역을 떠난다')
+
+	func('$menu', '===END===')
+end
+
+if city_form = 21:
+	$place = 'taurus_street'
+
+	func('$menu', '===BEGIN===', 'column_0')
+
+	if $estate = 'taurus_house':
+		func('$menu', 'goto_city', $menu_item_apartmenttaurus_house, 0, 'city_form', 'menu_form', '당신의 아파트')
+	end
+	if npc_progress['don_castilio'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_castilio, menu_castilio, '돈 카스틸요')
+	else
+		func('$menu', 'interaction_city', $menu_item_castilio_gray, menu_castilio, '돈 카스틸요')
+	end
+	if npc_progress['don_diego'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_diego, menu_diego, '돈 디에고')
+	else
+		func('$menu', 'interaction_city', $menu_item_diego_gray, menu_diego, '돈 디에고')
+	end
+	if npc_progress['magister_gilmeritus'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_gilmeritus, menu_gilmeritus, '마기스테르 길메리투스')
+	else
+		func('$menu', 'interaction_city', $menu_item_gilmeritus_gray, menu_gilmeritus, '마기스테르 길메리투스')
+	end
+	if npc_progress['sir_toughbar'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_toughbar, menu_toughbar, '서 터프바')
+	else
+		func('$menu', 'interaction_city', $menu_item_toughbar_gray, menu_toughbar, '서 터프바')
+	end
+	if npc_progress['lady_edna'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_edna, menu_edna, '레이디 에드나')
+	else
+		func('$menu', 'interaction_city', $menu_item_edna_gray, menu_edna, '레이디 에드나')
+	end
+	if npc_progress['lady_suinton'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_suinton, menu_suinton, '은둔중인 귀부인')
+	else
+		func('$menu', 'interaction_city', $menu_item_suinton_gray, menu_suinton, '은둔중인 귀부인')
+	end
+	IF npc_progress['Marquis_de_s'] ! 2:
+		FUNC('$menu', 'interaction_city', $menu_item_Marquis_de_s, menu_Marquis_de_s, '마르키 드 에스')
+	ELSE
+		FUNC('$menu', 'interaction_city', $menu_item_Marquis_de_s_gray, menu_Marquis_de_s, '마르키 드 에스')
+	END
+	func('$menu', 'city_form', $menu_item_taurus_street, menu_taurus_street, '중앙 거리로')
+
+	func('$menu', '===END===')
+end
+
+if city_form = 3:
+	city_district = 3
+	$place = 'serpis_district'
+	func('$menu', 'spacer', 1)
+
+	func('$menu', '===BEGIN===', 'column_0')
+
+	func('$menu', 'city_form', $menu_item_Anthill, menu_Anthill, '개미굴')
+	func('$menu', 'interaction_city', $menu_item_hip, menu_hip, '버진스 힙')
+	func('$menu', 'city_form', $menu_item_Technosphere, menu_Technosphere, '테크노스피어')
+	func('$menu', 'interaction_city', $menu_item_spires, menu_spires, '행정 첨탑')
+	func('$menu', 'city_form', $menu_item_Leaveserpis_district, menu_Leaveserpis_district, '구역을 떠난다')
+
+	func('$menu', '===END===')
+end
+
+if city_form = 31:
+	$place = 'serpis_street'
+
+	func('$menu', '===BEGIN===', 'column_0')
+	if $estate = 'serpis_house':
+		func('$menu', 'goto_city', $menu_item_apartmentserpis_house, 0, 'city_form', 'menu_form', '당신의 아파트')
+	end
+	if npc_progress['yôhanan_stiven'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_yôhanan_stiven, menu_yôhanan_stiven, '요하난 스티벤')
+	else
+		func('$menu', 'interaction_city', $menu_item_yôhanan_stiven_gray, menu_yôhanan_stiven, '요하난 스티벤')
+	end
+	if npc_progress['archmage_zephiros'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_zephiros, menu_zephiros, '대마법사 제피로스')
+	else
+		func('$menu', 'interaction_city', $menu_item_zephiros_gray, menu_zephiros, '대마법사 제피로스')
+	end
+	if npc_progress['zhuge_liang'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_zhuge_liang, menu_zhuge_liang, '제갈량')
+	else
+		func('$menu', 'interaction_city', $menu_item_zhuge_liang_gray, menu_zhuge_liang, '제갈량')
+	end
+	if npc_progress['piter_viabu'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_viabu, menu_viabu, '피터 비아부')
+	else
+		func('$menu', 'interaction_city', $menu_item_viabu_gray, menu_viabu, '피터 비아부')
+	end
+	if npc_progress['mister_lardbag'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_lardbag, menu_lardbag, '미스터 라드백')
+	else
+		func('$menu', 'interaction_city', $menu_item_lardbag_gray, menu_lardbag, '미스터 라드백')
+	end
+	if npc_progress['krull'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_krull, menu_krull, '크룰')
+	else
+		func('$menu', 'interaction_city', $menu_item_krull_gray, menu_krull, '크룰')
+	end
+	if $estate ! 'serpis_house':
+		if npc_progress['avek_plesir'] ! 2:
+			func('$menu', 'interaction_city', $menu_item_plesir, menu_plesir, '아벡 플레시르')
+		else
+			func('$menu', 'interaction_city', $menu_item_plesir_gray, menu_plesir, '아벡 플레시르')
+		end
+	end
+	func('$menu', 'city_form', $menu_item_serpis_street, menu_serpis_street, '중앙 거리로')
+	func('$menu', '===END===')
+
+	func('$menu', '===BEGIN===', 'column_1')
+	if $estate = 'serpis_house':
+		if npc_progress['avek_plesir'] ! 2:
+			func('$menu', 'interaction_city', $menu_item_plesir, menu_plesir, '아벡 플레시르')
+		else
+			func('$menu', 'interaction_city', $menu_item_plesir_gray, menu_plesir, '아벡 플레시르')
+		end
+	end
+	if npc_progress['green_mamba'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_mamba, menu_mamba, '그린 맘바')
+	else
+		func('$menu', 'interaction_city', $menu_item_mamba_gray, menu_mamba, '그린 맘바')
+	end
+	if npc_progress['leonid_alexandriatos'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_alexandriatos, menu_alexandriatos, '레오니드 알렉산드리아토스')
+	else
+		func('$menu', 'interaction_city', $menu_item_alexandriatos_gray, menu_alexandriatos, '레오니드 알렉산드리아토스')
+	end
+	if npc_progress['lucius_patricius'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_patricius, menu_patricius, '루키우스 파트리키우스')
+	else
+		func('$menu', 'interaction_city', $menu_item_patricius_gray, menu_patricius, '루키우스 파트리키우스')
+	end
+	if npc_progress['singh_khan'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_khan, menu_khan, '싱 칸')
+	else
+		func('$menu', 'interaction_city', $menu_item_khan_gray, menu_khan, '싱 칸')
+	end
+	if npc_progress['frogger'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_frogger, menu_frogger, '프로거')
+	else
+		func('$menu', 'interaction_city', $menu_item_frogger_gray, menu_frogger, '프로거')
+	end
+	if npc_progress['dofine_tutti'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_tutti, menu_tutti, '황태자 뚜띠')
+	else
+		func('$menu', 'interaction_city', $menu_item_tutti_gray, menu_tutti, '황태자 뚜띠')
+	end
+	if npc_progress['earl_gray'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_earl, menu_earl, '얼 그레이')
+	else
+		func('$menu', 'interaction_city', $menu_item_earl_gray, menu_earl, '얼 그레이')
+	end
+	func('$menu', '===END===')
+end
+
+if city_form = 33:
+	$place = 'technodrom'
+
+	!reset health checkup status so examination fee is charged once per visit
+	master_health_checked = 0
+	dynamic $do_for_each_slave_in_list, "{ if dynslave_state ! CONST_INT['no_slave']: dynslave['health_issues_revealed'] = 0 }", '$mobile_slave_characters'
+
+	func('$menu', 'spacer', 1)
+
+	func('$menu', '===BEGIN===', 'column_0')
+
+	func('$menu', 'interaction_city', $menu_item_Medical_center, menu_Medical_center, '의료 센터')
+	!if sparks > 0:
+		func('$menu', 'interaction_city', $menu_item_Cryostatic, menu_Cryostatic, '크라이오스태틱 상점')
+	!else
+	!	func('$menu', 'exec', $menu_item_Cryostatic_gray, empty, 'Cryostatic Store')
+	!end
+	func('$menu', 'interaction_city', $menu_item_Library, menu_Library, '도서관 터미널')
+	func('$menu', 'city_form', $menu_item_Leave_technodrom, menu_Leave_technodrom, '테크노스피어를 떠난다')
+
+	func('$menu', '===END===')
+end
+
+if city_form = 4:
+	city_district = 4
+	$place = 'kamira_district'
+	func('$menu', 'spacer', 1)
+
+	func('$menu', '===BEGIN===', 'column_0')
+
+	func('$menu', 'city_form', $menu_item_Resident_kamira_district, menu_Resident_kamira_district, '카미라 저택가')
+	func('$menu', 'interaction_city', $menu_item_Uncle_Bo, menu_Uncle_Bo, '보 아저씨의 문양')
+	func('$menu', 'interaction_city', $menu_item_Mystra, menu_Mystra, '미스트라의 진귀품')
+	func('$menu', 'interaction_city', $menu_item_animal_farm, menu_animal_farm, '공영 동물 농장')
+	func('$menu', 'interaction_city', $menu_item_Citadel, menu_Citadel, '티에라 델 시타델')
+	func('$menu', 'city_form', $menu_item_Leavekamira_district, menu_Leavekamira_district, '구역을 떠난다')
+
+	func('$menu', '===END===')
+end
+
+if city_form = 41:
+	$place = 'kamira_street'
+
+	func('$menu', '===BEGIN===', 'column_0')
+	if $estate = 'kamira_house':
+		func('$menu', 'goto_city', $menu_item_apartmentkamira_house, 0, 'city_form', 'menu_form', '당신의 아파트')
+	end
+	if npc_progress['gloth_prisonguard'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_gloth, menu_gloth, '글롯 프리즌가드')
+	else
+		func('$menu', 'interaction_city', $menu_item_gloth_gray, menu_gloth, '글롯 프리즌가드')
+	end
+	if npc_progress['bullhorn'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_bullhorn, menu_bullhorn, '불혼')
+	else
+		func('$menu', 'interaction_city', $menu_item_bullhorn_gray, menu_bullhorn, '불혼')
+	end
+	if npc_progress['arbue'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_arbue, menu_arbue, '아르뷰')
+	else
+		func('$menu', 'interaction_city', $menu_item_arbue_gray, menu_arbue, '아르뷰')
+	end
+	if npc_progress['magnaga'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_magnaga, menu_magnaga, '마그나가')
+	else
+		func('$menu', 'interaction_city', $menu_item_magnaga_gray, menu_magnaga, '마그나가')
+	end
+	if npc_progress['kratos'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_kratos, menu_kratos, '크라토스')
+	else
+		func('$menu', 'interaction_city', $menu_item_kratos_gray, menu_kratos, '크라토스')
+	end
+	if $estate ! 'kamira_house':
+		if npc_progress['mikkey'] ! 2:
+			func('$menu', 'interaction_city', $menu_item_mikkey, menu_mikkey, '미키')
+		else
+			func('$menu', 'interaction_city', $menu_item_mikkey_gray, menu_mikkey, '미키')
+		end
+	end
+	func('$menu', 'city_form', $menu_item_kamira_street, menu_kamira_street, '중앙 거리로')
+	func('$menu', '===END===')
+
+	func('$menu', '===BEGIN===', 'column_1')
+	if $estate = 'kamira_house':
+		if npc_progress['mikkey'] ! 2:
+			func('$menu', 'interaction_city', $menu_item_mikkey, menu_mikkey, '미키')
+		else
+			func('$menu', 'interaction_city', $menu_item_mikkey_gray, menu_mikkey, '미키')
+		end
+	end
+	if npc_progress['sfinga'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_sfinga, menu_sfinga, '스핑기')
+	else
+		func('$menu', 'interaction_city', $menu_item_sfinga_gray, menu_sfinga, '스핑기')
+	end
+	if npc_progress['lady_mordhulla'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_mordhulla, menu_mordhulla, '레이디 모르둘라')
+	else
+		func('$menu', 'interaction_city', $menu_item_mordhulla_gray, menu_mordhulla, '레이디 모르둘라')
+	end
+	if npc_progress['kurfilinn'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_kurfilinn, menu_kurfilinn, '쿠르필린')
+	else
+		func('$menu', 'interaction_city', $menu_item_kurfilinn_gray, menu_kurfilinn, '쿠르필린')
+	end
+	if npc_progress['prince_charming'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_charming, menu_charming, '프린스 차밍')
+	else
+		func('$menu', 'interaction_city', $menu_item_charming_gray, menu_charming, '프린스 차밍')
+	end
+	if npc_progress['lord_pira'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_pira, menu_pira, '로드 파이라')
+	else
+		func('$menu', 'interaction_city', $menu_item_pira_gray, menu_pira, '로드 파이라')
+	end
+	if npc_progress['countess_bathory'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_bathory, menu_bathory, '바토리 백작부인')
+	else
+		func('$menu', 'interaction_city', $menu_item_bathory_gray, menu_bathory, '바토리 백작부인')
+	end
+	IF npc_progress['Jane'] ! 2:
+		FUNC('$menu', 'interaction_city', $menu_item_jane, 10390, '제인')
+	ELSE
+		FUNC('$menu', 'interaction_city', $menu_item_jane_gray, 10399, '제인')
+	END
+	func('$menu', '===END===')
+end
+
+if city_form = 5:
+	city_district = 5
+	$place = 'korvus_district'
+	func('$menu', 'spacer', 1)
+
+	func('$menu', '===BEGIN===', 'column_0')
+
+	func('$menu', 'city_form', $menu_item_Residenceskorvus_district, menu_Residenceskorvus_district, '코르부스 저택가')
+	func('$menu', 'interaction_city', $menu_item_Steel, menu_Steel, '스틸 로즈')
+	func('$menu', 'interaction_city', $menu_item_theatre, menu_theatre, '해부 극장')
+	func('$menu', 'interaction_city', $menu_item_Tower, menu_Tower, '레이븐 타워')
+	func('$menu', 'city_form', $menu_item_Leavekorvus_district, menu_Leavekorvus_district, '구역을 떠난다')
+
+	func('$menu', '===END===')
+end
+
+if city_form = 51:
+	$place = 'korvus_street'
+
+	func('$menu', '===BEGIN===', 'column_0')
+
+	if $estate = 'korvus_house':
+		func('$menu', 'goto_city', $menu_item_apartmentkorvus_house, 0, 'city_form', 'menu_form', '당신의 아파트')
+	end
+	if npc_progress['wight'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_wight, menu_wight, '와이트')
+	else
+		func('$menu', 'interaction_city', $menu_item_wight_gray, menu_wight, '와이트')
+	end
+	if npc_progress['lestor'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_lestor, menu_lestor, '레스터')
+	else
+		func('$menu', 'interaction_city', $menu_item_lestor_gray, menu_lestor, '레스터')
+	end
+	if npc_progress['paral_itch'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_itch, menu_itch, '파라 라이시스')
+	else
+		func('$menu', 'interaction_city', $menu_item_itch_gray, menu_itch, '파라 라이시스')
+	end
+	if npc_progress['draugr'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_draugr, menu_draugr, '드라우그르')
+	else
+		func('$menu', 'interaction_city', $menu_item_draugr_gray, menu_draugr, '드라우그르')
+	end
+	if npc_progress['scarlet'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_scarlet, menu_scarlet, '스칼렛')
+	else
+		func('$menu', 'interaction_city', $menu_item_scarlet_gray, menu_scarlet, '스칼렛')
+	end
+	func('$menu', 'city_form', $menu_item_korvus_street, menu_korvus_street, '중앙 거리로')
+	func('$menu', '===END===')
+end
+if city_form = 51:
+	$place = 'korvus_street'
+
+	func('$menu', '===BEGIN===', 'column_1')
+
+	if npc_progress['mad_baron'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_baron, menu_baron, '매드 바론')
+	else
+		func('$menu', 'interaction_city', $menu_item_baron_gray, menu_baron, '매드 바론')
+	end
+	if npc_progress['faceless'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_faceless, menu_faceless, '페이스리스')
+	else
+		func('$menu', 'interaction_city', $menu_item_faceless_gray, menu_faceless, '페이스리스')
+	end
+	if npc_progress['donna_venturi'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_venturi, menu_venturi, '돈나 벤투리')
+	else
+		func('$menu', 'interaction_city', $menu_item_venturi_gray, menu_venturi, '돈나 벤투리')
+	end
+	if npc_progress['lady_yasmenia'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_yasmenia, menu_yasmenia, '레이디 야스메니아')
+	else
+		func('$menu', 'interaction_city', $menu_item_yasmenia_gray, menu_yasmenia, '레이디 야스메니아')
+	end
+	if npc_progress['count_yagellon'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_yagellon, menu_yagellon, '야겔론 백작')
+	else
+		func('$menu', 'interaction_city', $menu_item_yagellon_gray, menu_yagellon, '야겔론 백작')
+	end
+	if npc_progress['baron_imladis'] ! 2:
+		func('$menu', 'interaction_city', $menu_item_imladis, menu_imladis, '이믈라디스 남작')
+	else
+		func('$menu', 'interaction_city', $menu_item_imladis_gray, menu_imladis, '이믈라디스 남작')
+	end
+	func('$menu', '===END===')
+end
+
+if city_form = 6:
+	! JO9_SLUMS_COLOUR_ICONS_20261014
+	$menu_item_jo9_slum_residential = '<li style="background: url(''content/pic/ui overhaul/jo9_slum_residential.png'') no-repeat left top;">'
+	$menu_item_jo9_biker_garage = '<li style="background: url(''content/pic/ui overhaul/jo9_biker_garage.png'') no-repeat left top;">'
+	city_district = 6
+	$place = 'slums'
+	func('$menu', '===BEGIN===', 'column_0')
+
+	if $estate = 'slum_house':
+		func('$menu', 'goto_city', $menu_item_apartmentslum_house, 0, 'city_form', 'menu_form', '당신의 판잣집')
+	end
+	func('$menu', 'interaction_city', $menu_item_Smuggler, menu_Smuggler, '밀수업자의 아지트')
+	func('$menu', 'interaction_city', $menu_item_Moneylender, menu_Moneylender, '고리대금업자의 집')
+	IF npc_progress['Rafael'] = 2: FUNC('$menu', 'interaction_city', $menu_item_Black_bazar, menu_Black_bazar, '암시장')
+	FUNC('$menu', 'interaction_city', $menu_item_jo9_slum_residential, 6031, '주거 구역')
+	IF Байкер_квест < 1 and npc_progress['biker'] ! 2: FUNC('$menu', 'interaction_city', $menu_item_jo9_biker_garage, 9210, '차고')
+	IF Байкер_квест = 1 and Байкер_квест ! 2: FUNC('$menu', 'interaction_city', $menu_item_jo9_biker_garage, 9214, '차고')
+	IF Байкер_квест = 2 and Байкер_квест ! 3: FUNC('$menu', 'interaction_city', $menu_item_jo9_biker_garage, 9218, '차고')
+	IF slave_state = CONST_INT['no_slave'] and npc_progress['tsyuansu'] = 0 or npc_progress['tsyuansu'] > 0 and npc_progress['tsyuansu'] ! 2: FUNC('$menu', 'interaction_city', $menu_item_tsyuansu, 9223, '주안수 연구소')
+	IF slave_state = CONST_INT['slave_exist'] and npc_progress['tsyuansu'] = 0 or npc_progress['tsyuansu'] = 2: FUNC('$menu', 'location_gray', $menu_item_tsyuansu_gray, empty, '주안수 연구소')
+	IF npc_progress['Hotorn_voice'] ! 2: FUNC('$menu', 'interaction_city', $menu_item_red_secta, 9227, '붉은 교단')
+	IF slave_state = CONST_INT['no_slave'] and npc_progress['Hotorn_aliman'] = 0 and npc_progress['Hotorn_voice'] = 2 or npc_progress['Hotorn_aliman'] > 0 and npc_progress['Hotorn_aliman'] ! 2: FUNC('$menu', 'interaction_city', $menu_item_red_secta, 9231, '붉은 교단')
+	IF npc_progress['Hotorn_voice'] = 2 and npc_progress['Hotorn_aliman'] < 1 and slave_state = CONST_INT['slave_exist'] or npc_progress['Hotorn_aliman'] = 2: FUNC('$menu', 'location_gray', $menu_item_red_secta_gray, empty, '붉은 교단')
+!	FUNC('$menu', 'city_form', $menu_item_Unfamiliar_gray, empty, 'Unknown House')
+
+	!if active[$quest[16]] < 2: FUNC('$menu', 'interaction_city', $menu_item_dumak, 9020, 'Dumac’s Hut')
+	!if npc_progress['Yagishna'] < 2: FUNC('$menu', 'interaction_city', $menu_item_yagishna, 9050, 'Yagishna’s Shop')
+	!if npc_progress['Dragon'] < 2: FUNC('$menu', 'interaction_city', $menu_item_dragon, 9060, 'Black Dragon Cave')
+	!if npc_progress['mouse_king'] < 2: FUNC('$menu', 'interaction_city', $menu_item_mouse_king, 9070, 'The Mouse King’s Hole')
+	!if npc_progress['Ledy_Karina'] > 0 and npc_progress['Veineut'] < 2: FUNC('$menu', 'interaction_city', $menu_item_veineut, 9200, 'Veineut’s Dwelling')
+
+
+	!FUNC('$menu', 'exec_options', $menu_item_return_slums, 'city_form = 6 & $quick_move_action = "go" & gt "sjm_UI_UIadds"', 'Return to Slums')
+
+	func('$menu', 'city_form', $menu_item_city_gate, menu_city_gate, '도시 관문으로')
+	!func('$menu', 'city_form', $menu_item_Walktocity, menu_Walktocity, 'Enter the City')
+
+	func('$menu', '===END===')
+end
+
+IF city_form = 119: 
+	city_district = 7
+	$place = 'otchuzhdenie' 
+	FUNC('$menu', '===BEGIN===', 'column_0') 
+	if $estate = 'Otchuzhdenie_house': 
+		FUNC('$menu', 'goto_city', $menu_item_apartmentOtchuzhdenie_house, 0, 'menu_form = 0 & city_form', 'menu_form', '당신의 아파트') 
+	end 
+	IF temporary_cell_state = 1 and slave_state = CONST_INT['no_slave']: 
+		GS 'slave_to_temporary_cell' 
+		temporary_cell_state = 0 
+		temporary_cell_type = slave_type 
+		slave_state = CONST_INT['slave_exist'] 
+	END
+	FUNC('$menu', 'city_form', $menu_item_ResidencesOtchuzhdenie, 1191, '"부서진 자들"의 도시')
+	FUNC('$menu', 'city_form', $menu_item_ResidencesOtchuzhdenie2, 1192, '잃어버린 영혼들의 땅')
+	FUNC('$menu', 'interaction_city', $menu_item_zooferma, 67, '동물 농장')
+	FUNC('$menu', 'interaction_city', $menu_item_studfarm, 9912, '종마 목장')
+	FUNC('$menu', 'interaction_city', $menu_item_CherniyLes, 810, '검은 숲')
+	FUNC('$menu', 'interaction_city', $menu_item_threaten_sale, 8991, '노예 사파리')
+	FUNC('$menu', 'city_form', $menu_item_border_regions, 15111, '지역을 떠난다')
+	FUNC('$menu', '===END===')
+END
+
+
+
+IF city_form = 1191: 
+	$place = '8017' 
+	FUNC('$menu', '===BEGIN===', 'column_0') 
+IF npc_progress['PALACH'] ! 2: 
+	FUNC('$menu', 'interaction_city', $menu_item_Palach, 806, '사형집행인의 흙손') 
+ELSE 
+	FUNC('$menu', 'interaction_city', $menu_item_Palach_gray, 806, '사형집행인의 흙손') 
+END 
+IF npc_progress['Afina'] ! 2:
+	FUNC('$menu', 'interaction_city', $menu_item_Afina, 8010, '아테나의 동굴')
+ELSE
+	FUNC('$menu', 'interaction_city', $menu_item_Afina_gray, 8010, '아테나의 동굴')
+END
+IF npc_progress['Marsi'] ! 2:
+	FUNC('$menu', 'interaction_city', $menu_item_Marsi, 8015, '마르시의 거처')
+ELSE
+	FUNC('$menu', 'interaction_city', $menu_item_Marsi_gray, 8015, '마르시의 거처')
+END
+IF npc_progress['Xena'] ! 2: 
+	FUNC('$menu', 'interaction_city', $menu_item_Xena, 8022, '제나의 연구실') 
+ELSE 
+	FUNC('$menu', 'interaction_city', $menu_item_Xena_gray, 8022, '제나의 연구실') 
+END 
+IF npc_progress['POSLUSHNITSYDEVILS'] ! 2: 
+	FUNC('$menu', 'interaction_city', $menu_item_PoslushnitsyDevils, 807, '사탄주의자들의 도래') 
+ELSE 
+	FUNC('$menu', 'interaction_city', $menu_item_PoslushnitsyDevils_gray, 807, '사탄주의자들의 도래') 
+END 
+	FUNC('$menu', '===END===')
+END
+IF city_form = 1191: 
+	$place = 'Otchuzhdenie_district' 
+	FUNC('$menu', '===BEGIN===', 'column_1') 
+IF npc_progress['Exortsist'] ! 2: 
+	FUNC('$menu', 'interaction_city', $menu_item_Exortsist, 8019, '구마사의 예배당') 
+ELSE 
+	FUNC('$menu', 'interaction_city', $menu_item_Exortsist_gray, 8019, '구마사의 예배당') 
+END 
+IF npc_progress['Zariy'] ! 2:
+	FUNC('$menu', 'interaction_city', $menu_item_Zariy, 8023, '자리이 궁전')
+ELSE
+	FUNC('$menu', 'interaction_city', $menu_item_Zariy_gray, 8023, '자리이 궁전')
+END
+IF npc_progress['Princess_maggot'] ! 2:
+	FUNC('$menu', 'interaction_city', $menu_item_Princess_maggot, 8016, '프린세스 매곳의 집')
+ELSE
+	FUNC('$menu', 'interaction_city', $menu_item_Princess_maggot_gray, 8016, '프린세스 매곳의 집')
+END
+IF npc_progress['Ravin'] ! 2: 
+	FUNC('$menu', 'interaction_city', $menu_item_Ravin, 8017, '라빈 폴리곤') 
+ELSE 
+	FUNC('$menu', 'interaction_city', $menu_item_Ravin_gray, 8017, '라빈 폴리곤') 
+END 
+IF unique_slave["erza"] = 0 and slave_state = CONST_INT['no_slave']: FUNC('$menu', 'interaction_city', $menu_item_ResidencesOtchuzhdenie, menu_erza, '둘러본다')
+	FUNC('$menu', 'city_form', $menu_item_otchuzhdenie, 119, '중앙 거리로') 
+	FUNC('$menu', '===END===')
+END
+IF city_form = 1192: 
+	$place = 'Otchuzhdenie_district2' 
+	FUNC('$menu', '===BEGIN===', 'column_0') 
+IF npc_progress['CHIMERA'] ! 2: 
+	FUNC('$menu', 'interaction_city', $menu_item_Chimera, 800, '키메라의 소굴') 
+ELSE 
+	FUNC('$menu', 'interaction_city', $menu_item_Chimera_gray, 800, '키메라의 소굴') 
+END 
+IF npc_progress['JATSHER'] ! 2:
+	FUNC('$menu', 'interaction_city', $menu_item_Jatsher, 804, '도마뱀 동굴')
+ELSE
+	FUNC('$menu', 'interaction_city', $menu_item_Jatsher_gray, 804, '도마뱀 동굴')
+END
+IF npc_progress['CHIMEROTORUS'] ! 2:
+	FUNC('$menu', 'interaction_city', $menu_item_ChimeroTorus, 801, '키메로토르의 오두막')
+ELSE
+	FUNC('$menu', 'interaction_city', $menu_item_ChimeroTorus_gray, 801, '키메로토르의 오두막')
+END
+IF npc_progress['GRANDkraken'] ! 2: 
+	FUNC('$menu', 'interaction_city', $menu_item_Grandkraken, 802, '그랜드 크라켄 동굴') 
+ELSE 
+	FUNC('$menu', 'interaction_city', $menu_item_Grandkraken_gray, 802, '그랜드 크라켄 동굴') 
+END 
+IF npc_progress['GUSTER'] ! 2: 
+	FUNC('$menu', 'interaction_city', $menu_item_Guster, 803, '거스터의 집') 
+ELSE 
+	FUNC('$menu', 'interaction_city', $menu_item_Guster_gray, 803, '거스터의 집') 
+END 
+IF npc_progress['Babun'] ! 2: 
+	FUNC('$menu', 'interaction_city', $menu_item_Babun, 8011, '바분의 오두막') 
+ELSE 
+	FUNC('$menu', 'interaction_city', $menu_item_Babun_gray, 8011, '바분의 오두막') 
+END 
+IF npc_progress['KOTOLAK'] ! 2: 
+	FUNC('$menu', 'interaction_city', $menu_item_Kotolak, 805, '코탈락 저택') 
+ELSE 
+	FUNC('$menu', 'interaction_city', $menu_item_Kotolak_gray, 805, '코탈락 저택') 
+END 
+	FUNC('$menu', '===END===')
+END
+IF city_form = 1192: 
+	$place = 'Otchuzhdenie_district2' 
+	FUNC('$menu', '===BEGIN===', 'column_1') 
+IF npc_progress['Dragoness'] ! 2: 
+	FUNC('$menu', 'interaction_city', $menu_item_Dragoness, 8012, '드래고네스의 영역') 
+ELSE 
+	FUNC('$menu', 'interaction_city', $menu_item_Dragoness_gray, 8012, '드래고네스의 영역') 
+END 
+IF npc_progress['Lyupen'] ! 2: 
+	FUNC('$menu', 'interaction_city', $menu_item_Lyupen, 8014, '루팽의 동굴') 
+ELSE 
+	FUNC('$menu', 'interaction_city', $menu_item_Lyupen_gray, 8014, '루팽의 동굴') 
+END 
+IF npc_progress['Sirena'] ! 2: 
+	FUNC('$menu', 'interaction_city', $menu_item_Sirena, 8018, '사이렌의 연못') 
+ELSE 
+	FUNC('$menu', 'interaction_city', $menu_item_Sirena_gray, 8018, '사이렌의 연못') 
+END 
+IF npc_progress['Vervolf'] ! 2: 
+	FUNC('$menu', 'interaction_city', $menu_item_Vervolf, 8020, '늑대의 소굴') 
+ELSE 
+	FUNC('$menu', 'interaction_city', $menu_item_Vervolf_gray, 8020, '늑대의 소굴') 
+END 
+IF npc_progress['Volchitsa'] ! 2:
+	FUNC('$menu', 'interaction_city', $menu_item_Volchitsa, 8021, '볼치차의 소굴')
+ELSE
+	FUNC('$menu', 'interaction_city', $menu_item_Volchitsa_gray, 8021, '볼치차의 소굴')
+END
+IF npc_progress['VERWOLF'] ! 2:
+	FUNC('$menu', 'interaction_city', $menu_item_VerWolf, 809, '웨어울프의 영지')
+ELSE
+	FUNC('$menu', 'interaction_city', $menu_item_VerWolf_gray, 809, '웨어울프의 영지')
+END
+	FUNC('$menu', 'city_form', $menu_item_otchuzhdenie, 119, '중앙 거리로')
+	FUNC('$menu', '===END===')
+END
+
+
+IF city_form = 140:
+$place = 'futaland'
+FUNC('$menu', 'spacer', -1)
+FUNC('$menu', '===BEGIN===', 'column_1')
+FUNC('$menu', 'interaction_city', $menu_item_futaland_home, 1101, '주거 구역')
+FUNC('$menu', 'interaction_city', $menu_item_Futaland_tower, 1102, '스페이드 여왕의 탑')
+FUNC('$menu', 'interaction_city', $menu_item_futaland_valley, 1103, '무지개 골짜기')
+FUNC('$menu', 'city_form', $menu_item_border_regions, 15111, '지역을 떠난다') 
+FUNC('$menu', '===END===')
+END
+
+if city_form = 61:
+	city_district = 6
+	$place = 'gates_of_mists'
+	func('$menu', 'spacer', 1)
+
+	func('$menu', '===BEGIN===', 'column_0')
+
+	if master_energy > 2:
+		func('$menu', 'interaction_city', $menu_item_Patrol, menu_Patrol, '안개 경계 순찰')
+	else
+		func('$menu', 'location_gray_tooltip', $menu_item_Patrol_gray, empty, '안개 경계 순찰', '너무 지쳐 있습니다')
+	end
+	FUNC('$menu', 'interaction_city', $menu_item_port, 10400, '항구')
+	FUNC('$menu', 'city_form', $menu_item_border_regions, 15111, '변경 지대')
+!	IF npc_progress['Rafael'] = 2: FUNC('$menu', 'interaction_city', $menu_item_Black_bazar, menu_Black_bazar, '"Black Market"')
+	func('$menu', 'interaction_city', $menu_item_camp, menu_camp, '베이스캠프')
+	FUNC('$menu', 'interaction_city', $menu_item_teatr, 791, '살아 있는 인형극장')
+	FUNC('$menu', 'interaction_city', $menu_item_fogs_portal, 6217, '포털 지대')
+	func('$menu', 'city_form', $menu_item_Slums, menu_Slums, '빈민가')
+	func('$menu', 'city_form', $menu_item_Walktocity, menu_Walktocity, '도시로 들어간다')
+
+	func('$menu', '===END===')
+end
+
+IF city_form = 15111:
+	$place = 'border_regions'
+	func('$menu', 'spacer', 1)
+	FUNC('$menu', '===BEGIN===', 'column_0')
+	FUNC('$menu', 'city_form', $menu_item_otchuzhdenie, 119, '배제 구역')
+	if no_futa = 0: FUNC('$menu', 'city_form', $menu_item_futaland, 140, '후타랜드')
+	FUNC('$menu', 'interaction_city', $menu_item_russiankvartal, 1200, '러시아 구역')
+	IF active[$event['спасение_рождества']] >= 10: FUNC('$menu', 'city_form', $menu_item_wintertales, 130, '겨울 동화')
+	IF active[$event['спасение_рождества']] >= 1 and active[$event['спасение_рождества']] < 10: FUNC('$menu', 'city_form', $menu_item_wintertales, 131, '겨울 동화')
+	FUNC('$menu', 'city_form', $menu_item_city_gate, 61, '도시 관문으로')
+	FUNC('$menu', '===END===')
+END
+
+
+IF city_form = 130 and active[$event['спасение_рождества']] >= 10:
+  $place = 'wintertales'
+  FUNC('$menu', '===BEGIN===', 'column_0')
+  FUNC('$menu', 'interaction_city', $menu_item_Xmas_palace, 1001, '크리스마스 광장')
+  FUNC('$menu', 'interaction_city', $menu_item_Talesforest, 1002, '동화의 숲')
+  FUNC('$menu', 'city_form', $menu_item_border_regions, 15111, '떠난다')
+  FUNC('$menu', '===END===')
+END
+
+IF city_form = 131 and active[$event['спасение_рождества']] >= 1 and active[$event['спасение_рождества']] < 10:
+  $place = 'wintertalesXXX'
+  FUNC('$menu', '===BEGIN===', 'column_0')
+  FUNC('$menu', 'interaction_city', $menu_item_XXXmas_palace, 10300, '크리스마스 광장')
+  IF npc_progress['angry_goblins'] = 2: FUNC('$menu', 'interaction_city', $menu_item_XXXTalesforest, 10301, '동화의 숲')
+  FUNC('$menu', 'city_form', $menu_item_border_regions, 15111, '떠난다')
+  FUNC('$menu', '===END===')
+END
+
+
+IF city_form = 121:
+  $place = 'eastkvartal_district'
+  FUNC('$menu', '===BEGIN===', 'column_0')
+  
+  if $estate = 'eastkvartal_house':
+    FUNC('$menu', 'goto_city', $menu_item_apartmenteastkvartal_house, 0, 'menu_form = 0 & city_form', 'menu_form', '당신의 아파트')
+  end
+  
+  IF hero_choice > 100 and (credit > 0 and faction_fame['eastkvartal'] < 2):
+    FUNC('$menu', 'exec', $menu_item_Residences_eastkvartal, empty, '주거 구역', '이곳에서의 평판이 부족합니다')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Residences_eastkvartal, 102001, '주거 구역')
+  END
+  
+  IF egeya_lose = 0:
+   FUNC('$menu', 'interaction_city', $menu_item_catfightclub, 10201, '캣파이트 클럽')
+  else
+   FUNC('$menu', 'location_gray', $menu_item_catfightclub_gray, empty, '캣파이트 클럽')
+  END
+  
+  !IF npc_progress['netsumi'] = 2:
+   FUNC('$menu', 'interaction_city', $menu_item_erosalon, 10202, '아마란스 살롱')
+  !else
+   !FUNC('$menu', 'location_gray', $menu_item_erosalon_gray, empty, 'Amaranth Salon')
+  !END
+  
+  FUNC('$menu', 'interaction_city', $menu_item_fashion_house, 10203, '패션 하우스') 
+ 
+  !Akabur_quest
+  IF active[$event['Akabur_quest']] = 0 and brand_reputation > 2: FUNC('$menu', 'interaction_city', $menu_item_Jinnee_oldman, 3001, '수상한 노인')
+  IF lost_quest_slave = 0 and lost_quest_slave_jasmine = 0 and active[$event['Akabur_quest']] > 1 and active[$event['Akabur_quest']] < 18: FUNC('$menu', 'interaction_city', $menu_item_Agraba, 3000, '아그라바 포털')
+ 
+ 
+  FUNC('$menu', 'city_form', $menu_item_Walktocity, menu_Walktocity, '구역을 떠난다')
+  
+
+  FUNC('$menu', '===END===')
+END
+
+
+
+!Red Light District.
+
+IF city_form = 117:
+	city_district = 8
+  $place = 'RedLight'
+  FUNC('$menu', '===BEGIN===', 'column_0')
+  IF $estate = 'RedLight_house':
+    FUNC('$menu', 'goto_city', $menu_item_apartmentRedLight_house, 0, 'menu_form = 0 & city_form', 'menu_form', '당신의 아파트')
+  END
+  IF hero_choice > 100 and (credit > 0 and faction_fame['RedLight'] < 2):
+    FUNC('$menu', 'exec', $menu_item_ResidencesRedLight, empty, '주거 구역', '당신의 평판으로는 이곳에 볼일이 없습니다')
+  ELSE
+    FUNC('$menu', 'city_form', $menu_item_ResidencesRedLight, menu_ResidencesRedLight, '주거 구역')
+  END
+! JO9 MOD START J9M0001 | 2026-10-01_city_menu_label | changed block; context may be included
+  FUNC('$menu', 'interaction_city', $menu_item_dosug, 22700, '사창가 골목')
+! JO9 MOD END J9M0001
+  FUNC('$menu', 'interaction_city', $menu_item_baraholka, 3991, '벼룩시장')
+  FUNC('$menu', 'interaction_city', $menu_item_kafe, 2991, '카페 "신들의 선물"')
+  IF npc_progress['Vlad'] = 2:
+  FUNC('$menu', 'interaction_city', $menu_item_Vlad, menu_Vampire_Ball, '블라드의 향락성')
+  ELSE
+    FUNC('$menu', 'location_gray', $menu_item_Vlad_gray, empty, '블라드의 향락성')
+  END
+  FUNC('$menu', 'interaction_city', $menu_item_zakritiy_klub, menu_zakritiy_klub, '프라이빗 클럽')
+  FUNC('$menu', 'city_form', $menu_item_Leavewhite, menu_Leavewhite, '구역을 떠난다')
+  FUNC('$menu', '===END===')
+END
+
+IF city_form = 1171:
+  $place = 'RedLight_district'
+  FUNC('$menu', '===BEGIN===', 'column_0')
+  IF npc_progress['demian'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_demian, menu_demian, '데미안의 저택')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_demian_gray, menu_demian, '데미안의 저택')
+  END
+  IF npc_progress['Lanista_Gretta'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Lanista_Gretta, menu_Lanista_Gretta, '그레타의 학교')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Lanista_Gretta_gray, menu_Lanista_Gretta, '그레타의 학교')
+  END
+  IF npc_progress['Pinna'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Pinna, menu_Pinna, '핀나의 아파트')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Pinna_gray, menu_Pinna, '핀나의 아파트')
+  END
+  IF npc_progress['dominadarina'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_dominadarina, menu_dominadarina, '다리나의 저택')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_dominadarina_gray, menu_dominadarina, '다리나의 저택')
+  END
+  IF npc_progress['MasterChristian'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_MasterChristian, menu_MasterChristian, '크리스천의 영지')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_MasterChristian_gray, menu_MasterChristian, '크리스천의 영지')
+  END
+  IF npc_progress['MasterFergus'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_MasterFergus, menu_MasterFergus, '퍼거스의 저택')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_MasterFergus_gray, menu_MasterFergus, '퍼거스의 저택')
+  END
+  IF npc_progress['Serviy'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Serviy, menu_Serviy, '세르비이의 집')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Serviy_gray, menu_Serviy, '세르비이의 집')
+  END
+  IF npc_progress['BlackCat'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_BlackCat, menu_BlackCat, '블랙 캣의 거처')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_BlackCat_gray, menu_BlackCat, '블랙 캣의 거처')
+  END
+  FUNC('$menu', '===END===')
+END
+
+IF city_form = 1171:
+  $place = 'RedLight_district'
+  FUNC('$menu', '===BEGIN===', 'column_1')
+  IF npc_progress['Sweet_angel'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Sweet_angel, menu_Sweet_angel, '스위트 엔젤의 저택')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Sweet_angel_gray, menu_Sweet_angel, '스위트 엔젤의 저택')
+  END
+  IF npc_progress['MurMyau'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_MurMyau, menu_MurMyau, '무르 먀우의 집')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_MurMyau_gray, menu_MurMyau, '무르 먀우의 집')
+  END
+  IF npc_progress['Vlad'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Vlad, menu_Vlad, '블라드의 영지')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Vlad_gray, menu_Vlad, '블라드의 영지')
+  END
+  IF npc_progress['DominaIdoneya'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_DominaIdoneya, menu_DominaIdoneya, '이도네야 궁전')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_DominaIdoneya_gray, menu_DominaIdoneya, '이도네야 궁전')
+  END
+  IF npc_progress['Roland'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Roland, menu_Roland, '롤랜드의 저택')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Roland_gray, menu_Roland, '롤랜드의 저택')
+  END
+  IF npc_progress['Legioner'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Legioner, menu_Legioner, '레기오네르의 집')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Legioner_gray, menu_Legioner, '레기오네르의 집')
+  END
+  IF npc_progress['Diktator_fabiy'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Diktator_fabiy, menu_Diktator_fabiy, '파비이 궁전')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Diktator_fabiy_gray, menu_Diktator_fabiy, '파비이 궁전')
+  END
+  FUNC('$menu', 'city_form', $menu_item_Redlight, menu_LeaveRedLight_district, '중앙 거리로 돌아간다')
+  FUNC('$menu', '===END===')
+END
+
+!End Red Light District
+
+
+
+
+if city_form = 1000:
+	$setting_display += '<div id="under">< CG 스타일 ></div>'
+	$setting_display += '<div id="under_gray" aria-disabled="true" title="개발중">개발중<br></div>'
+	$setting_display += '<div id="under_gray" aria-disabled="true" title="개발중">개발중<br></div>'
+	$setting_display += '<div id="under_gray" aria-disabled="true" title="개발중">개발중<br></div>'
+	$setting_display += '<br><br><div id="under">< < 자동 저장 설정 > ><br></div>'
+	$setting_display += '<a style="line-height:25%"></a><div id="under">< 매일 자동저장 ><br></div>'	
+	if autosave_day ! 1:
+		$setting_display += '<div id="under_gray">끔<br><div id = "clear"><a href = "EXEC: autosave_day = 1 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$setting_display += '<div id="under">켬<br><div id = "clear"><a href = "EXEC: autosave_day = 0 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	end
+	$setting_display += '<br><div id="under">< 주기 자동저장 ><br></div>'
+	if autosave_decade ! 1:
+		$setting_display += '<div id="under_gray">끔<br><div id = "clear"><a href = "EXEC: autosave_decade = 1 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$setting_display += '<div id="under">켬<br><div id = "clear"><a href = "EXEC: autosave_decade = 0 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	end
+
+	$setting_display_r += '<div id="under">< < 컨텐츠 옵션 > ><br></div>'
+	if nsfw ! 1:
+		$setting_display_r += '<div id="under">전체 19금 장면 : 활성<br><div id = "clear"><a href = "EXEC: nsfw = 1 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$setting_display_r += '<div id="under_gray">전체 19금 장면 : 비활성<br><div id = "clear"><a href = "EXEC: nsfw = 0 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	end
+	
+	if no_loli = 0 and perv_revealed > 0:
+		$setting_display_r += '<div id="under_gray">아동 추가대사 비활성<div id = "clear"><a href = "EXEC: no_loli = 2 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	elseif no_loli = 2:
+		$setting_display_r += '<div id="under">아동 추가대사 활성<div id = "clear"><a href = "EXEC: no_loli = 0 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	elseif no_loli = 0:
+		$setting_display_r += '<div id="under">아동 출현중<div id = "clear"><a href = "EXEC: no_loli = 1 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	elseif no_loli = 1:
+		$setting_display_r += '<div id="under_gray">아동 미출현<div id = "clear"><a href = "EXEC: no_loli = 0 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>' 
+	end
+	
+	if no_milf ! 1:
+		$setting_display_r += '<div id="under">MILF : 출현<br><div id = "clear"><a href = "EXEC: no_milf = 1 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$setting_display_r += '<div id="under_gray">MILF : 미출현<br><div id = "clear"><a href = "EXEC: no_milf = 0 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	end
+
+	if no_mindbreak ! 1:
+		$setting_display_r += '<div id="under">정신붕괴 : 활성<br><div id = "clear"><a href = "EXEC: no_mindbreak = 1 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$setting_display_r += '<div id="under_gray">정신붕괴 : 비활성<br><div id = "clear"><a href = "EXEC: no_mindbreak = 0 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	end
+
+	if no_guro ! 1:
+		$setting_display_r += '<div id="under">고어 컨텐츠 : 활성<br><div id = "clear"><a href = "EXEC: dynamic $guro_off & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$setting_display_r += '<div id="under_gray">고어 컨텐츠 : 바활성<br><div id = "clear"><a href = "EXEC: dynamic $guro_on & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	end
+
+	if no_futa ! 1:
+		$setting_display_r += '<div id="under">후타 콘텐츠 : 활성<br><div id = "clear"><a href = "EXEC: no_futa = 1 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$setting_display_r += '<div id="under_gray">후타 콘텐츠 : 비활성<br><div id = "clear"><a href = "EXEC: no_futa = 0 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	end
+
+	$setting_display_r += '<br><div id="under_gray">< < 난이도 설정 > ></div>'
+
+	if game_difficulty ! 2:
+		if difficulty_setting ! 1:
+			$setting_display_r += '<div id="under_gray">쉬움<div id = "clear"><a href = "EXEC: difficulty_setting = 1 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+		else
+			$setting_display_r += '<div id="under">쉬움</div>'
+		end
+		if difficulty_setting ! 0:
+			$setting_display_r += '<div id="under_gray">클래식/보통<br><div id = "clear"><a href = "EXEC: difficulty_setting = 0 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+		else
+			$setting_display_r += '<div id="under">클래식/보통</div>'
+		end
+	end
+	if difficulty_setting ! 2:
+		$setting_display_r += '<div id="under_gray">어려움/하드코어<br><div id = "clear"><a href = "EXEC: difficulty_setting = 2 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$setting_display_r += '<div id="under">어려움/하드코어</div>'
+	end
+
+	$setting_display_r += '<br><div id="under">< < 음향 설정 > ></div>'
+	if nsfw_sound_disabled = 0:
+		$setting_display_r += '<div id="under">19금 소리 : 활성중<br><div id="clear"><a href = "EXEC: nsfw_sound_disabled = 1 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$setting_display_r += '<div id="under_gray">19금 소리 : 비활성<br><div id="clear"><a href = "EXEC: nsfw_sound_disabled = 0 & gt ''menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+	end
+
+	$setting_display_c += '<br><div id="under">뒤로 <br><div id = "clear"><a href = "EXEC: gs ''$newloc'' & city_form = prev_city_form & gt ''city_menu_form''"><img src = "content\pic\clear.png"></a></div></div>'
+!  	$setting_display_c2 += '<br><div id="under_gray"> Next <br></div>'
+!  	$setting_display_c2 += '<br><div id="under_gray"> Next <br><div id = "clear"><img src = "content\pic\clear.png"></div></div>'
+end
+
+IF city_form = 118:
+	city_district = 9
+  $place = 'centralkvartal'
+  FUNC('$menu', '===BEGIN===', 'column_0')
+  IF $estate = 'centralkvartal_house':
+    FUNC('$menu', 'goto_city', $menu_item_apartmentcentralkvartal_house, 0, 'menu_form = 0 & city_form', 'menu_form', '당신의 아파트')
+  END
+  IF hero_choice > 100 and (credit > 0 and faction_fame['centralkvartal'] < 2):
+    FUNC('$menu', 'exec', $menu_item_Residencescentralkvartal, empty, '주거 구역', '당신의 평판으로는 이곳에 볼일이 없습니다')
+  ELSE
+    FUNC('$menu', 'city_form', $menu_item_Residencescentralkvartal, menu_Residencescentralkvartal, '주거 구역')
+  END
+  FUNC('$menu', 'interaction_city', $menu_item_apteka, 1991, '물약 상점')
+  FUNC('$menu', 'interaction_city', $menu_item_centralkvartalForum, menu_centralkvartalForum, '로마 포럼')
+  FUNC('$menu', 'interaction_city', $menu_item_bakery, 9991, '빵집 "갓 구운 빵"')
+  FUNC('$menu', 'city_form', $menu_item_Leavewhite, menu_Leavecentralkvartal, '구역을 떠난다')
+  FUNC('$menu', '===END===')
+END
+
+IF city_form = 1181:
+  $place = 'centralkvartal_district'
+  FUNC('$menu', '===BEGIN===', 'column_0')
+  IF npc_progress['Zhasmin'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Zhasmin, menu_Zhasmin, '자스민 저택')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Zhasmin_gray, menu_Zhasmin, '자스민 저택')
+  END
+  IF npc_progress['Ciciliya'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Ciciliya, menu_Ciciliya, '치칠리야 영지')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Ciciliya_gray, menu_Ciciliya, '치칠리야 영지')
+  END
+  IF npc_progress['Leta'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Leta, menu_Leta, '레타의 집')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Leta_gray, menu_Leta, '레타의 집')
+  END
+  IF npc_progress['MonaMur'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_MonaMur, menu_MonaMur, '모나 무르 저택')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_MonaMur_gray, menu_MonaMur, '모나 무르 저택')
+  END
+  IF npc_progress['Luisa'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Luisa, menu_Luisa, '루이사 정원')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Luisa_gray, menu_Luisa, '루이사 정원')
+  END
+  IF npc_progress['Roxolana'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Roxolana, menu_Roxolana, '록솔라나 궁전')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Roxolana_gray, menu_Roxolana, '록솔라나 궁전')
+  END
+  IF npc_progress['Valkeriya'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Valkeriya, menu_Valkeriya, '발케리야 영지')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Valkeriya_gray, menu_Valkeriya, '발케리야 영지')
+  END
+  IF npc_progress['Kleo'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Kleo, menu_Kleo, '클레오 궁전')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Kleo_gray, menu_Kleo, '클레오 궁전')
+  END
+  IF npc_progress['RedBaron'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_RedBaron, menu_RedBaron, '레드 바론 영지')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_RedBaron_gray, menu_RedBaron, '레드 바론 영지')
+  END
+  FUNC('$menu', '===END===')
+END
+
+IF city_form = 1181:
+  $place = 'centralkvartal_district'
+  FUNC('$menu', '===BEGIN===', 'column_1')
+  IF npc_progress['Ravena'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Ravena, menu_Ravena, '라베나 저택')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Ravena_gray, menu_Ravena, '라베나 저택')
+  END
+  IF npc_progress['Devlet'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Devlet, menu_Devlet, '데블렛 저택')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Devlet_gray, menu_Devlet, '데블렛 저택')
+  END
+  IF npc_progress['Mariam'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Mariam, menu_Mariam, '마리암 영지')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Mariam_gray, menu_Mariam, '마리암 영지')
+  END
+  IF npc_progress['Agniya'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Agniya, menu_Agniya, '아그니야 영지')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Agniya_gray, menu_Agniya, '아그니야 영지')
+  END
+  IF npc_progress['MagisterCrowley'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_MagisterCrowley, menu_MagisterCrowley, '크로울리 성')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_MagisterCrowley_gray, menu_MagisterCrowley, '크로울리 성')
+  END
+  IF npc_progress['Tecit'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_Tecit, menu_Tecit, '테싯 영지')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_Tecit_gray, menu_Tecit, '테싯 영지')
+  END
+  IF npc_progress['ShakhSelih'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_ShakhSelih, menu_ShakhSelih, '샤 셀리 하렘')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_ShakhSelih_gray, menu_ShakhSelih, '샤 셀리 하렘')
+  END
+  IF npc_progress['ShakhOsman'] ! 2:
+    FUNC('$menu', 'interaction_city', $menu_item_ShakhOsman, menu_ShakhOsman, '샤 오스만 하렘')
+  ELSE
+    FUNC('$menu', 'interaction_city', $menu_item_ShakhOsman_gray, menu_ShakhOsman, '샤 오스만 하렘')
+  END
+  FUNC('$menu', 'city_form', $menu_item_centralkvartal, menu_Leavecentralkvartal_district, '중앙 거리로')
+  FUNC('$menu', '===END===')
+END
+
+IF city_form = 120:
+  $place = 'fogs_district'
+  FUNC('$menu', '===BEGIN===', 'column_0')
+  FUNC('$menu', 'interaction_city', $menu_item_teatr, 791, '살아 있는 인형극장')
+  FUNC('$menu', 'interaction_city', $menu_item_fogs_portal, 6217, '포털 지대')
+  FUNC('$menu', 'city_form', $menu_item_city_gate, menu_city_gate, '도시 관문으로')
+  FUNC('$menu', '===END===')
+END
+
+!check for an event (moved to end after evaluating city_form so city_district is set so main_screen will reset menu_form upon return - ImperatorAugustus)
+gs '$city_random_event'
+
+gt 'city_screen'
+
+------------ city_menu_form ------------

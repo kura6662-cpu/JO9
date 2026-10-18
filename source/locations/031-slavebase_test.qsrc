@@ -1,0 +1,214 @@
+# slavebase_test
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1259 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'slavebase_test': gs 'snk_room_bridge', 'guard', 'slavebase_test'
+! JO9 MOD END J9M1259
+!debug location for slave database
+gs '_layout'
+
+!*p '<div id = "bg"><img src="content\pic\bg\<<$bg[$place]>>.png"></div>'
+! JO9 MOD START J9M1258 | 2026-10-15_z_inline_text_prefix | changed block; context may be included
+! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($text[txt], '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $text[txt] = $mid($text[txt], len($jo9_leading_empty) + 1, len($text[txt]))
+! JO9 MOD END J9M1258
+*p '<div id = "text"><<$text[txt]>></div>'
+
+if txt = 0:
+ 	slave_type = input ('노예 번호 입력')
+end
+
+$text[0] = 'fullimage'
+$text[1] = 'fullmade'
+$text[2] = 'fullmistress'
+$text[3] = 'fullsecretary'
+$text[4] = 'bathing_alone'
+$text[5] = 'percussion'
+$text[6] = 'cleaning'
+$text[7] = 'cooking'
+$text[8] = 'dance'
+$text[9] = 'desertag'
+$text[10] = 'enchanting'
+$text[11] = 'fighting'
+$text[12] = 'woodwind'
+$text[13] = 'strings'
+$text[14] = 'gymnastics'
+$text[15] = 'lesbo_bath'
+$text[16] = 'nurse'
+$text[17] = 'piano'
+$text[18] = 'rest'
+$text[19] = 'secretary'
+$text[20] = 'student'
+$text[21] = 'painting'
+$text[22] = 'singing'
+$text[23] = 'washing'
+$text[24] = 'analfisting'
+$text[25] = 'analsex'
+$text[26] = 'bondage'
+$text[27] = 'bdsm'
+$text[28] = 'bj'
+$text[29] = 'bukkake'
+$text[30] = 'disgrace'
+$text[31] = 'defloration'
+$text[32] = 'deprivation_suit'
+$text[33] = 'dog_sex'
+$text[34] = 'dildo'
+$text[35] = 'dt'
+$text[36] = 'enema'
+$text[37] = 'exhibit'
+$text[38] = 'fisting'
+$text[39] = 'fj'
+$text[40] = 'gangbang'
+$text[41] = 'hj'
+$text[42] = 'horse_sex'
+$text[43] = 'hug'
+$text[44] = 'kiss'
+$text[45] = 'scat'
+$text[46] = 'cunnilingus'
+$text[47] = 'lesbian'
+$text[48] = 'masturbation'
+$text[49] = 'paizuri'
+$text[50] = 'petplay'
+$text[51] = 'petting'
+$text[52] = 'pig_sex'
+$text[53] = 'ponyplay'
+$text[54] = 'rimming'
+$text[55] = 'seduce'
+$text[56] = 'sex_vaginal'
+$text[57] = 'spider'
+$text[58] = 'tongue'
+$text[59] = 'tentacles'
+$text[60] = 'urine_drink'
+$text[61] = 'branding'
+$text[62] = 'cane'
+$text[63] = 'ear_grab'
+$text[64] = 'ironmaiden'
+$text[65] = 'fireswing'
+$text[66] = 'fist_hit'
+$text[67] = 'leash'
+$text[68] = 'needle'
+$text[69] = 'pins'
+$text[70] = 'slap'
+$text[71] = 'spank'
+$text[72] = 'strappado'
+$text[73] = 'verminpit'
+$text[74] = 'water'
+$text[75] = 'wax'
+$text[76] = 'woodenhorse'
+$text[77] = 'whip'
+$text[78] = 'cowSK'
+$text[80] = 'nipplefuck'
+$text[81] = 'lesbiansex1'
+$text[82] = 'lesbiansex2'
+$text[83] = 'lesbiansex3'
+$text[84] = 'lesbiansex4'
+$text[85] = 'DoubleBdsm'
+$text[86] = 'DoubleHousework'
+$text[87] = 'DoubleGym'
+
+
+! JO9 MOD START J9M1257 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+if txt = 0: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$fullimage[slave_type]>>.png"></div>')
+if txt = 1: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$fullmade[slave_type]>>.png"></div>')
+if txt = 2: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$fullmistress[slave_type]>>.png"></div>')
+if txt = 3: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$fullsecretary[slave_type]>>.png"></div>')
+if txt = 4: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$bathing_alone[slave_type]>>.png"></div>')
+if txt = 5: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$percussion[slave_type]>>.png"></div>')
+if txt = 6: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$cleaning[slave_type]>>.png"></div>')
+if txt = 7: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$cooking[slave_type]>>.png"></div>')
+if txt = 8: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$dance[slave_type]>>.png"></div>')
+if txt = 9: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$desertag[slave_type]>>.png"></div>')
+if txt = 10: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$enchanting[slave_type]>>.png"></div>')
+if txt = 11: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$fighting[slave_type]>>.png"></div>')
+if txt = 12: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$woodwind[slave_type]>>.png"></div>')
+if txt = 13: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$strings[slave_type]>>.png"></div>')
+if txt = 14: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$gymnastics[slave_type]>>.png"></div>')
+if txt = 15: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$lesbo_bath[slave_type]>>.png"></div>')
+if txt = 16: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$nurse[slave_type]>>.png"></div>')
+if txt = 17: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$piano[slave_type]>>.png"></div>')
+if txt = 18: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$rest[slave_type]>>.png"></div>')
+if txt = 19: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$secretary[slave_type]>>.png"></div>')
+if txt = 20: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$student[slave_type]>>.png"></div>')
+if txt = 21: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$painting[slave_type]>>.png"></div>')
+if txt = 22: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$singing[slave_type]>>.png"></div>')
+if txt = 23: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$washing[slave_type]>>.png"></div>')
+if txt = 24: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$analfisting[slave_type]>>.png"></div>')
+if txt = 25: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$analsex[slave_type]>>.png"></div>')
+if txt = 26: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$bondage[slave_type]>>.png"></div>')
+if txt = 27: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$bdsm[slave_type]>>.png"></div>')
+if txt = 28: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$bj[slave_type]>>.png"></div>')
+if txt = 29: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$bukkake[slave_type]>>.png"></div>')
+if txt = 30: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$disgrace[slave_type]>>.png"></div>')
+if txt = 31: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$defloration[slave_type]>>.png"></div>')
+if txt = 32: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$deprivation_suit[slave_type]>>.png"></div>')
+if txt = 33: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$dog_sex[slave_type]>>.png"></div>')
+if txt = 34: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$dildo[slave_type]>>.png"></div>')
+if txt = 35: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$dt[slave_type]>>.png"></div>')
+if txt = 36: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$enema[slave_type]>>.png"></div>')
+if txt = 37: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$exhibit[slave_type]>>.png"></div>')
+if txt = 38: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$fisting[slave_type]>>.png"></div>')
+if txt = 39: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$fj[slave_type]>>.png"></div>')
+if txt = 40: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$gangbang[slave_type]>>.png"></div>')
+if txt = 41: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$hj[slave_type]>>.png"></div>')
+if txt = 42: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$horse_sex[slave_type]>>.png"></div>')
+if txt = 43: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$hug[slave_type]>>.png"></div>')
+if txt = 44: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$kiss[slave_type]>>.png"></div>')
+if txt = 45: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$kopro[slave_type]>>.png"></div>')
+if txt = 46: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$kuni[slave_type]>>.png"></div>')
+if txt = 47: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$lesbian[slave_type]>>.png"></div>')
+if txt = 48: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$masturbation[slave_type]>>.png"></div>')
+if txt = 49: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$paizuri[slave_type]>>.png"></div>')
+if txt = 50: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$petplay[slave_type]>>.png"></div>')
+if txt = 51: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$petting[slave_type]>>.png"></div>')
+if txt = 52: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$pig_sex[slave_type]>>.png"></div>')
+if txt = 53: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$ponyplay[slave_type]>>.png"></div>')
+if txt = 54: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$rimming[slave_type]>>.png"></div>')
+if txt = 55: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$seduce[slave_type]>>.png"></div>')
+if txt = 56: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$sex_vaginal[slave_type]>>.png"></div>')
+if txt = 57: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$spider[slave_type]>>.png"></div>')
+if txt = 58: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$tongue[slave_type]>>.png"></div>')
+if txt = 59: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$tentacles[slave_type]>>.png"></div>')
+if txt = 60: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$urine_drink[slave_type]>>.png"></div>')
+if txt = 61: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$branding[slave_type]>>.png"></div>')
+if txt = 62: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$cane[slave_type]>>.png"></div>')
+if txt = 63: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$ear_grab[slave_type]>>.png"></div>')
+if txt = 64: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$ironmaiden[slave_type]>>.png"></div>')
+if txt = 65: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$fireswing[slave_type]>>.png"></div>')
+if txt = 66: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$fist_hit[slave_type]>>.png"></div>')
+if txt = 67: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$leash[slave_type]>>.png"></div>')
+if txt = 68: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$needle[slave_type]>>.png"></div>')
+if txt = 69: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$pins[slave_type]>>.png"></div>')
+if txt = 70: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$slap[slave_type]>>.png"></div>')
+if txt = 71: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$spank[slave_type]>>.png"></div>')
+if txt = 72: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$strappado[slave_type]>>.png"></div>')
+if txt = 73: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$verminpit[slave_type]>>.png"></div>')
+if txt = 74: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$water[slave_type]>>.png"></div>')
+if txt = 75: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$wax[slave_type]>>.png"></div>')
+if txt = 76: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$woodenhorse[slave_type]>>.png"></div>')
+if txt = 77: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$whip[slave_type]>>.png"></div>')
+if txt = 78: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$cowSK[slave_type]>>.png"></div>')
+if txt = 80: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$nipplefuck[slave_type]>>.png"></div>')
+if txt = 81: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$lesbiansex1[slave_type]>>.png"></div>')
+if txt = 82: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$lesbiansex2[slave_type]>>.png"></div>')
+if txt = 83: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$lesbiansex3[slave_type]>>.png"></div>')
+if txt = 84: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$lesbiansex4[slave_type]>>.png"></div>')
+if txt = 85: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$DoubleBdsm[slave_type]>>.png"></div>')
+if txt = 86: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$DoubleHousework[slave_type]>>.png"></div>')
+if txt = 87: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$DoubleGym[slave_type]>>.png"></div>')
+! JO9 MOD END J9M1257
+if txt = 79: gt 'Start'
+
+if txt > 0:
+ 	addobj '<img src = "content\pic\buttons\back_button.png">'
+else
+ 	addobj '<img src = "content\pic\buttons\noback_button.png">'
+end
+addobj '<img src = "content\pic\buttons\forward_button.png">'
+
+*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<slave_type>></div>'
+*nl '<img src = "<<$seed_ava[slave_type]>>.png">'
+*nl '<img src = "<<$seed_ava_gray[slave_type]>>.png">'
+*nl '<img src = "<<$seed_ava_clear[slave_type]>>.png">'
+*nl '<img width = "220px" src = "content\pic\girls\body\<<$seed_boobs_img[slave_type]>>.png"><img width = "220px" src = "content\pic\girls\body\<<$seed_pussy_img[slave_type]>>.png">'
+*nl '<<$slave_boobs[seed_boobs[slave_type]]>></center></div>'
+------------ slavebase_test ------------

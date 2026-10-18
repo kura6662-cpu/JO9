@@ -1,0 +1,57 @@
+# start_demo_game
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2924 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'start_demo_game': gs 'snk_room_bridge', 'guard', 'start_demo_game'
+! JO9 MOD END J9M2924
+!Start Tutorial Game
+
+bath = 1
+kitchen = 1
+barn = 0 &! disable barn for tutorial
+dungeon = 0
+lab = 0
+
+gs 'demo_estate'
+
+$place = 'dungeon'
+
+day = 1
+decade = 0
+decadecount = 1
+ride_count = 1
+auction_count = 10
+gladi_count = 4
+
+cooked_food = -1
+sparks = 800
+demo_game = 1
+
+ui_style = 1
+gs '_layout'
+
+trainer_slave_training_count['mistress_angelika'] = -1
+trainer_slave_training_count['goji'] = -1
+trainer_slave_training_count['avgia'] = -1
+trainer_slave_training_count['marivana'] = -1
+trainer_slave_training_count['jeevs'] = -1
+trainer_slave_training_count['master_s'] = -1
+trainer_slave_training_count['morrigan'] = -1
+trainer_slave_training_count['ippolita'] = -1
+trainer_slave_training_count['von_valtz'] = -1
+trainer_slave_training_count['geralt'] = -1
+trainer_slave_training_count['yodson'] = -1
+trainer_slave_training_count['applejack'] = -1
+trainer_slave_training_count['giess'] = -1
+trainer_slave_training_count['ling'] = -1
+trainer_slave_training_count['minosia'] = -1
+trainer_slave_training_count['rabban'] = -1
+trainer_slave_training_count['sheepherd'] = -1
+
+$choose = 'choose_slave'
+txt = 1
+
+gs 'init_demo_game'
+gs '$newloc'
+gt 'choose_the_girl'
+
+------------ start_demo_game ------------

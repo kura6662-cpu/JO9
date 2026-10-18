@@ -1,0 +1,85 @@
+# jo9_traits_value
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START TBV_HELPER | 2026-10-17_trait_value
+! Feature helper: actor arrays are addressed through the existing instance name convention.
+! refresh recomputes appearance before adding the trait, so repeated evaluation is idempotent.
+$jo9_trait_value_mode = $args[0]
+$jo9_trait_value_actor = $args[1]
+jo9_trait_value_amount = args[2]
+jo9_trait_value_saved_peerless = args[3]
+result = 0
+if $jo9_trait_value_mode = 'reward':
+ result = jo9_trait_value_amount
+ if $jo9_trait_value_actor ! '': jo9_trait_value_saved_peerless = dyneval('result = ' + $jo9_trait_value_actor + "['jo9_peerless']")
+ ! Round the added half upward; zero and negative existing awards stay unchanged.
+ if jo9_trait_value_saved_peerless = 1 and result > 0: result += (result + 1) / 2
+ jump 'jo9_trait_value_done'
+end
+if $jo9_trait_value_actor = '': jump 'jo9_trait_value_done'
+if $jo9_trait_value_mode = 'refresh':
+ dynamic $replace({
+  jo9_trait_value_rate = max(cont_atr_min, min(cont_atr_max, dynslave_rate['beauty'])) + dynslave_rate['temp_beauty']
+  jo9_trait_value_grade = 0
+  if jo9_trait_value_rate >= cont_atr_threshold[1]: jo9_trait_value_grade = 1
+  if jo9_trait_value_rate >= cont_atr_threshold[2]: jo9_trait_value_grade = 2
+  if jo9_trait_value_rate >= cont_atr_threshold[3]: jo9_trait_value_grade = 3
+  if jo9_trait_value_rate >= cont_atr_threshold[4]: jo9_trait_value_grade = 4
+  if jo9_trait_value_rate >= cont_atr_threshold[5]: jo9_trait_value_grade = 5
+  dynslave['beauty'] = jo9_trait_value_grade
+  if dynslave['jo9_peerless'] = 1: dynslave['beauty'] = min(6, dynslave['beauty'] + 1)
+  ! Every individual grade printed in the knowledge and ST columns must reach A (4).
+  if dynslave['jo9_versatile'] = 0 and dynslave['jo9_versatile_manual_off'] = 0 and min(min(dynslave['service'], dynslave['cook'], dynslave['secretary'], dynslave['expression'], dynslave['nurse'], dynslave['alchemy'], dynslave['enchanter'], dynslave['stamina']), min(dynslave['gladiatrix'], dynslave['calisthenics'], dynslave['music'], dynslave['art'], dynslave['pet'], dynslave['dressage'], dynslave['cowSK'], dynslave['petting']), min(dynslave['oral'], dynslave['penetration'], dynslave['orgy'], dynslave['roleplay'], dynslave['fetishism'], dynslave['xenophily'], dynslave['nipplefuck'], dynslave['lesbiansex'])) >= 4: dynslave['jo9_versatile'] = 1
+ }, 'dyn'+'slave', $jo9_trait_value_actor)
+ jump 'jo9_trait_value_done'
+end
+if $jo9_trait_value_mode = 'base_price':
+ result = jo9_trait_value_amount
+ if dyneval('result = ' + $jo9_trait_value_actor + "['jo9_versatile']") = 1: result += result / 4
+ jump 'jo9_trait_value_done'
+end
+if $jo9_trait_value_mode = 'surgery':
+ ! Called before the original cost/history changes. Only current top appearance is eligible.
+ dynamic $replace({
+  if dynslave['beauty'] = 5 and dynslave['jo9_peerless'] = 0 and rand(1,100) <= 5:
+   dynslave['jo9_peerless'] = 1
+   dynslave['beauty'] = 6
+   msg '수술이 대성공하여, 한층 빛나는 절세의 미모를 얻었다.'
+  end
+ }, 'dyn'+'slave', $jo9_trait_value_actor)
+ jump 'jo9_trait_value_done'
+end
+if $jo9_trait_value_mode = 'premium':
+ result = dyneval($replace({
+  result = 0
+  if dynslave['virginity'] = 4 or dynslave['jo9_peerless'] = 1: result = 1
+ }, 'dyn'+'slave', $jo9_trait_value_actor))
+ jump 'jo9_trait_value_done'
+end
+if $jo9_trait_value_mode = 'haggle':
+ result = dyneval($replace({
+  result = jo9_trait_value_amount
+  if dynslave['virginity'] = 4 and dynslave['jo9_peerless'] = 1: result += result / 2
+ }, 'dyn'+'slave', $jo9_trait_value_actor))
+ jump 'jo9_trait_value_done'
+end
+if $jo9_trait_value_mode = 'market' or $jo9_trait_value_mode = 'auction':
+ result = jo9_trait_value_amount
+ result = dyneval($replace({
+  result = jo9_trait_value_amount
+  if dynslave['virginity'] = 4 or dynslave['jo9_peerless'] = 1:
+   if $jo9_trait_value_mode = 'market': result *= 10
+   if $jo9_trait_value_mode = 'auction': result *= 2
+   if dynslave['virginity'] = 4 and dynslave['jo9_peerless'] = 1: result += result / 2
+  end
+ }, 'dyn'+'slave', $jo9_trait_value_actor))
+ jump 'jo9_trait_value_done'
+end
+:jo9_trait_value_done
+killvar '$jo9_trait_value_mode'
+killvar '$jo9_trait_value_actor'
+killvar 'jo9_trait_value_amount'
+killvar 'jo9_trait_value_saved_peerless'
+killvar 'jo9_trait_value_rate'
+killvar 'jo9_trait_value_grade'
+! JO9 MOD END TBV_HELPER
+------------ jo9_traits_value ------------

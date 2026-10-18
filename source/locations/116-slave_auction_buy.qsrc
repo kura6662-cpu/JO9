@@ -1,0 +1,268 @@
+# slave_auction_buy
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1400 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'slave_auction_buy': gs 'snk_room_bridge', 'guard', 'slave_auction_buy'
+! JO9 MOD END J9M1400
+!Auction. Buy untrained slaves.
+if farid_potential_debt > 0:
+	if slave_state = CONST_INT['no_slave']: interaction_city = 1191
+	if slave_state > CONST_INT['no_slave']: interaction_city = 1192
+	gt 'interaction_city'
+end
+
+! possible to arrive via home "no slave" avatar portrait without passing through city_screen, so make sure we are playing city music
+if noble_status = 1 or brand_reputation >= 5:
+	$city_sound = 'content/snd/city_honor.wav'
+elseif $estate = 'slum_house':
+	$city_sound = 'content/snd/city_poor.wav'
+else
+	$city_sound = 'content/snd/city_citizen.wav'
+end
+
+if farid_debt > 0: interaction_city = 1193 & gt 'interaction_city'
+killobj
+
+if stock_state = CONST_INT['no_slave'] or (no_loli = 1 and stock['age'] = CONST_INT['loli_age']):
+	gs 'generate_stock'
+	if stock['base_beauty'] = 0: stock['base_beauty'] = 1 & stock_rate['beauty'] += 10 &! no F- natural beauty slaves will be generated for the market - ImperatorAugustus
+else
+	gs '$slave_price', 'stock'
+end
+$place = 'slave_stage'
+gs '_layout'
+
+if stock_sold = 0:
+	$text = '<<$auction_start>>'
+end
+
+if auction_phase = 0:
+	if stock_sold = 1: 
+! JO9 MOD START J9M1399 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+		$text = '<font color="#660000"> [잡파]<br>&nbsp;첫번째 상품입니다! <<$stock_world_auk>>에서 건너온 <<$stock_epithet>> <<$stock_occupation_auk>>! <<$stock_family_auk>> <b><<$stock_name>></b>! 입찰 시작가는 <b><<slave_base_price>>스파크</b> 입니다! 자, 어떤 분이 먼저 응찰하시겠습니까?!</font>'
+! JO9 MOD END J9M1399
+	end
+	if stock_sold > 1: 
+! JO9 MOD START J9M1398 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+		$text = '<font color="#660000"> [잡파]<br>&nbsp;다음 상품! <<$stock_world_auk>>에서 건너온 <<$stock_epithet>> <<$stock_occupation_auk>>! <<$stock_family_auk>> <b><<$stock_name>></b>! 입찰 시작가는 <b><<slave_base_price>>스파크</b> 입니다! 자, 어떤 분이 먼저 응찰하시겠습니까?!</font>'
+! JO9 MOD END J9M1398
+	end
+	if stock_sold >= stock_limit: 
+! JO9 MOD START J9M1397 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+		$text = '<font color="#660000"> [잡파]<br>&nbsp;오늘의 마지막 상품입니다! <<$stock_world_auk>>에서 건너온 <<$stock_epithet>> <<$stock_occupation_auk>>! <<$stock_family_auk>> <b><<$stock_name>></b>! 입찰 시작가는 <b><<slave_base_price>>스파크</b> 입니다! 자, 어떤 분이 먼저 응찰하시겠습니까?!</font>'
+! JO9 MOD END J9M1397
+	end
+end
+
+IF auction_phase = 2:
+  b = RAND (1,9)
+! JO9 MOD START J9M1396 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+  $text = '<font color="#660000"> [잡파]<br>&nbsp;입찰됩니다! <<cur_stock_price>>스파크, 하나... <<$auk_add[b]>></font>'
+! JO9 MOD END J9M1396
+END
+
+IF auction_phase = 3:
+  b = RAND (1,6)
+! JO9 MOD START J9M1395 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+  $text = '<font color="#660000"> [잡파]<br>&nbsp;<<cur_stock_price>>스파크, 둘... <<$auk_add[b]>></font>'
+! JO9 MOD END J9M1395
+END
+
+IF auction_phase = 4:
+  b = RAND (1,6)
+! JO9 MOD START J9M1394 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+  $text = '<font color="#660000"> [잡파]<br>&nbsp;<<cur_stock_price>>스파크, 셋! 낙찰.</font>'
+! JO9 MOD END J9M1394
+END
+
+IF auction_phase = 5:
+! JO9 MOD START J9M1393 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+  $text = '<font color="#660000">[잡파]<br>&nbsp;이것으로 오늘의 경매는 끝났습니다! 모든 상품이 낙찰되었습니다. 내일 또 뵙기를 바라겠습니다. 안개가 우리에게 더 많은 경이로운 미녀들을 선사할 것입니다!</font>' 
+! JO9 MOD END J9M1393
+END
+
+if auction_phase = 6:
+	total_bought += 1
+	$text = '  당신은 새로 손에 넣은 노예를 데리고 시장을 떠난다.'
+	!Tracking user preference for lolis to unlock explicit text setting
+	if stock['age'] = CONST_INT['loli_age']: lolis_bought += 1
+	if total_bought > total_bought_threshold and ((100*lolis_bought) / total_bought) > iif(no_milf = 1, 65, 50): likes_lolis = 1
+
+	if likes_lolis = 1 and perv_revealed < 1 and stock['age'] = CONST_INT['loli_age']:
+! JO9 MOD START J9M1392 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+		$text = '[잡파]<br>&nbsp;<i>또 다른</i> 젊은 한 명이오, 내 친애하는 이여? 게다가 <i>이토록이나</i> 감미로운 아이라니, 분명 그녀는 당신에게 수많은 시간의 즐거움을 안겨 줄 것이오…' + _
+		' 어쩌면 당신은 젊음의 아름다움을 진정으로 감상할 줄 아는 남자인지도 모르겠군. 많은 이들은 이해하지 못하겠지만, 나 또한 "덜 익은 여성성"의 감식가라오. 새로운 Settings 옵션을 받아 주시오:' + _
+		'<i>        로리의 노화 관련 묘사는 노골적이다</i>'
+! JO9 MOD END J9M1392
+		perv_revealed = 1
+		no_loli = 2
+		msg '   새로 산 노예를 데리고 떠나려는 순간, 잡파가 굳이 너를 찾아온다. 어딘가 아는 사람 같은, 약간 소름 끼치는 태도와 음모를 속삭이듯 한 말투로 그가 말한다:'
+
+	elseif is_perv = 3 and loli_magic < 2 and stock['age'] = CONST_INT['loli_age'] and stock['beauty'] > 2:
+		$text = '  당신은 대금을 치르고 시장을 떠난다.<br><br>  이상하게도, 소녀의 손을 잡고 집으로 이끌자 바지 속이 꿈틀거리는 걸 느낀다. 수년 동안 제대로 발기한 적이 없었기에, 이건 꽤 이상하다. 이게 불멸의 로마의 어떤 마법이라도 되는 건가?'
+		loli_magic += 1
+		is_perv = 2
+		master_perv_rate += 7
+		if master_excitement_rate < 16: master_excitement_rate = 16
+		master_mood_rate += 16
+
+	elseif no_loli ! 2 and is_perv = 2 and loli_magic = 2 and stock['age'] = CONST_INT['loli_age'] and stock['beauty'] > 2 and assistant_state > CONST_INT['no_slave'] and assistant['age'] = CONST_INT['young_age'] and assistant['beauty'] > 2:
+		$text = '  당신은 대금을 치르고 시장을 떠난다.<br><br>  소녀의<<$little_txt>> 손을 잡고 집으로 이끌며, 이 새로운 노예와 사랑스러운 조수에게 네가 무슨 짓을 할 수 있을지 상상하는 것만으로도 몸이 달아오른다!'
+		is_perv = 1
+		master_perv_rate += 14
+		if master_excitement_rate < 32: master_excitement_rate = 32
+		master_libido_rate = max(master_libido_rate, master_libido_rate_cap[1])
+		master_mood_rate += 32
+
+	elseif stock['boobs'] > 2 and is_kid = 1 and kid_msg1 ! 1:
+		$text = '  남자애들이 다 그렇듯, 새로 손에 넣은 노예에게 자기소개를 할 때도 넌 그녀의 눈을 보지 않고 <<$slave_boobs_txt[stock["boobs"]]>>에 대고 말한다. 집으로 돌아가는 내내, 그 장대한 가슴을 한 번 더 보려고 계속 뒤를 돌아본다. 저건 네 <i>소유</i>다!'
+		kid_msg1 = 1
+		master_libido_rate += 4 * stock['boobs']
+		msg '   너 같은 어린 녀석들은 가슴 큰 여자를 <i>정말</i> 좋아하지. 노예의 젖가슴이 클수록 더 여자답고, 그러니 그런 여자를 가진 네가 더 훌륭한 노예상인이라고 생각하는 거다…<br><br><i>  그녀를 지배할 수만 있다면</i>.'
+
+	elseif is_perv ! 0 and perv_msg1 ! 1 and stock['boobs'] >= 4:
+		$text = '  당신은 새로 손에 넣은 노예를 데리고 시장을 떠난다.'
+		perv_msg1 = 1
+		master_libido_rate -= 4 * stock['boobs']
+		master_excitement_rate = -100
+		msg '   새 노예의 <<$slave_boobs_txt[stock["boobs"]]>>에 기가 눌린다. 어쩌면 그녀는 네게 너무 벅찬 여자일지도 모른다. 네가 제대로 해내지 못하면 어쩌지?'
+
+	elseif is_perv ! 0 and perv_msg2 ! 1 and stock['age'] = CONST_INT['milf_age']:
+		$text = '  당신은 새로 손에 넣은 노예를 데리고 시장을 떠난다.'
+		perv_msg2 = 1
+		master_libido_rate -= 4 * stock['boobs']
+		master_excitement_rate = -100
+		msg '   새 노예의 성숙함에 기가 눌린다. 어쩌면 그녀는 네가 쉽게 지배하기엔 너무 경험이 많을지도 모른다. 어쩌면 좀 더 어린 쪽이 나았을지도…'
+
+	else
+		$text = '  당신은 새로 손에 넣은 노예를 데리고 시장을 떠난다.'
+	end
+	if sound_on = 1: play $large_money_sound, sound_volume
+end
+
+if auction_phase = 7:
+! JO9 MOD START J9M1391 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+	$text = '<font color="#660000">[잡파]<br>&nbsp;오늘 경매는 마감되었으니, 내일 다시 찾아와!</font>'
+! JO9 MOD END J9M1391
+end
+
+if nsfw = 1:
+	not_safe = 1
+! JO9 MOD START J9M1390 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\empty.png"></div>')
+! JO9 MOD END J9M1390
+else
+! JO9 MOD START J9M1389 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\<<$bg[$place]>>.png"></div>')
+! JO9 MOD END J9M1389
+end
+! JO9 MOD START J9M1388 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+if stock_sold = 0: if nsfw = 0:*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\characters\slaver_fharid.png"></div>')
+if auction_phase = 5 or auction_phase = 7: if nsfw = 0: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\characters\slaver_fharid.png"></div>')
+! JO9 MOD END J9M1388
+if stock_sold > 0 and auction_phase < 5: if nsfw = 0: *p func('display_fullimage', 'stock', 'bg')
+! JO9 MOD START J9M1387 | 2026-10-15_z_inline_text_prefix | changed block; context may be included
+! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($text, '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $text = $mid($text, len($jo9_leading_empty) + 1, len($text))
+! JO9 MOD END J9M1387
+*p '<div id = "text"><<$text>></div>'
+
+if haggling_stage = 1:
+	if auction_phase < 4 and sparks >= rise_stock_price: *p '<div id = "auction_price">  입찰가<br>    <<rise_stock_price>>$</div>' & *p '<div id = "auction_rise_up"><a class="tooltip-left" tooltip-data="입찰한다" href = "EXEC: gt ''slave_auction_rise''"><img src="content\pic\buttons\rise_up.png"></a><br><a style="padding-top: 7px;" class="tooltip-left" tooltip-data="지금 가격의 2.5배로 즉시 구매한다" href = "EXEC: gt ''slave_auction_buyout''"><img src="content\pic\buttons\approve_small.png"></a></div>'
+else
+	if haggling_stage = 2: *p '<div id = "auction_price"><<cur_stock_price>>스파크!</div>'
+end
+
+if haggling_stage = 1 and auction_phase < 6:
+	*p '<div id = "auction_next"><a class="tooltip-left" tooltip-data="다음 노예" href = "EXEC: gt ''slave_auction_next''"><img src="content\pic\buttons\auk_next.png"></a></div>'
+end
+
+addobj '<img src = "content\pic\buttons\auk_fwrd.png">'
+
+gs '$addon', 'info_box'
+
+if stock_sold > 0 and auction_phase < 5:
+	*p ''
+	if stock['lactation'] > 1:
+		$boobs_milk04_txt = ' 부풀은 모유젖'
+		$boobs_milk05_txt = ' 탄력있는 모유젖'
+		$boobs_milk0_txt = ' 팽창된 모유젖'
+		$boobs_milk24_txt = ' 묵직한 모유젖'
+		$boobs_milk25_txt = ' 출렁이는 모유젖'
+		$boobs_milk2_txt = ' 출렁출렁한 모유젖'	
+	else
+		$boobs_milk04_txt = ' 봉긋한 젖'
+		$boobs_milk05_txt = ' 탄력적인 젖'
+		$boobs_milk0_txt = ' 터질듯한 젖'
+		$boobs_milk24_txt = ' 말랑말랑한 젖통'
+		$boobs_milk25_txt = ' 물렁물렁한 젖통'
+		$boobs_milk2_txt = ' 푹신한 젖통'
+	end
+	$slave_boobs2[3] = '커다랗고<<$boobs_milk24_txt>>'
+	$slave_boobs2[4] = '대단히 크고<<$boobs_milk25_txt>>'
+	$slave_boobs2[5] = '거대하고<<$boobs_milk2_txt>>'
+	$slave_boobs2[6] = '기막히게 크고<<$boobs_milk2_txt>>'
+	
+	$slave_boobs0[3] = '커다랗고<<$boobs_milk05_txt>>'
+	$slave_boobs0[4] = '대단히 크고<<$boobs_milk05_txt>>'
+	$slave_boobs0[5] = '엄청난 크기의<<$boobs_milk0_txt>>'
+	$slave_boobs0[6] = '바닥까지 닿을것 같은<<$boobs_milk0_txt>>'
+	if stock['age'] = CONST_INT['loli_age']:
+		$stock_boobs = $slave_boobs1[stock['boobs']]
+	elseif stock['age'] = CONST_INT['milf_age']:
+		$stock_boobs = $slave_boobs2[stock['boobs']]
+	else
+		$stock_boobs = $slave_boobs0[stock['boobs']]
+	end
+	*p '<div id = "side_panel_location"><font style="font-family:경기천년제목 Medium">노예 경매중<br></font><font><font size="2">~ Jack-O` with Oldhuntsman & 2.2.3 Kor Ver ~</font></div>'
+	*p '<div id = "interaction_stat_bar">'
+	*nl '호 칭 : &nbsp;<<$stock_name>>'
+	*nl '연 령 대 : &nbsp;<<$slave_age_name[stock["age"]]>>'
+	if $master_head_gear = 'raven_crown':
+		*nl '노예 등급: &nbsp;<<$rating[rating]>><br><br>'
+	else
+		*nl
+	end
+	*p ' 속성정보<div style="line-height:25%"><br></div>' 
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'beauty', stock['beauty'], 1)
+	*p '<font style="font-size:12px;">외모 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $красота_справка & msg $красота_справка_2"><<$beauty[stock["beauty"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'stamina', stock['stamina'], 1)
+	*nl '<font style="font-size:12px;">체력 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $здоровье_справка & dynamic $msg, $здоровье_справка_2"><<$stamina[stock["stamina"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'sensitivity', stock['sensitivity'], 1)
+	*nl '<font style="font-size:12px;">감수성 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $чувствительность_справка & dynamic $msg, $чувствительность_справка_2"><<$sensitivity[stock["sensitivity"]]>></a><div style="line-height:25%"><br></div>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'temper', stock['temper'], 1)
+	*p '<font style="font-size:12px;">성격 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $темперамент_справка & dynamic $msg, $темперамент_справка_2"><<$temper[stock["temper"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'intellect', stock['intellect'], 1)
+	*nl '<font style="font-size:12px;">지성 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $ум_справка & dynamic $msg, $ум_справка_2"><<$intellect[stock["intellect"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'ego', stock['ego'], 1)
+	*nl '<font style="font-size:12px;">자아 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $характер_справка & dynamic $msg, $характер_справка_2"><<$ego[stock["ego"]]>></a><div style="line-height:25%"><br></div>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'pride', stock['pride'], -1)
+	*p '<font style="font-size:12px;">태도 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $гордыня_справка & dynamic $msg, $гордыня_справка_2"><<$pride[stock["pride"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'exotic', stock['exotic'], 1)
+	*nl '<font style="font-size:12px;">독특함 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $экзотичность_справка & dynamic $msg, $экзотичность_справка_2"><<$exotic[stock["exotic"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'fat', IIF(stock['fat'] = 1 or stock['fat'] = 5, 1, 6 - stock['fat']))
+	*nl '<font style="font-size:12px;">체형 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $жыр_справка & dynamic $msg, $жыр_справка_2"><<$fat[stock["fat"]]>></a><div style="line-height:25%"><br></div>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'style', stock['style'], 1)
+	*p '<font style="font-size:12px;">세련됨 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $стиль_справка & dynamic $msg, $стиль_справка_2"><<$style[stock["style"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'fame', stock['fame'], 1)
+	*nl '<font style="font-size:12px;">인지도 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $слава_справка & dynamic $msg, $слава_справка_2"><<$girl_fame[stock["fame"]]>></a><div style="line-height:25%"><Br></div>'
+	*p '노예의 특성<div style="line-height:25%"><br></div>'
+	*p '<<$ucase($mid($stock_boobs,1,1))+$mid($stock_boobs,2)>>'
+	*nl '<<$stock_features_list>></div>'
+elseif auction_phase = 7:
+	$npc_id = 'фарид_аукционщик'
+	*p '<div id = "side_panel_above">~ Jack-o-nine-tails 2.4.0.0 & Kor Ver ~</div>'
+	*p '<div id = "side_panel_main"><<$npc_name[$npc_id]>><br><font size="3"><<$npc_status[$npc_id]>></font></div>'
+	*p '<div id = "side_panel_attitude"><<$npc_attitude[npc_attitude[$npc_id]]>></div>'
+	*p '<div id = "side_panel_text"><span class="jo9-reference-body"><<$npc_info[$npc_id]>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style></div>'
+else
+	*p '<div id = "side_panel_above">~ Jack-o-nine-tails 2.4.0.0 & Kor Ver ~</div>'
+	*p '<div id = "side_panel_main"><<$place_name[$place]>><br><font size="3"><<$place_location[$place]>></font></div>'
+													
+	*p '<div id = "side_panel_text"><span class="jo9-reference-body"><<$place_info[$place]>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style><br></div>'
+end
+
+if sound_on = 1 and $play_sound[txt] ! '': play 'content\snd\<<$play_sound[txt]>>.wav', sound_volume
+if $play_sound[txt] ! '': $play_sound[txt] = ''
+
+------------ slave_auction_buy ------------

@@ -1,0 +1,95 @@
+# assistant_testing
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2820 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'assistant_testing': gs 'snk_room_bridge', 'guard', 'assistant_testing'
+! JO9 MOD END J9M2820
+!Assistant Testing Cheat
+!Created by crushboss
+
+if assistant_state = CONST_INT['slave_exist']:
+	!Assistant Piercings
+	assistant['nipple_piercing'] = 1
+	assistant['clit_piercing'] = 1
+	assistant['ear_piercing'] = 1
+	assistant['tongue_piercing'] = 1
+	assistant['belly_piercing'] = 1
+	assistant['nostril_piercing'] = 1
+	assistant['nose_piercing'] = 1
+	assistant['tongue_split'] = 1
+	assistant['scarification'] = 1
+
+	!Assistant Makeup and Tattoos
+	assistant['makeup'] = 3
+	assistant['fiend_tattoo'] = 1
+	assistant['tattoo'] = 5
+	assistant['manicure'] = 5
+	assistant['perfume'] = 1
+	assistant['hygiene'] = 0
+	assistant_rate['hygiene'] = 0
+	assistant['epilation'] = 12
+	assistant['hairstyle'] = 7
+	assistant['pos_gentle'] = 2
+	assistant['pos_slave_clean'] = 1
+
+	!Assistant Clothing Inventory
+	assistant_inventory['common_apron'] = 1
+	assistant_inventory['maid_dress'] = 1
+	assistant_inventory['nurse_dress'] = 1
+	assistant_inventory['enchanter_robe'] = 1
+	assistant_inventory['leotard'] = 1
+	assistant_inventory['chainmail_bikini'] = 1
+	assistant_inventory['laced_underwear'] = 1
+	assistant_inventory['bellydance'] = 1
+	assistant_inventory['anal_tail'] = 1
+	assistant_inventory['pony_plume'] = 1
+	assistant_inventory['leather_gloves'] = 1
+	assistant_inventory['ponygirl_harness'] = 1
+	assistant_inventory['cow_gear'] = 1
+	assistant_inventory['high_heels'] = 1
+	assistant_inventory['hoofed_boots'] = 1
+
+	!Assistant Equipped Gear
+	$assistant['wpn'] = 'катана'
+	$assistant['scnd'] = ''
+	$assistant['armor'] = 'плейт'
+	$assistant['right_wpn'] = 'катана'
+	$assistant['left_wpn'] = 'кинжал'
+	$assistant['back_wpn'] = 'фламберг'
+	$assistant['cloth'] = 'leather_corset'
+	$assistant['earrings'] = 'incrusted_earrings'
+	$assistant['collar'] = 'golden_collar'
+	$assistant['headband'] = 'exotic_wig'
+	$assistant['gloves'] = 'laced_gloves'
+	$assistant['nipplerings'] = 'nipple_chain'
+	$assistant['clitring'] = 'incrusted_earrings'
+	$assistant['boots'] = 'high_boots'
+	$assistant['ring_left'] = 'incrusted_ring'
+	$assistant['ring_right'] = 'incrusted_ring'
+	$assistant['navel'] = 'heavy_gauge_rings'
+	$assistant['tongue'] = 'barbells'
+
+	!Pet Fiend
+	if pet_tentacle < 1:
+		pet_tentacle = 1
+	 	tentacle_size = 0
+	 	tentacle_hp = 0
+	end
+
+	!Assistant Misc
+	!if assistant['arena_level'] < 4: assistant['arena_level'] = 4
+	!if assistant['has_ride_win'] < 1: assistant['has_ride_win'] = 1
+	assistant_rate['fame'] += 15
+	assistant['brand'] = 3
+
+	!Testing new assistant buttons
+	!Testing Code - crushboss
+	assistant['fertility'] = 0
+	!assistant['parasite'] = 1
+	!assistant['ill'] = 1
+	!assistant['pregnant'] = 1
+	!assistant['wounds'] = 4
+	!assistant_rate['wounds'] = 140
+end
+!End of testing code
+
+------------ assistant_testing ------------

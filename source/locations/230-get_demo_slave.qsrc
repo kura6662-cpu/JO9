@@ -1,0 +1,252 @@
+# get_demo_slave
+! Readable view; authoritative fields are in ../locations.json.
+if snk_room_target > 0 and $curloc = 'get_demo_slave': gs 'snk_room_bridge', 'guard', 'get_demo_slave'
+!activates the slave for training mode
+slave_state = CONST_INT['slave_exist']
+gs 'get_stock_seed', 'demo'
+slave["world_index"] = stock_world_index[slave_type]
+slave["nation_index"] = stock_nation_index[slave_type]
+slave["family_index"] = stock_family_index[slave_type]
+slave["work_index"] = stock_work_index[slave_type]
+slave["id"] = stock_id[slave_type]
+slave["relative_id"] = stock_id_relative[slave_type]
+$slave["relative_relations"] = $stock_relative_relations[slave_type]
+slave['tolerant_world'] = RAND (0,20) - (slave["world_index"] * 4) + 4
+slave['tolerant_nation'] = RAND (0,20) - (slave["world_index"] * 4) + 4
+slave['tolerant_family'] = RAND (0,20) - (slave["world_index"] * 4) + 4
+slave['tolerant_work'] = RAND (0,20) - (slave["world_index"] * 4) + 4
+if slave['tolerant_world'] <0: slave['tolerant_world'] = 0
+if slave['tolerant_nation'] <0: slave['tolerant_nation'] = 0
+if slave['tolerant_family'] <0: slave['tolerant_family'] = 0
+if slave['tolerant_work'] <0: slave['tolerant_work'] = 0
+$slave_psy_basic = $seed_psy_basic[slave_type]
+$slave_type = 'unic'
+slave["null"] = 0
+slave["age"] = seed_age[slave_type]
+$slave["hair"] = $seed_hair[slave_type]
+if slave["age"] = CONST_INT['loli_age']: slave['fertility'] = -2
+if slave["age"] ! CONST_INT['loli_age']: slave['fertility'] = 0
+IF slave["age"] = CONST_INT['loli_age']:
+ slave["epilation"] = 100
+ if slave["makeup"] = 0: slave["makeup"] = 2
+END
+IF slave["age"] ! CONST_INT['loli_age']:
+ slave["epilation"] = 0
+ slave["makeup"] = 0
+END
+!STATS
+slave["beauty"] = seed_beauty[slave_type]
+slave["stamina"] = seed_stamina[slave_type]
+slave["sensitivity"] = seed_sensitivity[slave_type]
+slave["temper"] = seed_temper[slave_type]
+slave["ego"] = seed_ego[slave_type]
+slave["pride"] = seed_pride[slave_type]
+slave["intellect"] = seed_intellect[slave_type]
+slave["exotic"] = seed_exotic[slave_type]
+slave["base_exotic"] = seed_exotic[slave_type]
+slave["custom"] = seed_custom[slave_type]
+slave["moral"] = seed_moral[slave_type]
+slave["instinct"] = seed_instinct[slave_type]
+slave["rational"] = seed_rational[slave_type]
+slave["spoil"] = seed_spoil[slave_type]
+slave['expression'] = seed_expression[slave_type]
+slave['pet'] = seed_pet[slave_type]
+slave['dressage'] = seed_dressage[slave_type]
+slave['nurse'] = seed_nurse[slave_type]
+slave['service'] = seed_service[slave_type]
+slave['cook'] = seed_cook[slave_type]
+slave['gladiatrix'] = seed_gladiatrix[slave_type]
+slave['enchanter'] = seed_enchanter[slave_type]
+slave['art'] = seed_art[slave_type]
+slave['music'] = seed_music[slave_type]
+slave['calisthenics'] = seed_calisthenics[slave_type]
+slave['secretary'] = seed_secretary[slave_type]
+slave['cowSK'] = seed_cowSK[slave_type]
+slave['alchemy'] = seed_alchemy[slave_type]
+slave["petting"] = 0
+slave["oral"] = 0
+slave["roleplay"] = 0
+slave["sub_hj"] = seed_sub_hj[slave_type]
+slave["sub_fj"] = seed_sub_fj[slave_type]
+slave["sub_hug"] = seed_sub_hug[slave_type]
+slave["sub_paizuri"] = seed_sub_paizuri[slave_type]
+slave["sub_kiss"] = seed_sub_kiss[slave_type]
+slave["sub_tongue"] = seed_sub_tongue[slave_type]
+slave["sub_bj"] = seed_sub_bj[slave_type]
+slave["sub_dt"] = seed_sub_dt[slave_type]
+slave["sub_asslik"] = seed_sub_asslik[slave_type]
+slave["sub_vaginal"] = seed_sub_vaginal[slave_type]
+slave["sub_anal"] = seed_sub_anal[slave_type]
+slave["sub_fisting"] = seed_sub_fisting[slave_type]
+slave["anal_stretch"]= seed_anal_stretch[slave_type]
+slave["sub_nipplefuck"]= 0
+slave["sub_seduce"] = seed_sub_seduce[slave_type]
+slave["sub_masturbation"] = seed_sub_masturbation[slave_type]
+slave["sub_dildo"] = seed_sub_dildo[slave_type]
+slave["sub_exhibit"] = seed_sub_exhibit[slave_type]
+slave["sub_humiliation"] = seed_sub_humiliation[slave_type]
+slave["sub_enema"] = seed_sub_enema[slave_type]
+slave["sub_mazo"] = seed_sub_mazo[slave_type]
+slave["sub_selfpain"] = seed_sub_selfpain[slave_type]
+slave["sub_piss"] = seed_sub_piss[slave_type]
+slave["sub_kopro"] = seed_sub_kopro[slave_type]
+slave["sub_threesome"] = seed_sub_threesome[slave_type]
+slave["sub_dp"] = seed_sub_dp[slave_type]
+slave["sub_tp"] = seed_sub_tp[slave_type]
+slave["sub_gangbang"] = seed_sub_gangbang[slave_type]
+slave["sub_bukkake"] = seed_sub_bukkake[slave_type]
+slave["sub_zoosex"] = seed_sub_zoosex[slave_type]
+slave["sub_bestiality"] = seed_sub_bestiality[slave_type]
+slave["sub_tentacles"] = seed_sub_tentacles[slave_type]
+slave["fat"] = seed_fat[slave_type]
+slave["metabolism"] = seed_metabolism[slave_type]
+slave["scars"] = seed_scars[slave_type]
+$slave_psy_basic = $seed_psy_basic[slave_type]
+!TRAITS
+slave["masochism"] = seed_masochism[slave_type]
+slave["nymphomania"] = seed_nymphomania[slave_type]
+slave["exhibitionism"] = seed_exhibitionism[slave_type]
+slave["homosexualism"] = seed_homosexualism[slave_type]
+slave["homosexualism_revealed"] = seed_homosexualism_revealed[slave_type]
+slave["abuse_attitude"] = seed_abuse_attitude[slave_type]
+slave["blood_attitude"] = seed_blood_attitude[slave_type]
+slave["passion_sweets"] = seed_passion_sweets[slave_type]
+slave["courage"] = seed_courage[slave_type]
+slave["boobs"] = seed_boobs[slave_type]
+virginity = seed_virginity[slave_type]
+display_psy_status = 1
+!BACKGROUND
+IF hero_choice > 100 and slave_type > 799:
+	$slave_world_description = $stock_world_descriptionW[slave_type]
+	$slave_family_description = $stock_family_descriptionW[slave_type]
+	$slave_occupation_description = $stock_occupation_descriptionW[slave_type]
+ELSE
+	$slave_world_description = $stock_world_description[slave_type]
+	$slave_family_description = $stock_family_description[slave_type]
+	$slave_occupation_description = $stock_occupation_description[slave_type]
+END
+$slave_name = $seed_name[slave_type]
+slave['ill'] = 0
+slave['parasite'] = 0
+$slave['boobs_img'] = $seed_boobs_img[slave_type]
+$slave['pussy_img'] = $seed_pussy_img[slave_type]
+!slave['brand'] = 4
+!tattoo_brand = slave['brand']
+!stats alignment
+slave["energy"] = slave["metabolism"]
+slave["hygiene"] = 2
+slave["exotic"] = seed_exotic[slave_type]
+slave["bcheck"] = 0
+slave["neg_slave"] = 1 + slave["pride"] + slave["temper"] + slave["ego"] - slave["custom"]
+slave['cycle_day'] = RAND (1,28)
+slave["calories"] = 3
+$slave['fullimage'] = $fullimage[slave_type]
+$slave['ava'] = $seed_ava[slave_type]
+$slave['ava_gray'] = $seed_ava_gray[slave_type]
+$slave['ava_clear'] = $seed_ava_clear[slave_type]
+!EQUIP
+$slave["wpn"] = 'безоружный'
+$slave["armor"] = 'без_брони'
+$slave["scnd"] = ''
+$slave["back_wpn"] = ''
+$slave["left_wpn"] = ''
+$slave["right_wpn"] = ''
+$slave["arm_wpn"] = ''
+$slave["leg_wpn"] = ''
+$slave["cloth"] = 'slavecostume'
+IF slave_type = 908:
+	$slave["wpn"] = 'кинжал'
+	$slave["armor"] = 'кожан'
+	$slave["left_wpn"] = 'стилет'
+	$slave["right_wpn"] = 'кинжал'
+	$slave["back_wpn"] = ''
+	$slave["cloth"] = 'bellydance'
+	slave["ear_piercing"] = 1
+	slave["manicure"] = 5
+	slave["perfume"] = 1
+	slave["hygiene"] = 0
+	slave_rate["hygiene"] = 0
+	slave["epilation"] = 12
+	slave["hairstyle"] = 7
+	slave["pos_gentle"] = 2
+	slave['pos_slave_clean'] = 2
+	$slave["earrings"] = 'incrusted_earrings'
+	$slave["gloves"] = 'laced_gloves'
+	$slave["boots"] = 'pointes'
+	$slave["ring_left"] = 'incrusted_ring'
+	$slave["ring_right"] = 'incrusted_ring'
+	slave_rules['sleep_condition'] = 0
+	slave_rules['food_type'] = 2
+	slave_rules['eats_remains'] = 0
+	slave_rules['food_portion'] = 4
+	slave_rules['washes'] = 1
+	slave_rules['blowjob'] = 1
+	slave_rules['v_balls'] = 1
+	slave_rules['forces'] = 1
+	slave_rules['master'] = 1
+	slave_rules['tentacle'] = 1
+	IF spawn_semen < 120:
+		spawn_semen = 120
+	else
+		spawn_semen += 60
+	END
+	slave["metabolism"] = 3
+END
+IF slave_type = 2598 or slave_type = 2599 or slave_type = 2600 or slave_type = 2601 or slave_type = 2602 or slave_type = 2603:
+	$slave["wpn"] = 'безоружный'
+	$slave["armor"] = 'без_брони'
+	$slave["scnd"] = ''
+	$slave["back_wpn"] = ''
+	$slave["left_wpn"] = ''
+	$slave["right_wpn"] = ''
+	$slave["arm_wpn"] = ''
+	$slave["leg_wpn"] = ''
+	$slave["cloth"] = 'anal_tail'
+	$slave["headband"] = ''
+	$slave["earrings"] = ''
+	$slave["collar"] = 'leather_collar'
+	$slave["gloves"] = ''
+	$slave["boots"] = ''
+	$slave["nipplerings"] = 'nipple_chain'
+	$slave["clitring"] = ''
+	$slave["ring_left"] = ''
+	$slave["ring_right"] = ''
+	$slave["navel"] = ''
+	$slave["tongue"] = ''
+	slave["full_piercing"] = 0
+ 	slave["nipple_piercing"] = 1
+ 	slave["clit_piercing"] = 0
+ 	slave["ear_piercing"] = 0
+ 	slave["tongue_piercing"] = 0
+ 	slave["belly_piercing"] = 0
+ 	slave["nostril_piercing"] = 0
+ 	slave["nose_piercing"] = 1
+ 	slave["scarification"] = 0
+ 	slave["tattoo_timeup"] = 0
+ 	slave["tattoo"] = 0
+ 	slave["fiend_tattoo"] = 0
+ 	slave["manicure"] = 0
+	slave["perfume"] = 0
+	slave["hygiene"] = 0
+	slave_rate["hygiene"] = 0
+END
+slave['newness'] = 10
+if slave["bruises"] = 1: slave_rate["bruises"] = 10
+if slave["bruises"] = 2: slave_rate["bruises"] = 20
+if slave["bruises"] = 3: slave_rate["bruises"] = 40
+if slave["bruises"] = 4: slave_rate["bruises"] = 80
+if slave["bruises"] = 5: slave_rate["bruises"] = 160
+!if slave["scars"] = 0: slave_rate["scars"] = 0
+if slave["scars"] = 1: slave_rate["scars"] = 10
+if slave["scars"] = 2: slave_rate["scars"] = 20
+if slave["scars"] = 3: slave_rate["scars"] = 40
+if slave["scars"] = 4: slave_rate["scars"] = 80
+if slave["scars"] = 5: slave_rate["scars"] = 160
+if slave["hygiene"] = 1: slave_rate["hygiene"] = 10
+if slave["hygiene"] = 2: slave_rate["hygiene"] = 20
+if slave["hygiene"] = 3: slave_rate["hygiene"] = 40
+if slave["hygiene"] = 4: slave_rate["hygiene"] = 80
+if slave["hygiene"] = 5: slave_rate["hygiene"] = 160
+gs '#txt_man'
+gs '#txt_2_man'
+------------ get_demo_slave ------------

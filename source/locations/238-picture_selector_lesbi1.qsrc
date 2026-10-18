@@ -1,0 +1,109 @@
+# picture_selector_lesbi1
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2956 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'picture_selector_lesbi1': gs 'snk_room_bridge', 'guard', 'picture_selector_lesbi1'
+! JO9 MOD END J9M2956
+! Выбор картинок для лесби-мастурбации
+
+$custom_art_name = 'Лесби-мастурбация'
+
+if customization = 2:
+  if $custom_art ! '': 
+    if subject = 1 or subject = 3: $slave['custom_lesbian1'] = $custom_art
+    if subject = 2: $assistant['custom_lesbian1'] = $custom_art
+  else
+    if subject = 1 or subject = 3: $slave['custom_lesbian1'] = ''
+    if subject = 2: $assistant['custom_lesbian1'] = ''
+  end
+end
+
+killvar '$custom_art'
+! Список типов
+
+$hair_array[0] = 'Girl_General'
+$hair_array[1] = 'Loli_General'
+$hair_array[2] = 'Milf_General'
+$hair_array[3] = 'GirlBlack_GirlBlack'
+$hair_array[4] = 'GirlBlack_GirlBlond'
+$hair_array[5] = 'GirlBlack_GirlBlue'
+$hair_array[6] = 'GirlBlack_GirlBrown'
+$hair_array[7] = 'GirlBlack_GirlRed'
+$hair_array[8] = 'GirlBlack_GirlWhite'
+$hair_array[9] = 'GirlBlond_GirlBrown'
+$hair_array[10] = 'GirlBlond_MilfBlond'
+$hair_array[11] = 'GirlBlue_GirlPurple'
+$hair_array[12] = 'GirlBlue_GirlRed'
+$hair_array[13] = 'GirlBlue_GirlWhite'
+$hair_array[14] = 'GirlBrown_GirlBrown'
+$hair_array[15] = 'GirlBrown_GirlWhite'
+$hair_array[16] = 'GirlGreen_GirlGreen'
+$hair_array[17] = 'GirlGreen_GirlPurple'
+$hair_array[18] = 'GirlPink_GirlPink'
+$hair_array[19] = 'GirlPink_GirlWhite'
+$hair_array[20] = 'GirlPink_MilfWhite'
+$hair_array[21] = 'GirlPurple_GirlPurple'
+$hair_array[22] = 'GirlPurple_GirlWhite'
+$hair_array[23] = 'GirlRed_MilfBlue'
+$hair_array[24] = 'GirlWhite_GirlWhite'
+$hair_array[25] = 'LoliBlack_LoliBlack'
+$hair_array[26] = 'LoliBlack_LoliBlond'
+$hair_array[27] = 'LoliBlack_LoliPurple'
+$hair_array[28] = 'LoliBlack_LoliWhite'
+$hair_array[29] = 'LoliBlond_LoliPurple'
+$hair_array[30] = 'LoliBlond_LoliRed'
+$hair_array[31] = 'LoliBlond_LoliWhite'
+$hair_array[32] = 'LoliBrown_MilfBlack'
+$hair_array[33] = 'LoliGreen_LoliBlack'
+$hair_array[34] = 'LoliPink_GirlBlond'
+$hair_array[35] = 'LoliPurple_LoliPurple'
+$hair_array[36] = 'LoliPurple_MilfPurple'
+$hair_array[37] = 'LoliWhite_LoliWhite'
+$hair_array[38] = 'MilfBlack_MilfBlond'
+$hair_array[39] = 'MilfBlack_MilfBlue'
+$hair_array[40] = 'MilfBlack_MilfPurple'
+$hair_array[41] = 'MilfBlond_MilfBrown'
+$hair_array[42] = 'MilfBlond_MilfPink'
+$hair_array[43] = 'MilfBlue_MilfBrown'
+$hair_array[44] = 'MilfBrown_MilfPurple'
+$hair_array[45] = 'custom'
+$hair_array[46] = 'Friren'
+
+
+! Количество рандомных картинок
+
+picture_random[0] = 4
+picture_random[1] = 4
+picture_random[2] = 5
+picture_random[3] = 2
+picture_random[4] = 2
+picture_random[6] = 2
+picture_random[9] = 4
+picture_random[10] = 2
+picture_random[11] = 2
+picture_random[15] = 2
+picture_random[38] = 2
+picture_random[41] = 2
+picture_random[44] = 2
+picture_random[45] = 16
+picture_random[46] = 2
+
+
+$picture_selector["result"] = 'girls\sex\Lesbian\Masturbation\Mast_'
+
+
+
+if $slave['custom_lesbian1'] ! '' and (subject = 1 or subject = 3): 
+    $picture_selector["result"] += $slave['custom_lesbian1']
+    jump 'custom_override'
+end
+if $assistant['custom_lesbian1'] ! '' and subject = 2:
+    $picture_selector["result"] += $assistant['custom_lesbian1']
+    jump 'custom_override'
+end
+
+
+
+gs 'picture_selector_slave_assistant'
+:custom_override
+
+------------ picture_selector_lesbi1 ------------

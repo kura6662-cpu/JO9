@@ -1,0 +1,99 @@
+# new_estate
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2847 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'new_estate': gs 'snk_room_bridge', 'guard', 'new_estate'
+! JO9 MOD END J9M2847
+!Initializes a new home or interior
+
+if $estate = 'slum_house':
+	bath = 0
+	kitchen = 0
+	library = 0 &! unused
+	dungeon = 0
+	boudoir = 0
+	barn = 0
+	lab = 0
+	pen = 0
+	stasis_tank = 0
+else
+	bath = 1
+	kitchen = 1
+	library = 0 &! unused
+	dungeon = iif(estate_cost_dungeon[$estate] = 0, 1, 0) &! new estate includes dungeon?
+	boudoir = iif(estate_cost_boudoir[$estate] = 0, 1, 0) &! new estate includes boudoir?
+	barn =    iif(estate_cost_barn[$estate] = 0, 1, 0)    &! new estate includes barn?
+	lab =     iif(estate_cost_lab[$estate] = 0, 1, 0)     &! new estate includes lab?
+	pen =     iif(pet_tentacle > 0, 1, 0) &! transfer fiend if renting a new apartment on the same day
+end
+
+! retain access to occupied rentals until forfeit in next_day if living in slums (moving to another rental same day simply transfers slaves to equivalent rental in new residence building; cost difference ignored for current decade)
+if prisoner_state > CONST_INT['no_slave']: dungeon = 1 &! if you had a prisoner
+if max(farmhand_state, cow_state, harpy_state, pig_state) > CONST_INT['no_slave']: barn = 1 &! if you had any livestock
+! fiend pen status transfers with estate changes and will be forfeit at next_day if living in slums
+
+$study = $interior
+$bed = $interior
+$bath = $interior
+$kitchen = $interior
+$boudoir = $interior
+$lab = $interior
+$dungeon = $interior
+$barn = $interior
+
+$bg['home_lux'] = $interior_study_large[$interior]
+
+$bg['study'] = $interior_study[$interior]
+$place_name['study'] = $estate_study_name[$estate]
+$place_location['study'] = $estate_study_location[$estate]
+$place_info['study'] = $interior_study_info[$interior]
+
+$bg['bedroom_lux'] = $interior_bed_large[$interior]
+
+$bg['bedroom'] = $interior_bed[$interior]
+$place_name['bedroom'] = $estate_bed_name[$estate]
+$place_location['bedroom'] = $estate_bed_location[$estate]
+$place_info['bedroom'] = $interior_bed_info[$interior]
+
+$bg['bathroom_lux'] = $interior_bath_large[$interior]
+
+$bg['bathroom'] = $interior_bath[$interior]
+$place_name['bathroom'] = $estate_bath_name[$estate]
+$place_location['bathroom'] = $estate_bath_location[$estate]
+$place_info['bathroom'] = $interior_bath_info[$interior]
+
+$bg['dungeon_lux'] = $interior_dungeon_large[$interior]
+
+$bg['dungeon'] = $interior_dungeon[$interior]
+$place_name['dungeon'] = $estate_dungeon_name[$estate]
+$place_location['dungeon'] = $estate_dungeon_location[$estate]
+$place_info['dungeon'] = $interior_dungeon_info[$interior]
+
+$bg['kitchen_lux'] = $interior_kitchen_large[$interior]
+
+$bg['kitchen'] = $interior_kitchen[$interior]
+$place_name['kitchen'] = $estate_kitchen_name[$estate]
+$place_location['kitchen'] = $estate_kitchen_location[$estate]
+$place_info['kitchen'] = $interior_kitchen_info[$interior]
+
+$bg['lab_lux'] = $interior_lab_large[$interior]
+
+$bg['lab'] = $interior_lab[$interior]
+$place_name['lab'] = $estate_lab_name[$estate]
+$place_location['lab'] = $estate_lab_location[$estate]
+$place_info['lab'] = $interior_lab_info[$interior]
+
+$bg['boudoir_lux'] = $interior_boudoir_large[$interior]
+
+$bg['boudoir'] = $interior_boudoir[$interior]
+$place_name['boudoir'] = $estate_boudoir_name[$estate]
+$place_location['boudoir'] = $estate_boudoir_location[$estate]
+$place_info['boudoir'] = $interior_boudoir_info[$interior]
+
+$bg['barn_lux'] = $interior_barn_large
+
+$bg['barn'] = $interior_barn
+$place_name['barn'] = $estate_barn_name[$estate]
+$place_location['barn'] = $estate_barn_location[$estate]
+$place_info['barn'] = $interior_barn_info[$interior]
+
+------------ new_estate ------------

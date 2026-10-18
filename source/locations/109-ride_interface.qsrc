@@ -1,0 +1,221 @@
+# ride_interface
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1348 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'ride_interface': gs 'snk_room_bridge', 'guard', 'ride_interface'
+! JO9 MOD END J9M1348
+!Chariot races
+
+!Check for race completion
+if boards = 0 or frame = 0:
+	$crash_text = $current_ride
+	gt '$ride_finish', 1
+end
+
+if wheels = 0 or chassis = 0:
+	$crash_text = $current_ride
+	gt '$ride_finish', 2
+end
+
+if chariot['pony_health'] <= 0:
+	$crash_text = $current_ride
+	gt '$ride_finish', 3
+end
+
+if trace_segment > 12:
+	gt '$ride_finish', 4
+end
+
+!Determination of the order of riders
+killvar '$participant'
+
+i = 0
+j = 1
+n = arrsize('$rider')
+:loop
+	if rider_participates[$rider[i]] = 1:
+		$participant[j] = $rider[i]
+		j += 1
+	end
+	i +=1
+if i < n: jump 'loop'
+
+if $participant[2] = '': $participant[2] = 'crashed'
+if $participant[3] = '': $participant[3] = 'crashed'
+if $participant[4] = '': $participant[4] = 'crashed'
+if $participant[5] = '': $participant[5] = 'crashed'
+if $participant[6] = '': $participant[6] = 'crashed'
+
+e = 0
+:loop2
+	i = 1
+	:loop3
+		s = i + 1
+		if s > 6: s = 6
+
+		if speed_points[$participant[i]] < speed_points[$participant[i+1]]:
+			$temp = $participant[i]
+			$participant[i] = $participant[i+1]
+			$participant[i+1] = $temp
+		end
+		i +=1
+	if i < 6-e: jump 'loop3'
+
+	e +=1
+if e < n+1: jump 'loop2'
+
+!Information about the latest actions of the player and opponents
+if trace_segment = 1:
+	$current_ride = ''
+	$future_ride = $trace_forward_description['ride_start']
+end
+
+if trace_segment = 2:
+	$future_ride = $trace_forward_description[$trace[2]]
+end
+
+
+$ride_flow = '<br>'
+$ride_flow += '<br><<$current_ride>><br><br>'
+
+if trace_segment = 1:
+	$ride_flow += '<font color="#cd0000"><<$trace_name[$trace[1]]>></font>  -> &nbsp'
+else
+	$ride_flow += '<<$trace_name[$trace[1]]>>  -> &nbsp'
+end
+
+if trace_segment = 2:
+	$ride_flow += '<font color="#cd0000"><<$trace_name[$trace[2]]>></font>  -> &nbsp'
+else
+	$ride_flow += '<<$trace_name[$trace[2]]>>  -> &nbsp'
+end
+
+if trace_segment = 3:
+	$ride_flow += '<font color="#cd0000"><<$trace_name[$trace[3]]>></font>  -> &nbsp'
+else
+	$ride_flow += '<<$trace_name[$trace[3]]>>  -> &nbsp'
+end
+
+if trace_segment = 4:
+	$ride_flow += '<font color="#cd0000"><<$trace_name[$trace[4]]>></font>  -> &nbsp'
+else
+	$ride_flow += '<<$trace_name[$trace[4]]>>  -> &nbsp'
+end
+
+if trace_segment = 5:
+	$ride_flow += '<font color="#cd0000"><br><<$trace_name[$trace[5]]>></font>  -> &nbsp'
+else
+	$ride_flow += '<br><<$trace_name[$trace[5]]>>  -> &nbsp'
+end
+
+if trace_segment = 6:
+	$ride_flow += '<font color="#cd0000"><<$trace_name[$trace[6]]>></font>  -> &nbsp'
+else
+	$ride_flow += '<<$trace_name[$trace[6]]>>  -> &nbsp'
+end
+
+if trace_segment = 7:
+	$ride_flow += '<font color="#cd0000"><<$trace_name[$trace[7]]>></font>  -> &nbsp'
+else
+	$ride_flow += '<<$trace_name[$trace[7]]>>  -> &nbsp'
+end
+
+if trace_segment = 8:
+	$ride_flow += '<font color="#cd0000"><<$trace_name[$trace[8]]>></font>  -> &nbsp'
+else
+	$ride_flow += '<<$trace_name[$trace[8]]>>  -> &nbsp'
+end
+
+if trace_segment = 9:
+	$ride_flow += '<font color="#cd0000"><br><<$trace_name[$trace[9]]>></font>  -> &nbsp'
+else
+	$ride_flow += '<br><<$trace_name[$trace[9]]>>  -> &nbsp'
+end
+
+if trace_segment = 10:
+	$ride_flow += '<font color="#cd0000"><<$trace_name[$trace[10]]>></font>  -> &nbsp'
+else
+	$ride_flow += '<<$trace_name[$trace[10]]>>  -> &nbsp'
+end
+
+if trace_segment = 11:
+	$ride_flow += '<font color="#cd0000"><<$trace_name[$trace[11]]>></font>  -> &nbsp'
+else
+	$ride_flow += '<<$trace_name[$trace[11]]>>  -> &nbsp'
+end
+
+if trace_segment = 12:
+	$ride_flow += '<font color="#cd0000"><<$trace_name[$trace[12]]>></font>'
+else
+	$ride_flow += '<<$trace_name[$trace[12]]>><br>'
+end
+
+$ride_flow += ' <br><br><<$future_ride>><br><br>'
+
+!new CSS for ride pic
+! JO9 MOD START J9M1347 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+if nsfw = 0:*p func('interior_change', 'jo9_html', '<div id = "ride_bg"><img src = "content\pic\bg\ride.png"></div>')
+! JO9 MOD END J9M1347
+*p '<div id = "ride_txt"><<$ride_flow>></div>'
+
+!new CSS for ride var
+if ui_style = 2:
+	*p '<div id = "ride_options">현재 속력 : <<chariot["speed"]>> km/h'
+	*nl '차 기동성 : <<chariot["maneuverability_effective"]>> (i<<chariot["inertia"]>>)'
+	*nl '말 체력 : <<chariot["pony_health"]>>'
+	*nl '<<$frame[frame]>>'
+	*nl '<<$boards[boards]>>'
+	*nl '<<$chassis[chassis]>>'
+	*nl '<<$wheels[wheels]>></div>'
+else
+	*p '<div id = "ride_options">현재 속력 : <<chariot["speed"]>> km/h'
+	*nl '차 기동성 : <<chariot["maneuverability_effective"]>> (i<<chariot["inertia"]>>)'
+	*nl '말 체력 : <<chariot["pony_health"]>>'
+	*nl '<<$frame[frame]>>'
+	*nl '<<$boards[boards]>>'
+	*nl '<<$chassis[chassis]>>'
+	*nl '<<$wheels[wheels]>></div>'
+end
+
+!new CSS for ride var
+*p '<div id = "ride_subtions">'
+*nl '<a href = "EXEC: gt ''ride_next'',1">채찍 휘두르기</a>'
+*nl '<a href = "EXEC: gt ''ride_next'',2">방향 조정</a>'
+*nl '<a href = "EXEC: gt ''ride_next'',3">고삐 당긴다!</a></div>'
+
+*p '<div id = "rider1_pic"><a href = "EXEC: msg $rider_description[$participant[1]]"><img src = "<<$rider_ava[$participant[1]]>>"></a></div>'
+*p '<div id = "rider2_pic"><a href = "EXEC: msg $rider_description[$participant[2]]"><img src = "<<$rider_ava[$participant[2]]>>"></a></div>'
+*p '<div id = "rider3_pic"><a href = "EXEC: msg $rider_description[$participant[3]]"><img src = "<<$rider_ava[$participant[3]]>>"></a></div>'
+*p '<div id = "rider4_pic"><a href = "EXEC: msg $rider_description[$participant[4]]"><img src = "<<$rider_ava[$participant[4]]>>"></a></div>'
+*p '<div id = "rider5_pic"><a href = "EXEC: msg $rider_description[$participant[5]]"><img src = "<<$rider_ava[$participant[5]]>>"></a></div>'
+*p '<div id = "rider6_pic"><a href = "EXEC: msg $rider_description[$participant[6]]"><img src = "<<$rider_ava[$participant[6]]>>"></a></div>'
+
+*p '<div id = "rider1_name"><<$rider_name[$participant[1]]>> (<<rider_structure[$participant[1]]>>)</div>'
+*p '<div id = "rider2_name"><<$rider_name[$participant[2]]>> (<<rider_structure[$participant[2]]>>)</div>'
+*p '<div id = "rider3_name"><<$rider_name[$participant[3]]>> (<<rider_structure[$participant[3]]>>)</div>'
+*p '<div id = "rider4_name"><<$rider_name[$participant[4]]>> (<<rider_structure[$participant[4]]>>)</div>'
+*p '<div id = "rider5_name"><<$rider_name[$participant[5]]>> (<<rider_structure[$participant[5]]>>)</div>'
+*p '<div id = "rider6_name"><<$rider_name[$participant[6]]>> (<<rider_structure[$participant[6]]>>)</div>'
+
+*p '<div id = "rider1_score">승점: <<speed_points[$participant[1]]>></div>'
+*p '<div id = "rider2_score">승점: <<speed_points[$participant[2]]>></div>'
+*p '<div id = "rider3_score">승점: <<speed_points[$participant[3]]>></div>'
+*p '<div id = "rider4_score">승점: <<speed_points[$participant[4]]>></div>'
+*p '<div id = "rider5_score">승점: <<speed_points[$participant[5]]>></div>'
+*p '<div id = "rider6_score">승점: <<speed_points[$participant[6]]>></div>'
+
+$toplay = 'ride' & dynamic $play_music
+
+if ui_style = 2:
+	if sound_on = 1:
+		*p '<div id="sound_icon"><a href = "EXEC: sound_on = 0 & close all & gt $curloc"><img src="content\pic\ui\grimdark\buttons\sound_on.png"></a></div>'
+	else
+		*p '<div id="sound_icon"><a href = "EXEC: sound_on = 1 & gt $curloc"><img src="content\pic\ui\grimdark\buttons\sound_off.png"></a></div>'
+	end
+else
+	if sound_on = 1:
+		*p '<div id="sound_icon"><a href = "EXEC: sound_on = 0 & close all & gt $curloc"><img src="content\pic\buttons\sound_on.png"></a></div>'
+	else
+		*p '<div id="sound_icon"><a href = "EXEC: sound_on = 1 & gt $curloc"><img src="content\pic\buttons\sound_off.png"></a></div>'
+	end
+end
+------------ ride_interface ------------

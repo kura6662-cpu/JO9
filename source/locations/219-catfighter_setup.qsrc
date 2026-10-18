@@ -1,0 +1,44 @@
+# $catfighter_setup
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2941 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$catfighter_setup': gs 'snk_room_bridge', 'guard', '$catfighter_setup'
+! JO9 MOD END J9M2941
+!Рассчёт вводных для гладиаторского поединка
+!Improved - crushboss
+!Reset Combat Variables at the start of a new Gladiatrix Contest - crushboss
+gs '$combat_variable_reset'
+sp_txt = 0
+количество_врагов = 1
+killvar '$extra_special_active'
+killvar '$extra_special_used'
+killvar '$враг'
+killvar '$ge'
+a = RAND(1,3)
+if a = 1: $ge = 'gladiatrix1_ava'
+if a = 2: $ge = 'gladiatrix2_ava'
+if a = 3: $ge = 'gladiatrix3_ava'
+$враг[1] = $ge
+IF $g_type = "retiarius":
+ $extra_special_active = 'content/pic/buttons/net_active.png'
+ $extra_special_used = 'content/pic/buttons/net_used.png'
+END
+IF $g_type = "flagrius":
+ $extra_special_active = 'content/pic/buttons/whip_active.png'
+ $extra_special_used = 'content/pic/buttons/whip_used.png'
+END
+IF $g_type = "dimacherus" or $g_type = '':
+ $g_type = "dimacherus"
+ $extra_special_active = 'content/pic/buttons/dual_active.png'
+ $extra_special_used = 'content/pic/buttons/dual_used.png'
+END
+IF $g_type = "hoplomachus":
+ $extra_special_active = 'content/pic/buttons/shield_active.png'
+ $extra_special_used = 'content/pic/buttons/shield_used.png'
+END
+IF $g_type = "kimerian":
+ $extra_special_active = 'content/pic/buttons/heavy_active.png'
+ $extra_special_used = 'content/pic/buttons/heavy_used.png'
+END
+interaction_city = 103001
+gt 'interaction_city'
+------------ $catfighter_setup ------------

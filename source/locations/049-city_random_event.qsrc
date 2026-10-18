@@ -1,0 +1,191 @@
+# $city_random_event
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1535 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$city_random_event': gs 'snk_room_bridge', 'guard', '$city_random_event'
+! JO9 MOD END J9M1535
+!random events in city (TODO: at the moment these are NON-random do-once events, so we might want to make a new $city_nonrandom_event location for these -ImperatorAugustus)
+! $args[0] is set to 'home' when this is called from city_screen or menu_form or item_change when returning home from outside; $args[0] is not set when this is called from city_menu_form
+
+if city_form = 61 and isabella_met = 0 and assistant_state = CONST_INT['no_slave'] and $estate ! 'slum_house':
+	isabella_met = 1
+	interaction_city = 610
+	gt 'interaction_city'
+end
+
+if guild_gangbang_reveal = 0 and is_gangbang >0:
+	if guild_reputation >= 3 and is_home = 0 and $args[0] ! 'home' and city_form = estate_location[$estate]:
+		guild_gangbang_reveal = 1
+		msg '밖으로 나오자 편지 한 통이 배달되어 있는 걸 발견한다. 내용은 이렇다:<br>' + _
+		'  친애하는 <<$master_name>>께, <br>' + _ 
+		'  오늘 길드에서 제 노예를 위한 난교 훈련 세션을 열 예정입니다. 당신도 함께해 주신다면 영광이겠습니다. 오후 내내 이어질 예정이니 아무 때나 들르셔도 됩니다.<br>' + _ 
+		'  경의를 표하며, <br>' + _ 
+		'  로드 더바트'
+	end
+end
+
+IF city_form = 117 and event_met['doagirls'] = 0 and city_random_event[3] = 0 and slave_state = CONST_INT['no_slave'] and assistant_state = 0 and master_cha > 2 and master_fighter > 2 and master_domination > 3 and brand_reputation > 2 and faction_fame['RedLight'] > 2:
+ event_met['doagirls'] = 1
+ city_random_event[3] = 1
+ interaction_city = 796
+ gt 'interaction_city'
+END
+
+
+if hero_choice = 10 and noble_status = 1 and julia_start ! -1:
+	if julia_start = 0:
+		julia_start = day
+	elseif day >= julia_start + 5 and is_home = 0 and $args[0] ! 'home' and city_form = estate_location[$estate]:
+		julia_start = -1 &! disable repetition of letter event and signal interaction_city (Vatican gate, id 16) and $quest_list (to display a reminder in objectives tab)
+		msg '밖으로 나오자 편지 한 통이 배달되어 있는 걸 발견한다. 내용은 이렇다:<br>' + _
+			'  존경하는 <<$master_name>>께,<br>' + _
+			'  한 인간 소녀가 바티칸에 와서 자신이 당신의 오랫동안 행방불명이었던 여동생이라고 주장하고 있습니다.<br>' + _
+			'  그 말이 사실인지 저희는 알 수 없습니다. 하지만 분명한 것은 그녀가 큰 고통을 겪었고, 오직 하느님의 은총으로 겨우 살아 있다는 점입니다.'
+		msg '  그녀는 당신을 몹시 만나고 싶어 하며, 이곳 바티칸에서 당신의 방문을 기다리고 있습니다.<br>' + _
+			'  진실이 밝혀질 때까지 저희가 그녀에게 피신처와 돌봄을 제공하겠습니다.<br>' + _
+			'  진심을 담아, 요한나<br>' + _
+			'  교황 이오안 1세의 비서'
+	end
+end
+
+IF menu_form = 0 and active[$event['спасение_рождества']] = 11 and slave_state = CONST_INT['no_slave'] and assistant_state = 0 and master_energy <= 1:
+ interaction_city = 10101
+ gt 'interaction_city'
+END
+
+IF city_form = 119 and event_met['girl'] = 0 and city_random_event[2] = 0 and temporary_cell_state = 0 and slave_state = CONST_INT['no_slave']:
+ event_met['girl'] = 1
+ city_random_event[2] = 1
+ interaction_city = 795
+ gt 'interaction_city'
+END
+
+
+
+!Банкет во дворце Джафара
+IF active[$event['Akabur_quest']] = 13 and day >= Банкет + 1 and menu_form = 0 and city_random_event[10] = 0:
+ interaction_city = 30117
+ city_random_event[10] = 1
+ gt 'interaction_city'
+END
+IF active[$event['Akabur_quest']] = 14 and day >= Лампа_джинна + 1 and menu_form = 0:
+ interaction_city = 30118
+ gt 'interaction_city'
+END
+IF active[$event['Akabur_quest']] = 15 and day >= Лампа_джинна + 5 and menu_form = 0:
+ interaction_city = 301191
+ gt 'interaction_city'
+END
+IF active[$event['Akabur_quest']] = 16 and day >= Лампа_джинна + 7 and menu_form = 0 and ((slave_type = 2617 and slave['pregnant'] > 0) or (assistant_type = 2617 and assistant['pregnant'] > 0)):
+ interaction_city = 301192
+ gt 'interaction_city'
+END
+IF (active[$event['Akabur_quest']] = 16 or active[$event['Akabur_quest']] = 17) and day >= Лампа_джинна + 10 and menu_form = 0 and ((slave_type = 2617 and slave['pregnant'] < 1) or (assistant_type = 2617 and assistant['pregnant'] < 1)):
+ interaction_city = 301193
+ gt 'interaction_city'
+END
+IF active[$event['Akabur_quest']] = 20 and menu_form = 0 and ((slave_type = 2617 and slave['rehabilitation'] = 0) or (assistant_type = 2617 and assistant['rehabilitation'] = 0)):
+ interaction_city = 301198
+ gt 'interaction_city'
+END
+IF city_form = 130 and event_met['madelyn'] = 0 and city_random_event[5] = 0 and npc_progress['Don_Darmidon'] = 2 and slave_state = CONST_INT['no_slave']:
+ interaction_city = 10131
+ gt 'interaction_city'
+END
+
+if noble_status = 1 and noble_msg = 0:
+msg '편지를 받았다. 내용은 이렇다: 안젤리카다. 시민권을 얻은 건 축하하지만, 지금은 해야 할 일이 산더미라 어떻게 봐도 축하하고 있을 틈이 없다. 시민권이 무적을 보장해 주는 것도 아니고, 노예상 일이라는 게 원래 주변 모두가 널 좋아하게 만들어 두지 않으면 등 뒤에 칼이 꽂히기 쉬운 법이니까.' 
+msg '그러니 모든 구역을 돌아다니면서 그곳 사람들과 연줄을 만들어라. 이것은 우리 길드에도 중요한 일이다. 특히 행정 센터와 배제 구역의 노숙자들에게는 신경을 써라. 전자의 비위는 무슨 수를 써서든 맞춰야 하고, 후자는 문제가 될 수 있으니까. 일하러 가라!' 
+noble_msg = 1
+end
+if npc_progress['ImperatorGay'] = 2 and npc_progress['Varvar_king'] = 2 and witch_msg = 0:
+msg '편지를 받았다. 내용은 이렇다: 또 안젤리카다. 빈민가에서 마녀들이 널 찾고 있다. 그 여자들은 위험한 부류니까, 일단 가서 네게 뭘 원하는지 듣기라도 해라.' 
+msg ' 개인적으로 난 걔들이랑 더는 얽히고 싶지 않다. 이미 한 번 상대해 봤고, 다시는 그러고 싶지 않으니까. 그렇다고 네게 그들을 위해 일하라고 강요할 수도 없다. 그러니 형식상으로라도 가서 얘기만 들어라. 걱정 마라, 널 죽이진 않을 거다. 아마도.' 
+witch_msg = 1
+end
+if guild_reputation > 3 and angelika_msg = 0:
+msg '편지를 받았다. 내용은 이렇다: 또 안젤리카다. 한가해지면 길드에 와라. 개인적으로 맡길 일이 있다. 민감한 사안이니 이 방문에 대해 소문내지 말고 조용히 행동해라. 기다리고 있겠다.'
+angelika_msg = 1
+end
+
+IF interaction_city = 62 and event_met['friren'] = 0 and city_random_event[9] = 0 and slave_state = CONST_INT['no_slave']:
+ event_met['friren'] = 1
+ city_random_event[9] = 1
+ interaction_city = 999
+ gt 'interaction_city'
+END
+
+IF interaction_city = 62 and event_met['sense'] = 0 and city_random_event[12] = 0 and slave_state = CONST_INT['no_slave']:
+ event_met['sense'] = 1
+ city_random_event[12] = 1
+ interaction_city = 997
+ gt 'interaction_city'
+END
+
+
+if hero_choice = 123 and menu_form = 0 and moneylender_message ! -1:
+		moneylender_message = -1 &
+! JO9 MOD START J9M1534 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+msg '긴급한 메시지를 받았다. 내용은 이렇다: 아직도 네가 여전히 내 소유물이라는 걸 안 잊은 거겠지, 계집아?! 혹시 잊었다면 내 애들이 금방 기억나게 해 줄 테니까, <<$master_name>>! 아니면 이미 그렇게 해 줬나?...'
+! JO9 MOD END J9M1534
+msg ' 좋아... 이번 한 번은 넘어가 주지. 물론 내 애들은 그 사실을 모르겠지만... 하지만 열흘 뒤엔 또 돈을 가져와라. 내 암캐이자 걔들 암캐 노릇을 평생 하고 싶진 않겠지, 그렇지?! 그리고 감히 제때 빚을 못 갚는 짓을 세 번만 더 하면, 그땐 네 책임이다, <<$master_name>>! 자유는 영영 못 볼 줄 알아!' 
+msg '내가 해 줄 조언은 하나다, <<$master_name>>. 기름을 잔뜩 비축해 둬라! 느낌이 오거든. 아주 곧, 아주 많이 필요해질 거다... 내 말 알아들었길 바란다, 내 사랑스러운 창녀야!... 열흘 뒤에 내 스파크 들고 오면서 보자... 고리대금업자'
+	moneylender_alert = 0	
+end
+IF hero_choice = 123 and menu_form = 0 and moneylender_alert = 0:
+ interaction_city = 634
+ gt 'interaction_city'
+END
+IF hero_choice > 100 and credit > 0 and moneylender_alert = 1 and period < 9 and menu_form = 0:
+ interaction_city = 6340
+ gt 'interaction_city'
+END
+IF hero_choice > 100 and overdue = 3 and period < 10 and menu_form = 0: 
+ interaction_city = 6335
+ gt 'interaction_city'
+END
+
+IF city_form = 130 and event_met['snegurochka'] = 0 and npc_progress['Santa'] = 2 and slave_state = CONST_INT['no_slave']:
+ interaction_city = 10243
+ gt 'interaction_city'
+END
+
+if slums_shakedown < day:
+	! to make living in the slums more expensive, this repeating "shakedown" event (starting after 20 decades) has been added - ImperatorAugustus
+	if city_form = 6 or $args[0] = 'home':
+		if $estate = 'slum_house':
+			if slums_shakedown = 0:
+				if day > 200:
+					slums_shakedown = day
+					if debt_count < 60: debt_count = 60 &! will extend any existing debt, but not past 60 days
+					debt += estate_cost_main['kamira_house']/2
+					! 125$ after 26 decades (200 + 60 days) equates to 4$ per decade saved from game start (with minimum start amount of 200$, that leaves 75$ for other purposes)
+					! if the player has insufficient savings when the event occurs, they can either complete training and sell a slave or use an arena champion to earn a minimum of 72$ per decade
+					! saving 25$ per decade for 5 decades to pay the debt leaves at least 47$ to cover bills and other expenses, and bills can be reduced by cryo-freezing the slave between battles
+					! 20$ per decade for slaver meals + 8$ for cryo storage + 2$ for slave energy recovery (pollen/sleep), leaves at least 15$ per decade for other costs, e.g. medical care or drugs
+					! also, arena income will increase by a minimum of 12 sparks each decade if the slave wins a champion challenge of each type and then defeats the absolute champion
+					! so over the course of 60 days, 5 more battles can pay at least 72 + 84 + 96 + 108 + 108 (if the player keeps choosing the same challenge type, 72 + 84 + 84 + 84 + 84)
+					! in short, even if caught by surprise with no reserves at all, it is a survivable challenge with 27$ per decade guaranteed margin of error and some randomized padding
+					! the debt amount is cut in half on normal difficulty, which means that the subsequent shakedowns after the first are equivalent to the first shakedown on hard
+					msg '당신은 판잣집 문에 꽂혀 있는 더러운 양피지 한 장을 발견했다. 휘갈겨 쓴 짧은 메시지가 적혀 있다:<br><br>' + _
+					'  노예상. 대금업자에게 추가로 빚진 <<estate_cost_main["kamira_house"]/2>>$ 기억하지? 그는 <<debt_count>>일 안에 그 돈을 기대하고 있다.'
+					msg '쪽지에는 서명이 없지만, 빈민가에서 세력을 넓히는 갱단 중 하나의 표식이 그 아래에 노골적으로 새겨져 있다. 놈들이 대금업자를 앞세워 당신을 뜯어내고 있는 모양이다. 표식과 쪽지가 연결되어 있다는 증거는 없다. 물론 대금업자는 당신이 자기에게 돈을 빌렸다고 주장하겠지. 당신의 선택지는 갚거나... 기도하는 것뿐이다. 이건 당신이 이길 수 있는 싸움이 아니다.'
+				end
+			elseif day > (slums_shakedown + 100):
+				slums_shakedown = day
+				if debt_count < 60: debt_count = 60 &! will extend any existing debt, but not past 60 days
+				debt += estate_cost_main['kamira_house'] &! amount is increased, but slums are still 6x cheaper (six decades to save cost of one decade rental in Camira)
+				! after the first shakedown, the event can repeat after at least 40 days from last payment (60 days to pay + 40 days delay = 100 days from last letter)
+				! it is irrelevant if the payment is made early; the next extortion letter will not arrive until at least(*) 60 days after the previous debt deadline
+				!   (*) "at least" because we expect the player will go out once per decade for arena events; by staying home, the next event can be delayed indefinitely
+				! assuming minimum spacing between extortions, players are required to earn and save 25$ per decade for extortion payments while living in the slums (12$ on normal difficulty)
+				! this is sustainable with a single arena grand champion (at least 108$ per decade) or race champion (at least 225$ per decade once player has a nine race winning streak)
+				! interaction_city id 1315 (abandon current apartment) will delay shakedown by at least 1 day to give player time to rent a different apartment first
+				msg '당신은 판잣집 문에 꽂혀 있는 또 다른 더러운 양피지 한 장을 발견했다. 거기엔 또 다른 쪽지가 휘갈겨 쓰여 있다:<br><br>' + _
+ 				'  노예상. 대금업자는 당신이 추가로 빚진 <<estate_cost_main["kamira_house"]>>$를 <<debt_count>>일 안에 기대하고 있다.<br><br>' + _
+				'쪽지에는 서명이 없다.'
+			end
+		end
+	end
+end
+
+------------ $city_random_event ------------

@@ -1,0 +1,256 @@
+# $cow_price
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1533 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$cow_price': gs 'snk_room_bridge', 'guard', '$cow_price'
+! JO9 MOD END J9M1533
+!Cow Price Calculation - Pianocat
+!Also sets $cow_auction strings (relocated from #txt_2 database because these strings contain subexpressions referring to variables that are set here) - ImperatorAugustus
+
+! JO9 MOD START TBV_COW_REFRESH | 2026-10-17_trait_value
+gs 'jo9_traits_value', 'refresh', 'cow'
+cowprice = 0
+! JO9 MOD END TBV_COW_REFRESH
+
+!Price for cows
+cow_base_price = 20
+
+
+if cow['fat'] = 0: cow_base_price -= 500
+if cow['fat'] = 1: cow_base_price -= 100
+if cow['fat'] = 3: cow_base_price += 60
+if cow['fat'] = 4: cow_base_price += 100
+if cow['fat'] = 5: cow_base_price += 40
+
+if cow['ego'] = 0: cow_base_price += 100
+if cow['ego'] = 1: cow_base_price += 60
+if cow['ego'] = 2: cow_base_price += 20
+if cow['ego'] = 3: cow_base_price -= 30
+if cow['ego'] = 4: cow_base_price -= 60
+if cow['ego'] = 5: cow_base_price -= 100
+
+if cow['pride'] = 0: cow_base_price += 100
+if cow['pride'] = 1: cow_base_price += 60
+if cow['pride'] = 2: cow_base_price += 20
+if cow['pride'] = 3: cow_base_price -= 30
+if cow['pride'] = 4: cow_base_price -= 60
+if cow['pride'] = 5: cow_base_price -= 300
+
+if cow['stamina'] = 1: cow_base_price -= 150
+if cow['stamina'] = 2: cow_base_price += 0
+if cow['stamina'] = 3: cow_base_price += 40
+if cow['stamina'] = 4: cow_base_price += 80
+if cow['stamina'] = 5: cow_base_price += 150
+
+if cow['pet'] = 1: cow_base_price += 10
+if cow['pet'] = 2: cow_base_price += 20
+if cow['pet'] = 3: cow_base_price += 40
+if cow['pet'] = 4: cow_base_price += 80
+if cow['pet'] = 5: cow_base_price += 100
+
+if cow['dressage'] = 1: cow_base_price += 10
+if cow['dressage'] = 2: cow_base_price += 20
+if cow['dressage'] = 3: cow_base_price += 40
+if cow['dressage'] = 4: cow_base_price += 80
+if cow['dressage'] = 5: cow_base_price += 100
+
+if cow['xenophily'] = 0: cow_base_price -= 200
+if cow['xenophily'] = 1: cow_base_price -= 100
+if cow['xenophily'] = 2: cow_base_price += 20
+if cow['xenophily'] = 3: cow_base_price += 100
+if cow['xenophily'] = 4: cow_base_price += 200
+if cow['xenophily'] = 5: cow_base_price += 300
+
+if cow['cowSK'] = 3: cow_base_price -= 400
+if cow['cowSK'] = 4: cow_base_price += 100
+if cow['cowSK'] = 5: cow_base_price += 800
+
+if cow['mood'] = 0: cow_base_price += 50
+if cow['mood'] = 1: cow_base_price += 100
+if cow['mood'] = 2: cow_base_price += 150
+if cow['mood'] = 3: cow_base_price += 200
+if cow['mood'] = 4: cow_base_price += 250
+if cow['mood'] = 5: cow_base_price += 300
+if cow['mood'] = -1: cow_base_price -= 20
+if cow['mood'] = -2: cow_base_price -= 40
+if cow['mood'] = -3: cow_base_price -= 60
+if cow['mood'] = -4: cow_base_price -= 100
+if cow['mood'] = -5: cow_base_price -= 250
+
+!The two max levels of instinct and custom calculations add up: eg, cow with 2 instinct will value +60 sparks/cow with 5 instinct will value +160 sparks
+if cow['instinct'] = 0: cow_base_price -= 40
+if cow['instinct'] > 0: cow_base_price += 60
+if cow['instinct'] > 3: cow_base_price += 100
+if cow['custom'] = 0: cow_base_price -= 40
+if cow['custom'] > 0: cow_base_price += 60
+if cow['custom'] > 3: cow_base_price += 100
+
+if cow['angst'] = 0: cow_base_price += 80
+if cow['angst'] = 1: cow_base_price -= 60
+if cow['angst'] = 2: cow_base_price -= 120
+if cow['angst'] = 3: cow_base_price -= 180
+if cow['angst'] = 4: cow_base_price -= 250
+if cow['angst'] = 5: cow_base_price -= 500
+
+if cow['fear'] = 0: cow_base_price += 150
+if cow['fear'] = 1: cow_base_price += 20
+if cow['fear'] = 2: cow_base_price -= 40
+if cow['fear'] = 3: cow_base_price -= 80
+if cow['fear'] = 4: cow_base_price -= 120
+if cow['fear'] = 5: cow_base_price -= 150
+
+if cow['boobs'] = 0: cow_base_price -= 400
+if cow['boobs'] = 1: cow_base_price -= 200
+if cow['boobs'] = 2: cow_base_price -= 100
+if cow['boobs'] = 3: cow_base_price += 20
+if cow['boobs'] = 4: cow_base_price += 150
+if cow['boobs'] = 5: cow_base_price += 300
+if cow['boobs'] = 6: cow_base_price += 500
+
+if cow['virginity'] = 3: cow_base_price += 80
+if cow['sub_fisting'] > 2: cow_base_price += 40
+if cow['sub_fisting'] > 4: cow_base_price += 40
+
+if cow['age'] = CONST_INT['milf_age']: cow_base_price += 150
+
+if cow['cowSK_affinity'] > 0: cow_base_price += 250
+
+if $cow_psy_status = 'broken': cow_base_price /= 2
+
+!bonus for master capacity to lead negotiation and impress Jarik
+cow_base_price += master_str*10
+cow_base_price += master_cha*10
+cow_base_price += master_style*10
+cow_base_price += brand_reputation*10
+cow_base_price += guild_reputation*10
+
+if cow_base_price < 20: cow_base_price = 20
+
+
+! JO9 MOD START TBV_COW_BASE_PRICE | 2026-10-17_trait_value
+cow_base_price = func('jo9_traits_value', 'base_price', 'cow', cow_base_price)
+!Calculate cow price
+cowprice = (cow_base_price*3)/2
+! JO9 MOD END TBV_COW_BASE_PRICE
+if cowprice < 30: cowprice = 30
+
+!Cow auction text
+if cow['age'] ! CONST_INT['milf_age']: $csell_age = '겉보기에는 조금 <font color="#A300CC">젊어</font> 보이는군요. 하지만 큰 문제는 아닙니다.'
+if cow['age'] = CONST_INT['milf_age']: $csell_age = '그녀는 <font color="#A300CC">성숙</font>했습니다. 그건 언제나 좋은 일이지요.'
+
+if cow['cowSK'] <= 3: $csell_cowSK = '진짜 문제는 그녀가 <font color="#0000D8">젖소처럼 행동하는 기술</font>이 부족하다는 겁니다. 남은 마무리는 우리 쪽에서 해야 하고, "훈련"이 끝나기 전에 부서지지 않을 거라고 장담할 수도 없습니다… 우리 둘 다에게 마이너스 요소라는 뜻이지요, 조련사님.'
+if cow['cowSK'] = 4: $csell_cowSK = '다만 한 가지, 그녀는 아직 완전히 <font color="#0000D8">젖소로 훈련된</font> 상태는 아니군요? 어느 정도는 길들여진 것 같지만, 그걸로 값이 눈에 띄게 오를 정도는 아닙니다. 미안합니다, 조련사님…'
+if cow['cowSK'] = 5: $csell_cowSK = '무엇보다도 그녀는 자기 역할인 <font color="#0000D8">젖소로서 완벽하게 훈련되고 "숙련된"</font> 것처럼 보입니다. 우리에게 완벽하게 조건화된 여자들은 아주 중요합니다. 확실한 물건이니까요… 그러니 이야기를 계속해 봅시다. 분명 우리 둘 다 좋은 거래를 하게 될 겁니다.'
+
+if cow['boobs'] = 0: $csell_boobs = '젠장. 그녀의 <font color="#0000D8">가슴</font>은 어디 있습니까? 우리가 젖소를 찾고 있다는 건 알고 계시겠지요?'
+if cow['boobs'] = 1: $csell_boobs = '거의 <font color="#0000D8">평평한 가슴</font>이군요… 좋은 물건은 아닙니다.'
+if cow['boobs'] = 2: $csell_boobs = '시작부터 좋지 않군요… 제 경력 동안 당신의 "젖소"보다 <font color="#0000D8">가슴</font>이 더 큰 여자들은 수도 없이 봤습니다.'
+if cow['boobs'] = 3: $csell_boobs = '괜찮은 <font color="#0000D8">가슴</font>을 가졌군요. 대단하진 않지만, 뭐, 일은 해낼 수 있을 겁니다.'
+if cow['boobs'] = 4: $csell_boobs = '좋은 출발입니다. 그녀의 <font color="#0000D8">가슴</font>은 우리 평균 생산량에 딱 맞게 갖춰져 있군요.'
+if cow['boobs'] = 5: $csell_boobs = '아주 멋진 <font color="#0000D8">가슴</font>입니다! 이런 "급"은 좀처럼 보기 힘들지요. 점수 하나 따셨습니다, 조련사님.'
+if cow['boobs'] = 6: $csell_boobs = '정말 압도적이군요. 이 <font color="#0000D8">가슴</font>이 약속한 만큼만 해 준다면, 올해의 젖소가 여기서 나올지도 모르겠습니다!'
+
+if cow['fat'] = 0: $csell_fat = ' 흠… 해골처럼 보이는군요. 너무 <font color="#0000D8">말랐습니다</font>!'
+if cow['fat'] = 1: $csell_fat = ' 음, 조금 <font color="#A300CC">마른</font> 편이군요. 좋은 점은 아닙니다. 생산량에 영향을 줄 겁니다.'
+if cow['fat'] = 2: $csell_fat = ' 그녀의 <font color="#A300CC">체중</font>은 꽤 정상적으로 보입니다. 특별할 건 없군요.'
+if cow['fat'] = 3: $csell_fat = ' 흠, 조금 <font color="#A300CC">통통</font>해 보이는군요. 그건 좋은 일입니다.'
+if cow['fat'] = 4: $csell_fat = ' 어쨌든 그녀는 젖소로서는 완벽한 <font color="#A300CC">체중</font>을 가졌습니다. 딱 적당히 살이 붙었군요!'
+if cow['fat'] = 5: $csell_fat = ' 인상적이군요… 적어도 <font color="#A300CC">마른</font> 편은 절대 아닙니다. 이쪽이 더 낫긴 하지만, 외양간 자리를 좀 비워 둬야겠군요…'
+
+if cow['stamina'] = 1: $csell_stamina = ' 발 하나 앞으로 내딛는 것도 버거워 보이는군요… 젖소에게 꼭 필수인 건 아니지만, 그녀는 <font color="#A300CC">너무 약합니다</font>.'
+if cow['stamina'] = 2: $csell_stamina = ' 그녀는 <font color="#A300CC">조금 약한 편</font>이지만, 젖소라면 아주 드문 수준은 아닙니다. 마라톤을 시키는 것도 아니지 않습니까?'
+if cow['stamina'] = 3: $csell_stamina = ' 그녀는 <font color="#A300CC">건강합니다</font>. 감염과 질병을 막는 데는 언제나 좋은 요소지요.'
+if cow['stamina'] = 4: $csell_stamina = ' 그녀는 <font color="#A300CC">꽤 단련되어 있습니다</font>. 감염과 질병을 막는 데는 언제나 좋은 요소지요.'
+if cow['stamina'] = 5: $csell_stamina = ' 땀 한 방울 안 흘리는군요! <font color="#A300CC">이렇게 상태가 좋은</font> 젖소는 보기 드뭅니다. 이런 여자를 축사에 가둬 두는 게 아까울 정도군요. 어쨌든 분명 좋은 보너스입니다.'
+
+if cow['ego'] = 0: $csell_ego = ' 그녀는 완전히 <font color="#A300CC">줏대가 없어</font> 보이는군요. 완벽합니다. 우리에겐 다루기 쉬운 젖소가 필요하니까요.'
+if cow['ego'] = 1: $csell_ego = ' 그녀는 꽤 <font color="#A300CC">무해해</font> 보입니다. 좋은 점이지요.'
+if cow['ego'] = 2: $csell_ego = ' 더 나쁠 수도 있었겠지만, 조금 갈피를 못 잡는 것 같군요. 정신이 완전히 <font color="#A300CC">복종적</font>인 상태는 아닙니다.'
+if cow['ego'] = 3: $csell_ego = ' 그녀는 <font color="#A300CC">꽤 독립적</font>입니다. 젖소로서는 좋은 점이 아니지만, 이번 경우엔 큰 문제까진 아닐 듯하군요.'
+if cow['ego'] = 4: $csell_ego = ' 그녀는 <font color="#A300CC">매우 독립적</font>이군요. 축사에서는 보기 드문 타입입니다. 말썽을 일으키지 않기를 바랄 뿐이네요…'
+if cow['ego'] = 5: $csell_ego = ' 이건 좋지 않습니다. 이렇게 <font color="#A300CC">의지가 강한</font> 젖소는 처음 봅니다! 어떻게 이 여자를 이렇게까지 안 부수고 훈련시킨 겁니까? 젖소에게 그런 의지는 필요 없지요. 말 안 듣는 쪽으로 이어지지 않기만 바랍니다…'
+
+if cow['pride'] = 0: $csell_pride = ' 좋은 점이군요. 그녀는 완전히 <font color="#A300CC">부끄러움을 모릅니다</font>. 평생 알몸으로 지내게 될 걸 생각하면 이쪽이 훨씬 낫지요… 안 그렇습니까?'
+if cow['pride'] = 1: $csell_pride = ' 음, 그녀는 꽤 <font color="#A300CC">소심해</font> 보이는군요… 수정과 착유를 다루기엔 더 수월할 겁니다.'
+if cow['pride'] = 2: $csell_pride = ' 그녀는 좀 더 <font color="#A300CC">거리낌이 없어</font>도 되겠군요. 덜 부끄러워해야 한다는 뜻입니다. 걱정하지 마십시오, 가격에 영향을 줄 정도는 아닙니다. 매일 받게 될 "처리"에 곧 익숙해질 테니까요.'
+if cow['pride'] = 3: $csell_pride = ' 그녀는 <font color="#A300CC">자존심이 강한</font> 타입입니다, 조련사님… 좋은 점은 아니지요. 이런 부류는 가끔 협조가 조금 껄끄럽습니다. 물론 이보다 심한 경우도 봤습니다만…'
+if cow['pride'] = 4: $csell_pride = ' 그녀는 분명히 <font color="#A300CC">지나치게 자존심이 강합니다</font>! 좀 더 열어 주려는 시도는 해 보셨습니까? 여기 삶은 그녀에게 힘들 겁니다… 그리고 우리까지 힘들게 만들겠지요…'
+if cow['pride'] = 5: $csell_pride = ' 이건 <font color="#0000D8">오만한</font> 젖소로군요! 농담입니까? 이런 게 가능할 줄은 몰랐습니다… 분명 말썽을 일으킬 겁니다, 아시겠지요…'
+
+if cow['instinct'] = 0: $csell_instinct = ' 그녀는 자기 처지를 진심으로 받아들이지 못하는 노예처럼 보입니다. 이게 그녀에게는 본능이 아닙니다. 어느 정도는 말 잘 들을지 몰라도, 더 <font color="#0000D8">길들여져야</font> 합니다…'
+if cow['instinct'] > 0: $csell_instinct = ' 그녀는 좀 더 복종에 익숙해지고, 주인의 뜻에 재빨리 반응할 수 있어야 합니다. 그래도 이미 그녀를 <font color="#0000D8">길들이는</font> 데 꽤 좋은 일을 해 놓으셨군요. 나머지는 쉽게 끝낼 수 있겠습니다.'
+if cow['instinct'] > 3: $csell_instinct = ' 그녀는 충분히 <font color="#0000D8">길들여진</font> 것처럼 보입니다. 좋은 점이지요. 시간이 조금만 더 지나면 젖소로 사는 게 그녀에게 완전히 자연스러워질 겁니다.'
+
+if cow['custom'] = 0: $csell_custom = ' 그녀는 자기 처지에 아직 <font color="#0000D8">익숙하지 않습니다</font>. 그래서 결국 문제를 일으킬 수도 있겠군요…'
+if cow['custom'] > 0: $csell_custom = ' 그녀는 어느 정도 복종에 <font color="#0000D8">익숙해져</font> 있습니다. 좋은 점이지요. 물론 더 좋아질 수는 있습니다.'
+if cow['custom'] > 3: $csell_custom = ' 어쨌든 그녀는 젖소로 사는 삶에 꽤 <font color="#0000D8">익숙해진</font> 것처럼 보입니다. 완벽하지요. 우리 가축은 우유 생산 말고 다른 데에 정신 팔릴 필요가 없으니까요!'
+
+if cow['pet'] < 3 and cow['dressage'] < 3:
+	$csell_pet = '그녀가 역할놀이엔 그다지 익숙하지 않다고요? 큰 문제는 아닙니다. 어디까지나 보너스 요소니까요. <font color="#A300CC">동물 역할</font>에 깊이 조건화된 젖소들은 대개 통제하기가 조금 더 쉽습니다.'
+elseif cow['pet'] < 3 and cow['dressage'] > 2:
+	$csell_pet = '조금 훈련은 시켜 두셨군요? <font color="#A300CC">동물처럼 행동하도록 훈련</font>시키는 건 절대 나쁠 게 없습니다… 더 할 수 있는 자는 덜한 것도 해낼 수 있는 법, 그렇지 않습니까?'
+elseif cow['pet'] > 2 and cow['dressage'] < 3:
+ 	$csell_pet = '조금 훈련은 시켜 두셨군요? <font color="#A300CC">동물처럼 행동하도록 훈련</font>시키는 건 절대 나쁠 게 없습니다… 더 할 수 있는 자는 덜한 것도 해낼 수 있는 법, 그렇지 않습니까?'
+else
+ 	$csell_pet = '그녀는 <font color="#A300CC">동물처럼 행동하는 것</font>에 익숙하다고요? 완벽합니다. 필수까지는 아니지만, 그만큼 값을 더 받을 만하지요. 조건화에는 확실히 더 유리하니까요.'
+end
+
+if cow['xenophily'] < 2: $csell_xeno = '그렇다 해도, 그녀가 <font color="#0000D8">이종 선호</font>에 익숙하지 않은 건 문제다: 알다시피, 미노타우로스가 종종 수정을 맡기 때문에 여자들이 비인간과의 성행위에 익숙한 편이 더 좋다.'
+if cow['xenophily'] = 2: $csell_xeno = '어쨌든, 그녀는 <font color="#0000D8">이종 선호</font>에 편안함을 느끼는 듯하다: 그녀는 매달 몇 번씩 미노타우로스를 상대해야 할 테니까… 우리에게 익숙하지 않은 젖소들은 처음 몇 번은 겁을 먹을 수 있다: 그건 생산성에 나쁘다.'
+if cow['xenophily'] > 2: $csell_xeno = '그리고 그녀는 적어도 인간과의 성행위만큼이나 <font color="#0000D8">이종 선호</font>에도 익숙해 보인다: 이건 아주 좋은 점이다, 우리가 말하자면 어떤 "수단"을 써서라도 빠르게 수정 과정을 시작할 수 있을 테니까…'
+
+if cow['virginity'] = 3: $csell_virginity = '좋습니다. 그녀의 질은 <font color="#A300CC">느슨하게 풀려</font> 있군요. 수정할 때 도움이 될 겁니다.'
+if cow['virginity'] ! 3: $csell_virginity = '그녀의 질이 조금 <font color="#A300CC">너무 조입니다</font>. 아주 중요한 문제는 아니지만, 다치지 않게 조심은 해야겠군요.'
+if cow['sub_fisting'] < 3: $csell_fisting = '하지만 <font color="#A300CC">피스팅</font> 쪽은 좀 더 작업했어야 했습니다. 아시다시피, 그걸로 그녀를 "풀어 주는" 게 꽤 좋은 방법이거든요.'
+if cow['sub_fisting'] > 2: $csell_fisting = '그녀가 <font color="#A300CC">피스팅</font>에 익숙하다고요? 좋습니다. 수정을 수월하게 하는 데 이 행위가 얼마나 가치 있는지, 많은 농장주들이 완전히 과소평가하곤 하지요.'
+if cow['sub_fisting'] > 4: $csell_fisting = '그럴 줄 알았습니다. 그녀는 분명 여러 번 <font color="#A300CC">피스팅을 당한</font> 상태군요. 수정도 훨씬 쉬워질 겁니다!'
+
+if cow['mood'] = 0: $csell_mood = '흠, 그녀는 <font color="#0000D8">차분해</font> 보입니다. 우린 우울한 젖소를 좋아하지 않습니다. 생산성에 치명적일 수 있거든요.'
+if cow['mood'] = 1: $csell_mood = '흠, 그녀는 <font color="#0000D8">차분해</font> 보입니다. 우린 우울한 젖소를 좋아하지 않습니다. 생산성에 치명적일 수 있거든요.'
+if cow['mood'] = 2: $csell_mood = '당신 젖소는 <font color="#0000D8">낙천적</font>인 편인 것 같군요. 좋은 점입니다. 이런 애들이 언제나 생산성이 조금 더 높거든요.'
+if cow['mood'] = 3: $csell_mood = '당신 젖소는 <font color="#0000D8">만족해</font> 보이는군요. 좋은 점입니다. 이런 애들은 언제나 생산성이 조금 더 높거든요.'
+if cow['mood'] = 4: $csell_mood = '그녀는 자기 운명을 정말 <font color="#0000D8">기쁘게</font> 받아들이는 것 같군요. 보기 좋습니다. 행복은 농장에선 곧 사업성과로 이어지니까요.'
+if cow['mood'] = 5: $csell_mood = '그녀는 자기 운명을 정말 <font color="#0000D8">기쁘게</font> 받아들이는 것 같군요. 보기 좋습니다. 행복은 농장에선 곧 사업성과로 이어지니까요.'
+if cow['mood'] = -1: $csell_mood = '그녀는 꽤 <font color="#0000D8">슬퍼</font> 보이는군요… 큰 문제까지는 아니지만, 행복한 젖소가 언제나 더 생산적이긴 하지요.'
+if cow['mood'] = -2: $csell_mood = '그녀는 꽤 <font color="#0000D8">슬퍼</font> 보이는군요… 큰 문제까지는 아니지만, 행복한 젖소가 언제나 더 생산적이긴 하지요.'
+if cow['mood'] = -3: $csell_mood = '그녀는 꽤 <font color="#0000D8">슬퍼</font> 보이는군요… 큰 문제까지는 아니지만, 행복한 젖소가 언제나 더 생산적이긴 하지요.'
+if cow['mood'] = -4: $csell_mood = '흠… 이 여자는 <font color="#0000D8">우울합니다</font>… 아시겠지만, 그런 건 사업에 좋지 않습니다. 우리 젖소들의 생산성에 아주 나쁜 영향을 줄 수 있지요.'
+if cow['mood'] = -5: $csell_mood = '흠… 이 여자는 <font color="#0000D8">우울합니다</font>… 아시겠지만, 그런 건 사업에 좋지 않습니다. 우리 젖소들의 생산성에 아주 나쁜 영향을 줄 수 있지요.'
+
+if cow['angst'] = 0: $csell_angst = '그리고 그녀는 전혀 <font color="#0000D8">절망해</font> 보이지도 않는군요.'
+if cow['angst'] > 0: $csell_angst = '분명 그녀는 <font color="#0000D8">절망</font>에 빠져 있습니다… <font color="#0000D8">불안</font>만큼 위험한 건 없지요. 내가 데려가긴 하겠지만, 아주 주의 깊게 지켜봐야 할 겁니다.'
+if cow['angst'] > 3: $csell_angst = '그리고 그녀는 <font color="#0000D8">불안</font>에 잠식되어 있습니다… 이런 상태로 얼마나 버틸 수 있을지 모르겠군요… 가격에도 큰 영향을 줄 겁니다, 조련사님.'
+
+if cow['fear'] < 2: $csell_fear = '아, 그리고 그녀는 두려워하지 않는군요. 좋습니다. <font color="#A300CC">공포</font>가 절망만큼 가축 생산성에 치명적인 건 아니니까요.'
+if cow['fear'] > 1: $csell_fear = '아, 그리고 그녀는 <font color="#A300CC">두려워</font> 보이는군요. 큰 문제는 아니지만, 젖 생산량에는 조금 영향을 줄 수 있습니다…'
+if cow['fear'] > 3: $csell_fear = '아, 하지만 이것 좀 보십시오. 그녀는 <font color="#A300CC">겁에 질려</font> 있습니다! 좋지 않군요. 생산성이 떨어질 겁니다, 조련사님…'
+
+$csell_affinity = ''
+if cow['cowSK_affinity'] > 0: $csell_affinity = '당신 노예가 이곳에 꽤 흥미를 보이는 걸 봤습니다. 어쩌면 젖소 취급을 받는 데 어떤… <font color="#0000D8">"적성"</font>이 있는 걸지도 모르겠군요. 그건 가격에 보탬이 될 수밖에 없습니다.'
+$csell_broken = ''
+if $cow_psy_status = 'broken': $csell_broken = '마지막으로 한 가지 더. 미안합니다만, 조련사님. 당신 노예의 정신이 <font color="#0000D8">망가져</font> 있더군요… 사실 당신이 데려왔을 때 제일 먼저 눈에 띈 것도 그거였습니다. 우리 쪽 흥미를 끌 만큼 생산적일 수는 있겠지만, 이런 상태라면 제값의 절반밖에 못 칩니다. 참 안타까운 일이군요…'
+
+if cowprice < 1800: $cow_estimate = '이 여자를 사들이긴 하겠습니다만, 솔직히 말해 조련사님, 아주 수익성이 좋을 것 같진 않습니다… 어쩌면 끝내 좋은 젖소가 못 될 수도 있지요. 제가 드릴 수 있는 건 <<cowprice>> 스파크뿐입니다.'
+if cowprice >= 1800: $cow_estimate = '이 정도면 우리 기준에선 평범한 가축입니다. 그러니 예, 자리는 있습니다, 조련사님. <<cowprice>> 스파크를 드리지요. 평범한 젖소에 대한 평범한 값입니다.'
+if cowprice > 2600: $cow_estimate = '좋은 젖소를 가져오셨군요, 조련사님! 꽤 생산적일 겁니다. 그래서 <<cowprice>> 스파크를 제시할 수 있습니다.'
+if cowprice > 3500: $cow_estimate = '이 여자는 꼭 필요합니다. 이 정도로 생산적인 젖소는 좀처럼 보기 힘드니까요. <<cowprice>> 스파크를 드리겠습니다. 저 "자질"을 생각하면 공영 농장이야말로 그녀에게 가장 어울리는 곳이겠지요.'
+
+killvar '$cow_auction'
+$cow_auction[1]= '  <i>  야릭는 <<$cow_name>>를 꽤 오랫동안 데리고 간다. 마침내 당신의 노예와 함께 돌아오는데, 가축 사육 환경에서 그녀의 자신감을 시험해 본 모양이다.</i>'
+! JO9 MOD START J9M1532 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$cow_auction[]= '[야릭]<br>&nbsp;<<$csell_age>> <<$csell_cowSK>>'
+$cow_auction[]= ' <i> 미노타우로스는 그녀의 젖꼭지를 쥐어짜고 엉덩이를 툭툭 두드린다.</i><br>[야릭]<br>&nbsp;<<$csell_boobs>><<$csell_fat>>'
+$cow_auction[]= '[야릭]<br>&nbsp;아, 그리고 좀 뛰게도 해 봤지요:<<$csell_stamina>>'
+$cow_auction[]= '[야릭]<br>&nbsp;성격으로 보자면,<<$csell_ego>> 흠, 또 다른 점이라면:<<$csell_pride>>'
+$cow_auction[]= '[야릭]<br>&nbsp;<<$csell_instinct>> <<$csell_custom>>'
+$cow_auction[]= ' <i> 야릭는 그녀가 가축이나 조랑말 역할로 얼마나 훈련되었는지 묻는다.</i><br>[야릭]<br>&nbsp;<<$csell_pet>>'
+$cow_auction[]= '[야릭]<br>&nbsp;<<$csell_xeno>>'
+$cow_auction[]= ' <i> 그러고는 당신의 노예에게 다리를 벌리게 한 뒤, 눈과 손가락으로 보지를 살핀다. <<$cow_name>>는 작게 신음한다.</i><br>[야릭]<br>&nbsp;<<$csell_virginity>> <<$csell_fisting>>'
+$cow_auction[]= ' <i> 미노타우로스는 마침내 몸을 일으키며 덧붙인다:</i><br>[야릭]<br>&nbsp;<<$csell_mood>> <<$csell_angst>> <<$csell_fear>>'
+! JO9 MOD END J9M1532
+if $csell_affinity ! '' or $csell_broken ! '': $cow_auction[] = '  [Jarik]<br>- <<$csell_affinity>>' + iif($csell_affinity ! '', ' ', '') + '<<$csell_broken>>'
+$cow_auction[] = '  <i>  야릭가 출구 쪽을 가리키고, 둘은 함께 외양간을 나선다.</i>'
+! JO9 MOD START J9M1531 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$cow_auction[] = ' <i> 야릭는 당신의 젖소 값을 머릿속으로 가늠하며 천천히 거대한 머리를 흔든다. 마침내 값을 부른다:</i><br>[야릭]<br>&nbsp;<<$cow_estimate>>'
+! JO9 MOD END J9M1531
+
+------------ $cow_price ------------

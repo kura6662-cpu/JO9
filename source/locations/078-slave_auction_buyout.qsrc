@@ -1,0 +1,17 @@
+# slave_auction_buyout
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2858 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'slave_auction_buyout': gs 'snk_room_bridge', 'guard', 'slave_auction_buyout'
+! JO9 MOD END J9M2858
+!Slave buyout - created by crushboss
+if sparks >= ((cur_stock_price*5)/2):
+ 	sparks -= ((cur_stock_price*5)/2) - cur_stock_price &! offset because action_phase 6 in slave_auction_pass will also subtract cur_stock_price
+ 	auction_phase = 6
+ 	stock_sold = stock_limit + 1
+else
+ 	msg '이 노예를 사기에는 스파크가 부족합니다!'
+end
+
+gt 'slave_auction_buy'
+
+------------ slave_auction_buyout ------------

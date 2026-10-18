@@ -1,0 +1,84 @@
+# demo_estate
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2921 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'demo_estate': gs 'snk_room_bridge', 'guard', 'demo_estate'
+! JO9 MOD END J9M2921
+!Tutorial Mode - Estate initialization
+!Created by crushboss
+
+!Room Picture fix for Tutorial Mode - crushboss
+$estate = 'white_house'
+$interior = 'classic'
+interior_prestige['classic'] = 1
+
+$study = 'classic'
+$interior_study_large['classic'] = 'interiors\classic_study_large'
+$interior_study['classic'] = 'interiors\classic_study'
+$interior_study_info['classic'] = '   '
+$bg['study'] = $interior_study[$study]
+$bg['home_lux'] = $interior_study_large[$study]
+$place_name['study'] = $estate_study_name[$estate]
+$place_location['study'] = $estate_study_location[$estate]
+$place_info['study'] = $interior_study_info[$study]
+
+$bed = 'classic'
+$interior_bed_large['classic'] = 'interiors\classic_bedroom_large'
+$interior_bed['classic'] = 'interiors\classic_bedroom'
+$interior_bed_info['classic'] = '   '
+$bg['bedroom'] = $interior_bed[$bed]
+$bg['bedroom_lux'] = $interior_bed_large[$bed]
+$place_name['bedroom'] = $estate_bed_name[$estate]
+$place_location['bedroom'] = $estate_bed_location[$estate]
+$place_info['bedroom'] = $interior_bed_info[$bed]
+
+$bath = 'classic'
+$interior_bath_large['classic'] = 'interiors\classic_bath_large'
+$interior_bath['classic'] = 'interiors\classic_bath'
+$interior_bath_info['classic'] = '   '
+$bg['bathroom'] = $interior_bath[$bath]
+$bg['bathroom_lux'] = $interior_bath_large[$bath]
+$place_name['bathroom'] = $estate_bath_name[$estate]
+$place_location['bathroom'] = $estate_bath_location[$estate]
+$place_info['bathroom'] = $interior_bath_info[$bath]
+
+$dungeon = 'classic'
+$interior_dungeon_large['classic'] = 'interiors\classic_dungeon_large'
+$interior_dungeon['classic'] = 'interiors\classic_dungeon'
+$interior_dungeon_info['classic'] = '   '
+$bg['dungeon'] = $interior_dungeon[$dungeon]
+$bg['dungeon_lux'] = $interior_dungeon_large[$dungeon]
+$place_name['dungeon'] = $estate_dungeon_name[$estate]
+$place_location['dungeon'] = $estate_dungeon_location[$estate]
+$place_info['dungeon'] = $interior_dungeon_info[$dungeon]
+
+$kitchen = 'classic'
+$interior_kitchen_large['classic'] = 'interiors\classic_kitchen_large'
+$interior_kitchen['classic'] = 'interiors\classic_kitchen'
+$interior_kitchen_info['classic'] = '   '
+$bg['kitchen'] = $interior_kitchen[$kitchen]
+$bg['kitchen_lux'] = $interior_kitchen_large[$kitchen]
+$place_name['kitchen'] = $estate_kitchen_name[$estate]
+$place_location['kitchen'] = $estate_kitchen_location[$estate]
+$place_info['kitchen'] = $interior_kitchen_info[$kitchen]
+
+$lab = 'classic'
+$interior_lab_large['classic'] = 'interiors\classic_lab_large'
+$interior_lab['classic'] = 'interiors\classic_lab'
+$interior_lab_info['classic'] = '   '
+$bg['lab'] = $interior_lab[$lab]
+$bg['lab_lux'] = $interior_lab_large[$lab]
+$place_name['lab'] = $estate_lab_name[$estate]
+$place_location['lab'] = $estate_lab_location[$estate]
+$place_info['lab'] = $interior_lab_info[$lab]
+
+$boudoir = 'classic'
+$interior_boudoir_large['classic'] = 'interiors\classic_boudoir_large'
+$interior_boudoir['classic'] = 'interiors\classic_boudoir'
+$interior_boudoir_info['classic'] = '   '
+$bg['boudoir'] = $interior_boudoir[$boudoir]
+$bg['boudoir_lux'] = $interior_boudoir_large[$boudoir]
+$place_name['boudoir'] = $estate_boudoir_name[$estate]
+$place_location['boudoir'] = $estate_boudoir_location[$estate]
+$place_info['boudoir'] = $interior_boudoir_info[$boudoir]
+
+------------ demo_estate ------------

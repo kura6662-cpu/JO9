@@ -1,0 +1,31 @@
+# slave_to_cage
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2884 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'slave_to_cage': gs 'snk_room_bridge', 'guard', 'slave_to_cage'
+! JO9 MOD END J9M2884
+!move slave to prisoner
+
+dynamic $swap_slave_instances, 'slave', 'prisoner'
+
+if prisoner_state = CONST_INT['slave_exist']:
+	if hunting_prize > 0:
+		$prisoner_info_text = '  네 전리품은 <<$slave_beauty1_txt[prisoner["beauty"]]>> <<$slave_noun3[prisoner["age"]]>>다. 네가 처리할 수 있을 때까지 그녀를 감방에 가둬 둔다.'
+		hunting_prize = 0
+	else
+		dynamic $replace("$prisoner_info_text = '<<$psy_status[$prisoner_psy_status]>>'", 'dyn'+'slave', 'prisoner') &! evaluate delayed sub-expressions with substitution
+	end
+elseif prisoner_state = CONST_INT['slave_faint']:
+	if hunting_prize > 0:
+		$prisoner_info_text = '  네 전리품은 <<$slave_beauty1_txt[prisoner["beauty"]]>> <<$slave_noun3[prisoner["age"]]>>다. 그녀는 지쳐서 작게 신음하고 있다. 상태가 아주 좋지 않은 건 분명하지만, 네가 처리할 수 있을 때까지 감방에 두면 아마 괜찮아질 것이다.'
+		hunting_prize = 0
+	else
+		$prisoner_info_text = '  <<$prisoner_name>>은 지쳐서 작게 신음하고 있다. 상태가 아주 좋지 않은 게 분명하다. 휴식을 주거나 심지어 의료 지원까지 해야 한다.'
+	end
+end
+
+prisoner_fattening = 0
+prisoner['orig_fat'] = prisoner['fat']
+
+gt $return_lock
+
+------------ slave_to_cage ------------

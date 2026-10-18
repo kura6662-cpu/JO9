@@ -1,0 +1,54 @@
+> Public reference copy. Dated validation results refer to their original inputs; current source and the English guides take precedence. Machine-specific paths have been replaced with placeholders.
+
+# 개인실 식단 선택·설명 수정 (2026-10-15)
+
+사용자 요청: 개인실 식단 선택이 되지 않는 문제 수정 및 실제 효과·게임 분위기에 맞는 설명 정리.
+
+## 기준본
+
+사용자가 새로 갱신한 배포본 <DISTRIBUTION_GAME_DIR>/jack.qsp를 먼저 읽었다. 플레이본도 동일 SHA-256 6d507cb0685ce3ae1eb5a2023ea28ec22b4709ca5c1fb325de379e7a1c58a7a2임을 확인했다. 이전 세션 후보 QSP로 되돌리지 않고 이 파일에서 선언형 치환만 적용했다.
+
+## 수정
+
+- 기존 식단 이름과 가격은 a 태그 밖에 있어 32px 체크 아이콘만 클릭 가능했다. 아이콘·이름·설명을 포함한 전체 행을 하나의 링크로 바꿨다. 작은 버튼에만 의존하던 동작을 없애고 팝업 표시 우선순위도 고정했다.
+- 개인실 1~4별 명시적인 diet_set 인자 경로를 추가했다. 선택값 1/0/2만 받으며 해당 방의 ration만 바꾼 뒤 팝업을 다시 표시한다. 다른 방의 값은 건드리지 않는다. 같은 식단 재선택은 special_diet_days를 초기화하지 않으며 실제 식단 변경만 초기화한다.
+- 팝업을 열었을 때도 현재 식단의 최신 설명을 하단에 표시한다. 설명 캐시 갱신 location과 초기 #txt_man을 함께 수정해 기존 세이브와 새 게임 모두 같은 지문을 쓴다.
+- 일반식(2$/일)은 체형에 따라 양을 조절하는 소박한 식사, 고열량식(4$/일)은 증량·수유 영양 보충으로 설명했다.
+- 특별식단(8$/일)은 일반식처럼 체형을 관리하면서 좋은 재료와 간식을 더하는 대접으로 설명했다. 닷새 이후 특별대우 기분 및 응석 증가, 열흘 이후 추가 기분 효과를 문맥에 반영했다. 안개 괴물 먹이를 가리키던 옛 설명 및 기술적인 효과 나열은 교체했다.
+- next_day의 칼로리·청구·기분·응석 수치 처리와 가격은 변경하지 않았다. 즉시 식비가 빠지는 구매 버튼이 아니라 일일 식단 지정을 유지한다.
+
+## 적용·검증
+
+mods/2026-10-15_private_room_diet_selection.json 및 tests/test_private_room_diet_selection.cjs.
+
+두 게임 각각 공식 apply_mods.ps1 적용, 248 location 왕복 검증 및 qsp_verify PASS. 변경은 slave_private_room1~4, snk_room_diet_migrate, #txt_man의 선언된 치환뿐이다. 모든 QSP 필드를 백업과 재대조했고 next_day는 바이트 동일하다.
+
+임시 HTML에서 실제 생성된 행과 CSS를 렌더링해 세 식단의 제목·설명 클릭 6곳 모두 올바른 방/값 링크를 받는지, 행이 팝업과 배경 안에 들어오는지 확인했다. 이 검사는 브라우저 클릭/배치 검사이며 네이티브 QSP에서 식단값 변경을 실행한 것은 아니다.
+
+- 두 게임 적용 후 SHA-256: e0cc5c9bab543998c3fee46513a96df2e1f51ce513f6c4f604e7538d2d604bcb
+- 외부 원본 백업: G:/somi/IMGMG/backups/private-diet-selection-20261015/{full,work}/jack.qsp.before
+
+## 사용자 확인
+
+게임을 다시 실행한 뒤 개인실 식사 설정에서 고열량식→특별식단→일반식 순서로 글자를 눌러 체크 표시와 하단 설명이 바뀌는지 확인한다. 팝업을 닫았다 다시 열어 선택이 유지되는지도 확인한다. 실제 플레이 검증은 사용자 확인 대기다.
+
+
+## 식단 선택 재실패의 원인과 UI 재수정
+
+사용자가 237f6e1 적용 후에도 개인실2의 체크가 일반식에서 바뀌지 않고 팝업의 작은 글꼴·넘침도 남는다고 확인했다. 이전 브라우저 검사는 클릭 링크와 배치만 검증해 실제 QSP 변수 갱신 경로를 놓쳤다. 이전 수정만으로 선택 문제가 해결됐다는 판단을 철회한다.
+
+실제 원인은 snk_room_diet_migrate의 COPYARR였다. QSP는 같은 변수에 숫자와 문자열 값을 함께 보관하므로 `copyarr '$room2_ration', '$room1_ration'`이 설명뿐 아니라 room1_ration 숫자값까지 덮어쓴다. 개인실 진입과 $newloc에서 설명을 재갱신할 때마다 2~4번 방 식단이 1번 방을 따라가고 있었다.
+
+설명 1~4번 문자열 항목을 각각 대입하도록 바꿨다. 선택값과 연속 특별식단 일수, 실제 next_day 효과·청구는 바꾸지 않는다. 팝업에서는 작은 설명문과 카드 테두리를 제거하고 경기천년제목 Medium 20px의 식단명·가격만 표시한다. 상세 지문은 하단 본문에 유지한다. 체크·이름을 포함한 행 전체 클릭 경로는 유지한다.
+
+추가 패치: mods/2026-10-15_z_private_diet_state_and_font.json. 기존 2026-10-15_private_room_diet_selection 다음에 적용한다.
+
+회귀 검사 tests/test_private_diet_state_refresh.cjs는 실제 설명 갱신 코드의 문자열 대입/COPYARR 부분을 해석해 숫자·문자열 이중값 모델로 실행한다. 수정 전 다른 방의 숫자 선택값이 바뀌어 실패했고, 수정 후 4개 방×3종 선택을 각각 3회 갱신해 독립 선택값이 보존됨을 확인했다. 이는 해당 명령의 소스 기반 모델 검사이며 네이티브 QSP 엔진 실행은 아니다.
+
+실제 게임 글꼴 파일과 양피지 PNG를 넣은 임시 HTML에서 제목/아이콘 클릭 6곳, 글꼴, 팝업 경계를 확인했다. 248 location 왕복 및 qsp_verify 통과. 선언한 5개 location 외 모든 필드는 보존했다.
+
+- 적용 전 두 게임 SHA-256: e0cc5c9bab543998c3fee46513a96df2e1f51ce513f6c4f604e7538d2d604bcb
+- 적용 후 두 게임 SHA-256: 467e5c5dc133b217633cf8de4ffe796886e1cf61f12ebd68254e51971be5bee8
+- 백업: G:/somi/IMGMG/backups/diet-state-refresh-20261015/{full,work}/jack.qsp.before
+
+사용자 실제 확인: 게임을 재실행하고 개인실2에서 고열량식/특별식단을 선택한다. 선택 표시와 하단 지문 변경, 팝업 닫기·다시 열기 후 선택 유지, 1번 방 식단이 따라 바뀌지 않는지 확인한다. 실제 게임 확인은 사용자 대기다.

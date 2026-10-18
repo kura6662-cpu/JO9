@@ -1,0 +1,15 @@
+# $mood_rise
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2843 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$mood_rise': gs 'snk_room_bridge', 'guard', '$mood_rise'
+! JO9 MOD END J9M2843
+!Decrease magnitude of negative moodlets of specified slave ($args[0]) by specified number (args[1])
+
+i = arrsize('$slave_bad_mood')
+:mood_rise_loop
+	i -= 1
+	$curmod = $slave_bad_mood[i]
+	dynamic "<<$args[0]>>[$curmod] = max(0, <<$args[0]>>[$curmod] - <<args[1]>>)"
+if i > 0: jump 'mood_rise_loop'
+
+------------ $mood_rise ------------

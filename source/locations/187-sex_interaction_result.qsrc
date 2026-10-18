@@ -1,0 +1,108 @@
+# sex_interaction_result
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2917 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'sex_interaction_result': gs 'snk_room_bridge', 'guard', 'sex_interaction_result'
+! JO9 MOD END J9M2917
+!Второй этап обработки действий в секси-тайм
+$msg_txt = ''
+gs 'sex_addup'
+! MEIKI_CHECKS_V1: session_route and session_state results update the two eligibility flags.
+! JO9 MOD START J9M2916 | 2026-10-15_zz_meiki_state | changed block; context may be included
+! JO9 MOD END J9M2916
+if sex['jo9_meiki_eligible'] = 1:
+	if func('jo9_meiki_checks', 'session_step', sex_interaction, $interaction_type, diligence) = 1: sex['jo9_meiki_voluntary_steps'] += 1
+	if func('jo9_meiki_checks', 'session_finish', $interaction_type, sex['cum_pleasure'], sex['jo9_meiki_voluntary_steps'], sex['jo9_meiki_bonus_paid']) = 1:
+		sex['cum_pleasure'] += 1
+		sex['jo9_meiki_bonus_paid'] = 1
+	end
+end
+
+if $interaction_type = 'deny':
+	$bg_path = $iif($sex['partner'] = '', $slave["fullimage"], $assistant["fullimage"])
+	$text[1] = '  이 년이 저항한다! 네 지시에 따르기를 거부한다.'
+	sex_num = 0 &! back to main menu of active sex (for example, stop penetration) - ImperatorAugustus
+else
+	torture_intensity = 5 & dynamic $replace($dyn_interaction_result_extras, 'dyn'+'slave', iif($sex['partner'] = '', 'slave', 'assistant'))
+end
+
+if $interaction_type = 'foreplay':
+	if sex_done_thisperson[$str(sex_interaction)] = 0: sex['girl_newness'] -= 1
+	dynamic '<<$rise_skill>> += 1'
+end
+
+if $interaction_type = 'penetration':
+	if sex_done_thisperson[$str(sex_interaction)] = 0: sex['girl_newness'] -= 1
+	dynamic '<<$rise_skill>> += 1'
+end
+
+if $interaction_type = 'ejaculate':
+	pc_pleasure = max (1,quality)
+	sex['pc_boner'] -= pc_pleasure
+	lube = 0
+	$insertion = ''
+	sex["pc_excitement"] = 0
+	master_mood_rate += sex["cum_pleasure"]
+	sex["cum_pleasure"] = 0
+	dynamic '<<$rise_skill>> += 1'
+end
+
+if $interaction_type = 'extras':
+	dynamic '<<$rise_skill>> += 1'
+end
+
+if sex["climax_force"] > 0:
+	if $sex['partner'] = '':
+		slave['pos_gentle'] = max(slave['pos_gentle'], 2)
+	end
+	if $sex['partner'] = 'assistant':
+		assistant['pos_gentle'] = max(assistant['pos_gentle'], 2)
+	end
+	if sex["climax_force"] = 1:
+		$text[] = $sex_orgasm_clitoral
+		sex['girl_excitement'] = 1
+		sex["climax_buildup"] = 0
+		if $sex['partner'] = '': slave['pos_orgasm'] += 1 &! moodlet exponentially decays in next_day -ImperatorAugustus
+		if $sex['partner'] = 'assistant': assistant['pos_orgasm'] += 1 &! moodlet exponentially decays in next_day -ImperatorAugustus
+	end
+	if sex["climax_force"] = 2:
+		$text[] = $sex_orgasm_deep
+		sex["climax_buildup"] = sex["climax_threshold"]/2
+		if $sex['partner'] = '': slave['pos_multiple_orgasm'] = 2
+		if $sex['partner'] = 'assistant': assistant['pos_multiple_orgasm'] = 2
+	end
+	if sex["climax_force"] = 3:
+		$text[] = $sex_orgasm_squirt
+		sex["climax_buildup"] = sex["climax_threshold"] - 10
+		if $sex['partner'] = '': slave['pos_multiple_orgasm'] = 3
+		if $sex['partner'] = 'assistant': assistant['pos_multiple_orgasm'] = 3
+	end
+	if sex["climax_force"] > 1: sex["climax_count"] += 1
+	if sex["climax_top"] < sex["climax_force"]: sex["climax_top"] = sex["climax_force"]
+	sex["climax_force"] = 0
+end
+
+sex_done_today[$str(sex_interaction)] += 1
+sex_done_thisperson[$str(sex_interaction)] += 1
+
+if sex["pc_interest"] <= 0 and $interaction_type ! 'ejaculate':
+	$text[] = '  어느 순간 당신은 이 짓이 미칠 듯이 지긋지긋해졌다는 걸 깨닫는다. 왜 그녀를 배려하고 어떻게든 즐겁게 해 주려 애써야 하지? 진작 대충 싸 버렸어야 했다. 이제는 그럴 기분조차 들지 않는다.'
+	$return_lock = 'sex_end'
+end
+
+if sex["pc_energy"] <= 0:
+	$text[] = '  당신은 너무 지치고 숨까지 차서, 더 이상 계속할 힘이 남아 있지 않다.'
+	$return_lock = 'sex_end'
+end
+
+!Chimera Gem modifiers - crushboss
+if chimera_gem_on = 1:
+	master_excitement = 5
+	master_excitement_rate = 200
+	sex["cum_buildup"] += master_excitement
+	sex['pc_boner'] = master_excitement
+	pc_boner_plus = master_excitement
+end
+
+gt 'sex_interaction_screen'
+
+------------ sex_interaction_result ------------

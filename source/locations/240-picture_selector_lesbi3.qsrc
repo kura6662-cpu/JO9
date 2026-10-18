@@ -1,0 +1,111 @@
+# picture_selector_lesbi3
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2958 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'picture_selector_lesbi3': gs 'snk_room_bridge', 'guard', 'picture_selector_lesbi3'
+! JO9 MOD END J9M2958
+! Выбор картинок для страпона - mrross
+
+$custom_art_name = 'Страпон'
+
+if customization = 2:
+  if $custom_art ! '': 
+    if subject = 1 or subject = 3: $slave['custom_lesbian3'] = $custom_art
+    if subject = 2: $assistant['custom_lesbian3'] = $custom_art
+  else
+    if subject = 1 or subject = 3: $slave['custom_lesbian3'] = ''
+    if subject = 2: $assistant['custom_lesbian3'] = ''
+  end
+end
+
+killvar '$custom_art'
+! Список типов
+
+$hair_array[0] = 'Girl_General'
+$hair_array[1] = 'Loli_General'
+$hair_array[2] = 'Milf_General'
+$hair_array[3] = 'blank'
+$hair_array[4] = 'blank'
+$hair_array[5] = 'blank'
+$hair_array[6] = 'blank'
+$hair_array[7] = 'blank'
+$hair_array[8] = 'blank'
+$hair_array[9] = 'blank'
+$hair_array[10] = 'blank'
+$hair_array[11] = 'blank'
+$hair_array[12] = 'blank'
+$hair_array[13] = 'blank'
+$hair_array[14] = 'blank'
+$hair_array[15] = 'blank'
+$hair_array[16] = 'blank'
+$hair_array[17] = 'blank'
+$hair_array[18] = 'blank'
+$hair_array[19] = 'blank'
+$hair_array[20] = 'blank'
+$hair_array[21] = 'blank'
+$hair_array[22] = 'blank'
+$hair_array[23] = 'blank'
+$hair_array[24] = 'blank'
+$hair_array[25] = 'blank'
+$hair_array[26] = 'blank'
+$hair_array[27] = 'blank'
+$hair_array[28] = 'blank'
+$hair_array[29] = 'blank'
+$hair_array[30] = 'custom'
+$hair_array[31] = 'Friren'
+
+
+! Количество рандомных картинок
+
+picture_random[0] = 9
+picture_random[1] = 7
+picture_random[2] = 8
+picture_random[3] = 0
+picture_random[4] = 0
+picture_random[5] = 0
+picture_random[6] = 0
+picture_random[7] = 0
+picture_random[8] = 0
+picture_random[9] = 0
+picture_random[10] = 0
+picture_random[11] = 0
+picture_random[12] = 0
+picture_random[13] = 0
+picture_random[14] = 0
+picture_random[15] = 0
+picture_random[16] = 0
+picture_random[17] = 0
+picture_random[18] = 0
+picture_random[19] = 0
+picture_random[20] = 0
+picture_random[21] = 0
+picture_random[22] = 0
+picture_random[23] = 0
+picture_random[24] = 0
+picture_random[25] = 0
+picture_random[26] = 0
+picture_random[27] = 0
+picture_random[28] = 0
+picture_random[29] = 0
+picture_random[30] = 16
+picture_random[31] = 0
+
+
+$picture_selector["result"] = 'girls\sex\Lesbian\Strapon\Strapon_'
+
+
+
+if $slave['custom_lesbian3'] ! '' and (subject = 1 or subject = 3): 
+    $picture_selector["result"] += $slave['custom_lesbian3']
+    jump 'custom_override'
+end
+if $assistant['custom_lesbian3'] ! '' and subject = 2:
+    $picture_selector["result"] += $assistant['custom_lesbian3']
+    jump 'custom_override'
+end
+
+
+
+gs 'picture_selector_slave_assistant'
+:custom_override
+
+------------ picture_selector_lesbi3 ------------

@@ -1,0 +1,1556 @@
+[
+  {
+    "index": 0,
+    "name": "Start",
+    "file": "locations/000-Start.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 1,
+    "name": "start_refresh",
+    "file": "locations/001-start_refresh.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 2,
+    "name": "refresh_database",
+    "file": "locations/002-refresh_database.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 3,
+    "name": "warning",
+    "file": "locations/003-warning.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 4,
+    "name": "main_menu",
+    "file": "locations/004-main_menu.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 5,
+    "name": "controls",
+    "file": "locations/005-controls.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 6,
+    "name": "credits",
+    "file": "locations/006-credits.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 7,
+    "name": "development",
+    "file": "locations/007-development.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 8,
+    "name": "exit",
+    "file": "locations/008-exit.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 9,
+    "name": "init_game",
+    "file": "locations/009-init_game.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 10,
+    "name": "init_custom_game",
+    "file": "locations/010-init_custom_game.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 11,
+    "name": "init_story_mode",
+    "file": "locations/011-init_story_mode.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 12,
+    "name": "hero_creation",
+    "file": "locations/012-hero_creation.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 13,
+    "name": "hero_customization",
+    "file": "locations/013-hero_customization.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 14,
+    "name": "hero_customization_woman",
+    "file": "locations/014-hero_customization_woman.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 15,
+    "name": "hero_customization_man",
+    "file": "locations/015-hero_customization_man.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 16,
+    "name": "hero_description",
+    "file": "locations/016-hero_description.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 17,
+    "name": "start_game",
+    "file": "locations/017-start_game.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 18,
+    "name": "_layout",
+    "file": "locations/018-layout.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 19,
+    "name": "main_layout",
+    "file": "locations/019-main_layout.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 20,
+    "name": "stats_layout",
+    "file": "locations/020-stats_layout.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 21,
+    "name": "$addon",
+    "file": "locations/021-addon.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 22,
+    "name": "$addon_custom_data",
+    "file": "locations/022-addon_custom_data.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 23,
+    "name": "$menu",
+    "file": "locations/023-menu.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 24,
+    "name": "menu_form",
+    "file": "locations/024-menu_form.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 25,
+    "name": "city_menu_form",
+    "file": "locations/025-city_menu_form.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 26,
+    "name": "sjm_UI_UIadds",
+    "file": "locations/026-sjm_UI_UIadds.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 27,
+    "name": "sjm_UI_UIadds_buystethoscope",
+    "file": "locations/027-sjm_UI_UIadds_buystethoscope.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 28,
+    "name": "toggle_trophy",
+    "file": "locations/028-toggle_trophy.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 29,
+    "name": "display_pic",
+    "file": "locations/029-display_pic.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 30,
+    "name": "display_fullimage",
+    "file": "locations/030-display_fullimage.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 31,
+    "name": "slavebase_test",
+    "file": "locations/031-slavebase_test.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 32,
+    "name": "assistant_testing",
+    "file": "locations/032-assistant_testing.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 33,
+    "name": "generate_stock_testing",
+    "file": "locations/033-generate_stock_testing.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 34,
+    "name": "generate_stock_maximum_testing",
+    "file": "locations/034-generate_stock_maximum_testing.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 35,
+    "name": "stock_to_slave_testing",
+    "file": "locations/035-stock_to_slave_testing.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 36,
+    "name": "stock_to_slave_testing2",
+    "file": "locations/036-stock_to_slave_testing2.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 37,
+    "name": "debug_info",
+    "file": "locations/037-debug_info.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 38,
+    "name": "debug_info_assistant",
+    "file": "locations/038-debug_info_assistant.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 39,
+    "name": "$newloc",
+    "file": "locations/039-newloc.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 40,
+    "name": "$objsel",
+    "file": "locations/040-objsel.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 41,
+    "name": "$ongload",
+    "file": "locations/041-ongload.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 42,
+    "name": "$difficulty_setting",
+    "file": "locations/042-difficulty_setting.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 43,
+    "name": "$slave_price",
+    "file": "locations/043-slave_price.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 44,
+    "name": "$slave_traits",
+    "file": "locations/044-slave_traits.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 45,
+    "name": "$stock_traits",
+    "file": "locations/045-stock_traits.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 46,
+    "name": "$cow_price",
+    "file": "locations/046-cow_price.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 47,
+    "name": "$moodlets_account",
+    "file": "locations/047-moodlets_account.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 48,
+    "name": "$calculate_attributes",
+    "file": "locations/048-calculate_attributes.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 49,
+    "name": "$city_random_event",
+    "file": "locations/049-city_random_event.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 50,
+    "name": "$combat_variable_reset",
+    "file": "locations/050-combat_variable_reset.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 51,
+    "name": "$end_day_variable_reset",
+    "file": "locations/051-end_day_variable_reset.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 52,
+    "name": "$expert_search",
+    "file": "locations/052-expert_search.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 53,
+    "name": "$guild_auction",
+    "file": "locations/053-guild_auction.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 54,
+    "name": "$food_choice",
+    "file": "locations/054-food_choice.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 55,
+    "name": "$furniture_list",
+    "file": "locations/055-furniture_list.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 56,
+    "name": "$weapon_assignments",
+    "file": "locations/056-weapon_assignments.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 57,
+    "name": "$gladiator_setup",
+    "file": "locations/057-gladiator_setup.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 58,
+    "name": "$gladiator_fight_start",
+    "file": "locations/058-gladiator_fight_start.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 59,
+    "name": "$ride_start",
+    "file": "locations/059-ride_start.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 60,
+    "name": "$ride_finish",
+    "file": "locations/060-ride_finish.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 61,
+    "name": "$mod_master_drop",
+    "file": "locations/061-mod_master_drop.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 62,
+    "name": "$mod_master_rise",
+    "file": "locations/062-mod_master_rise.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 63,
+    "name": "$mood_drop",
+    "file": "locations/063-mood_drop.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 64,
+    "name": "$mood_rise",
+    "file": "locations/064-mood_rise.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 65,
+    "name": "$quest_list",
+    "file": "locations/065-quest_list.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 66,
+    "name": "$appropriate_buyers_list",
+    "file": "locations/066-appropriate_buyers_list.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 67,
+    "name": "moodlets",
+    "file": "locations/067-moodlets.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 68,
+    "name": "new_estate",
+    "file": "locations/068-new_estate.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 69,
+    "name": "ride_next",
+    "file": "locations/069-ride_next.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 70,
+    "name": "auspex_list",
+    "file": "locations/070-auspex_list.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 71,
+    "name": "billing",
+    "file": "locations/071-billing.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 72,
+    "name": "chose_answer",
+    "file": "locations/072-chose_answer.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 73,
+    "name": "end_contract",
+    "file": "locations/073-end_contract.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 74,
+    "name": "generate_stock",
+    "file": "locations/074-generate_stock.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 75,
+    "name": "get_stock_seed",
+    "file": "locations/075-get_stock_seed.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 76,
+    "name": "generate_clone",
+    "file": "locations/076-generate_clone.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 77,
+    "name": "item_change",
+    "file": "locations/077-item_change.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 78,
+    "name": "slave_auction_buyout",
+    "file": "locations/078-slave_auction_buyout.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 79,
+    "name": "slave_auction_rise",
+    "file": "locations/079-slave_auction_rise.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 80,
+    "name": "slave_auction_pass",
+    "file": "locations/080-slave_auction_pass.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 81,
+    "name": "slave_auction_next",
+    "file": "locations/081-slave_auction_next.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 82,
+    "name": "slave_to_train_get",
+    "file": "locations/082-slave_to_train_get.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 83,
+    "name": "slave_sell_chek",
+    "file": "locations/083-slave_sell_chek.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 84,
+    "name": "slave_sell_done",
+    "file": "locations/084-slave_sell_done.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 85,
+    "name": "next_day",
+    "file": "locations/085-next_day.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 86,
+    "name": "slave_free_time",
+    "file": "locations/086-slave_free_time.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 87,
+    "name": "npc_progress",
+    "file": "locations/087-npc_progress.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 88,
+    "name": "choice_screen",
+    "file": "locations/088-choice_screen.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 89,
+    "name": "end_day_screen",
+    "file": "locations/089-end_day_screen.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 90,
+    "name": "main_screen",
+    "file": "locations/090-main_screen.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 91,
+    "name": "master_stat",
+    "file": "locations/091-master_stat.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 92,
+    "name": "master_stat_clients",
+    "file": "locations/092-master_stat_clients.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 93,
+    "name": "teach_screen",
+    "file": "locations/093-teach_screen.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 94,
+    "name": "slave_stat",
+    "file": "locations/094-slave_stat.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 95,
+    "name": "assistant_stat",
+    "file": "locations/095-assistant_stat.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 96,
+    "name": "prison_cell",
+    "file": "locations/096-prison_cell.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 97,
+    "name": "barn",
+    "file": "locations/097-barn.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 98,
+    "name": "interior_change",
+    "file": "locations/098-interior_change.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 99,
+    "name": "interior_storage",
+    "file": "locations/099-interior_storage.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 100,
+    "name": "interior_restore",
+    "file": "locations/100-interior_restore.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 101,
+    "name": "interaction",
+    "file": "locations/101-interaction.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 102,
+    "name": "interaction_result",
+    "file": "locations/102-interaction_result.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 103,
+    "name": "interaction_screen",
+    "file": "locations/103-interaction_screen.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 104,
+    "name": "city_screen",
+    "file": "locations/104-city_screen.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 105,
+    "name": "interaction_city",
+    "file": "locations/105-interaction_city.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 106,
+    "name": "interaction_result_city",
+    "file": "locations/106-interaction_result_city.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 107,
+    "name": "interaction_screen_city",
+    "file": "locations/107-interaction_screen_city.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 108,
+    "name": "colosseum_fight",
+    "file": "locations/108-colosseum_fight.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 109,
+    "name": "ride_interface",
+    "file": "locations/109-ride_interface.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 110,
+    "name": "guild",
+    "file": "locations/110-guild.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 111,
+    "name": "guild_board",
+    "file": "locations/111-guild_board.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 112,
+    "name": "shop_general",
+    "file": "locations/112-shop_general.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 113,
+    "name": "shop_wpn",
+    "file": "locations/113-shop_wpn.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 114,
+    "name": "item_buy",
+    "file": "locations/114-item_buy.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 115,
+    "name": "plastics",
+    "file": "locations/115-plastics.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 116,
+    "name": "slave_auction_buy",
+    "file": "locations/116-slave_auction_buy.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 117,
+    "name": "slave_auction_sell",
+    "file": "locations/117-slave_auction_sell.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 118,
+    "name": "slave_auction_sell_end",
+    "file": "locations/118-slave_auction_sell_end.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 119,
+    "name": "slave_to_train",
+    "file": "locations/119-slave_to_train.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 120,
+    "name": "special_screen",
+    "file": "locations/120-special_screen.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 121,
+    "name": "trophy_room_screen",
+    "file": "locations/121-trophy_room_screen.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 122,
+    "name": "trophy_room",
+    "file": "locations/122-trophy_room.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 123,
+    "name": "epic_win",
+    "file": "locations/123-epic_win.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 124,
+    "name": "quest12",
+    "file": "locations/124-quest12.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 125,
+    "name": "assistant_private_room",
+    "file": "locations/125-assistant_private_room.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 126,
+    "name": "slave_private_room1",
+    "file": "locations/126-slave_private_room1.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 127,
+    "name": "slave_private_room2",
+    "file": "locations/127-slave_private_room2.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 128,
+    "name": "slave_private_room3",
+    "file": "locations/128-slave_private_room3.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 129,
+    "name": "slave_private_room4",
+    "file": "locations/129-slave_private_room4.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 130,
+    "name": "hard_return",
+    "file": "locations/130-hard_return.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 131,
+    "name": "get_special_assistant",
+    "file": "locations/131-get_special_assistant.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 132,
+    "name": "slave_to_assistant",
+    "file": "locations/132-slave_to_assistant.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 133,
+    "name": "stock_to_slave",
+    "file": "locations/133-stock_to_slave.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 134,
+    "name": "stock_to_slave_nogt",
+    "file": "locations/134-stock_to_slave_nogt.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 135,
+    "name": "expert_to_slave",
+    "file": "locations/135-expert_to_slave.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 136,
+    "name": "stock_to_expert",
+    "file": "locations/136-stock_to_expert.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 137,
+    "name": "slave_to_cage",
+    "file": "locations/137-slave_to_cage.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 138,
+    "name": "slave_to_cow",
+    "file": "locations/138-slave_to_cow.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 139,
+    "name": "slave_to_harpy",
+    "file": "locations/139-slave_to_harpy.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 140,
+    "name": "slave_to_iced",
+    "file": "locations/140-slave_to_iced.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 141,
+    "name": "stasis_cell",
+    "file": "locations/141-stasis_cell.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 142,
+    "name": "#txt",
+    "file": "locations/142-txt.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 143,
+    "name": "#txt_2",
+    "file": "locations/143-txt_2.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 144,
+    "name": "#var_base",
+    "file": "locations/144-var_base.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 145,
+    "name": "#help_msg",
+    "file": "locations/145-help_msg.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 146,
+    "name": "#dynamic",
+    "file": "locations/146-dynamic.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 147,
+    "name": "#npc_base",
+    "file": "locations/147-npc_base.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 148,
+    "name": "#item_base",
+    "file": "locations/148-item_base.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 149,
+    "name": "#estate_base",
+    "file": "locations/149-estate_base.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 150,
+    "name": "#options",
+    "file": "locations/150-options.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 151,
+    "name": "#place_base",
+    "file": "locations/151-place_base.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 152,
+    "name": "#chariots_base",
+    "file": "locations/152-chariots_base.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 153,
+    "name": "#moodlet_base",
+    "file": "locations/153-moodlet_base.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 154,
+    "name": "#variative",
+    "file": "locations/154-variative.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 155,
+    "name": "#food_base",
+    "file": "locations/155-food_base.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 156,
+    "name": "#masters_base",
+    "file": "locations/156-masters_base.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 157,
+    "name": "#simple_npc",
+    "file": "locations/157-simple_npc.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 158,
+    "name": "#quest_base",
+    "file": "locations/158-quest_base.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 159,
+    "name": "#static_base",
+    "file": "locations/159-static_base.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 160,
+    "name": "#static_txt",
+    "file": "locations/160-static_txt.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 161,
+    "name": "#тексты_движка",
+    "file": "locations/161-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 162,
+    "name": "#противники",
+    "file": "locations/162-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 163,
+    "name": "#суперудары",
+    "file": "locations/163-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 164,
+    "name": "#боевые_предметы",
+    "file": "locations/164-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 165,
+    "name": "начать_бой",
+    "file": "locations/165-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 166,
+    "name": "атака_игрока",
+    "file": "locations/166-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 167,
+    "name": "ход_противников",
+    "file": "locations/167-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 168,
+    "name": "конец_раунда",
+    "file": "locations/168-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 169,
+    "name": "конец_боя",
+    "file": "locations/169-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 170,
+    "name": "искусственный_идиот",
+    "file": "locations/170-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 171,
+    "name": "раскладка_бой",
+    "file": "locations/171-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 172,
+    "name": "боевой_интерфейс",
+    "file": "locations/172-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 173,
+    "name": "боевое_меню",
+    "file": "locations/173-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 174,
+    "name": "суперудары",
+    "file": "locations/174-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 175,
+    "name": "передышка",
+    "file": "locations/175-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 176,
+    "name": "инвентарь",
+    "file": "locations/176-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 177,
+    "name": "вторичные_атаки",
+    "file": "locations/177-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 178,
+    "name": "сменить_оружие",
+    "file": "locations/178-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 179,
+    "name": "сменить_оружие_основное",
+    "file": "locations/179-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 180,
+    "name": "сменить_оружие_вторичное",
+    "file": "locations/180-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 181,
+    "name": "рассчет_вреда",
+    "file": "locations/181-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 182,
+    "name": "выход_из_боя",
+    "file": "locations/182-location.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 183,
+    "name": "sex_initiate",
+    "file": "locations/183-sex_initiate.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 184,
+    "name": "sex_screen",
+    "file": "locations/184-sex_screen.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 185,
+    "name": "sex_end",
+    "file": "locations/185-sex_end.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 186,
+    "name": "sex_interaction",
+    "file": "locations/186-sex_interaction.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 187,
+    "name": "sex_interaction_result",
+    "file": "locations/187-sex_interaction_result.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 188,
+    "name": "sex_interaction_screen",
+    "file": "locations/188-sex_interaction_screen.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 189,
+    "name": "#sex_texts",
+    "file": "locations/189-sex_texts.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 190,
+    "name": "#sex_options",
+    "file": "locations/190-sex_options.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 191,
+    "name": "$sex_newloc",
+    "file": "locations/191-sex_newloc.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 192,
+    "name": "sex_addup",
+    "file": "locations/192-sex_addup.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 193,
+    "name": "demo_estate",
+    "file": "locations/193-demo_estate.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 194,
+    "name": "demo_intro",
+    "file": "locations/194-demo_intro.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 195,
+    "name": "demo_layout",
+    "file": "locations/195-demo_layout.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 196,
+    "name": "init_demo_game",
+    "file": "locations/196-init_demo_game.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 197,
+    "name": "start_demo_game",
+    "file": "locations/197-start_demo_game.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 198,
+    "name": "choose_the_girl",
+    "file": "locations/198-choose_the_girl.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 199,
+    "name": "demo_menu_form",
+    "file": "locations/199-demo_menu_form.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 200,
+    "name": "black_market_get_comm_slave",
+    "file": "locations/200-black_market_get_comm_slave.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 201,
+    "name": "black_market_index",
+    "file": "locations/201-black_market_index.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 202,
+    "name": "black_market_interface",
+    "file": "locations/202-black_market_interface.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 203,
+    "name": "fog_index",
+    "file": "locations/203-fog_index.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 204,
+    "name": "#event_base",
+    "file": "locations/204-event_base.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 205,
+    "name": "get_special_assistant_quest",
+    "file": "locations/205-get_special_assistant_quest.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 206,
+    "name": "epic_win_marsjinn",
+    "file": "locations/206-epic_win_marsjinn.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 207,
+    "name": "killslave",
+    "file": "locations/207-killslave.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 208,
+    "name": "pharmacy",
+    "file": "locations/208-pharmacy.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 209,
+    "name": "relations_fastcalc",
+    "file": "locations/209-relations_fastcalc.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 210,
+    "name": "interaction.relations",
+    "file": "locations/210-interaction_relations.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 211,
+    "name": "#npc_base_woman",
+    "file": "locations/211-npc_base_woman.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 212,
+    "name": "master_love",
+    "file": "locations/212-master_love.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 213,
+    "name": "$illness_risk_woman",
+    "file": "locations/213-illness_risk_woman.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 214,
+    "name": "$mod_assistant_rise",
+    "file": "locations/214-mod_assistant_rise.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 215,
+    "name": "$mod_assistant_drop",
+    "file": "locations/215-mod_assistant_drop.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 216,
+    "name": "$illness_risk_man",
+    "file": "locations/216-illness_risk_man.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 217,
+    "name": "$pregnancy_female",
+    "file": "locations/217-pregnancy_female.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 218,
+    "name": "$catfight_fight_start",
+    "file": "locations/218-catfight_fight_start.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 219,
+    "name": "$catfighter_setup",
+    "file": "locations/219-catfighter_setup.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 220,
+    "name": "origins_relations",
+    "file": "locations/220-origins_relations.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 221,
+    "name": "safari.info",
+    "file": "locations/221-safari_info.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 222,
+    "name": "#sex_options_woman",
+    "file": "locations/222-sex_options_woman.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 223,
+    "name": "goto_loc1",
+    "file": "locations/223-goto_loc1.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 224,
+    "name": "#sex_texts_woman",
+    "file": "locations/224-sex_texts_woman.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 225,
+    "name": "sex_screen_woman",
+    "file": "locations/225-sex_screen_woman.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 226,
+    "name": "sex_interaction_woman",
+    "file": "locations/226-sex_interaction_woman.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 227,
+    "name": "sex_interaction_result_woman",
+    "file": "locations/227-sex_interaction_result_woman.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 228,
+    "name": "female_pregant_end2",
+    "file": "locations/228-female_pregant_end2.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 229,
+    "name": "female_pregant_end",
+    "file": "locations/229-female_pregant_end.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 230,
+    "name": "get_demo_slave",
+    "file": "locations/230-get_demo_slave.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 231,
+    "name": "get_special_slave",
+    "file": "locations/231-get_special_slave.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 232,
+    "name": "slave_sell",
+    "file": "locations/232-slave_sell.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 233,
+    "name": "#txt_woman",
+    "file": "locations/233-txt_woman.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 234,
+    "name": "#txt_2_woman",
+    "file": "locations/234-txt_2_woman.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 235,
+    "name": "#txt_2_man",
+    "file": "locations/235-txt_2_man.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 236,
+    "name": "#txt_man",
+    "file": "locations/236-txt_man.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 237,
+    "name": "picture_selector",
+    "file": "locations/237-picture_selector.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 238,
+    "name": "picture_selector_lesbi1",
+    "file": "locations/238-picture_selector_lesbi1.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 239,
+    "name": "picture_selector_lesbi2",
+    "file": "locations/239-picture_selector_lesbi2.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 240,
+    "name": "picture_selector_lesbi3",
+    "file": "locations/240-picture_selector_lesbi3.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 241,
+    "name": "picture_selector_lesbi4",
+    "file": "locations/241-picture_selector_lesbi4.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 242,
+    "name": "picture_selector_lesbian",
+    "file": "locations/242-picture_selector_lesbian.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 243,
+    "name": "snk_room_bridge",
+    "file": "locations/243-snk_room_bridge.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 244,
+    "name": "snk_room_menu_screen",
+    "file": "locations/244-snk_room_menu_screen.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 245,
+    "name": "snk_room_diet_migrate",
+    "file": "locations/245-snk_room_diet_migrate.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 246,
+    "name": "jo9_reference_info",
+    "file": "locations/246-jo9_reference_info.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 247,
+    "name": "snk_rm_dialogue_info",
+    "file": "locations/247-snk_rm_dialogue_info.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 248,
+    "name": "jo9_meiki_willing",
+    "file": "locations/248-jo9_meiki_willing.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 249,
+    "name": "jo9_meiki_state",
+    "file": "locations/249-jo9_meiki_state.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 250,
+    "name": "jo9_meiki_training_bonus",
+    "file": "locations/250-jo9_meiki_training_bonus.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 251,
+    "name": "jo9_meiki_sale",
+    "file": "locations/251-jo9_meiki_sale.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 252,
+    "name": "jo9_meiki_checks",
+    "file": "locations/252-jo9_meiki_checks.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 253,
+    "name": "jo9_learning_xp",
+    "file": "locations/253-jo9_learning_xp.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 254,
+    "name": "jo9_fog_relay",
+    "file": "locations/254-jo9_fog_relay.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 255,
+    "name": "jo9_traits",
+    "file": "locations/255-jo9_traits.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 256,
+    "name": "jo9_traits_personality",
+    "file": "locations/256-jo9_traits_personality.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 257,
+    "name": "jo9_traits_combat",
+    "file": "locations/257-jo9_traits_combat.qsrc",
+    "actions": 0
+  },
+  {
+    "index": 258,
+    "name": "jo9_traits_value",
+    "file": "locations/258-jo9_traits_value.qsrc",
+    "actions": 0
+  }
+]

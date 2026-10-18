@@ -1,0 +1,27 @@
+# fog_index
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2928 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'fog_index': gs 'snk_room_bridge', 'guard', 'fog_index'
+! JO9 MOD END J9M2928
+!Индексация туманов
+
+i = 0
+
+! Счётчик коммунальных уникалок
+bmi = 0
+
+:index_loop
+
+i += 1
+if $seed_name[i] <> 'blank' and $seed_name[i] <> '' and $seed_name[i] <> 'пусто' and black_market_taken['<<i>>'] = 0:
+	bm_index[bmi] = i
+	bmi += 1
+	!msg "i = <<i>><br>bm_index[<<bmi>>] name is <<$seed_name[i]>>"
+end
+if i < 497: jump 'index_loop'
+
+!msg "Кол-во рабынь: <<arrsize('bm_index')>>"
+
+txt = 0
+
+------------ fog_index ------------

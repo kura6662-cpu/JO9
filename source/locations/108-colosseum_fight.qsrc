@@ -1,0 +1,57 @@
+# colosseum_fight
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2871 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'colosseum_fight': gs 'snk_room_bridge', 'guard', 'colosseum_fight'
+! JO9 MOD END J9M2871
+количество_врагов = 1
+
+if colosseum_fight = 1 or colosseum_fight = 11 or colosseum_fight = 21 or colosseum_fight = 31:
+	g = rand(1,3)
+	if g = 1:$силуэт_моба['голая_рабыня'] = "content/pic/mob/glad_naked.png" & $аватара_моба['голая_рабыня'] = "content/pic/mob/glad_naked_ava.png"
+	if g = 2:$силуэт_моба['голая_рабыня'] = "content/pic/mob/glad_naked_2.png" & $аватара_моба['голая_рабыня'] = "content/pic/mob/glad_naked_ava_2.png"
+	if g = 3:$силуэт_моба['голая_рабыня'] = "content/pic/mob/glad_naked_3.png" & $аватара_моба['голая_рабыня'] = "content/pic/mob/glad_naked_ava_3.png"
+	$враг[1] = 'голая_рабыня'
+end
+
+if colosseum_fight = 2 or colosseum_fight = 12 or colosseum_fight = 22 or colosseum_fight = 32:
+	g = rand(1,3)
+	if g = 1:$силуэт_моба['госпожа'] = "content/pic/characters/mistress_morrigan.png" & $аватара_моба['госпожа'] = "content/pic/characters/mistress_ava.png"
+	if g = 2:$силуэт_моба['госпожа'] = "content/pic/mob/glad_mistress_2.png" & $аватара_моба['госпожа'] = "content/pic/mob/glad_mistress_ava_2.png"
+	if g = 3:$силуэт_моба['госпожа'] = "content/pic/mob/glad_mistress_3.png" & $аватара_моба['госпожа'] = "content/pic/mob/glad_mistress_ava_3.png"
+	$враг[1] = 'госпожа'
+end
+
+if colosseum_fight = 3 or colosseum_fight = 13 or colosseum_fight = 23 or colosseum_fight = 33:
+	g = rand(1,3)
+	if g = 1:$силуэт_моба['шиноби'] = "content/pic/mob/glad_shinobi.png" & $аватара_моба['шиноби'] = "content/pic/mob/glad_shinobi_ava.png"
+	if g = 2:$силуэт_моба['шиноби'] = "content/pic/mob/glad_shinobi_2.png" & $аватара_моба['шиноби'] = "content/pic/mob/glad_shinobi_ava_2.png"
+	if g = 3:$силуэт_моба['шиноби'] = "content/pic/mob/glad_shinobi_3.png" & $аватара_моба['шиноби'] = "content/pic/mob/glad_shinobi_ava_3.png"
+	$враг[1] = 'шиноби'
+end
+
+if colosseum_fight = 4 or colosseum_fight = 14 or colosseum_fight = 24 or colosseum_fight = 34:
+	g = rand(1,3)
+	if g = 1:$силуэт_моба['латница'] = "content/pic/mob/glad_armored.png" & $аватара_моба['латница'] = "content/pic/mob/glad_armored_ava.png"
+	if g = 2:$силуэт_моба['латница'] = "content/pic/mob/glad_armored_2.png" & $аватара_моба['латница'] = "content/pic/mob/glad_armored_ava_2.png"
+	if g = 3:$силуэт_моба['латница'] = "content/pic/mob/glad_armored_3.png" & $аватара_моба['латница'] = "content/pic/mob/glad_armored_ava_3.png"
+	$враг[1] = 'латница'
+end
+
+if colosseum_fight = 5 or colosseum_fight = 15 or colosseum_fight = 25 or colosseum_fight = 35:
+	g = rand(1,2)
+	if g = 1:$силуэт_моба['амазонка'] = "content/pic/mob/glad_amason.png" & $аватара_моба['амазонка'] = "content/pic/mob/glad_amason_ava.png"
+	if g = 2:$силуэт_моба['амазонка'] = "content/pic/mob/glad_amason_2.png" & $аватара_моба['амазонка'] = "content/pic/mob/glad_amason_ava_2.png"
+	$враг[1] = 'амазонка'
+end
+
+if colosseum_fight > 10:
+	combatant = 1
+end
+
+if colosseum_fight > 20:
+	combatant = 2
+end
+
+interaction_city = 199
+gt 'interaction_city'
+------------ colosseum_fight ------------

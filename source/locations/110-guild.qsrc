@@ -1,0 +1,128 @@
+# guild
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1351 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'guild': gs 'snk_room_bridge', 'guard', 'guild'
+! JO9 MOD END J9M1351
+if expert_give_slave = 1:
+	expert_give_slave = 0
+	gs 'expert_to_slave'
+end
+
+!SLAVERS GUILD
+gs '_layout'
+gs '$slave_price'
+npc = 0
+$place = 'guild_hall'
+$text_display = '<br>'
+
+if sp_txt = 1:
+	func('$menu', '===BEGIN===', 'column_0')
+	if contract['active'] = 1: func('$menu', 'interaction_city', $menu_item_close_contract, menu_close_contract, '계약 제출/안젤리카')
+	if contract['active'] = 2: func('$menu', 'location_gray', $menu_item_close_contract_gray, empty, '계약 제출/안젤리카')
+	if contract['active'] = 0 and slave_state ! CONST_INT['no_slave']: func('$menu', 'interaction_city', $menu_item_contract_work, menu_contract_work, '계약 업무')
+	if contract['active'] = 0 and slave_state = CONST_INT['no_slave']: func('$menu', 'exec_options', $menu_item_contract_list, 'sp_txt = 2 & gt $curloc', '계약 목록')
+	if slave_state = CONST_INT['slave_exist'] and slave['brand'] > 0:
+		func('$menu', 'interaction_city', $menu_item_subpurchaser, menu_subpurchaser, '재매입상과 대화')
+	else
+		func('$menu', 'location_gray_tooltip', $menu_item_subpurchaser_gray, empty, '재매입상과 대화', '내놓을 낙인 노예가 없다')
+	end
+	func('$menu', 'interaction_city', $menu_item_Talk_expert, menu_Talk_expert, '전문가와 대화')
+	if auction_count = 0:
+		if slave_state = CONST_INT['slave_exist'] and slave['brand'] > 0 and rating > 0:
+			func('$menu', 'interaction_city', $menu_item_Auction_slaves, menu_Auction_slaves, '낙인 노예 경매')
+		else
+			func('$menu', 'location_gray_tooltip', $menu_item_Auction_slaves_gray, empty, '낙인 노예 경매', '내놓을 훈련된 낙인 노예가 없다')
+		end
+	else
+		func('$menu', 'location_gray', $menu_item_Auction_slaves_gray, empty, '경매까지 남은 날: <<auction_count>>')
+	end
+	
+	IF revolution = 1 and witch_talk = 0:
+		FUNC('$menu', 'interaction_city', $menu_item_contract_list, 6025, '마녀의 보상')
+	END
+	IF guild_reputation > 3 and active[$event['спасение_рождества']] = 0:
+		FUNC('$menu', 'interaction_city', $menu_item_guild, 1010, '개인 의뢰')
+	END
+	IF active[$event['спасение_рождества']] = 10:
+		FUNC('$menu', 'interaction_city', $menu_item_guild, 10100, '크리스마스 보고')
+	END
+
+	if is_gangbang > 0:
+		func('$menu', 'interaction_city', $menu_item_gangbang, menu_guild_gangbang, '집단 훈련 ')
+	elseif is_gangbang = 0:
+		func('$menu', 'location_gray', $menu_item_gangbang_gray, empty, '오늘은 훈련 세션이 없다')
+	else
+		func('$menu', 'location_gray', $menu_item_gangbang_gray, empty, '집단 훈련 종료')
+	end
+
+	func('$menu', 'city_form', $menu_item_Leaveguild, menu_Leaveguild, '나가기')
+	func('$menu', '===END===')
+end
+
+if sp_txt = 2:
+	gs '$calculate_attributes' &! updates master attributes so that if guild reputation rose after an auction or turning in a contract, it will be reflected when trying to take a new contract
+	func('$menu', 'spacer', 1)
+	func('$menu', '===BEGIN===', 'column_0')
+! JO9 MOD START RNL117 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	if guild_reputation >= 0 and contract['active'] = 0 and slave_state = CONST_INT['no_slave']: func('$menu', 'interaction_city', $menu_item_D1_rank, menu_D1_rank, '계약 업무 - D 등급')
+! JO9 MOD END RNL117
+	if guild_reputation >= 1 and contract['active'] = 0 and slave_state = CONST_INT['no_slave']: func('$menu', 'interaction_city', $menu_item_D2_rank, menu_D2_rank, '계약 업무 - D+ 등급')
+! JO9 MOD START RNL116 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	if guild_reputation >= 2 and contract['active'] = 0 and slave_state = CONST_INT['no_slave']: func('$menu', 'interaction_city', $menu_item_C1_rank, menu_C1_rank, '계약 업무 - C 등급')
+! JO9 MOD END RNL116
+	if guild_reputation >= 2 and contract['active'] = 0 and slave_state = CONST_INT['no_slave']: func('$menu', 'interaction_city', $menu_item_C2_rank, menu_C2_rank, '계약 업무 - C+ 등급')
+! JO9 MOD START RNL115 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	if guild_reputation >= 3 and contract['active'] = 0 and slave_state = CONST_INT['no_slave']: func('$menu', 'interaction_city', $menu_item_B1_rank, menu_B1_rank, '계약 업무 - B 등급')
+! JO9 MOD END RNL115
+	func('$menu', 'exec_options', $menu_item_Contracts_back, 'sp_txt = 1 & gt $curloc', '뒤로')
+	func('$menu', '===END===')
+	func('$menu', '===BEGIN===', 'column_1')
+	if guild_reputation >= 3 and contract['active'] = 0 and slave_state = CONST_INT['no_slave']: func('$menu', 'interaction_city', $menu_item_B2_rank, menu_B2_rank, '계약 업무 - B+ 등급')
+! JO9 MOD START RNL114 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	if guild_reputation >= 4 and contract['active'] = 0 and slave_state = CONST_INT['no_slave']: func('$menu', 'interaction_city', $menu_item_A1_rank, menu_A1_rank, '계약 업무 - A 등급')
+! JO9 MOD END RNL114
+	if guild_reputation >= 4 and contract['active'] = 0 and slave_state = CONST_INT['no_slave']: func('$menu', 'interaction_city', $menu_item_A2_rank, menu_A2_rank, '계약 업무 - A+ 등급')
+! JO9 MOD START RNL113 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	if guild_reputation >= 5 and contract['active'] = 0 and slave_state = CONST_INT['no_slave']: func('$menu', 'interaction_city', $menu_item_S1_rank, menu_S1_rank, '계약 업무 - S 등급')
+! JO9 MOD END RNL113
+	if guild_reputation >= 5 and contract['active'] = 0 and slave_state = CONST_INT['no_slave']: func('$menu', 'interaction_city', $menu_item_S2_rank, menu_S2_rank, '계약 업무 - S+ 등급')
+	func('$menu', '===END===')
+end
+
+
+$text[txt] = $guild[sp_txt]
+
+! JO9 MOD START J9M1350 | 2026-10-08_persistent_image_cycle, 2026-10-15_z_inline_text_prefix | changed block; context may be included
+*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\<<$bg[$place]>>.png"></div>')
+! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($text[txt], '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $text[txt] = $mid($text[txt], len($jo9_leading_empty) + 1, len($text[txt]))
+! JO9 MOD END J9M1350
+*p '<div id = "text"><<$text[txt]>></div>'
+! JO9 MOD START J9M1349 | 2026-10-09_city_scene_menu_alignment | changed block; context may be included
+*p func('$menu', 'layout_style')
+*p '<div id="jo9_scene_menu" class="jo9_menu_scene"><<$text_display>></div>'
+! JO9 MOD END J9M1349
+
+if npc = 0:
+	$info_bar = ''
+	*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<$place_name[$place]>></div><<$place_location[$place]>><br>'
+	*nl '참고 정보:</center></div>'
+	*p '<div id = "side_panel_text"><span class="jo9-reference-body"><<$place_info[$place]>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style></div>'
+else
+	$info_bar = ''
+	*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<$npc_name[$npc_id]>></div><<$npc_status[$npc_id]>><br>'
+	*nl '참고 정보:</center></div>'
+	*p '<div id = "side_panel_text"><<$npc_attitude[npc_attitude[$npc_id]]>>'
+	*nl '<span class="jo9-reference-body"><<$npc_info[$npc_id]>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style></div>'
+end
+
+if sound_on = 1 and $play_sound[txt] ! '': play 'content\snd\<<$play_sound[txt]>>.wav', sound_volume
+if $play_sound[txt] ! '': $play_sound[txt] = ''
+
+------------ guild ------------

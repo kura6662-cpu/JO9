@@ -1,0 +1,196 @@
+# snk_room_bridge
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M3011 | 2026-10-11_relocate_snkmod_resources | changed block; context may be included
+! Private-room target bridge
+! JO9 MOD END J9M3011
+if $args[0] = 'master':
+ $snk_master_return = 'slave_private_room' + str(args[1])
+ gs 'snk_room_bridge', 'leave'
+ master_stat_screen = 0
+ gt 'master_stat'
+end
+if $args[0] = 'master_close':
+ $snk_master_destination = $snk_master_return
+ $snk_master_return = ''
+ $equip_choice = ''
+ gt $snk_master_destination
+end
+if $args[0] = 'summary':
+ if snk_room_target > 0:
+  gs 'debug_info', 'snk_popup', 'slave'
+ else
+  gs 'debug_info', 'snk_popup', 'room' + str(args[1])
+ end
+ exit
+end
+if $args[0] = 'portrait':
+ $snk_room_info_kind = $args[0]
+ if snk_room_target = 0: gs 'snk_room_bridge', 'enter', args[1], 1
+ if snk_room_target = 0: exit
+ snk_room_inventory = 1
+ $info_text = ''
+ $equip_choice = ''
+ if $snk_room_info_kind = 'portrait':
+  slave_stat_screen = 0
+  gt 'slave_stat'
+ end
+ $snk_room_saved_psy = $slave_psy_status
+ snk_room_debug_open = 1
+ gt 'debug_info'
+end
+if $args[0] = 'inventory':
+ if snk_room_target = 0: gs 'snk_room_bridge', 'enter', args[1], 1
+ if snk_room_target = 0: exit
+ snk_room_inventory = 1
+ slave_stat_screen = 2
+ $equip_choice = ''
+ $info_text = ''
+ gt 'slave_stat'
+end
+if $args[0] = 'inventory_close':
+ $equip_choice = ''
+ $info_text = ''
+ gs 'snk_room_bridge', 'leave'
+ gt $snk_room_return
+end
+if $args[0] = 'enter':
+ if snk_room_target > 0: exit
+ if args[1] < 1 or args[1] > 4: exit
+ $snk_room_actor = 'room' + str(args[1])
+ snk_room_requested_menu = args[2]
+ dynamic 'snk_room_can_act = <<$snk_room_actor>>_state'
+ if snk_room_can_act ! CONST_INT['slave_exist']:
+  msg '개인실 노예가 행동할 수 없는 상태입니다.'
+  gt 'slave_private_room' + str(args[1])
+ end
+ dynamic 'snk_room_energy = <<$snk_room_actor>>["energy"]'
+ if (args[2] = 12 or args[2] = 13 or args[2] = 17) and snk_room_energy <= -4:
+  msg '행동력이 부족해서 교육을 시작할 수 없습니다.'
+  gt 'slave_private_room' + str(args[1])
+ end
+ if args[2] = 17 and sparks < coach_price[0]:
+  msg '가정교사를 부를 스파크가 부족합니다.'
+  gt 'slave_private_room' + str(args[1])
+ end
+ snk_room_target = args[1]
+ $snk_room_return = 'slave_private_room' + str(snk_room_target)
+ $snk_room_old_onnewloc = $onnewloc
+ ! All named properties, rates, inventory, names, and history counters travel
+ ! through the exact original $slave_vars list used by room allocation.
+ dynamic $swap_slave_instances, 'slave', $snk_room_actor
+ dynamic $swap_slave_instances, $snk_room_actor, 'snk_parked_slave'
+ menu_form = snk_room_requested_menu
+ dynamic '$<<$snk_room_actor>>_info_text = ""'
+ ! This is already a room in the home; do not let stale city state close its menu.
+ is_home = 1
+ city_district = -1
+ $return_lock = $snk_room_return
+ exit
+end
+if $args[0] = 'leave':
+ if snk_room_target = 0: exit
+ if snk_room_debug_open = 1:
+  $slave_psy_status = $snk_room_saved_psy
+  snk_room_debug_open = 0
+ end
+ ! The original cow lesson temporarily swaps its subject once more.
+ if cow_lesson_in_progress = 1:
+  dynamic $swap_slave_instances, 'slave', 'cow'
+  cow_lesson_in_progress = 0
+ end
+ dynamic $swap_slave_instances, 'slave', $snk_room_actor
+ dynamic $swap_slave_instances, 'slave', 'snk_parked_slave'
+ snk_room_target = 0
+ snk_room_inventory = 0
+ $onnewloc = $snk_room_old_onnewloc
+ killvar '$snk_room_old_onnewloc'
+ ! Leave an empty parked instance; never an extra copy of a character.
+ exit
+end
+if $args[0] = 'room_sex' and snk_room_target > 0:
+ if master_excitement < 0 or slave['energy'] <= -4 or slave_state ! CONST_INT['slave_exist']:
+  menu_form = 1
+  gt 'menu_form'
+ end
+ snk_room_original_interaction = 1026 + snk_room_target
+ gs 'snk_room_bridge', 'leave'
+ interaction = snk_room_original_interaction
+ gt 'interaction'
+end
+if $args[0] = 'guard' and snk_room_target > 0:
+ if snk_room_inventory = 1:
+  if $args[1] = 'slave_stat': exit
+  if $args[1] = 'debug_info': exit
+  if $args[1] = 'item_change' and slot >= 20 and slot <= 35: exit
+  snk_room_inventory = 0
+ end
+ if $args[1] = 'menu_form':
+  if (menu_form = 12 or menu_form = 13 or menu_form = 17) and slave['energy'] <= -4: menu_form = 1
+  if menu_form = 17 and sparks < coach_price[0]: menu_form = 1
+  if menu_form = 1: exit
+  if menu_form = 11: exit
+  if menu_form = 12: exit
+  if menu_form = 13: exit
+  if menu_form = 15: exit
+  if menu_form = 17: exit
+  if menu_form = 111: exit
+  if menu_form = 121: exit
+  if menu_form = 122: exit
+  if menu_form = 123: exit
+  if menu_form = 124: exit
+  if menu_form = 131: exit
+  if menu_form = 132: exit
+  if menu_form = 133: exit
+  if menu_form = 134: exit
+  if menu_form = 136: exit
+  if menu_form = 137: exit
+  if menu_form = 138: exit
+  if menu_form = 139: exit
+  if menu_form = 151: exit
+  if menu_form = 152: exit
+  if menu_form = 153: exit
+  if menu_form = 154: exit
+  if menu_form = 155: exit
+  if menu_form = 156: exit
+  if menu_form = 1233: exit
+  if menu_form = 1546: exit
+  if menu_form = 1547: exit
+  gs 'snk_room_bridge', 'leave'
+  gt $snk_room_return
+ end
+ if $args[1] = 'main_screen': exit
+ if $args[1] = 'interaction' or $args[1] = 'interaction_result' or $args[1] = 'interaction_screen': exit
+ if $args[1] = 'interaction.relations' or $args[1] = 'teach_screen': exit
+ if instr($args[1], 'sex_') = 1 or instr($args[1], 'lesson.') = 1: exit
+ ! An original lesson refusal can start combat. Keep that original consequence
+ ! attached to the room subject until its original return to menu_form.
+ if $fight_return = 'menu_form' and $враг[1] = 'воспитуемая':
+  if $args[1] = 'начать_бой' or $args[1] = 'боевой_интерфейс' or $args[1] = 'атака_игрока' or $args[1] = 'ход_противников' or $args[1] = 'конец_раунда' or $args[1] = 'конец_боя' or $args[1] = 'выход_из_боя' or $args[1] = 'передышка' or $args[1] = 'сменить_оружие' or $args[1] = 'сменить_оружие_основное' or $args[1] = 'сменить_оружие_вторичное' or $args[1] = 'суперудары' or $args[1] = 'инвентарь': exit
+  if $args[1] = 'interaction_city' and (interaction_city = 901 or interaction_city = 902 or interaction_city = 903 or interaction_city = 143): exit
+  if $args[1] = 'shop_general' and get_weapon = 1: exit
+  if ($args[1] = 'interaction_result_city' or $args[1] = 'interaction_screen_city') and interaction_city = 143: exit
+ end
+ ! Preserve the original game-over outcome instead of returning a dead player
+ ! to the room. Restore ownership before the exit location executes.
+ if $args[1] = 'exit':
+  gs 'snk_room_bridge', 'leave'
+  exit
+ end
+ ! Original unmet lesson prerequisites send their message to slave_stat.
+ ! Keep the message while returning to this room rather than exposing jobs.
+ if $args[1] = 'slave_stat' and $info_text ! '':
+  $snk_room_feedback = $info_text
+  $info_text = ''
+  gs 'snk_room_bridge', 'leave'
+  dynamic '$<<$snk_room_actor>>_info_text = $snk_room_feedback'
+  killvar '$snk_room_feedback'
+  gt $snk_room_return
+ end
+ ! Stop a navigation/shortcut before the destination code can use the wrong
+ ! actor. Normal completion, ESC, a different room, and load redirects all
+ ! pass this guard before the original location body.
+ gs 'snk_room_bridge', 'leave'
+ gt $snk_room_return
+end
+
+------------ snk_room_bridge ------------

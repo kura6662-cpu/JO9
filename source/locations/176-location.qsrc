@@ -1,0 +1,18 @@
+# инвентарь
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2902 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'инвентарь': gs 'snk_room_bridge', 'guard', 'инвентарь'
+! JO9 MOD END J9M2902
+!INVENTORY MENU
+
+!creating menu
+$боевое_меню = ''
+if вакхический_нектар > 0: $боевое_меню += "<a href='EXEC: dynamic $применить[""вакхический_нектар""]'>바쿠스의 넥타르</a> [х<<вакхический_нектар>>]<br>"
+if тонизируюзщий_эликсир > 0: $боевое_меню += "<a href='EXEC: dynamic $применить[""тонизируюзщий_эликсир""]'>강장 영약</a> [х<<тонизируюзщий_эликсир>>]<br>"
+if целительный_бальзам > 0: $боевое_меню += "<a href='EXEC: dynamic $применить[""целительный_бальзам""]'>치유의 연고</a> [х<<целительный_бальзам>>]<br>"
+$боевое_меню += "<br>"
+$боевое_меню += "<a href='EXEC: dynamic $вернуться_в_корень'>뒤로</a><br>"
+
+gt 'боевой_интерфейс'
+
+------------ инвентарь ------------

@@ -1,0 +1,187 @@
+# shop_wpn
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1378 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'shop_wpn': gs 'snk_room_bridge', 'guard', 'shop_wpn'
+! JO9 MOD END J9M1378
+gs '_layout'
+$npc_id = 'менхантер'
+$text_display = ''
+
+if wpn_price > 0 and $item_id ! '':
+	interaction_city = 1114
+	gt 'interaction_city'
+elseif skip_to ! 0:
+	if npc = 0: killvar '$text'
+	$item_id = ''
+	wpn_price = 0
+	sp_txt = skip_to
+	skip_to = 0
+elseif sp_txt = 0:
+	killvar '$text' &! this reset is important, do not remove it - ImperatorAugustus
+	sp_txt = 1
+end
+
+! JO9 MOD START J9M1377 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+if $bg[$place] ! '': *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\<<$bg[$place]>>.png"></div>')
+! JO9 MOD END J9M1377
+
+if sp_txt = 1:
+	npc = 0 &! clears npc image on transition from interaction_city greeting - ImperatorAugustus
+	func('$menu', 'spacer', 3)
+
+	func('$menu', '===BEGIN===', 'column_0')
+	func('$menu', 'exec_options', $menu_item_Weapons, 'sp_txt = 2 & gt $curloc', '무기류')
+	func('$menu', 'exec_options', $menu_item_Armors, 'sp_txt = 3 & gt $curloc', '방어구류')
+	func('$menu', 'interaction_city', $menu_item_preferencesarmory, menu_preferencesarmory, '선호도 확인')
+	if slave_state = CONST_INT['slave_exist'] and slave['brand'] > 0 and slave['brand'] ! 4:
+		func('$menu', 'interaction_city', $menu_item_Offerarmory, menu_Offerarmory, '노예 제안')
+	else
+		func('$menu', 'location_gray_tooltip', $menu_item_Offerarmory_gray, empty, '노예 제안', '내놓을 낙인 노예가 없다')
+	end
+	func('$menu', 'city_form', $menu_item_Leavearmory, emptyLeavearmory, '가게 나가기')
+	func('$menu', '===END===')
+end
+
+if sp_txt = 2:
+	func('$menu', 'spacer', 4)
+
+	func('$menu', '===BEGIN===', 'column_0')
+	func('$menu', 'exec_options', $menu_item_Secondary, 'sp_txt = 11 & gt $curloc', '호신 무기')
+	func('$menu', 'exec_options', $menu_item_Onehanded, 'sp_txt = 12 & gt $curloc', '한손 무기')
+	func('$menu', 'exec_options', $menu_item_Twohanded, 'sp_txt = 13 & gt $curloc', '양손 무기')
+! JO9 MOD START J9M1376 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+	func('$menu', 'exec_options', $menu_item_Backarmoy, 'sp_txt = 1 & gt $curloc', '더 둘러보기')
+! JO9 MOD END J9M1376
+	func('$menu', '===END===')
+end
+
+if sp_txt = 11:
+	func('$menu', 'spacer', 1)
+
+	func('$menu', '===BEGIN===', 'column_0')
+	func('$menu', 'exec_options', $menu_item_Stiletto, '$item_id = "стилет" & wpn_price = 10 & skip_to = 11 & gt $curloc', '스틸레토 (10$)')
+	func('$menu', 'exec_options', $menu_item_knuckles, '$item_id = "кастет" & wpn_price = 10 & skip_to = 11 & gt $curloc', '황동 장갑 (10$)')
+	func('$menu', 'exec_options', $menu_item_Stunner, '$item_id = "глушилка" & wpn_price = 10 & skip_to = 11 & gt $curloc', '목검 (10$)')
+	func('$menu', 'exec_options', $menu_item_Lashbuy, '$item_id = "нагайка" & wpn_price = 10 & skip_to = 11 & gt $curloc', '갈래 채찍 (10$)')
+	func('$menu', 'exec_options', $menu_item_Daggerbuy, '$item_id = "кинжал" & wpn_price = 15 & skip_to = 11 & gt $curloc', '단검 (15$)')
+	func('$menu', 'exec_options', $menu_item_cleaver, '$item_id = "тесак" & wpn_price = 20 & skip_to = 11 & gt $curloc', '도축칼 (20$)')
+! JO9 MOD START J9M1375 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+	func('$menu', 'exec_options', $menu_item_Backarmoy, 'sp_txt = 2 & gt $curloc', '뒤로')
+! JO9 MOD END J9M1375
+	func('$menu', '===END===')
+end
+
+if sp_txt = 12:
+	func('$menu', 'spacer', 3)
+
+	func('$menu', '===BEGIN===', 'column_0')
+	func('$menu', 'exec_options', $menu_item_Baton, '$item_id = "демократизатор" & wpn_price = 25 & skip_to = 12 & gt $curloc', '경봉 (25$)')
+	func('$menu', 'exec_options', $menu_item_Rapier, '$item_id = "рапира" & wpn_price = 50 & skip_to = 12 & gt $curloc', '레이피어 (50$)')
+	func('$menu', 'exec_options', $menu_item_Koncerz, '$item_id = "кончар" & wpn_price = 50 & skip_to = 12 & gt $curloc', '콘체쉬 (50$)')
+	func('$menu', 'exec_options', $menu_item_Whipbuy, '$item_id = "кнут" & wpn_price = 50 & skip_to = 12 & gt $curloc', '채찍 (50$)')
+	func('$menu', 'exec_options', $menu_item_Epee, '$item_id = "шпага" & wpn_price = 50 & skip_to = 12 & gt $curloc', '에페 (50$)')
+! JO9 MOD START J9M1374 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+	func('$menu', 'exec_options', $menu_item_Backarmoy, 'sp_txt = 2 & gt $curloc', '뒤로')
+! JO9 MOD END J9M1374
+	func('$menu', '===END===')
+
+	func('$menu', '===BEGIN===', 'column_1')
+	func('$menu', 'exec_options', $menu_item_Gladius, '$item_id = "гладиус" & wpn_price = 50 & skip_to = 12 & gt $curloc', '글라디우스 (50$)')
+	func('$menu', 'exec_options', $menu_item_Machete, '$item_id = "мачете" & wpn_price = 50 & skip_to = 12 & gt $curloc', '마체테 (50$)')
+	func('$menu', 'exec_options', $menu_item_Bastardsword, '$item_id = "бастард" & wpn_price = 100 & skip_to = 12 & gt $curloc', '바스타드 소드 (100$)')
+	func('$menu', 'exec_options', $menu_item_Katana, '$item_id = "катана" & wpn_price = 100 & skip_to = 12 & gt $curloc', '카타나 (100$)')
+	func('$menu', 'exec_options', $menu_item_Trident, '$item_id = "трезубец" & wpn_price = 100 & skip_to = 12 & gt $curloc', '트라이던트 (100$)')
+	func('$menu', 'exec_options', $menu_item_Mace, '$item_id = "мулава" & wpn_price = 100 & skip_to = 12 & gt $curloc', '메이스 (100$)')
+	func('$menu', '===END===')
+end
+
+if sp_txt = 13:
+	func('$menu', 'spacer', 1)
+
+	func('$menu', '===BEGIN===', 'column_0')
+	func('$menu', 'exec_options', $menu_item_Baseballbat, '$item_id = "бита" & wpn_price = 100 & skip_to = 13 & gt $curloc', '야구방망이 (100$)')
+	func('$menu', 'exec_options', $menu_item_Cattleprod, '$item_id = "скотобой" & wpn_price = 150 & skip_to = 13 & gt $curloc', '소몰이 막대 (150$)')
+	func('$menu', 'exec_options', $menu_item_Greataxe, '$item_id = "грейтекс" & wpn_price = 150 & skip_to = 13 & gt $curloc', '그레이트 액스 (150$)')
+	func('$menu', 'exec_options', $menu_item_Flamberge, '$item_id = "фламберг" & wpn_price = 200 & skip_to = 13 & gt $curloc', '플람베르그 (200$)')
+	func('$menu', 'exec_options', $menu_item_Naginata, '$item_id = "нагината" & wpn_price = 200 & skip_to = 13 & gt $curloc', '치도 (200$)')
+	func('$menu', 'exec_options', $menu_item_Morningstar, '$item_id = "моргенштерн" & wpn_price = 200 & skip_to = 13 & gt $curloc', '모닝스타 (200$)')
+! JO9 MOD START J9M1373 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+	func('$menu', 'exec_options', $menu_item_Backarmoy, 'sp_txt = 2 & gt $curloc', '뒤로')
+! JO9 MOD END J9M1373
+	func('$menu', '===END===')
+end
+
+if sp_txt = 3:
+	func('$menu', 'spacer', 2)
+
+	func('$menu', '===BEGIN===', 'column_0')
+	func('$menu', 'exec_options', $menu_item_Aramid, '$item_id = "комбез" & wpn_price = 100 & skip_to = 3 & gt $curloc', '아라미드 전투복 (100$)')
+	func('$menu', 'exec_options', $menu_item_Leather, '$item_id = "кожан" & wpn_price = 200 & skip_to = 3 & gt $curloc', '상어가죽 갑옷 (200$)')
+	func('$menu', 'exec_options', $menu_item_Elven, '$item_id = "эльчуга" & wpn_price = 250 & skip_to = 3 & gt $curloc', '요정족 사슬갑옷 (250$)')
+	func('$menu', 'exec_options', $menu_item_Yatserin, '$item_id = "ячуга" & wpn_price = 300 & skip_to = 3 & gt $curloc', '기사 사슬갑옷 (300$)')
+	func('$menu', 'exec_options', $menu_item_Combined, '$item_id = "полудоспех" & wpn_price = 800 & skip_to = 3 & gt $curloc', '아라미드 복합 갑옷 (800$)')
+	func('$menu', 'exec_options', $menu_item_Gothicbuy, '$item_id = "плейт" & wpn_price = 1000 & skip_to = 3 & gt $curloc', '고딕 플레이트 (1000$)')
+! JO9 MOD START J9M1372 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+	func('$menu', 'exec_options', $menu_item_Backarmoy, 'sp_txt = 1 & gt $curloc', '더 둘러보기')
+! JO9 MOD END J9M1372
+	func('$menu', '===END===')
+end
+
+if npc = 0:
+	$info_bar = ''
+	*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<$place_name[$place]>></div><<$place_location[$place]>><br>'
+	*nl '참고 정보:</center></div>'
+	*p '<div id = "side_panel_text"><span class="jo9-reference-body"><<$place_info[$place]>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style></div>'
+else
+	$info_bar = ''
+	if nsfw = 1:
+! JO9 MOD START J9M1371 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+		*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\empty.png"></div>')
+! JO9 MOD END J9M1371
+	elseif $npc_image[$npc_id] ! '':
+! JO9 MOD START J9M1370 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+		*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\characters\<<$npc_image[$npc_id]>>.png"></div>')
+! JO9 MOD END J9M1370
+	end
+	*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<$npc_name[$npc_id]>></div><<$npc_status[$npc_id]>><br>'
+	*nl '참고 정보:</center></div>'
+
+	*p '<div id = "side_panel_text"><<$npc_attitude[npc_attitude[$npc_id]]>>'
+	*nl '<span class="jo9-reference-body"><<$npc_info[$npc_id]>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style></div>'
+end
+
+! must display npc bg image before menu 999 to avoid overwriting menu with npc image when 999 has npc = 1
+
+if sp_txt = 999:
+	func('$menu', 'spacer', 1)
+
+	func('$menu', '===BEGIN===', 'column_0')
+! JO9 MOD START J9M1369 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+	func('$menu', 'exec_options', $menu_item_Backarmoy, 'sp_txt = 0 & gt $curloc', '더 둘러보기')
+! JO9 MOD END J9M1369
+	func('$menu', 'city_form', $menu_item_Leavearmory, emptyLeavearmory, '가게 나가기')
+	func('$menu', '===END===')
+end
+
+
+!if sp_txt = 4:
+! $text_display += {<br><br><br><br><br><br><br><div id="under">- Look at my merchandise!<br><div id = "clear"><a href = 'EXEC: gt "slave_sell"'><img src = "content\pic\clear.png"></a></div></div>}
+! $text_display += {<br><div id="under">- Tell me in detail what do you expect?<br><div id = "clear"><a href = 'EXEC: interaction_city = 1112 & gt "interaction_city"'><img src = "content\pic\clear.png"></a></div></div>}
+!end
+
+!*p '<div id = "bg"><img src="content\pic\bg\layout_2.png"></div>'
+! JO9 MOD START J9M1368 | 2026-10-15_z_inline_text_prefix | changed block; context may be included
+! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($text[txt], '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $text[txt] = $mid($text[txt], len($jo9_leading_empty) + 1, len($text[txt]))
+! JO9 MOD END J9M1368
+*p '<div id = "text"><<$text[txt]>></div>'
+! JO9 MOD START J9M1367 | 2026-10-09_city_scene_menu_alignment | changed block; context may be included
+*p func('$menu', 'layout_style')
+*p '<div id="jo9_scene_menu" class="jo9_menu_scene"><<$text_display>></div>'
+! JO9 MOD END J9M1367
+*p '<div id = "sparks_display"><<sparks>>$</div>'
+
+if sound_on = 1 and $play_sound[txt] ! '': play 'content\snd\<<$play_sound[txt]>>.wav', sound_volume
+if $play_sound[txt] ! '': $play_sound[txt] = ''
+------------ shop_wpn ------------

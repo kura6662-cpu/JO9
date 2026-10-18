@@ -1,0 +1,206 @@
+# prison_cell
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1315 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'prison_cell': gs 'snk_room_bridge', 'guard', 'prison_cell'
+! JO9 MOD END J9M1315
+$return_lock = 'prison_cell'
+$place = "dungeon"
+gs '_layout'
+
+dynamic $replace($newloc_update_slave, 'dyn'+'slave', 'prisoner')
+
+dynamic $prisoner_pass_out
+dynamic $master_pass_out &! master should be last
+
+prisoner_mood_plus = IIF(prisoner['mood'] < 0, 5 - prisoner['mood'], prisoner['mood'])
+
+
+if prisoner_state = CONST_INT['no_slave']:
+	$prisoner_info_text = $cage_empty
+elseif $prisoner_info_text = '':
+	if prisoner_state = CONST_INT['slave_exist']:
+		if prisoner['prison_food_type'] = 3 and prisoner['fat'] < 5 and prisoner['fat'] > prisoner['orig_fat']:
+! JO9 MOD START J9M1314 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+			$prisoner_info_text = '<<$prisoner_name>>의 몸무게가 어마어마하다. 쿠키 그릇을 끝없이 요구하길래, 안에 던져놓고 문을 잠궈 버렸다. 무거워서 그런지 미는 힘도 무척 강하다. 목에 하루종일 음식을 들이붓고, 비루해진 몸뚱이를 쳐다보며 또 저주했다가, 또 계속 먹어댄다.'
+! JO9 MOD END J9M1314
+		elseif prisoner['prison_food_type'] = 3 and prisoner['fat'] = 5 and prisoner['orig_fat'] < 5:
+! JO9 MOD START J9M1313 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+			$prisoner_info_text = '처음 감금 했을때 <<$prisoner_name>>의 몸은 <<$prisoner_fat_txt[prisoner[''orig_fat'']]>>. 지금은 거대한 마차같은 돼지가 따로없다. 그녀는 너무 뚱뚱해져서 거동도 힘들어 보이지만, 이만한 몸무게를 유지하는데는 단 몇개의 쿠키만 있어도 된다. 그녀에게 자존심이란 남아있지 않은 것 같다...'
+! JO9 MOD END J9M1313
+		elseif prisoner['prison_food_type'] = 3 and prisoner['fat'] = 5:
+! JO9 MOD START J9M1312 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+			$prisoner_info_text = '<<$prisoner_name>>(은)는 이미 거대한 비만 돼지에 불과하다. 그녀는 너무 뚱뚱해져서 거동도 힘들어 보이지만, 이만한 몸무게를 유지하는데는 단 몇개의 쿠키만 있어도 된다. 그녀에게 자존심이란 남아있지 않은 것 같다...'
+! JO9 MOD END J9M1312
+		else
+			dynamic $replace("$prisoner_info_text = '<<$psy_status[$prisoner_psy_status]>>'", 'dyn'+'slave', 'prisoner') &! evaluate delayed sub-expressions with substitution
+		end
+	elseif prisoner_state = CONST_INT['slave_faint']:
+! JO9 MOD START J9M1311 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+		$prisoner_info_text = '<<$prisoner_name>>의 낮은 신음이 터지며 몸이 거꾸러졌다. 상태가 좋지 않아보이니, 쉬게 하며 검진을 받아보게 하는게 좋을 것이다.'
+! JO9 MOD END J9M1311
+	elseif prisoner_state = CONST_INT['slave_dead']:
+! JO9 MOD START J9M1310 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+		$prisoner_info_text = '<<$prisoner_name>>(이)가 죽었다. 생기없는 시신 덩어리가 바닥에서 뒹굴고 있다.'
+! JO9 MOD END J9M1310
+	else
+! JO9 MOD START J9M1309 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+		$prisoner_info_text = '<b> 경고! 이것은 에러 메세지 입니다! 이 문장을 보셨다면 prisoner_state = <<prisoner_state>> 구문이 인식되지 않고 있는 것입니다! 수리가 가능한 사람에게 도움을 요청하거나, 직접 고쳐주세요.</b>'
+! JO9 MOD END J9M1309
+	end
+end
+
+! JO9 MOD START J9M1308 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\<<$bg[$place]>>.png"></div>')
+! JO9 MOD END J9M1308
+*p '<div id = "side_panel_location_2"><font style="font-family:경기천년제목 Medium">지하 감옥</font><br><font size="2">~ Jack-O-Nine-Tails 2.4.0.0 & Kor Ver ~</font></div>'
+if prisoner_state = CONST_INT['slave_exist'] and nsfw = 0:
+	! conscious state only - do not display prisoner full image (which appears conscious) when fainted - ImperatorAugustus
+	if prisoner['prison_food_type'] = 3 and prisoner['fat'] = 5:
+		$bg_path = 'scene/slave_fat'
+		g = rand(1, picMax['slave_fat'])
+		if g > 1: $bg_path += '_' + $str(g)
+! JO9 MOD START J9M1307 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+		*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$bg_path>>.png"></div>')
+! JO9 MOD END J9M1307
+	else
+!		*p '<div id = "bg"><img src="content\pic\<<$prisoner["fullimage"]>>.png"></div>'
+        *p '<div style="position:absolute;top:3px;left:150px;"><img src="content\pic\<<$prisoner["fullimage"]>>.png"></div>'
+	end
+	if master_excitement >= 0:
+		*p '<div id ="impregnate_button_cell"><a class="tooltip-bottom" tooltip-data="죄수를 강간한다" href = "EXEC: interaction = 1486 & gt ''interaction''"><img src="content\pic\buttons\impregnate_cell.png"></a></div>'
+	end
+	
+end
+
+if prisoner_state ! CONST_INT['no_slave']:
+	if slave_state = CONST_INT['no_slave']:
+		*p '<div id = "cell"><a href = "EXEC: $prisoner_info_text = '''' & gt ''slave_to_cage''"><img src="content\pic\buttons\release.png"></a></div>'
+	else
+		*p '<div id = "cell"><a href = "EXEC: $prisoner_info_text = '''' & gt ''slave_to_cage''"><img src="content\pic\buttons\cell_exchange.png"></a></div>'
+	end
+	*p '<div id="stat_lactation">'
+		*p '<img src = "<<$master_ava_color>>">'
+		*nl
+		*nl '<<$master_energy_stars>>'
+		*nl	
+		$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'mood', master_mood, 1)
+		*nl '<a class="tooltip-left" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $mood_chart"><<$mood[master_mood_plus]>></a>'
+		$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'master_excitement', master_excitement, 1)
+		*nl '<a class="tooltip-left" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $excitement_chart"><<dyneval($vb_cycle_stat, IIF(max(master_moodlet["neg_boner"], master_moodlet["neg_blazing"]) = 0, 5 + master_excitement, 0), $excitement[master_excitement_plus])>></a>'
+		$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'hygiene', master_hygiene, -1)
+		*nl '<a class="tooltip-left" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $hygiene_chart"><<$personal_hygiene[master_hygiene]>></a>'
+	*p '</div>'
+elseif slave_state > CONST_INT['no_slave']:
+	*p '<div id = "cell"><a href = "EXEC: $prisoner_info_text = '''' & gt ''slave_to_cage''"><img src="content\pic\buttons\imprison.png"></a></div>'
+end
+if prisoner_state = CONST_INT['slave_exist']:
+	*p '<div id = "prison_ava"><img src = "<<$prisoner[''ava_clear'']>>.png"></div>'
+	*p '<div id = "prison_short_stat"><<$prisoner_energy_stars>><div style="line-height:25%"><br></div>'
+	$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'mood', prisoner['mood'], 1)
+	*p '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $mood_chart"><<$mood[prisoner_mood_plus]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'hygiene', prisoner['hygiene'], -1)
+	*p '　<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href = "EXEC: msg $hygiene_chart"><<$personal_hygiene[prisoner["hygiene"]]>></a>'
+	*nl '<img src="content\pic\kalkulyator.png" width="15px" height="15px"> <<IIF(prisoner["calories"] > 0, "+", "")>><<prisoner["calories"]*100>> cal'
+	*nl '소유 기간: <<prisoner["age_count"]>> 일'
+		
+	if prisoner['lactation'] > 0:
+		*p '<div style="line-height:25%"><br></div>'
+		$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'cowSK', prisoner['cowSK'], 1)
+		*p '<div style="display:inline-block;position:relative;" class="tooltip-left" tooltip-data="<<$tooltip_text>>"><<$slave_cowSK[prisoner["cowSK"]]>></div><div style="line-height:25%"><br></div>'
+		*p '<<$slave_lactation[prisoner["lactation"]]>><<$impregnation_rate[prisoner["impregnation"]]>>'
+		*nl '<<$prisoner_boobs>>'
+		*p '</div>'
+		if master_excitement >= 0:
+			*p '<div id ="impregnate_button_cell"><a style="padding-top: 65px;" class="tooltip-left" tooltip-data="죄수를 따먹어 젖 분비 늘리기" href = "EXEC: interaction = 1486 & gt ''interaction''"><img src="content\pic\buttons\impregnate_cell.png"></a></div>'
+		end
+		*p '<div style="position:absolute;top:251px;left:666px;">'
+			*p '<a class="tooltip-bottom" tooltip-data="젖량 확인" href = "EXEC: gs ''#var_base'' & msg $prisoner_milk_quantity"><img src="content\pic\buttons\milk_drop_large.png"></a>'
+			if prisoner_state = CONST_INT['slave_faint']:
+				*p '<a class="tooltip-bottom" tooltip-data="당신의 죄수는 기절해 있다" href = "empty"><img src="content\pic\ui overhaul\milking_gray.png"></a>'
+			elseif prisoner['milk_summ'] < 10:
+				*p '<a class="tooltip-bottom" tooltip-data="젖이 부족함" href = "empty"><img src="content\pic\ui overhaul\milking_gray.png"></a>'
+			else
+				*p '<a class="tooltip-bottom" tooltip-data="죄수 착유" href = "EXEC: interaction = menu_P_milking & gt ''interaction''"><img src="content\pic\ui overhaul\milking.png"></a>'
+			end
+		*p '</div>'
+	else
+		*p '<div style="line-height:10%"><br></div>'
+		*p '<<$virginity[prisoner["virginity"]]>>'
+		*nl '<<$slave_anal_description[prisoner["anal_stretch"]]>>'
+		*nl '<<$clit_piercing[prisoner["clit_piercing"]]>>'
+		*nl '<<$vaginal_modification[prisoner["vaginal_modification"]]>>'
+	end
+	*p '</div>'
+end
+
+if prisoner_state = CONST_INT['slave_faint']:
+	*p '<div id = "prison_ava"><img src = "<<$prisoner[''ava_gray'']>>.png"></div>'
+	*p '<div id = "prison_short_stat ">의식 없음</div>'
+end
+
+if prisoner_state > CONST_INT['no_slave']:
+	$info_bar = '호 칭 : &nbsp;<<$prisoner_name>><br>연 령 대 : &nbsp;<<$slave_age_name[prisoner["age"]]>><br>'
+	$info_bar +=  '<a style="font-size:20px"><<$rating[rating]>></a>  죄수 속성정보'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'beauty', prisoner['beauty'], 1)
+	$info_bar += '<br><div style="line-height:25%"><br></div><font style="font-size:12px;"> 외모 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $красота_справка & dynamic $msg, $красота_справка_2"><<$beauty[prisoner["beauty"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'stamina', prisoner['stamina'], 1)
+	$info_bar += '<br><font style="font-size:12px;"> 체력 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $здоровье_справка & dynamic $msg, $здоровье_справка_2"><<$stamina[prisoner["stamina"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'sensitivity', prisoner['sensitivity'], 1)
+	$info_bar += '<br><font style="font-size:12px;"> 감수성 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $чувствительность_справка & dynamic $msg, $чувствительность_справка_2"><<$sensitivity[prisoner["sensitivity"]]>></a><div style="line-height:25%"></div>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'temper', prisoner['temper'], 1)
+	$info_bar += '<div style="line-height:25%"><br></div><font style="font-size:12px;"> 성격 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $темперамент_справка & dynamic $msg, $темперамент_справка_2"><<$temper[prisoner["temper"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'intellect', prisoner['intellect'], 1)
+	$info_bar += '<br><font style="font-size:12px;"> 지성 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $ум_справка & dynamic $msg, $ум_справка_2"><<$intellect[prisoner["intellect"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'ego', prisoner['ego'], 1)
+	$info_bar += '<br><font style="font-size:12px;"> 자아 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $характер_справка & dynamic $msg, $характер_справка_2"><<$ego[prisoner["ego"]]>></a><div style="line-height:25%"></div>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'pride', prisoner['pride'], -1)
+	$info_bar += '<div style="line-height:25%"><br></div><font style="font-size:12px;"> 태도 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $гордыня_справка & dynamic $msg, $гордыня_справка_2"><<$pride[prisoner["pride"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'exotic', prisoner['exotic'], 1)
+	$info_bar += '<br><font style="font-size:12px;"> 독특함 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $экзотичность_справка & dynamic $msg, $экзотичность_справка_2"><<$exotic[prisoner["exotic"]]>></a>'
+	$tooltip_text = func('$addon', 'prisoner_physique_tooltip_text', 'fat', prisoner['fat'])
+	$info_bar += '<br><font style="font-size:12px;"> 체형 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $жыр_справка & dynamic $msg, $жыр_справка_2"><<$fat[prisoner["fat"]]>></a><div style="line-height:25%"></div>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'style', prisoner['style'], 1)
+	$info_bar += '<div style="line-height:25%"><br></div><font style="font-size:12px;"> 세련됨 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $стиль_справка & dynamic $msg, $стиль_справка_2"><<$style[prisoner["style"]]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'fame', prisoner['fame'], 1)
+	$info_bar += '<br><font style="font-size:12px;"> 인지도 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $слава_справка & dynamic $msg, $слава_справка_2"><<$girl_fame[prisoner["fame"]]>></a><div style="line-height:25%"><br></div>'
+	$info_bar += '죄수의 특성<div style="line-height:25%"><br></div><<$prisoner_features_list>>'
+
+	if prisoner['prison_food_type'] = 1:
+		*p '<div id="chekbox_1s" style="left:1230px;top:140px;"><a class="tooltip-left-small-button" tooltip-data="저열량 건식" href = "EXEC: prisoner[''prison_food_type''] = -1 & $prisoner_info_text = $prisoner_ration[1] & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_1s"><a class="tooltip-left-small-button" tooltip-data="저열량 건식" href = "EXEC: prisoner[''prison_food_type''] = 1 & $prisoner_info_text = $prisoner_ration[2] & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+	if prisoner['prison_food_type'] = 0:
+		*p '<div id="chekbox_2s" style="left:1230px;top:166px;"><a class="tooltip-left-small-button" tooltip-data="개사료" href = "EXEC: prisoner[''prison_food_type''] = -1 & $prisoner_info_text = $prisoner_ration[1] & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_2s"><a class="tooltip-left-small-button" tooltip-data="개사료" href = "EXEC: prisoner[''prison_food_type''] = 0 & $prisoner_info_text = $prisoner_ration[3] & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+	if prisoner['prison_food_type'] = 2:
+		*p '<div id="chekbox_3s" style="left:1230px;top:191px;"><a class="tooltip-left-small-button" tooltip-data="촉수 산란액" href = "EXEC: prisoner[''prison_food_type''] = -1 & $prisoner_info_text = $prisoner_ration[1] & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_3s"><a class="tooltip-left-small-button" tooltip-data="촉수 산란액" href = "EXEC: prisoner[''prison_food_type''] = 2 & $prisoner_info_text = $prisoner_ration[4] & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+	if prisoner['prison_food_type'] = 3:
+		*p '<div id="chekbox_4s" style="left:1230px;top:216px;"><a class="tooltip-left-small-button" tooltip-data="맛좋은 쿠키" href = "EXEC: prisoner[''prison_food_type''] = -1 & $prisoner_info_text = $prisoner_ration[1] & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'
+	else
+		*p '<div id="chekbox_4s"><a class="tooltip-left-small-button" tooltip-data="체중 증가용 쿠키" href = "EXEC: prisoner[''prison_food_type''] = 3 & $prisoner_info_text = $prisoner_ration[5] & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'
+	end
+end
+
+if prisoner_state ! CONST_INT['no_slave']: *p '<div id = "prison_stat_bar"><<$info_bar>></div>'
+! dead prisoners should be displayed, so ! no_slave is correct here - ImperatorAugustus
+
+! JO9 MOD START J9M1306 | 2026-10-15_z_inline_text_prefix | changed block; context may be included
+! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($prisoner_info_text, '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $prisoner_info_text = $mid($prisoner_info_text, len($jo9_leading_empty) + 1, len($prisoner_info_text))
+! JO9 MOD END J9M1306
+*p '<div id="text"><<$prisoner_info_text>></div>'
+
+if cheat_no_starve = 0 and prisoner['starvation_warning'] = 1:
+	prisoner['starvation_warning'] = 2 &! will be reset in next_day when no longer starving
+	msg '<<$경고>>죄수가 굶주려 있다. 식사량이 부족한 모양이다.'
+end 
+
+*p '<div id = "logo2"><a class="tooltip-left-up" tooltip-data="집으로 돌아간다" href = "EXEC: menu_form = 0 & gt ''menu_form''"><img src="content\pic\buttons\leave_quarter.png" style="width:75px;height:75px"></a></div>'
+------------ prison_cell ------------

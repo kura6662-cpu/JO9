@@ -1,0 +1,22 @@
+# jo9_meiki_training_bonus
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M3028 | 2026-10-15_zzz_meiki_training | changed block; context may be included
+! JO9_TRAINING_V3: eligible primary lesson only; no change to success thresholds or secondary XP.
+result = 0
+if $interaction_type = 'self_sex_lesson' or $interaction_type = 'self_sex_lesson_assistant':
+ if $args[1] = 'slave["sub_threesome"]' or $args[1] = 'slave["sub_dp"]' or $args[1] = 'slave["sub_tp"]' or $args[1] = 'slave["sub_gangbang"]' or $args[1] = 'slave["sub_bukkake"]':
+  if $args[0] = 'slave':
+   if func('jo9_meiki_checks', 'direct', interaction_slave['diligence'], func('jo9_meiki_willing', 'slave', 1)) = 1:
+    result = 1
+   end
+  end
+  if $args[0] = 'assistant':
+   if func('jo9_meiki_checks', 'direct', interaction_assistant['diligence'], func('jo9_meiki_willing', 'assistant', 1)) = 1:
+    result = 1
+   end
+  end
+ end
+end
+! JO9 MOD END J9M3028
+
+------------ jo9_meiki_training_bonus ------------

@@ -1,0 +1,1680 @@
+# sex_interaction_woman
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2951 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'sex_interaction_woman': gs 'snk_room_bridge', 'guard', 'sex_interaction_woman'
+! JO9 MOD END J9M2951
+!Первый этап обработки действий в секси-тайм
+gs 'sex_addup'
+killvar '$play_sound'
+$play_sound[1] = ''
+!Обнуление переменных
+shameful = 0
+painful = 0
+disgusting = 0
+lesbian = 0
+darkness = 0
+bloody = 0
+fire_based = 0
+water_based = 0
+vermin_based = 0
+deprivation = 0
+abuse = 0
+comforting = 0
+txt = 1
+stimulating = 0
+clitoral_stimulation = 0
+multiplier = 1
+bonus = 0
+compensation = 0
+diligence = 0
+skill = 0
+quality = 0
+diff = 0
+balance = 0
+friction = 0
+synchronization = 0
+girl_x_change = 0
+boy_x_change = 0
+$rise_skill = 'dump'
+!Стриптиз
+IF sex_interaction = 101:
+ $interaction_type = 'foreplay'
+ shameful = 1
+ res = 0
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ skill = (1 + sex["girl_roleplay"] + sex["girl_calisthenics"])/2
+ 	$bg_path = func('display_pic', 'dynslave', 'seduce', 'girls/sex_scenes/')
+ quality = min (diligence, skill)
+ $text[1] = '  <<$active_strip[quality]>>'
+ $play_sound[1] = '<<$seduce_sound[sex["girl_age"]]>>'
+ IF sex['girl_style'] > sex['girl_exotic']:
+   multiplier = sex['girl_style']
+   bonus = sex['girl_exotic']
+  else
+   multiplier = sex['girl_exotic']
+   bonus = sex['girl_style']
+ END
+ if sex["pc_excitement_state"] < 3: sex["pc_excitement"] += quality
+ sex["pc_interest"] += quality * multiplier + bonus + sex['girl_newness']
+ IF $sex['partner'] = '':
+! JO9 MOD START COG_DIRECT_90 | 2026-10-16_innate_learning_traits
+  if diligence > slave['calisthenics']: slave_rate['calisthenics'] += func('jo9_learning_xp', (1), slave['jo9_learning_trait'], 'calisthenics')
+! JO9 MOD END COG_DIRECT_90
+  IF slave["sub_exhibit"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_exhibit"]'
+   else
+! JO9 MOD START COG_DIRECT_91 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_exhibit"]: slave["sub_exhibit_xp"] += func('jo9_learning_xp', (1), slave['jo9_learning_trait'], 'sub_exhibit')
+! JO9 MOD END COG_DIRECT_91
+  END
+  IF slave["sub_seduce"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_seduce"]'
+   else
+! JO9 MOD START COG_DIRECT_92 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_seduce"]: slave["sub_seduce_xp"] += func('jo9_learning_xp', (1), slave['jo9_learning_trait'], 'sub_seduce')
+! JO9 MOD END COG_DIRECT_92
+  END
+ END
+ IF $sex['partner'] = 'assistant':
+! JO9 MOD START COG_DIRECT_93 | 2026-10-16_innate_learning_traits
+  if diligence > assistant['calisthenics']: assistant_rate['calisthenics'] += func('jo9_learning_xp', (1), assistant['jo9_learning_trait'], 'calisthenics')
+! JO9 MOD END COG_DIRECT_93
+  IF assistant["sub_exhibit"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_exhibit"]'
+   else
+! JO9 MOD START COG_DIRECT_94 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_exhibit"]: assistant["sub_exhibit_xp"] += func('jo9_learning_xp', (1), assistant['jo9_learning_trait'], 'sub_exhibit')
+! JO9 MOD END COG_DIRECT_94
+  END
+  IF assistant["sub_seduce"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_seduce"]'
+   else
+! JO9 MOD START COG_DIRECT_95 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_seduce"]: assistant["sub_seduce_xp"] += func('jo9_learning_xp', (1), assistant['jo9_learning_trait'], 'sub_seduce')
+! JO9 MOD END COG_DIRECT_95
+  END
+ END
+ sex["girl_energy"] -= 10
+ strip = 1
+END
+!Соблазнение
+IF sex_interaction = 102:
+ $interaction_type = 'foreplay'
+ res = 0
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ skill = max (sex["girl_sub_seduce"], sex["girl_sub_humiliation"], sex["girl_sub_masturbation"])
+ quality = min (diligence, skill)
+ IF $sex['partner'] = '':
+  IF slave["sub_seduce"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_seduce"]'
+   else
+! JO9 MOD START COG_DIRECT_96 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_seduce"]: slave["sub_seduce_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_seduce')
+! JO9 MOD END COG_DIRECT_96
+  END
+  IF slave["sub_humiliation"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_humiliation"]'
+   else
+! JO9 MOD START COG_DIRECT_97 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_humiliation"]: slave["sub_humiliation_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_humiliation')
+! JO9 MOD END COG_DIRECT_97
+  END
+  IF slave["sub_masturbation"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_masturbation"]'
+   else
+! JO9 MOD START COG_DIRECT_98 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_masturbation"]: slave["sub_masturbation_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_masturbation')
+! JO9 MOD END COG_DIRECT_98
+  END
+ END
+ IF $sex['partner'] = 'assistant':
+  IF assistant["sub_seduce"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_seduce"]'
+   else
+! JO9 MOD START COG_DIRECT_99 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_seduce"]: assistant["sub_seduce_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_seduce')
+! JO9 MOD END COG_DIRECT_99
+  END
+  IF assistant["sub_humiliation"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_humiliation"]'
+   else
+! JO9 MOD START COG_DIRECT_100 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_humiliation"]: assistant["sub_humiliation_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_humiliation')
+! JO9 MOD END COG_DIRECT_100
+  END
+  IF assistant["sub_masturbation"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_masturbation"]'
+   else
+! JO9 MOD START COG_DIRECT_101 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_masturbation"]: assistant["sub_masturbation_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_masturbation')
+! JO9 MOD END COG_DIRECT_101
+  END
+ END
+ if sex["pc_excitement_state"] < 3: sex["pc_excitement"] += quality
+ if sex_done_today[sex_interaction] = 0: sex["pc_interest"] += quality * sex['girl_beauty'] + sex['girl_newness']
+ sex["girl_energy"] -= 5
+ $text[1] = '  <<$active_seduce[quality]>>'
+ gs 'picture_selector'
+ $play_sound[1] = '<<$seduce_sound[sex["girl_age"]]>>'
+END
+!Целоваться
+IF sex_interaction = 103:
+ $interaction_type = 'foreplay'
+ res = 0
+ stimulating = 1
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ skill = sex["girl_sub_kiss"]
+ quality = min (diligence, skill)
+ if sex["pc_excitement_state"] < 4: sex["pc_excitement"] += quality - sex_done_today[sex_interaction]
+ IF sex["girl_excitement"] < 3:
+  diff = sex["girl_excitement"] + sex["girl_attention"] - sex["girl_openmind"] + (3 - sex["girl_pain"]) - sex['girl_nympo']
+  IF master_oral > diff:
+   sex["girl_excitement"] += 1
+   else
+   if sex_done_today[sex_interaction] = 0: master_oral_rate += 1
+  END
+ END
+ IF $sex['partner'] = '':
+  IF slave["sub_kiss"] = 0:
+   if sex["girl_attention"] >= 3: $rise_skill = 'slave["sub_kiss"]'
+   else
+! JO9 MOD START COG_DIRECT_102 | 2026-10-16_innate_learning_traits
+   if sex["girl_attention"] > slave["sub_kiss"] and sex_done_today[sex_interaction] = 0: slave["sub_kiss_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_kiss')
+! JO9 MOD END COG_DIRECT_102
+  END
+ END
+ IF $sex['partner'] = 'assistant':
+  IF assistant["sub_kiss"] = 0:
+   if sex["girl_attention"] >= 3: $rise_skill = 'assistant["sub_kiss"]'
+   else
+! JO9 MOD START COG_DIRECT_103 | 2026-10-16_innate_learning_traits
+   if sex["girl_attention"] > assistant["sub_kiss"] and sex_done_today[sex_interaction] = 0: assistant["sub_kiss_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_kiss')
+! JO9 MOD END COG_DIRECT_103
+  END
+ END
+ $text[1] = '  <<$sex_kiss[quality]>>'
+ $special_bg = $kiss[sex['girl_type']]
+ $play_sound[1] = '<<$kiss_sound[sex["girl_age"]]>>'
+ sex["girl_energy"] -= 3
+ sex['pc_energy'] -= 3
+ sex["climax_buildup"] -= 2
+END
+!Ласкай меня
+IF sex_interaction = 104:
+ sex_interaction = 1040 + intensity
+END
+IF sex_interaction = 1041:
+ $interaction_type = 'foreplay'
+ res = 0
+ stimulating = 1
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ skill = max (sex["girl_sub_tongue"],sex["girl_sub_hj"],sex["girl_sub_hug"])
+ quality = min (diligence, skill)
+ IF sex["girl_excitement"] < 2 and diligence > 3 - sex['girl_nympo']: sex["girl_excitement"] += 1
+ if sex["pc_excitement_state"] > 3: multiplier += 1
+ if sex["pc_excitement_state"] > 4: multiplier += 1
+ sex["pc_excitement"] += quality * multiplier - sex_done_today[sex_interaction]
+ if sex_done_today[sex_interaction] = 0: sex["pc_interest"] += quality * multiplier
+ IF $sex['partner'] = '':
+  IF slave["sub_tongue"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_tongue"]'
+   else
+! JO9 MOD START COG_DIRECT_104 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_tongue"]: slave["sub_tongue_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_tongue')
+! JO9 MOD END COG_DIRECT_104
+  END
+  IF slave["sub_hj"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_hj"]'
+   else
+! JO9 MOD START COG_DIRECT_105 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_hj"]: slave["sub_hj_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_hj')
+! JO9 MOD END COG_DIRECT_105
+  END
+  IF slave["sub_hug"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_hug"]'
+   else
+! JO9 MOD START COG_DIRECT_106 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_hug"]: slave["sub_hug_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_hug')
+! JO9 MOD END COG_DIRECT_106
+  END
+ END
+ IF $sex['partner'] = 'assistant':
+  IF assistant["sub_tongue"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_tongue"]'
+   else
+! JO9 MOD START COG_DIRECT_107 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_tongue"]: assistant["sub_tongue_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_tongue')
+! JO9 MOD END COG_DIRECT_107
+  END
+  IF assistant["sub_hj"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_hj"]'
+   else
+! JO9 MOD START COG_DIRECT_108 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_hj"]: assistant["sub_hj_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_hj')
+! JO9 MOD END COG_DIRECT_108
+  END
+  IF assistant["sub_hug"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_hug"]'
+   else
+! JO9 MOD START COG_DIRECT_109 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_hug"]: assistant["sub_hug_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_hug')
+! JO9 MOD END COG_DIRECT_109
+  END
+ END
+ $text[1] = '  <<$sex_ll_caress[quality]>>'
+ $special_bg = $hj[sex['girl_type']]
+ $play_sound[1] = '<<$kiss_sound[sex["girl_age"]]>>'
+ sex["girl_energy"] -= 1
+END
+IF sex_interaction = 1042:
+ $interaction_type = 'foreplay'
+ res = 0
+ stimulating = 1
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ skill = max (sex["girl_sub_tongue"],sex["girl_sub_hj"],sex["girl_sub_hug"])
+ quality = min (diligence, skill)
+ IF sex["girl_excitement"] < 2 and diligence > 3 - sex['girl_nympo']: sex["girl_excitement"] += 1
+ if sex["pc_excitement_state"] > 2: multiplier += 1
+ sex["pc_excitement"] += quality * multiplier - sex_done_today[sex_interaction]
+ if sex_done_today[sex_interaction] = 0: sex["pc_interest"] += quality * multiplier
+ IF $sex['partner'] = '':
+  IF slave["sub_tongue"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_tongue"]'
+   else
+! JO9 MOD START COG_DIRECT_104 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_tongue"]: slave["sub_tongue_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_tongue')
+! JO9 MOD END COG_DIRECT_104
+  END
+  IF slave["sub_hj"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_hj"]'
+   else
+! JO9 MOD START COG_DIRECT_105 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_hj"]: slave["sub_hj_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_hj')
+! JO9 MOD END COG_DIRECT_105
+  END
+  IF slave["sub_hug"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_hug"]'
+   else
+! JO9 MOD START COG_DIRECT_106 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_hug"]: slave["sub_hug_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_hug')
+! JO9 MOD END COG_DIRECT_106
+  END
+ END
+ IF $sex['partner'] = 'assistant':
+  IF assistant["sub_tongue"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_tongue"]'
+   else
+! JO9 MOD START COG_DIRECT_107 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_tongue"]: assistant["sub_tongue_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_tongue')
+! JO9 MOD END COG_DIRECT_107
+  END
+  IF assistant["sub_hj"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_hj"]'
+   else
+! JO9 MOD START COG_DIRECT_108 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_hj"]: assistant["sub_hj_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_hj')
+! JO9 MOD END COG_DIRECT_108
+  END
+  IF assistant["sub_hug"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_hug"]'
+   else
+! JO9 MOD START COG_DIRECT_109 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_hug"]: assistant["sub_hug_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_hug')
+! JO9 MOD END COG_DIRECT_109
+  END
+ END
+ $text[1] = '   <<$sex_l_caress[quality]>>'
+ $special_bg = $hj[sex['girl_type']]
+ $play_sound[1] = '<<$kiss_sound[sex["girl_age"]]>>'
+ sex["girl_energy"] -= 2
+END
+IF sex_interaction = 1043:
+ $interaction_type = 'foreplay'
+ res = 0
+ stimulating = 1
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ skill = max (sex["girl_sub_tongue"],sex["girl_sub_hj"],sex["girl_sub_hug"])
+ quality = min (diligence, skill)
+ IF sex["girl_excitement"] < 2 and diligence > 3 - sex['girl_nympo']: sex["girl_excitement"] += 1
+ sex["pc_excitement"] += quality * 2 - sex_done_today[sex_interaction]
+ IF $sex['partner'] = '':
+  IF slave["sub_tongue"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_tongue"]'
+   else
+! JO9 MOD START COG_DIRECT_104 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_tongue"]: slave["sub_tongue_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_tongue')
+! JO9 MOD END COG_DIRECT_104
+  END
+  IF slave["sub_hj"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_hj"]'
+   else
+! JO9 MOD START COG_DIRECT_105 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_hj"]: slave["sub_hj_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_hj')
+! JO9 MOD END COG_DIRECT_105
+  END
+  IF slave["sub_hug"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_hug"]'
+   else
+! JO9 MOD START COG_DIRECT_106 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_hug"]: slave["sub_hug_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_hug')
+! JO9 MOD END COG_DIRECT_106
+  END
+ END
+ IF $sex['partner'] = 'assistant':
+  IF assistant["sub_tongue"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_tongue"]'
+   else
+! JO9 MOD START COG_DIRECT_107 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_tongue"]: assistant["sub_tongue_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_tongue')
+! JO9 MOD END COG_DIRECT_107
+  END
+  IF assistant["sub_hj"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_hj"]'
+   else
+! JO9 MOD START COG_DIRECT_108 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_hj"]: assistant["sub_hj_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_hj')
+! JO9 MOD END COG_DIRECT_108
+  END
+  IF assistant["sub_hug"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_hug"]'
+   else
+! JO9 MOD START COG_DIRECT_109 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_hug"]: assistant["sub_hug_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_hug')
+! JO9 MOD END COG_DIRECT_109
+  END
+ END
+ $text[1] = '    <<$sex_n_caress[quality]>>'
+ $special_bg = $hj[sex['girl_type']]
+ $play_sound[1] = '<<$kiss_sound[sex["girl_age"]]>>'
+ sex["girl_energy"] -= 3
+END
+IF sex_interaction = 1044:
+ $interaction_type = 'foreplay'
+ res = 1
+ stimulating = 1
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ skill = max (sex["girl_sub_tongue"],sex["girl_sub_hj"])
+ quality = min (diligence, skill)
+ IF sex["girl_excitement"] < 2 and diligence > 3 - sex['girl_nympo']: sex["girl_excitement"] += 1
+ sex["pc_excitement"] += quality * 3 - sex_done_today[sex_interaction]
+ sex["cum_buildup"] += 3
+ IF $sex['partner'] = '':
+  IF slave["sub_tongue"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_tongue"]'
+   else
+! JO9 MOD START COG_DIRECT_104 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_tongue"]: slave["sub_tongue_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_tongue')
+! JO9 MOD END COG_DIRECT_104
+  END
+  IF slave["sub_hj"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_hj"]'
+   else
+! JO9 MOD START COG_DIRECT_105 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_hj"]: slave["sub_hj_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_hj')
+! JO9 MOD END COG_DIRECT_105
+  END
+  IF slave["sub_hug"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_hug"]'
+   else
+! JO9 MOD START COG_DIRECT_106 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_hug"]: slave["sub_hug_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_hug')
+! JO9 MOD END COG_DIRECT_106
+  END
+ END
+ IF $sex['partner'] = 'assistant':
+  IF assistant["sub_tongue"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_tongue"]'
+   else
+! JO9 MOD START COG_DIRECT_107 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_tongue"]: assistant["sub_tongue_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_tongue')
+! JO9 MOD END COG_DIRECT_107
+  END
+  IF assistant["sub_hj"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_hj"]'
+   else
+! JO9 MOD START COG_DIRECT_108 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_hj"]: assistant["sub_hj_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_hj')
+! JO9 MOD END COG_DIRECT_108
+  END
+  IF assistant["sub_hug"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_hug"]'
+   else
+! JO9 MOD START COG_DIRECT_109 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_hug"]: assistant["sub_hug_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_hug')
+! JO9 MOD END COG_DIRECT_109
+  END
+ END
+ $text[1] = '    <<$sex_f_caress[quality]>>'
+ $special_bg = $hj[sex['girl_type']]
+ $play_sound[1] = '<<$kiss_sound[sex["girl_age"]]>>'
+ sex["girl_energy"] -= 5
+END
+IF sex_interaction = 1045:
+ $interaction_type = 'foreplay'
+ disgusting = 1
+ res = 1
+ stimulating = 1
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ skill = max (sex["girl_sub_tongue"],sex["girl_sub_hj"])
+ quality = min (diligence, skill)
+ IF sex["girl_excitement"] < 2 and diligence > 3 - sex['girl_nympo'] + sex["girl_perversion"]: sex["girl_excitement"] += 1
+ sex["pc_excitement"] += quality * 4 - sex_done_today[sex_interaction]
+ sex["cum_buildup"] += 4
+ IF $sex['partner'] = '':
+  IF slave["sub_tongue"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_tongue"]'
+   else
+! JO9 MOD START COG_DIRECT_104 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_tongue"]: slave["sub_tongue_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_tongue')
+! JO9 MOD END COG_DIRECT_104
+  END
+  IF slave["sub_hj"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_hj"]'
+   else
+! JO9 MOD START COG_DIRECT_105 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_hj"]: slave["sub_hj_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_hj')
+! JO9 MOD END COG_DIRECT_105
+  END
+  IF slave["sub_hug"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_hug"]'
+   else
+! JO9 MOD START COG_DIRECT_106 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_hug"]: slave["sub_hug_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_hug')
+! JO9 MOD END COG_DIRECT_106
+  END
+ END
+ IF $sex['partner'] = 'assistant':
+  IF assistant["sub_tongue"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_tongue"]'
+   else
+! JO9 MOD START COG_DIRECT_107 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_tongue"]: assistant["sub_tongue_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_tongue')
+! JO9 MOD END COG_DIRECT_107
+  END
+  IF assistant["sub_hj"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_hj"]'
+   else
+! JO9 MOD START COG_DIRECT_108 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_hj"]: assistant["sub_hj_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_hj')
+! JO9 MOD END COG_DIRECT_108
+  END
+  IF assistant["sub_hug"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_hug"]'
+   else
+! JO9 MOD START COG_DIRECT_109 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_hug"]: assistant["sub_hug_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_hug')
+! JO9 MOD END COG_DIRECT_109
+  END
+ END
+ $text[1] = '    <<$sex_ff_caress[quality]>>'
+ $special_bg = $hj[sex['girl_type']]
+ $play_sound[1] = '<<$kiss_sound[sex["girl_age"]]>>'
+ sex["girl_energy"] -= 5
+END
+!Массировать её
+IF sex_interaction = 105:
+ $interaction_type = 'foreplay'
+ force = sex['girl_sensitivity'] + intensity - 3
+ if force < 1: force = 1
+ if force > 5: force = 5
+ balance = sex['girl_openmind'] - force
+ IF sex["girl_excitement"] > 1:
+  compensation = sex["girl_excitement"] + master_petting - 5
+  IF balance > 0:
+   a = balance - compensation
+   if a <= 0: balance = 0
+   else
+   a = balance + compensation
+   if a >= 0: balance = 0
+  END
+ END
+ if balance < 0: pain_done = 1 & sex["climax_buildup"] = 0
+ IF balance > 0 and $sex['partner'] = '' and sex_done_today[sex_interaction] = 0:
+  slave_rate['sensitivity'] += 1
+ END
+ IF balance = 0 and master_petting > sex['girl_openmind']: sex['girl_openmind'] += 1 & sex['girl_attention'] -= 1
+ if sex_done_today[sex_interaction] = 0: master_petting_rate += 1
+ sex["pc_interest"] -= 5
+ $text[1] = '   <<$sex_massage[intensity]>>'
+ $special_bg = $petting[sex['girl_type']]
+ $play_sound[1] = '<<$petting_sound[sex["girl_age"]]>>'
+ sex["girl_energy"] -= intensity - 1
+ sex['pc_energy'] -= 2 * intensity
+ sex["climax_buildup"] -= 1
+ sex["cum_buildup"] = 0
+END
+!Возбуждать её
+IF sex_interaction = 106:
+ $interaction_type = 'foreplay'
+ stimulating = 1
+ clitoral_stimulation = 1
+ force = sex['girl_sensitivity'] + intensity - 3
+ if force < 1: force = 1
+ if force > 5: force = 5
+ balance = sex['girl_excitement'] - force
+ IF sex["girl_openmind"] > 1:
+  compensation = sex["girl_openmind"] + master_oral - 5
+  IF balance > 0:
+   a = balance - compensation
+   if a <= 0: balance = 0
+   else
+   a = balance + compensation
+   if a >= 0: balance = 0
+  END
+ END
+ if balance < 0: sex["climax_buildup"] -= 2 & sex["girl_attention"] += 1
+ IF balance > 0:
+  sex["climax_buildup"] -= 1
+  if $sex['partner'] = '' and sex_done_today[sex_interaction] = 0: slave_rate['sensitivity'] += 1
+ END
+ IF balance = 0:
+  diff = sex['girl_excitement'] - sex['girl_openmind'] + sex['girl_attention']
+  IF master_oral > diff:
+   sex['girl_excitement'] += 1
+   sex["climax_buildup"] += intensity
+   else
+   if sex_done_today[sex_interaction] = 0: master_oral_rate += 1
+   sex["climax_buildup"] += intensity
+  END
+ END
+ sex["pc_interest"] -= 5
+ $text[1] = '  <<$sex_caress_girl[intensity]>>'
+ $special_bg = $petting[sex['girl_type']]
+ $play_sound[1] = '<<$petting_sound[sex["girl_age"]]>>'
+ sex["girl_energy"] -= intensity
+ sex['pc_energy'] -= 2 * intensity
+END
+!Смазка
+IF sex_interaction = 19:
+ lube = 1
+ sex["pc_interest"] -= 1
+ sex['pc_energy'] -= 1
+ sex["climax_buildup"] -= 1
+ $text[1] = '  윤활제는 섹스를 더 편하게 만들어 줄 것이다.'
+ $play_sound[1] = '<<$slopy[1]>>'
+ g = RAND(1,2)
+ if g = 1: $special_bg = $master_fap
+ if g = 2: $special_bg = 'scene\master_fap_2'
+END
+!Дефлорация
+IF sex_interaction = 11:
+ $interaction_type = 'penetration'
+ stimulating = 1
+ if lube = 0: friction = 4 - sex["girl_excitement"]
+ IF friction > 0 and sex['girl_tightness'] < 0:
+  a = friction + sex['girl_tightness']
+  IF a > 0:
+   friction = a
+   else
+   friction = 0
+  END
+ END
+ if friction < 1: friction = 1
+ sex["girl_attention"] += 1
+ diff = sex["girl_excitement"] + sex["girl_attention"]*2 - sex["girl_openmind"] + friction
+ force = sex['girl_sensitivity'] + intensity - 2
+ if force < 1: force = 1
+ if force > 5: force = 5
+ balance = sex['girl_excitement'] - force
+ IF balance < 0:
+  sex["girl_openmind"] -= 1
+  sex["girl_attention"] += 1
+  diff -= balance
+ END
+ IF balance > 0:
+  sex["climax_buildup"] -= balance
+  diff += balance
+ END
+ if master_penetration > diff: sex['girl_excitement'] += 1
+ girl_stimulation = master_penetration - friction + sex["girl_openmind"]
+ sex["climax_buildup"] += girl_stimulation
+ pc_stimulation = 3 + sex['pc_boner'] + sex['girl_tightness'] + intensity - friction * intensity
+ sex["pc_excitement"] += pc_stimulation
+ if sex_done_today[sex_interaction] = 0: master_penetration_rate += 3
+ sex["pc_interest"] -= 1
+ sex["girl_energy"] -= intensity
+ sex['pc_energy'] -= intensity + 1
+ IF $insertion = 'vaginal':
+  $text[1] = '  <<$sex_defloration[intensity]>>'
+  else
+  $text[1] = '  <<$sex_insert_defloration>>'
+  $insertion = 'vaginal'
+ END
+ $play_sound[1] = '<<$soft_pain[sex["girl_age"]]>>'
+ gs 'picture_selector'
+ deflorated = 1
+ sex['girl_virgin'] = 2
+END
+!Вагинальный секс
+IF sex_interaction = 12:
+ $interaction_type = 'penetration'
+ stimulating = 1
+ clitoral_stimulation = 1
+ if lube = 0: friction = 3 - sex["girl_excitement"]
+ IF friction > 0 and sex['girl_tightness'] < 0:
+  a = friction + sex['girl_tightness']
+  IF a > 0:
+   friction = a
+   else
+   friction = 0
+  END
+ END
+ diff = sex["girl_excitement"] + sex["girl_attention"] - sex["girl_openmind"] + friction
+ force = sex['girl_sensitivity'] + intensity - 3
+ if force < 1: force = 1
+ if force > 5: force = 5
+ balance = sex['girl_excitement'] - force
+ IF balance < 0:
+  sex["girl_openmind"] -= 1
+  sex["girl_attention"] += 1
+  if $sex['partner'] = '' and sex_done_today[sex_interaction] = 0: slave["masochism_xp"] += 1
+  if $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0: assistant["masochism_xp"] += 1
+  diff -= balance
+  sex["masochism_revealed"] = 1
+ END
+ IF balance > 0:
+  if $sex['partner'] = '' and sex_done_today[sex_interaction] = 0: slave_rate['sensitivity'] += 1
+  if $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0: assistant_rate['sensitivity'] += 1
+  sex["climax_buildup"] -= balance
+  diff += balance
+ END
+ if master_penetration > diff: sex['girl_excitement'] += 1
+ girl_stimulation = master_penetration - friction + sex["girl_openmind"]
+ IF girl_stimulation > 0:
+  girl_stimulation += intensity + sex['girl_sub_vaginal']
+  IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0:
+! JO9 MOD START COG_DIRECT_110 | 2026-10-16_innate_learning_traits
+   if slave['sub_vaginal'] > 0: slave['sub_vaginal_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_vaginal')
+! JO9 MOD END COG_DIRECT_110
+   if slave['sub_vaginal'] = 0: $rise_skill = 'slave["sub_vaginal"]'
+  END
+  IF $sex['partner'] = 'assistant':
+! JO9 MOD START COG_DIRECT_111 | 2026-10-16_innate_learning_traits
+   if assistant['sub_vaginal'] > 0: assistant['sub_vaginal_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_vaginal')
+! JO9 MOD END COG_DIRECT_111
+   if assistant['sub_vaginal'] = 0: $rise_skill = 'assistant["sub_vaginal"]'
+  END
+  else
+  if sex_done_today[sex_interaction] = 0: slave_rate['sensitivity'] += 1
+ END
+ sex["climax_buildup"] += girl_stimulation
+ pc_stimulation = sex['girl_sub_vaginal'] + sex['pc_boner'] + sex['girl_tightness'] + intensity - friction * intensity
+ sex["pc_excitement"] += pc_stimulation
+ if sex_done_today[sex_interaction] = master_penetration: master_penetration_rate += 1
+ sex["nymphomania_revealed"] = 1
+ sex["pc_interest"] -= 3
+ sex["girl_energy"] -= intensity/2
+ sex['pc_energy'] -= intensity
+ IF $insertion = 'vaginal':
+  $text[1] = '  <<$sexy_vaginal[intensity]>>'
+  else
+  $text[1] = '  <<$sex_insert_vaginal>>'
+  $insertion = 'vaginal'
+ END
+ $play_sound[1] = '<<$fuck_sound[sex["girl_age"]]>>'
+ gs 'picture_selector'
+ !debug
+ !msg "girl_type = <<girl_type>>, sex['girl_type'] = <<sex['girl_type']>>,  $sex_vaginal[sex['girl_type']] = <<$sex_vaginal[sex['girl_type']]>>"
+ IF slave['ill'] > 0:
+  a = RAND (1,6)
+  if a > master_str and master_ill = 0 and obereg_on = 0: master_ill = 1
+ END
+ IF master_ill > 0:
+  a = RAND (1,6)
+  if a > slave['stamina'] and slave['ill'] = 0: slave['ill'] = 1
+ END
+END
+!Анальный секс
+IF sex_interaction = 13:
+ $interaction_type = 'penetration'
+ stimulating = 1
+ if lube = 0: friction = 5 - sex['girl_anal_stretch']
+ diff = sex["girl_excitement"] + sex["girl_attention"] - sex["girl_openmind"] + friction + sex['girl_sub_anal']
+ force = sex['girl_sensitivity'] + intensity - 3
+ if force < 1: force = 1
+ if force > 5: force = 5
+ balance = sex['girl_excitement'] - force
+ IF balance < 0:
+  sex["girl_openmind"] -= 1
+  sex["girl_attention"] += 1
+  if $sex['partner'] = '' and sex_done_today[sex_interaction] = 0: slave_rate['sensitivity'] -= 1 & slave["masochism_xp"] += 1
+  if $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0: assistant["masochism_xp"] += 1
+  diff -= balance
+  sex["masochism_revealed"] = 1
+ END
+ IF balance > 0:
+  if $sex['partner'] = '' and sex_done_today[sex_interaction] = 0: slave_rate['sensitivity'] += 1
+  if $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0: assistant_rate['sensitivity'] += 1
+  sex["climax_buildup"] -= balance
+  diff += balance
+ END
+ if master_penetration > diff: sex['girl_excitement'] += 1
+ girl_stimulation = master_penetration - friction + sex["girl_openmind"]
+ IF girl_stimulation > 0:
+  girl_stimulation += intensity + sex['girl_sub_anal']
+  IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0:
+! JO9 MOD START COG_DIRECT_112 | 2026-10-16_innate_learning_traits
+   if slave['sub_anal'] > 0: slave['sub_anal_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_anal')
+! JO9 MOD END COG_DIRECT_112
+   if slave['sub_anal'] = 0: $rise_skill = 'slave["sub_anal"]'
+  END
+  IF $sex['partner'] = 'assistant':
+! JO9 MOD START COG_DIRECT_113 | 2026-10-16_innate_learning_traits
+   if assistant['sub_anal'] > 0: assistant['sub_anal_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_anal')
+! JO9 MOD END COG_DIRECT_113
+   if assistant['sub_anal'] = 0: $rise_skill = 'assistant["sub_anal"]'
+  END
+  else
+  if sex_done_today[sex_interaction] = 0: slave_rate['custom'] += 1
+ END
+ sex["climax_buildup"] += girl_stimulation
+ pc_stimulation = sex['girl_sub_anal'] + sex['pc_boner'] + 1 + intensity*2 - friction * intensity * 2
+ sex["pc_excitement"] += pc_stimulation
+ if sex_done_today[sex_interaction] = master_penetration: master_penetration_rate += 1
+ sex["nymphomania_revealed"] = 1
+ sex["pc_interest"] -= 2
+ sex["girl_energy"] -= intensity
+ sex['pc_energy'] -= intensity + 1
+ IF $insertion = 'anal':
+  $text[1] = '  <<$sex_anal[intensity]>>'
+  else
+  $text[1] = '  <<$sex_insert_anal>>'
+  $insertion = 'anal'
+ END
+ $play_sound[1] = '<<$assfuck_sound[sex["girl_age"]]>>'
+  gs 'picture_selector'
+ IF slave['ill'] > 0:
+  a = RAND (1,6)
+  if a > master_str and master_ill = 0 and obereg_on = 0: master_ill = 1
+ END
+ IF master_ill > 0:
+  a = RAND (1,6)
+  if a > slave['stamina'] and slave['ill'] = 0: slave['ill'] = 1
+ END
+END
+!Минет
+IF sex_interaction = 14:
+ disgusting = 1
+ sex_interaction = 141
+ if intensity > 3: sex_interaction = 142
+END
+IF sex_interaction = 141:
+ $interaction_type = 'penetration'
+ sex["climax_buildup"] -= 2
+ res = intensity - 1
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ quality = min (diligence, sex['girl_sub_bj'])
+ if sex["girl_attention"] < 3: quality -= 1
+ if sex["girl_attention"] < 2: quality -= 2
+ sex["pc_excitement"] += quality * intensity
+ IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0 and diligence > 0:
+! JO9 MOD START COG_DIRECT_114 | 2026-10-16_innate_learning_traits
+  if slave['sub_bj'] > 0: slave['sub_bj_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_bj')
+! JO9 MOD END COG_DIRECT_114
+  if slave['sub_bj'] = 0: $rise_skill = 'slave["sub_bj"]'
+  slave_rate['pride'] -= intensity
+ END
+ IF $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0 and diligence > 0:
+! JO9 MOD START COG_DIRECT_115 | 2026-10-16_innate_learning_traits
+  if assistant['sub_bj'] > 0: assistant['sub_bj_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_bj')
+! JO9 MOD END COG_DIRECT_115
+  if assistant['sub_bj'] = 0: $rise_skill = 'assistant["sub_bj"]'
+  assistant_rate['pride'] -= intensity
+ END
+ IF sex['girl_perversion'] > -1:
+  girl_excitement_theshold = min (sex['girl_sensitivity'],sex["girl_openmind"]) - sex["girl_attention"] - sex['girl_angst'] + sex['girl_temper'] - 3
+  if sex['girl_excitement'] < girl_excitement_theshold: sex['girl_excitement'] += 1
+ END
+ sex["nymphomania_revealed"] = 1
+ sex["pc_interest"] -= 1
+ sex["girl_energy"] -= intensity*2
+ sex['pc_energy'] -= intensity/2
+ $text[1] = '  <<$sex_oral[intensity]>>'
+ $insertion = 'oral'
+ $play_sound[1] = '<<$bj_sound[sex["girl_age"]]>>'
+ $special_bg = $bj[sex['girl_type']]
+END
+IF sex_interaction = 142:
+ $interaction_type = 'penetration'
+ res = intensity - 1
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0:
+! JO9 MOD START COG_DIRECT_116 | 2026-10-16_innate_learning_traits
+  if slave['sub_dt'] > 0: slave['sub_dt_xp'] += func('jo9_learning_xp', (sex["girl_sub_dt"] - 2), slave['jo9_learning_trait'], 'sub_dt')
+! JO9 MOD END COG_DIRECT_116
+  if slave['sub_dt'] = 0: $rise_skill = 'slave["sub_dt"]'
+  slave_rate['instinct'] += intensity - 3
+  slave_rate['pride'] -= intensity*2
+  slave_rate['sensitivity'] -= intensity - 3
+ END
+ IF $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0:
+! JO9 MOD START COG_DIRECT_117 | 2026-10-16_innate_learning_traits
+  if assistant['sub_dt'] > 0: assistant['sub_dt_xp'] += func('jo9_learning_xp', (sex["girl_sub_dt"] - 2), assistant['jo9_learning_trait'], 'sub_dt')
+! JO9 MOD END COG_DIRECT_117
+  if assistant['sub_dt'] = 0: $rise_skill = 'assistant["sub_dt"]'
+  assistant_rate['instinct'] += intensity - 3
+  assistant_rate['pride'] -= intensity*2
+  assistant_rate['sensitivity'] -= intensity - 3
+ END
+ sex["climax_buildup"] -= intensity - sex['girl_sub_dt']
+ pc_stimulation = sex['pc_boner'] - sex['girl_sub_dt'] + intensity*2
+ sex["pc_excitement"] += pc_stimulation
+ IF intensity > sex['girl_sub_dt']:
+  sex['girl_excitement'] -= 1
+  sex["girl_openmind"] -= 1
+  if sex["girl_attention"] < 3: sex["girl_attention"] += 1
+ END
+ IF sex['girl_perversion'] > 0:
+  girl_excitement_theshold = min (sex['girl_sensitivity'],sex["girl_openmind"]) - sex["girl_attention"] - sex['girl_angst'] + sex['girl_temper'] - 3
+  if sex['girl_excitement'] < girl_excitement_theshold: sex['girl_excitement'] += 1
+ END
+ sex["nymphomania_revealed"] = 1
+ sex["pc_interest"] -= 2
+ sex["girl_energy"] -= intensity
+ sex['pc_energy'] -= intensity
+ $text[1] = '  <<$sex_oral[intensity]>>'
+ $insertion = 'oral'
+ $play_sound[1] = '<<$throatfuck_sound[sex["girl_age"]]>>'
+ $special_bg = $dt[sex['girl_type']]
+END
+!Фроттаж
+IF sex_interaction = 15:
+ stimulating = 1
+ sex_interaction = 150 + intensity
+ girl_excitement_theshold = min (sex['girl_sensitivity'],sex["girl_openmind"]) - sex["girl_attention"] - sex['girl_angst'] + sex['girl_temper'] - 3
+ if sex['girl_excitement'] < girl_excitement_theshold: sex['girl_excitement'] += 1
+ $text[1] = '  <<$sex_frottage[intensity]>>'
+END
+IF sex_interaction = 151:
+ $interaction_type = 'penetration'
+ sex["climax_buildup"] -= 1
+ sex["pc_excitement"] += master_penetration + intensity
+ IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0 and diligence > 0:
+! JO9 MOD START COG_DIRECT_118 | 2026-10-16_innate_learning_traits
+  if slave['sub_hug'] > 0: slave['sub_hug_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_hug')
+! JO9 MOD END COG_DIRECT_118
+  if slave['sub_hug'] = 0: $rise_skill = 'slave["sub_hug"]'
+  if intensity = slave['sensitivity']: slave_rate['sensitivity'] += 1
+ END
+ IF $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0 and diligence > 0:
+! JO9 MOD START COG_DIRECT_119 | 2026-10-16_innate_learning_traits
+  if assistant['sub_hug'] > 0: assistant['sub_hug_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_hug')
+! JO9 MOD END COG_DIRECT_119
+  if assistant['sub_hug'] = 0: $rise_skill = 'assistant["sub_hug"]'
+  if intensity = assistant['sensitivity']: assistant_rate['sensitivity'] += 1
+ END
+ sex["nymphomania_revealed"] = 1
+ sex["pc_interest"] -= 2
+ sex["girl_energy"] -= intensity
+ sex['pc_energy'] -= intensity
+ $play_sound[1] = '<<$petting_sound[sex["girl_age"]]>>'
+ $special_bg = $petting[sex['girl_type']]
+END
+IF sex_interaction = 152:
+ $interaction_type = 'penetration'
+ sex["climax_buildup"] -= 1
+ if lube = 0: friction = 4 - sex['girl_sub_hj']
+ if friction < 0: friction = 0
+ res = 1
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ quality = min (diligence, sex['girl_sub_hj'])
+ if sex["girl_attention"] < 3: quality -= 1
+ if sex["girl_attention"] < 2: quality -= 1
+ sex["pc_excitement"] += quality + intensity - friction
+ IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0 and diligence > 0:
+! JO9 MOD START COG_DIRECT_120 | 2026-10-16_innate_learning_traits
+  if slave['sub_hj'] > 0: slave['sub_hj_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_hj')
+! JO9 MOD END COG_DIRECT_120
+  if slave['sub_hj'] = 0: $rise_skill = 'slave["sub_hj"]'
+  if intensity = slave['sensitivity']: slave_rate['sensitivity'] += 1
+ END
+ IF $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0 and diligence > 0:
+! JO9 MOD START COG_DIRECT_121 | 2026-10-16_innate_learning_traits
+  if assistant['sub_hj'] > 0: assistant['sub_hj_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_hj')
+! JO9 MOD END COG_DIRECT_121
+  if assistant['sub_hj'] = 0: $rise_skill = 'assistant["sub_hj"]'
+  if intensity = assistant['sensitivity']: assistant_rate['sensitivity'] += 1
+ END
+ sex["nymphomania_revealed"] = 1
+ sex["pc_interest"] -= 2
+ sex["girl_energy"] -= intensity+1
+ sex['pc_energy'] -= intensity/2
+ $play_sound[1] = '<<$petting_sound[sex["girl_age"]]>>'
+ $special_bg = $hj[sex['girl_type']]
+END
+IF sex_interaction = 153:
+ $interaction_type = 'penetration'
+ sex["climax_buildup"] -= 1
+ if lube = 0: friction = 3 - sex['girl_sub_paizuri']
+ if friction < 0: friction = 0
+ res = 2
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ quality = min (diligence, sex['girl_sub_paizuri'])
+ if sex["girl_attention"] < 3: quality -= 1
+ if sex["girl_attention"] < 2: quality -= 1
+ sex["pc_excitement"] += quality*sex['girl_boobs'] + intensity - friction
+ IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0 and diligence > 0:
+! JO9 MOD START COG_DIRECT_122 | 2026-10-16_innate_learning_traits
+  if slave['sub_paizuri'] > 0: slave['sub_paizuri_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_paizuri')
+! JO9 MOD END COG_DIRECT_122
+  if slave['sub_paizuri'] = 0: $rise_skill = 'slave["sub_paizuri"]'
+  if intensity = slave['sensitivity']: slave_rate['sensitivity'] += 1
+ END
+ IF $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0 and diligence > 0:
+! JO9 MOD START COG_DIRECT_123 | 2026-10-16_innate_learning_traits
+  if assistant['sub_paizuri'] > 0: assistant['sub_paizuri_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_paizuri')
+! JO9 MOD END COG_DIRECT_123
+  if assistant['sub_paizuri'] = 0: $rise_skill = 'assistant["sub_paizuri"]'
+  if intensity = assistant['sensitivity']: assistant_rate['sensitivity'] += 1
+ END
+ sex["nymphomania_revealed"] = 1
+ sex["pc_interest"] -= 2
+ sex["girl_energy"] -= intensity + sex['girl_boobs']
+ sex['pc_energy'] -= intensity/2
+ $play_sound[1] = '<<$petting_sound[sex["girl_age"]]>>'
+ $special_bg = $paizuri[sex['girl_type']]
+END
+IF sex_interaction = 154:
+ $interaction_type = 'penetration'
+ sex["climax_buildup"] -= 1
+ if lube = 0: friction = 4 - sex['girl_sub_fj']
+ if friction < 0: friction = 0
+ res = 1
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ quality = min (diligence, sex['girl_sub_fj'])
+ if sex["girl_attention"] < 3: quality -= 1
+ if sex["girl_attention"] < 2: quality -= 1
+ sex["pc_excitement"] += quality + intensity - friction
+ IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0 and diligence > 0:
+! JO9 MOD START COG_DIRECT_124 | 2026-10-16_innate_learning_traits
+  if slave['sub_fj'] > 0: slave['sub_fj_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_fj')
+! JO9 MOD END COG_DIRECT_124
+  if slave['sub_fj'] = 0: $rise_skill = 'slave["sub_fj"]'
+  if intensity = slave['sensitivity']: slave_rate['sensitivity'] += 1
+ END
+ IF $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0 and diligence > 0:
+! JO9 MOD START COG_DIRECT_125 | 2026-10-16_innate_learning_traits
+  if assistant['sub_fj'] > 0: assistant['sub_fj_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_fj')
+! JO9 MOD END COG_DIRECT_125
+  if assistant['sub_fj'] = 0: $rise_skill = 'assistant["sub_fj"]'
+  if intensity = assistant['sensitivity']: assistant_rate['sensitivity'] += 1
+ END
+ sex["nymphomania_revealed"] = 1
+ sex["pc_interest"] -= 2
+ sex["girl_energy"] -= intensity + 1
+ sex['pc_energy'] -= intensity/2
+ $play_sound[1] = '<<$petting_sound[sex["girl_age"]]>>'
+ $special_bg = $fj[sex['girl_type']]
+END
+IF sex_interaction = 155:
+ $interaction_type = 'penetration'
+ if lube = 0: friction = 4 - sex["girl_excitement"]
+ if friction < 0: friction = 0
+ sex["pc_excitement"] += master_penetration + intensity
+ IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0:
+! JO9 MOD START COG_DIRECT_118 | 2026-10-16_innate_learning_traits
+  if slave['sub_hug'] > 0: slave['sub_hug_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_hug')
+! JO9 MOD END COG_DIRECT_118
+  if slave['sub_hug'] = 0: $rise_skill = 'slave["sub_hug"]'
+  slave_rate['sensitivity'] += 1
+ END
+ IF $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0:
+! JO9 MOD START COG_DIRECT_119 | 2026-10-16_innate_learning_traits
+  if assistant['sub_hug'] > 0: assistant['sub_hug_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_hug')
+! JO9 MOD END COG_DIRECT_119
+  if assistant['sub_hug'] = 0: $rise_skill = 'assistant["sub_hug"]'
+  assistant_rate['sensitivity'] += 1
+ END
+ sex["nymphomania_revealed"] = 1
+ sex["pc_interest"] -= 2
+ sex["girl_energy"] -= intensity - 1
+ sex['pc_energy'] -= intensity + 1
+ $play_sound[1] = '<<$petting_sound[sex["girl_age"]]>>'
+ $special_bg = $petting[sex['girl_type']]
+END
+IF sex_interaction = 161:
+ $interaction_type = 'extras'
+ stimulating = 1
+ skill = master_oral - sex['girl_excitement']
+ balance = sex['girl_sensitivity'] - intensity
+ IF balance < 0:
+  skill += balance
+  sex["girl_attention"] += 1
+  if sex['girl_excitement'] >= intensity: sex["climax_buildup"] += 1
+ END
+ IF balance > 0:
+  skill -= balance - 1
+  if $sex['partner'] = '' and sex_done_today[sex_interaction] = 0: slave_rate['sensitivity'] += 1
+  if $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0: assistant_rate['sensitivity'] += 1
+ END
+ IF skill > 0:
+  sex['girl_excitement'] += 1
+  sex["climax_buildup"] += 1
+ END
+ sex["pc_interest"] -= 3
+ if sex_done_today[sex_interaction] = 0: master_oral_rate += 1
+ $text[1] = '  <<$sex_oral_extra[intensity]>>'
+ $special_bg = $kiss[sex['girl_type']]
+ $play_sound[1] = '<<$kiss_sound[sex["girl_age"]]>>'
+ sex["girl_energy"] -= 1
+ sex['pc_energy'] -= 1
+END
+IF sex_interaction = 162:
+ $interaction_type = 'extras'
+ stimulating = 1
+ clitoral_stimulation = 1
+ force = sex['girl_sensitivity'] + intensity - 3
+ if force < 1: force = 1
+ if force > 5: force = 5
+ balance = sex['girl_excitement'] - force
+ diff = sex["girl_attention"] - sex["girl_openmind"]
+ skill = master_petting - sex["girl_attention"] + sex['girl_sensitivity']
+ IF balance = 0: diff -= sex['girl_sensitivity']
+ IF balance < 0:
+  sex["girl_openmind"] -= 1
+  sex["girl_attention"] += 1
+  diff -= balance
+ END
+ IF balance > 0:
+  if $sex['partner'] = '' and sex_done_today[sex_interaction] = 0: slave_rate['sensitivity'] += 1
+  if $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0: assistant_rate['sensitivity'] += 1
+  diff += balance
+ END
+ sex["climax_buildup"] += master_petting - diff
+ if sex_done_today[sex_interaction] = 0: master_petting_rate += 1
+ sex["pc_interest"] -= 5
+ sex["girl_energy"] -= 1
+ sex['pc_energy'] -= intensity
+ $text[1] = '  <<$sex_manual_extra[intensity]>>'
+ $special_bg = $petting[sex['girl_type']]
+ $play_sound[1] = '<<$petting_sound[sex["girl_age"]]>>'
+END
+IF sex_interaction = 163:
+ $interaction_type = 'extras'
+ abuse = 1
+ res = intensity
+ dynamic $sex_diligence
+ quality = sex["girl_sub_humiliation"]
+ if diligence > sex['girl_excitement']: sex['girl_excitement'] += 1
+ if diligence < 0: sex['girl_excitement'] -= 1
+ IF $sex['partner'] = '':
+  IF slave["sub_humiliation"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_humiliation"]'
+   else
+! JO9 MOD START COG_DIRECT_126 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_humiliation"] and sex_done_today[sex_interaction] = 0: slave["sub_humiliation_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_humiliation')
+! JO9 MOD END COG_DIRECT_126
+  END
+  IF master_domination > slave['pride']:
+   if sex_done_today[sex_interaction] = 0: slave_rate['pride'] -= intensity
+   else
+   if sex_done_today[sex_interaction] = 0: master_domination_rate += 1
+  END
+ END
+ IF $sex['partner'] = 'assistant':
+  IF assistant["sub_humiliation"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_humiliation"]'
+   else
+! JO9 MOD START COG_DIRECT_127 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_humiliation"] and sex_done_today[sex_interaction] = 0: assistant["sub_humiliation_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_humiliation')
+! JO9 MOD END COG_DIRECT_127
+  END
+  IF master_domination > assistant['pride']:
+   if sex_done_today[sex_interaction] = 0: assistant_rate['pride'] -= intensity
+   else
+   if sex_done_today[sex_interaction] = 0: master_domination_rate += 1
+  END
+ END
+ sex["pc_interest"] += intensity * sex['girl_ego'] - sex_done_today[sex_interaction]
+ sex['pc_energy'] -= 1
+ $text[1] = '  <<$sex_abuse_extra[intensity]>>'
+ $special_bg = $petting[sex['girl_type']]
+ $play_sound[1] = '<<$cry[0]>>'
+END
+IF sex_interaction = 164:
+ $interaction_type = 'extras'
+ painful = 1
+ res = intensity
+ dynamic $sex_diligence
+ force = intensity + sex["girl_attention"] + sex["girl_sensitivity"] - sex['girl_excitement'] - 3 - sex['girl_masochism'] * 2
+ IF force > 0:
+  sex['girl_excitement'] -= 1
+  sex["climax_buildup"] -= force
+  sex["girl_openmind"] -= 1
+  sex["girl_attention"] += 1
+ END
+ if diligence > sex['girl_excitement'] and force <= 0: sex['girl_excitement'] += 1
+ if intensity = 1: sex["climax_buildup"] += 1
+ IF $sex['partner'] = '':
+  IF slave["sub_mazo"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_mazo"]'
+   else
+! JO9 MOD START COG_DIRECT_128 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_mazo"] and sex_done_today[sex_interaction] = 0: slave["sub_mazo_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_mazo')
+! JO9 MOD END COG_DIRECT_128
+  END
+  a = intensity + slave['pride']
+  if a > 5 and sex_done_today[sex_interaction] = 0: slave_rate['pride'] -= a - 5
+ END
+ IF $sex['partner'] = 'assistant':
+  IF assistant["sub_mazo"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_mazo"]'
+   else
+! JO9 MOD START COG_DIRECT_129 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_mazo"] and sex_done_today[sex_interaction] = 0: assistant["sub_mazo_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_mazo')
+! JO9 MOD END COG_DIRECT_129
+  END
+  a = intensity + assistant['pride']
+  if a > 5 and sex_done_today[sex_interaction] = 0: assistant_rate['pride'] -= a - 5
+ END
+ sex["masochism_revealed"] = 1
+ sex["pc_interest"] += intensity * slave['temper'] - sex_done_today[sex_interaction]
+ sex["girl_energy"] -= intensity
+ sex['pc_energy'] -= intensity
+ if sex_done_today[sex_interaction] = 0: master_domination_rate += 1
+ $text[1] = '  <<$sex_slap_extra[intensity]>>'
+ $special_bg = $slap[sex['girl_type']]
+ $play_sound[1] = '<<$slap_sound>>'
+END
+IF sex_interaction = 165:
+ $interaction_type = 'extras'
+ painful = 1
+ force = intensity + sex["girl_attention"] + sex["girl_sensitivity"] - sex['girl_excitement'] - 3 - sex['girl_masochism'] * 2
+ IF force > 0:
+  sex['girl_excitement'] -= 1
+  sex["climax_buildup"] -= force
+  sex["girl_openmind"] -= 1
+  sex["girl_attention"] += 1
+ END
+ if force < 0 and intensity >= sex['girl_excitement']: sex['girl_excitement'] += 1
+ IF $sex['partner'] = '':
+  IF slave["sub_mazo"] = 0:
+   if diligence > 1: $rise_skill = 'slave["sub_mazo"]'
+   else
+! JO9 MOD START COG_DIRECT_128 | 2026-10-16_innate_learning_traits
+   if diligence > slave["sub_mazo"] and sex_done_today[sex_interaction] = 0: slave["sub_mazo_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_mazo')
+! JO9 MOD END COG_DIRECT_128
+  END
+ END
+ IF $sex['partner'] = 'assistant':
+  IF assistant["sub_mazo"] = 0:
+   if diligence > 1: $rise_skill = 'assistant["sub_mazo"]'
+   else
+! JO9 MOD START COG_DIRECT_129 | 2026-10-16_innate_learning_traits
+   if diligence > assistant["sub_mazo"] and sex_done_today[sex_interaction] = 0: assistant["sub_mazo_xp"] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_mazo')
+! JO9 MOD END COG_DIRECT_129
+  END
+ END
+ sex["masochism_revealed"] = 1
+ sex["pc_interest"] += intensity * slave['temper'] - sex_done_today[sex_interaction]
+ sex["girl_energy"] -= 1
+ sex['pc_energy'] -= 1
+ if sex_done_today[sex_interaction] = 0: master_domination_rate += 1
+ $text[1] = '  <<$sex_bite_extra[intensity]>>'
+ $special_bg = $slap[sex['girl_type']]
+ $play_sound[1] = '<<$bite>>'
+END
+!ИГРЫ
+!Завязать глаза
+IF sex_interaction = 21:
+	$interaction_type = 'foreplay'
+	res = 1
+	darkness = 1
+	dynamic $sex_diligence
+	IF diligence < 0:
+		$interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+	END
+	sex['eyes_bound'] = 1
+	sex["girl_attention"] -= 1
+	if diligence > sex["girl_openmind"] and sex_done_today[sex_interaction] = 0: sex["girl_openmind"] += 1
+	if diligence <= 0: sex["girl_openmind"] -= 1
+ 	IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0: slave_rate["instinct"] += 1 & slave_rate['temper'] -= 1
+ 	IF $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0: assistant_rate["instinct"] += 1 & assistant_rate['temper'] -= 1
+ 	sex["darkness_attitude_revealed"] = 1
+	$text[1] = '  당신은 소녀에게 안대를 단단히 씌운다. 이렇게 하면 바깥 자극에서 벗어나 자기 감각에 더 잘 집중할 수 있을 것이다.'
+	g = RAND(1,8)
+	if g = 1: $special_bg = 'scene\blindfold'
+	if g = 2: $special_bg = 'scene\blindfold_2'
+	if g = 3: $special_bg = 'scene\blindfold_3'
+	if g = 4: $special_bg = 'scene\blindfold_4'
+	if g = 5: $special_bg = 'scene\blindfold_5'
+	if g = 6: $special_bg = 'scene\blindfold_6'
+	if g = 7: $special_bg = 'scene\blindfold_7'
+	if g = 8: $special_bg = 'scene\blindfold_8'
+ 	sex['pc_energy'] -= 1
+	sex["pc_interest"] -= 1
+	sex["climax_buildup"] -= sex["girl_attention"]
+END
+!Развязать глаза
+IF sex_interaction = 211:
+ $interaction_type = 'foreplay'
+ sex['eyes_bound'] = 0
+ sex["girl_attention"] += 1
+ $text[1] = '   당신은 소녀의 눈에서 안대를 벗겨, 주변에서 일어나는 일에 주의를 돌리고 더 많은 주도권을 보이게 한다.'
+ $special_bg = 'scene\blindfold'
+ sex['pc_energy'] -= 1
+ sex["pc_interest"] -= 1
+ sex["climax_buildup"] -= sex["girl_attention"]
+END
+!Связать
+IF sex_interaction = 22:
+ $interaction_type = 'foreplay'
+ res = 2
+ deprivation = 1
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ sex['bondage'] = 1
+ sex["girl_openmind"] += 1
+ if diligence > sex["girl_excitement"] and master_bondage > sex["girl_excitement"]: sex["girl_excitement"] += 1
+ if diligence <= 0: sex["girl_attention"] += 1
+ IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0: slave_rate["rational"] += 1 & slave_rate['ego'] -= 1
+ IF $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0: assistant_rate["rational"] += 1 & assistant_rate['ego'] -= 1
+ sex["deprivation_attitude_revealed"] = 1
+ $text[1] = '  당신은 소녀가 무력감을 느끼도록 단단히 묶는다.'
+ $special_bg = $bondage[sex['girl_type']]
+ sex['pc_energy'] -= 10
+ sex["pc_interest"] -= 1
+ sex["climax_buildup"] -= sex["girl_attention"] - master_bondage
+END
+!Развязать
+IF sex_interaction = 221:
+ $interaction_type = 'foreplay'
+ sex['bondage'] = 0
+ $text[1] = '    당신은 소녀를 밧줄에서 풀어, 스스로 행동할 수 있게 한다.'
+ $special_bg = $bondage[sex['girl_type']]
+ sex['pc_energy'] -= 1
+ sex["pc_interest"] -= 1
+ sex["climax_buildup"] -= sex["girl_attention"]
+END
+!Зажимы для сосков
+IF sex_interaction = 23:
+ $interaction_type = 'foreplay'
+ res = 2
+ painful = 1
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ sex['clamps'] = 1
+ sex["girl_openmind"] -= 1
+ if diligence > sex["girl_excitement"] and master_torture > sex["girl_excitement"]: sex["girl_excitement"] += 1
+ IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0: slave_rate["rational"] += 1 & slave_rate['pride'] -= 1
+ IF $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0: assistant_rate["rational"] += 1 & assistant_rate['pride'] -= 1
+ sex["masochism_revealed"] = 1
+ $text[1] = '  당신은 쇠사슬로 연결된 금속 클램프를 집어 소녀의 유두에 단다. 감각은 꽤 아프겠지만, 올바른 자세로 받아들이면 그녀의 흥분은 더 올라갈 것이다.'
+ $special_bg = $pins[sex['girl_type']]
+ $play_sound[1] = '<<$clamps[1]>>'
+ sex['pc_energy'] -= 2
+ sex["pc_interest"] += sex['girl_sensitivity']
+ sex["climax_buildup"] -= sex["girl_attention"] - master_torture
+END
+!Снять зажимы
+IF sex_interaction = 231:
+ $interaction_type = 'foreplay'
+ sex['clamps'] = 0
+ $text[1] = '   당신은 소녀 유두에서 금속 클램프를 떼어 낸다. 때로는 클램프를 다는 순간보다 빼는 순간이 훨씬 더 아프지만, 그만큼 특별한 해방감도 준다.'
+ $special_bg = $pins[sex['girl_type']]
+ $play_sound[1] = '<<$clamps[2]>>'
+ sex['pc_energy'] -= 1
+ sex["pc_interest"] -= 1
+ sex["climax_buildup"] += master_torture
+END
+!Щекотать кинжалом
+IF sex_interaction = 24:
+ $interaction_type = 'foreplay'
+ bloody = 1
+ a = sex['girl_fear'] + sex['girl_sensitivity']
+ IF a >= 6 and sex['girl_masochism'] < 1:
+  sex["climax_buildup"] = 0
+  sex["girl_openmind"] -= 1
+  sex["girl_excitement"] -= 1
+  sex["girl_attention"] += 1
+  else
+  if sex["girl_excitement"] < sex['girl_sensitivity']: sex["girl_excitement"] += 1 & sex["climax_buildup"] += sex['girl_sensitivity']
+ END
+ IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0:
+  slave_rate['sensitivity'] += 1
+ END
+ IF $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0:
+  assistant_rate['sensitivity'] += 1
+ END
+ if sex_done_today[sex_interaction] = 0: master_torture_rate += 1
+ sex["pc_interest"] += sex['girl_sensitivity']
+ $text[1] = '   <<$sex_dagger>>'
+ $special_bg = $petting[sex['girl_type']]
+ $play_sound[1] = '<<$petting_sound[sex["girl_age"]]>>'
+ sex["girl_energy"] -=  1
+ sex['pc_energy'] -= 2
+ sex["cum_buildup"] = 0
+END
+!Капать воском
+IF sex_interaction = 25:
+ $interaction_type = 'foreplay'
+ painful = 1
+ a = sex['girl_fear'] + sex['girl_sensitivity']
+ IF a >= 6 and sex['girl_masochism'] < 1:
+  sex["climax_buildup"] = 0
+  sex["girl_openmind"] -= 1
+  sex["girl_excitement"] -= 1
+  sex["girl_attention"] += 1
+  else
+  if sex["girl_excitement"] < sex['girl_sensitivity']: sex["girl_excitement"] += 1 & sex["climax_buildup"] += sex['girl_sensitivity']
+ END
+ IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0:
+  slave_rate['custom'] += 1
+ END
+ IF $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0:
+  assistant_rate['custom'] += 1
+ END
+ sex["masochism_revealed"] = 1
+ if sex_done_today[sex_interaction] = 0: master_torture_rate += 1
+ sex["pc_interest"] += sex['girl_sensitivity']
+ $text[1] = '   <<$sex_wax>>'
+ $special_bg = $wax[sex['girl_type']]
+ $play_sound[1] = '<<$soft_pain[sex["girl_age"]]>>'
+ sex["girl_energy"] -=  1
+ sex['pc_energy'] -= 2
+ sex["cum_buildup"] = 0
+END
+!Поставить клизму
+IF sex_interaction = 26:
+ $interaction_type = 'foreplay'
+ res = 2
+ shameful = 1
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ sex['enema'] = 1
+ sex["girl_openmind"] -= 1
+ if diligence > sex["girl_excitement"] and master_fetish > sex["girl_excitement"]: sex["girl_excitement"] += 1
+ if $sex['partner'] = '' and sex_done_today[sex_interaction] = 0: slave_rate["pride"] -= master_fetish
+ if $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0: assistant_rate["pride"] -= master_fetish
+ if sex_done_today[sex_interaction] = 0: master_fetish_rate += 1
+ $text[1] = $sex_enema
+ $special_bg = $enema[sex['girl_type']]
+ $play_sound[1] = '<<$moan[sex["girl_age"]]>>'
+ sex['pc_energy'] -= 5
+ sex["girl_energy"] -=  10
+ sex["pc_interest"] += sex['pride'] + master_fetish
+ sex["climax_buildup"] -= sex["girl_attention"] - master_fetish
+END
+!Выпустить воду
+IF sex_interaction = 261:
+ $interaction_type = 'foreplay'
+ shameful = 1
+ sex['enema'] = 0
+ $play_sound[1] = '<<$moan[sex["girl_age"]]>>'
+ $text[1] = $sex_enema_out
+ $special_bg = $enema[sex['girl_type']]
+ sex['pc_energy'] -= 1
+ sex["pc_interest"] -= 1
+ sex["climax_buildup"] += master_torture
+END
+!Золотой дождь
+IF sex_interaction = 27:
+ $interaction_type = 'foreplay'
+ disgusting = 1
+ shameful = 1
+ res = 3
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ IF sex['girl_perversion'] < 0:
+  sex["climax_buildup"] = 0
+  sex["girl_openmind"] -= 1
+  sex["girl_excitement"] -= 1
+  sex["girl_attention"] += 1
+  else
+  if sex['girl_perversion'] > 0 and sex["girl_excitement"] < master_fetish: sex["girl_excitement"] += 1
+ END
+ IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0:
+! JO9 MOD START COG_DIRECT_130 | 2026-10-16_innate_learning_traits
+  if slave['sub_piss'] > 0: slave['sub_piss_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_piss')
+! JO9 MOD END COG_DIRECT_130
+  if slave['sub_piss'] = 0: $rise_skill = 'slave["sub_piss"]'
+  slave_rate['custom'] += 1
+  slave_rate['pride'] -= master_fetish
+ END
+ IF $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0:
+! JO9 MOD START COG_DIRECT_131 | 2026-10-16_innate_learning_traits
+  if assistant['sub_piss'] > 0: assistant['sub_piss_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_piss')
+! JO9 MOD END COG_DIRECT_131
+  if assistant['sub_piss'] = 0: $rise_skill = 'assistant["sub_piss"]'
+  assistant_rate['custom'] += 1
+  assistant_rate['pride'] -= master_fetish
+ END
+ sex["perversion_revealed"] = 1
+ if sex_done_today[sex_interaction] = 0: master_fetish_rate += 1
+ sex["pc_interest"] += 1 + sex['girl_sub_piss'] + master_fetish
+ $text[1] = '   <<$sex_urination[sex["girl_sub_piss"]]>>'
+ $special_bg = $urine_drink[sex['girl_type']]
+ $play_sound[1] = '<<$urine[sex["girl_age"]]>>'
+ sex["girl_energy"] -=  2
+ sex['pc_energy'] -= 3
+ sex["cum_buildup"] = 0
+END
+!Фистинг
+IF sex_interaction = 28:
+ $interaction_type = 'foreplay'
+ if sex['girl_anal_stretch'] <= 3: painful = 1
+ res = 3
+ stimulating = 1
+ dynamic $sex_diligence
+ IF diligence < 0:
+  $interaction_type = 'deny' & gt 'sex_interaction_result_woman'
+ END
+ IF sex['girl_anal_stretch'] < 3 or sex['girl_masochism'] = -1:
+  sex["climax_buildup"] = 0
+  sex["girl_openmind"] -= 1
+  sex["girl_excitement"] -= 1
+  sex["girl_attention"] += 1
+  if $sex['partner'] = '' and sex_done_today[sex_interaction] = 0: slave_rate['sensitivity'] -= 1 & slave["masochism_xp"] += 1
+  if $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0: assistant_rate['sensitivity'] -= 1 &assistant["masochism_xp"] += 1
+  else
+  if sex["girl_excitement"] < sex['girl_sensitivity']: sex["girl_excitement"] += 1 & sex["climax_buildup"] += sex['girl_sensitivity']
+  if sex['girl_masochism'] > 0 and sex["girl_excitement"] < master_penetration: sex["girl_excitement"] += 1
+  if $sex['partner'] = '' and sex_done_today[sex_interaction] = 0: slave_rate['sensitivity'] += 1
+  if $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0: assistant_rate['sensitivity'] += 1
+ END
+ IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0:
+! JO9 MOD START COG_DIRECT_132 | 2026-10-16_innate_learning_traits
+  if slave['anal_stretch'] > 0: slave['anal_stretch_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'anal_stretch')
+! JO9 MOD END COG_DIRECT_132
+  if slave['anal_stretch'] = 0: $rise_skill = 'slave["anal_stretch"]'
+ END
+ IF $sex['partner'] = 'assistant':
+! JO9 MOD START COG_DIRECT_133 | 2026-10-16_innate_learning_traits
+  if assistant['anal_stretch'] > 0: assistant['anal_stretch_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'anal_stretch')
+! JO9 MOD END COG_DIRECT_133
+  if assistant['anal_stretch'] = 0: $rise_skill = 'assistant["anal_stretch"]'
+ END
+ sex["masochism_revealed"] = 1
+ $text[1] = '  <<$sex_analfisting[sex["girl_anal_stretch"]]>>'
+ $play_sound[1] = '<<$fisting_sound[sex["girl_age"]]>>'
+ $special_bg = $analfisting[sex['girl_type']]
+ sex['pc_energy'] -= 5
+ sex["pc_interest"] += sex['girl_anal_stretch'] + master_penetration
+ sex["girl_energy"] -= 10
+END
+!КОНЧАНИЯ
+!Внутрь
+IF sex_interaction = 91:
+ $interaction_type = 'ejaculate'
+ res = 2
+ stimulating = 1
+ dynamic $sex_diligence
+ IF $insertion = 'vaginal':
+  $play_sound[1] = '<<$fuck_sound[sex["girl_age"]]>>'
+  gs 'picture_selector'
+  $text[1] = '<<$sex_cum_vaginal>>'
+!  if sex['girl_ovulation'] > 0: sex['girl_get_pregnant'] = 1
+!  sex['girl_get_pregnant'] = 1
+  quality = min (diligence,sex['girl_sub_vaginal'])
+ END
+ IF $insertion = 'anal':
+  $play_sound[1] = '<<$assfuck_sound[sex["girl_age"]]>>'
+   gs 'picture_selector'
+  $text[1] = '<<$sex_cum_anal>>'
+  quality = min (diligence,sex['girl_sub_anal'])
+ END
+ sex["climax_buildup"] += quality
+ if sex_done_today[sex_interaction] = master_penetration: master_penetration_rate += 1
+ IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0: slave_rate["custom"] += 1
+ IF $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0: assistant_rate["custom"] += 1
+ sex["cum_pleasure"] = sex['pc_boner']*3 + sex["pc_excitement_state"]*3
+ sex["pc_interest"] -= 5
+ sex["girl_energy"] -= 3
+ sex['pc_energy'] -= 5
+END
+!{В ротик
+IF sex_interaction = 92:
+ $interaction_type = 'ejaculate'
+ res = 2
+ disgusting = 1
+ dynamic $sex_diligence
+ quality = min (diligence,sex['girl_sub_bj'])
+ if $sex['partner'] = '' and sex_done_today[sex_interaction] = 0: slave_rate["custom"] += 1 & slave_rate["pride"] -= 2
+ IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0 and diligence > 0:
+! JO9 MOD START COG_DIRECT_114 | 2026-10-16_innate_learning_traits
+  if slave['sub_bj'] > 0: slave['sub_bj_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_bj')
+! JO9 MOD END COG_DIRECT_114
+  if slave['sub_bj'] = 0: $rise_skill = 'slave["sub_bj"]'
+ END
+ if $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0: assistant_rate["custom"] += 1 & assistant_rate["pride"] -= 2
+ IF $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0 and diligence > 0:
+! JO9 MOD START COG_DIRECT_115 | 2026-10-16_innate_learning_traits
+  if assistant['sub_bj'] > 0: assistant['sub_bj_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_bj')
+! JO9 MOD END COG_DIRECT_115
+  if assistant['sub_bj'] = 0: $rise_skill = 'assistant["sub_bj"]'
+ END
+ if quality > 2:
+  sex["cum_pleasure"] = sex['pc_boner']*quality + sex["pc_excitement_state"]*quality
+  else
+  sex["cum_pleasure"] = sex['pc_boner']*2 + sex["pc_excitement_state"]*2
+ END
+ sex["pc_interest"] -= 3
+ sex["girl_energy"] -= 1
+ sex['pc_energy'] -= 3
+ $play_sound[1] = '<<$bj_sound[sex["girl_age"]]>>'
+ $special_bg = $bj[sex['girl_type']]
+ $text[1] = '<<$sex_cum_oral>>'
+END
+!На лицо, bukkake
+IF sex_interaction = 93:
+ $interaction_type = 'ejaculate'
+ res = 1
+ disgusting = 1
+ dynamic $sex_diligence
+ quality = min (diligence,sex['girl_sub_bukkake'])
+ if $sex['partner'] = '' and sex_done_today[sex_interaction] = 0: slave_rate["pride"] -= master_fetish
+ IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0 and diligence > 0:
+! JO9 MOD START COG_DIRECT_134 | 2026-10-16_innate_learning_traits
+  if slave['sub_bukkake'] > 0: slave['sub_bukkake_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_bukkake')
+! JO9 MOD END COG_DIRECT_134
+  if slave['sub_bukkake'] = 0: $rise_skill = 'slave["sub_bukkake"]'
+ END
+ if $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0: assistant_rate["pride"] -= master_fetish
+ IF $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0 and diligence > 0:
+! JO9 MOD START COG_DIRECT_135 | 2026-10-16_innate_learning_traits
+  if assistant['sub_bukkake'] > 0: assistant['sub_bukkake_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_bukkake')
+! JO9 MOD END COG_DIRECT_135
+  if assistant['sub_bukkake'] = 0: $rise_skill = 'assistant["sub_bukkake"]'
+ END
+ sex["perversion_revealed"] = 1
+ sex["cum_pleasure"] = sex['pc_boner'] + sex["pc_excitement_state"] + quality*2
+ sex["pc_interest"] -= 3
+ sex["girl_energy"] -= 1
+ sex['pc_energy'] -= 3
+ $play_sound[1] = '<<$moan[sex["girl_age"]]>>'
+ $special_bg = $tongue[sex['girl_type']]
+ $text[1] = '<<$sex_cum_bukkake>>'
+END
+!На тело
+IF sex_interaction = 94:
+ $interaction_type = 'ejaculate'
+ res = 0
+ disgusting = 1
+ dynamic $sex_diligence
+ IF $insertion = 'anal':
+  $play_sound[1] = '<<$assfuck_sound[sex["girl_age"]]>>'
+  $special_bg = $analsex[sex['girl_type']]
+  else
+  $play_sound[1] = '<<$moan[sex["girl_age"]]>>'
+  $special_bg = $paizuri[sex['girl_type']]
+ END
+ quality = min (diligence,sex['girl_sub_bukkake'])
+ if $sex['partner'] = '' and sex_done_today[sex_interaction] = 0: slave_rate["pride"] -= 1
+ IF $sex['partner'] = '' and sex_done_today[sex_interaction] = 0 and diligence > 0:
+! JO9 MOD START COG_DIRECT_134 | 2026-10-16_innate_learning_traits
+  if slave['sub_bukkake'] > 0: slave['sub_bukkake_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), slave['jo9_learning_trait'], 'sub_bukkake')
+! JO9 MOD END COG_DIRECT_134
+  if slave['sub_bukkake'] = 0: $rise_skill = 'slave["sub_bukkake"]'
+ END
+ if $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0: assistant_rate["pride"] -= 1
+ IF $sex['partner'] = 'assistant' and sex_done_today[sex_interaction] = 0 and diligence > 0:
+! JO9 MOD START COG_DIRECT_135 | 2026-10-16_innate_learning_traits
+  if assistant['sub_bukkake'] > 0: assistant['sub_bukkake_xp'] += func('jo9_learning_xp', (sex["girl_attention"] - 2), assistant['jo9_learning_trait'], 'sub_bukkake')
+! JO9 MOD END COG_DIRECT_135
+  if assistant['sub_bukkake'] = 0: $rise_skill = 'assistant["sub_bukkake"]'
+ END
+ sex["perversion_revealed"] = 1
+ sex["cum_pleasure"] = sex['pc_boner'] + sex["pc_excitement_state"] + quality
+ sex["pc_interest"] -= 5
+ sex["girl_energy"] -= 1
+ sex['pc_energy'] -= 2
+ $text[1] = '<<$sex_cum_body>>'
+END
+!На пол
+IF sex_interaction = 95:
+ $interaction_type = 'ejaculate'
+ sex["pc_interest"] -= 10
+ sex['pc_energy'] -= 1
+ sex["cum_pleasure"] = sex['pc_boner'] + sex["pc_excitement_state"]
+ $text[1] = '<<$sex_cum_waste>>'
+ $play_sound[1] = '<<$slopy>>'
+END}
+GT 'sex_interaction_result_woman'
+------------ sex_interaction_woman ------------

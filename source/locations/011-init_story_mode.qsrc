@@ -1,0 +1,112 @@
+# init_story_mode
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2810 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'init_story_mode': gs 'snk_room_bridge', 'guard', 'init_story_mode'
+! JO9 MOD END J9M2810
+!Initialize Story Mode Game
+!Created by crushboss
+!Initialize Story Mode Game
+!Created by crushboss
+!if hero_choice > 100: gs '#var_base_woman'
+gs '#var_base'
+hero_points = 0
+sparks = 0
+master_str = 0
+master_cha = 0
+master_style = 0
+master_libido = 0
+master_energy = 5
+female_anal_description = 5
+female_nipple_piercing = 0
+female["clit_piercing"] = 0
+female["brand"] = 0
+female["breast_enchanced"] = 0
+female_lactation = 0
+piercing_in = 0
+female_vaginal_modification = 0
+female_virginity = 2
+master_tutor = 0
+master_fighter = 0
+master_butler = 0
+master_artdirector = 0
+master_medic = 0
+master_mage = 0
+master_torture = 0
+master_domination = 0
+master_bondage = 0
+master_flagelation = 0
+master_petting = 0
+master_oral = 0
+master_penetration = 0
+master_fetish = 0
+female["boobs"] = 0
+female_nipple_piercing = 0
+$estate = 'slum_house'
+$starting_area = 'Трущобы'
+$assistant["armor"] = 'без_брони'
+$slave["armor"] = 'без_брони'
+$master_wpn = 'безоружный'
+$master_armor = 'без_брони'
+$master_scnd = ''
+$master_back_wpn = ''
+$master_left_wpn = ''
+$master_right_wpn = ''
+$master_arm_wpn = ''
+$master_leg_wpn = ''
+$master_cloth = 'man_rugs'
+$master_head_gear = 'none'
+$master_earring = 'none'
+$master_amulet = 'none'
+$master_ring = 'none'
+$master_karman = 'none'
+inventory['нагайка'] = 0
+inventory['кнут'] = 0
+вакхический_нектар = 0
+тонизируюзщий_эликсир = 0
+целительный_бальзам = 0
+приворотное_зелье = 0
+мощный_афодизиак = 0
+вода_леты = 0
+метаболизм_плюс = 0
+метаболизм_минус = 0
+жир_плюс = 0
+жир_минус = 0
+inventory['regal_suit'] = 0
+inventory['medic_robes'] = 0
+inventory['wizard_robes'] = 0
+!옷바꾸기 짜증나서 만듦
+inventory['miracle_robes'] = 0
+fridge["alcohol"] = 0
+fridge["virgin_meat"] = 0
+alcohol = 0
+virgin_meat = 0
+faction_fame['neutral'] = 0
+faction_fame['taurus'] = 0
+faction_fame['serpis'] = 0
+faction_fame['korvus'] = 0
+faction_fame['kamira'] = 0
+faction_fame['RedLight'] = 0
+faction_fame['centralkvartal'] = 0
+faction_fame['otchuzhdenie'] = 0
+faction_fame['fogs'] = 0
+faction_fame['eastkvartal'] = 0
+faction_fame['futaland'] = 0
+faction_fame['russiankvartal'] = 0
+$current_sub = ''
+assistant_rules['sleep_condition'] = 0
+slave["rewarded_today"] = 0
+assistant["rewarded_today"] = 0
+
+story_mode = 1
+custom_game = 0
+demo_game = 0
+difficulty_setting = 0 &! changed from 0 (normal obedience) to 1 (easy obedience) in 2.3.1 for better transition from tutorial - ImperatorAugustus
+game_difficulty = 1
+
+IF hero_choice = 114 or hero_choice = 119 or hero_choice = 120 or hero_choice = 12 or hero_choice = 17 or hero_choice = 18:
+	master_vampire = 1
+ELSE
+	master_vampire = 0
+END
+
+------------ init_story_mode ------------

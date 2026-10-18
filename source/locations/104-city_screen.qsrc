@@ -1,0 +1,307 @@
+# city_screen
+! Readable view; authoritative fields are in ../locations.json.
+ui_style = 2
+! JO9_SINGLE_GRIMDARK_UI_20261014
+! JO9 MOD START J9M1331 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'city_screen': gs 'snk_room_bridge', 'guard', 'city_screen'
+! JO9 MOD END J9M1331
+! JO9_UI_V16_READABILITY
+!city_screen, not at home
+dynamic $city_sounds
+
+gs 'main_layout'
+gs '#var_base' 
+!if hero_choice > 100: gs '#var_base_woman'
+
+$info_text = '' &! prevents blank screen bug when accessing slave/assistant stat screen
+
+! JO9 MOD START J9M1330 | 2026-10-08_persistent_image_cycle, 2026-10-09_city_scene_menu_alignment, 2026-10-15_css24_qsp_titles | changed block; context may be included
+*p func('interior_change', 'jo9_html', '<div id = "large_image"><img src="content\pic\bg\<<$bg[$place]>>.png"></div>')
+*p func('$menu', 'layout_style')
+*p '<div id="main_screen" class="jo9_menu_city"><<$text_display>></div>'
+*p '<div id="jo9_ui_city"></div><div id="jo9_master_card"><span class="jo9_card_title">주인공</span></div><div id="jo9_slave_card"><span class="jo9_card_title">노예</span></div><div id="jo9_assistant_card"><span class="jo9_card_title">조수</span></div>'
+! JO9 MOD END J9M1330
+
+if wizard_mode = 1:
+	*p '<div class="upper_container"><div id = "upper">&nbsp;일차: <<day>> (<<sparks>>$)  |  칼: <<slave["calories"]>>  |  공: <<slave["fear"]>>/<<slave_rate["fear"]>>  |  길: <<slave["instinct"]>>/<<slave_rate["instinct"]>>  |  자: <<slave["rational"]>>/<<slave_rate["rational"]>>  |  습: <<slave["custom"]>>/<<slave_rate["custom"]>>  |  헌: <<slave["moral"]>>/<<slave_rate["moral"]>>  |  버: <<slave["spoil"]>>/<<slave_rate["spoil"]>>  |  절: <<slave["angst"]>>/<<slave_rate["angst"]>></div></div>'
+else
+	$shedule_warn = ''
+	if exam_in_progress = 0:
+		if ride_count = 0:    $shedule_warn += '<font color="#ff5700"><b>!</b></font>'
+		if auction_count = 0: $shedule_warn += '<font color="#ff5700"><b>!</b></font>'
+		if gladi_count = 0:   $shedule_warn += '<font color="#ff5700"><b>!</b></font>'
+	end
+	if exam_in_progress = 1:
+		$upper_info_bar = '일차: <<day>> (<<sparks>>$)'
+	else
+		$upper_info_bar = '<a style = "color: black;" href="EXEC: msg $shedule">일차: <<day>></a> (<<sparks>>$)'
+	end
+	if debt > 0: $upper_info_bar += ' | 빚: <<debt>>$ (<<debt_count>>일)'
+	if credit > 0: $upper_info_bar += ' |  대출금: <<credit>>  다음 상환금: <<payment>> 스파크 ( <<period>> 일.) '
+	if contract['time'] > 0: $upper_info_bar += ' | 계약: <<contract["time"]>>일'
+	*p '<div class="upper_container"><div id = "upper"><<$shedule_warn>>&nbsp;<<$upper_info_bar>></div></div>'
+end
+
+!ImperatorAugustus: consolidated master avatar and status display, sync with main_screen
+*p '<div id = "master_short_ava"><a href = "EXEC: master_stat_screen = 0 & gt ''master_stat''"><img src = "<<$master_ava_color>>"></a></div>'
+! JO9_UI_V192_AP_master
+$energy_help = '<div>초록색 행동력 바는 대부분의 행동에 소비되며 수면, 캄라, 요정 꽃가루, 강장 영약, 숙련된 마사지로 회복됩니다.<br><br>빨간 칸은 피로입니다. 이 상태에서 행동력을 더 소비하면 근력이나 지구력에 해를 줍니다.<br>보라색은 운동 한계 경고입니다. 행동력이 남아 있어도 추가 운동은 해롭습니다.<br>사선 칸은 현재 체력으로 사용할 수 없는 영역이며, 반 칸은 행동력 0.5입니다.<br><br>녹색 화살표는 현재 한도를 넘는 초과 에너지를 뜻합니다. 운동 한계 상태에서는 화살표도 보라색입니다.<br>파란 별 아이콘은 휴식 적립입니다. 밤의 규칙 행동이나 다음 날을 위해 환급 및 이월되며, 이월에는 지구력 한도가 적용됩니다.<br><br>바와 아이콘에 마우스를 올리면 정확한 수치를 확인할 수 있습니다.</div>'
+jo9_ap_units = 2 * master_energy - master_half_action
+jo9_ap_cap = max(0, min(5, 5))
+jo9_ap_bonus = max(0, 0)
+jo9_ap_extra = max(0, jo9_ap_units - 2 * jo9_ap_cap)
+jo9_ap_base = min(jo9_ap_units, 2 * jo9_ap_cap)
+$jo9_ap_cells = ''
+for jo9_ap_i = 1 to 5 step 1:
+ $jo9_ap_kind = 'jo9_ap_empty'
+ if jo9_ap_units >= 0:
+  if jo9_ap_i > jo9_ap_cap: $jo9_ap_kind = 'jo9_ap_locked'
+  if jo9_ap_base >= 2 * jo9_ap_i: $jo9_ap_kind = 'jo9_ap_green'
+  if jo9_ap_base = 2 * jo9_ap_i - 1: $jo9_ap_kind = 'jo9_ap_green_half'
+  if master_moodlet['neg_master_overexerted'] > 0: $jo9_ap_kind = $replace($jo9_ap_kind, 'green', 'purple')
+ else
+  if -jo9_ap_units >= 2 * (6 - jo9_ap_i): $jo9_ap_kind = 'jo9_ap_red'
+  if -jo9_ap_units = 2 * (6 - jo9_ap_i) - 1: $jo9_ap_kind = 'jo9_ap_red_half'
+ end
+ $jo9_ap_cells += '<span class="jo9_ap_cell <<$jo9_ap_kind>>"></span>'
+end
+$jo9_ap_tip = '행동력 ' + iif(jo9_ap_units < 0, '-', '') + str(max(jo9_ap_units, -jo9_ap_units) / 2) + iif(max(jo9_ap_units, -jo9_ap_units) MOD 2 = 1, '.5', '') + ' · 현재 한도 ' + str(jo9_ap_cap) + ' / 기본 상한 5'
+$jo9_ap_extra_tip = '초과 에너지 ' + str(jo9_ap_extra / 2) + iif(jo9_ap_extra MOD 2 = 1, '.5', '')
+$jo9_ap_rest_tip = '휴식 적립 ' + str(jo9_ap_bonus) + ' · 밤 또는 다음 날 환급, 이월 한도 적용'
+$jo9_ap_tip += ' · ' + $jo9_ap_extra_tip + ' · 휴식 적립 ' + str(jo9_ap_bonus)
+if jo9_ap_units < 0: $jo9_ap_tip += ' · 피로: 추가 소비 시 근력 및 지구력에 악영향'
+if master_moodlet['neg_master_overexerted'] > 0: $jo9_ap_tip += ' · 운동 한계: 추가 운동 주의'
+$jo9_ap_arrow = 'jo9_extra_green'
+if master_moodlet['neg_master_overexerted'] > 0: $jo9_ap_arrow = 'jo9_extra_purple' & $jo9_ap_extra_tip += ' · 운동 한계: 추가 운동 주의'
+if jo9_ap_extra = 0: $jo9_ap_arrow += ' jo9_ap_inactive'
+$jo9_ap_star = 'jo9_rest_star'
+if jo9_ap_bonus = 0: $jo9_ap_star += ' jo9_ap_inactive'
+*p '<div id="jo9_ap_master" class="jo9_ap"><a tooltip-data="<<$jo9_ap_tip>>" href="EXEC: msg $energy_help"><span class="jo9_ap_cells"><<$jo9_ap_cells>></span></a></div><div id="jo9_extra_master" class="jo9_extra"><span class="jo9_extra_icon <<$jo9_ap_arrow>>" tooltip-data="<<$jo9_ap_extra_tip>>"></span><span class="jo9_extra_icon <<$jo9_ap_star>>" tooltip-data="<<$jo9_ap_rest_tip>>"></span></div><div id="master_short_stat">'
+	$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'mood', master_mood, 1)
+	*p '<a class="tooltip-left" tooltip-data="<<$tooltip_text>>" href="EXEC: master_stat_screen = 3 & gt ''master_stat''"><<$mood[master_mood_plus]>></a>'
+	$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'master_excitement', master_excitement, 1)
+	*nl '<a class="tooltip-left" tooltip-data="<<$tooltip_text>>" href = "EXEC: msg $excitement_chart"><<dyneval($vb_cycle_stat, iif(max(master_moodlet["neg_boner"], master_moodlet["neg_blazing"]) = 0, 5 + master_excitement, 0), $excitement[master_excitement_plus])>></a>'
+	$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'hygiene', master_hygiene, -1)
+	*nl '<a class="tooltip-left" tooltip-data="<<$tooltip_text>>" href = "EXEC: msg $hygiene_chart"><<$personal_hygiene[master_hygiene]>></a>'
+*p '</div>'
+
+!lillimerge: added fiend name
+!ImperatorAugustus: consolidated assistant avatar and status display, moved energy to top, added : to fiend status
+!differs from main_screen by showing ava instead of ava_clear for slave_exist, and ava_gray instead of ava for slave_faint
+if assistant_state = CONST_INT['slave_exist']:
+	*p '<div id = "assistant_short_ava"><a href = "EXEC: assistant_stat_screen = 0 & gt ''assistant_stat''"><img src = "<<$assistant[''ava'']>>.png"></a></div>'
+	! JO9_UI_V192_AP_assistant
+jo9_ap_units = 2 * assistant['energy'] - assistant['half_action']
+jo9_ap_cap = max(0, min(5, assistant['stamina']))
+jo9_ap_bonus = max(0, assistant['well_rested'])
+jo9_ap_extra = max(0, jo9_ap_units - 2 * jo9_ap_cap)
+jo9_ap_base = min(jo9_ap_units, 2 * jo9_ap_cap)
+$jo9_ap_cells = ''
+for jo9_ap_i = 1 to 5 step 1:
+ $jo9_ap_kind = 'jo9_ap_empty'
+ if jo9_ap_units >= 0:
+  if jo9_ap_i > jo9_ap_cap: $jo9_ap_kind = 'jo9_ap_locked'
+  if jo9_ap_base >= 2 * jo9_ap_i: $jo9_ap_kind = 'jo9_ap_green'
+  if jo9_ap_base = 2 * jo9_ap_i - 1: $jo9_ap_kind = 'jo9_ap_green_half'
+  if assistant['neg_exhausted'] > 0: $jo9_ap_kind = $replace($jo9_ap_kind, 'green', 'purple')
+ else
+  if -jo9_ap_units >= 2 * (6 - jo9_ap_i): $jo9_ap_kind = 'jo9_ap_red'
+  if -jo9_ap_units = 2 * (6 - jo9_ap_i) - 1: $jo9_ap_kind = 'jo9_ap_red_half'
+ end
+ $jo9_ap_cells += '<span class="jo9_ap_cell <<$jo9_ap_kind>>"></span>'
+end
+$jo9_ap_tip = '행동력 ' + iif(jo9_ap_units < 0, '-', '') + str(max(jo9_ap_units, -jo9_ap_units) / 2) + iif(max(jo9_ap_units, -jo9_ap_units) MOD 2 = 1, '.5', '') + ' · 현재 한도 ' + str(jo9_ap_cap) + ' / 기본 상한 5'
+$jo9_ap_extra_tip = '초과 에너지 ' + str(jo9_ap_extra / 2) + iif(jo9_ap_extra MOD 2 = 1, '.5', '')
+$jo9_ap_rest_tip = '휴식 적립 ' + str(jo9_ap_bonus) + ' · 밤 또는 다음 날 환급, 이월 한도 적용'
+$jo9_ap_tip += ' · ' + $jo9_ap_extra_tip + ' · 휴식 적립 ' + str(jo9_ap_bonus)
+if jo9_ap_units < 0: $jo9_ap_tip += ' · 피로: 추가 소비 시 근력 및 지구력에 악영향'
+if assistant['neg_exhausted'] > 0: $jo9_ap_tip += ' · 운동 한계: 추가 운동 주의'
+$jo9_ap_arrow = 'jo9_extra_green'
+if assistant['neg_exhausted'] > 0: $jo9_ap_arrow = 'jo9_extra_purple' & $jo9_ap_extra_tip += ' · 운동 한계: 추가 운동 주의'
+if jo9_ap_extra = 0: $jo9_ap_arrow += ' jo9_ap_inactive'
+$jo9_ap_star = 'jo9_rest_star'
+if jo9_ap_bonus = 0: $jo9_ap_star += ' jo9_ap_inactive'
+*p '<div id="jo9_ap_assistant" class="jo9_ap"><a tooltip-data="<<$jo9_ap_tip>>" href="EXEC: msg $energy_help"><span class="jo9_ap_cells"><<$jo9_ap_cells>></span></a></div><div id="jo9_extra_assistant" class="jo9_extra"><span class="jo9_extra_icon <<$jo9_ap_arrow>>" tooltip-data="<<$jo9_ap_extra_tip>>"></span><span class="jo9_extra_icon <<$jo9_ap_star>>" tooltip-data="<<$jo9_ap_rest_tip>>"></span></div><div id="assistant_short_stat">'
+elseif assistant_state = CONST_INT['no_slave']:
+	*p '<div id = "assistant_short_ava"><img src = "content/pic/blank_ava.png"></div>'
+	*p '<div id = "assistant_short_stat">조수 없음'
+elseif assistant_state = CONST_INT['slave_faint']:
+	*p '<div id = "assistant_short_ava"><a href = "EXEC: assistant_stat_screen = 0 & gt ''assistant_stat''"><img src = "<<$assistant["ava_gray"]>>.png"></a></div>'
+	*p '<div id = "assistant_short_stat">기절'
+elseif assistant_state = CONST_INT['slave_dead']:
+	*p '<div id = "assistant_short_ava"><a href = "EXEC: assistant_stat_screen = 0 & gt ''assistant_stat''"><img src = "<<$assistant["ava_gray"]>>.png"></a></div>'
+	*p '<div id = "assistant_short_stat">사망'
+end
+if assistant_state = CONST_INT['slave_exist']:
+	$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'mood', assistant['mood'], 1)
+	*p '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $mood_chart"><<$mood[assistant_mood_plus]>></a>'
+end
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'house_mess', house_mess, -1)
+*nl '<a class="tooltip-left" tooltip-data="<<$tooltip_text>>" href = "EXEC: msg $house_mess_chart"><<$house_mess[house_mess]>></a>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'cooked_food', cooked_food_plus, 1)
+*nl '<div style="display:inline-block;position:relative;" class="tooltip-left" tooltip-data="<<$tooltip_text>>"><<$replace($replace($replace($cooked_food_label[cooked_food_plus], ''통조림 음식'', ''통조림''), ''음식찌꺼기'', ''남은음식''), ''음식 찌꺼기'', ''남은음식'')>></div>'
+if ate_already >= max(1, master_str) and cooked_food <= master_str:
+	$tooltip_text = '식사 질이 당신의 체력을 유지하기에 충분했다'
+	*p '<div id="master_info_hungry"><a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>"><<dyneval($vb_cycle_skill, ate_already, "배부름")>></a></div>'
+elseif ate_already > 0:
+	$tooltip_text = '식사 질이 당신의 체력을 유지하기에 충분하지 않았다'
+	*p '<div id="master_info_hungry"><a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>"><<dyneval($vb_cycle_skill, ate_already, "배고픔")>></a></div>'
+end
+*p '</div>'
+! JO9 MOD START MONSTER_STATUS_CITY_SCREEN | 2026-10-17_zzzz_monster_status_icon
+! 조수 상태칸 밖에 괴물 상태 아이콘을 표시한다. 1=갈망, 2=만족. 성장 이름은 툴팁으로 표시한다.
+if pet_tentacle > 0 and (tentacle_state = 1 or tentacle_state = 2):
+	$tooltip_text = $strfind($tentacle_name[tentacle_size], '>([^<>]+)<', 1)
+	if $tooltip_text = '': $tooltip_text = $tentacle_name[tentacle_size]
+	$tooltip_text = '안개 괴물 · ' + $tooltip_text + ' / 현재 상태: ' + iif(tentacle_state = 1, '갈망', '만족')
+	*p '<div id="jo9_house_monster"><a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $tentacle_chart"><img src="content\pic\ui\monster_status\<<iif(tentacle_state = 1, "craving", "satisfied")>>.png" alt="안개 괴물"></a></div>'
+end
+! JO9 MOD END MONSTER_STATUS_CITY_SCREEN
+
+!ImperatorAugustus: consolidated slave avatar and status display
+!differs from main_screen by showing ava instead of ava_clear for slave_exist, and ava_gray instead of ava for slave_faint
+if slave_state = CONST_INT['slave_exist']:
+	*p '<div id = "slave_short_ava"><a href = "EXEC: slave_stat_screen = 0 & gt ''slave_stat''"><img src = "<<$slave["ava"]>>.png"></a></div>'
+	! JO9_UI_V192_AP_slave
+jo9_ap_units = 2 * slave['energy'] - slave['half_action']
+jo9_ap_cap = max(0, min(5, slave['stamina']))
+jo9_ap_bonus = max(0, slave['well_rested'])
+jo9_ap_extra = max(0, jo9_ap_units - 2 * jo9_ap_cap)
+jo9_ap_base = min(jo9_ap_units, 2 * jo9_ap_cap)
+$jo9_ap_cells = ''
+for jo9_ap_i = 1 to 5 step 1:
+ $jo9_ap_kind = 'jo9_ap_empty'
+ if jo9_ap_units >= 0:
+  if jo9_ap_i > jo9_ap_cap: $jo9_ap_kind = 'jo9_ap_locked'
+  if jo9_ap_base >= 2 * jo9_ap_i: $jo9_ap_kind = 'jo9_ap_green'
+  if jo9_ap_base = 2 * jo9_ap_i - 1: $jo9_ap_kind = 'jo9_ap_green_half'
+  if slave['neg_exhausted'] > 0: $jo9_ap_kind = $replace($jo9_ap_kind, 'green', 'purple')
+ else
+  if -jo9_ap_units >= 2 * (6 - jo9_ap_i): $jo9_ap_kind = 'jo9_ap_red'
+  if -jo9_ap_units = 2 * (6 - jo9_ap_i) - 1: $jo9_ap_kind = 'jo9_ap_red_half'
+ end
+ $jo9_ap_cells += '<span class="jo9_ap_cell <<$jo9_ap_kind>>"></span>'
+end
+$jo9_ap_tip = '행동력 ' + iif(jo9_ap_units < 0, '-', '') + str(max(jo9_ap_units, -jo9_ap_units) / 2) + iif(max(jo9_ap_units, -jo9_ap_units) MOD 2 = 1, '.5', '') + ' · 현재 한도 ' + str(jo9_ap_cap) + ' / 기본 상한 5'
+$jo9_ap_extra_tip = '초과 에너지 ' + str(jo9_ap_extra / 2) + iif(jo9_ap_extra MOD 2 = 1, '.5', '')
+$jo9_ap_rest_tip = '휴식 적립 ' + str(jo9_ap_bonus) + ' · 밤 또는 다음 날 환급, 이월 한도 적용'
+$jo9_ap_tip += ' · ' + $jo9_ap_extra_tip + ' · 휴식 적립 ' + str(jo9_ap_bonus)
+if jo9_ap_units < 0: $jo9_ap_tip += ' · 피로: 추가 소비 시 근력 및 지구력에 악영향'
+if slave['neg_exhausted'] > 0: $jo9_ap_tip += ' · 운동 한계: 추가 운동 주의'
+$jo9_ap_arrow = 'jo9_extra_green'
+if slave['neg_exhausted'] > 0: $jo9_ap_arrow = 'jo9_extra_purple' & $jo9_ap_extra_tip += ' · 운동 한계: 추가 운동 주의'
+if jo9_ap_extra = 0: $jo9_ap_arrow += ' jo9_ap_inactive'
+$jo9_ap_star = 'jo9_rest_star'
+if jo9_ap_bonus = 0: $jo9_ap_star += ' jo9_ap_inactive'
+*p '<div id="jo9_ap_slave" class="jo9_ap"><a tooltip-data="<<$jo9_ap_tip>>" href="EXEC: msg $energy_help"><span class="jo9_ap_cells"><<$jo9_ap_cells>></span></a></div><div id="jo9_extra_slave" class="jo9_extra"><span class="jo9_extra_icon <<$jo9_ap_arrow>>" tooltip-data="<<$jo9_ap_extra_tip>>"></span><span class="jo9_extra_icon <<$jo9_ap_star>>" tooltip-data="<<$jo9_ap_rest_tip>>"></span></div><div id="slave_short_stat">'
+		$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'mood', slave['mood'], 1)
+		*p '<a class="tooltip-left" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $mood_chart"><<$mood[slave_mood_plus]>></a>'
+		if slave['virtue'] > 0 and slave['sin'] > 0:
+			$tooltip_text = '<<$slave_name>>는 죄책감과 공로감을 함께 느낀다 (<<slave[''virtue'']>>)'
+		elseif slave['virtue'] > 0:
+			$tooltip_text = '<<$slave_name>>는 공로감을 느낀다'
+		elseif slave['sin'] > 0:
+			$tooltip_text = '<<$slave_name>>는 죄책감을 느낀다'
+		else
+			$tooltip_text = '<<$slave_name>>는 죄책감도 공로감도 느끼지 않는다'
+		end
+		*nl '<div style="display:inline-block;position:relative;" class="tooltip-left" tooltip-data="<<$tooltip_text>>"><<$replace($replace($replace($replace($behavior_evaluation[eval], ''공 ['', ''공로[''), ''죄 ['', ''죄책[''), ''공['', ''공로[''), ''죄['', ''죄책['')>></div>'
+		$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'hygiene', slave['hygiene'], -1)
+		*nl '<a class="tooltip-left" tooltip-data="<<$tooltip_text>>" href = "EXEC: msg $hygiene_chart"><<$personal_hygiene[slave["hygiene"]]>></a>'
+	*p '</div>'
+elseif slave_state = CONST_INT['no_slave']:
+	*p '<div id = "slave_short_ava"><img src = "content/pic/blank_ava.png"></div>'
+	*p '<div id = "slave_short_stat">노예 없음</div>'
+elseif slave_state = CONST_INT['slave_faint']:
+	*p '<div id = "slave_short_ava"><a href = "EXEC: slave_stat_screen = 0 & gt ''slave_stat''"><img src = "<<$slave["ava_gray"]>>.png"></a></div>'
+	*p '<div id = "slave_short_stat">기절</div>'
+elseif slave_state = CONST_INT['slave_dead']:
+	*p '<div id = "slave_short_ava"><a href = "EXEC: slave_stat_screen = 0 & gt ''slave_stat''"><img src = "<<$slave["ava_gray"]>>.png"></a></div>'
+	*p '<div id = "slave_short_stat">사망</div>'
+end
+
+if ui_style = 2:
+	if sound_on = 1:
+		*p '<div id="sound_icon" class="tooltip-bottom" tooltip-data="사운드 켜짐"><a href = "EXEC: sound_on = 0 & close all & gt $curloc"><img src="content\pic\ui\grimdark\buttons\sound_on.png"></a></div>'
+	else
+		*p '<div id="sound_icon" class="tooltip-bottom" tooltip-data="사운드 꺼짐"><a href = "EXEC: sound_on = 1 & gt $curloc"><img src="content\pic\ui\grimdark\buttons\sound_off.png"></a></div>'
+	end
+else
+	if sound_on = 1:
+		*p '<div id="sound_icon" class="tooltip-bottom" tooltip-data="사운드 켜짐"><a href = "EXEC: sound_on = 0 & close all & gt $curloc"><img src="content\pic\buttons\sound_on.png"></a></div>'
+	else
+		*p '<div id="sound_icon" class="tooltip-bottom" tooltip-data="사운드 꺼짐"><a href = "EXEC: sound_on = 1 & gt $curloc"><img src="content\pic\buttons\sound_off.png"></a></div>'
+	end
+end
+!if master_vampire = 0: 
+!    $mood_hunger = $boy_mood[master_mood_plus]
+!else
+!    if master_str >= 4: 
+!        $mood_hunger = $boy_mood[master_mood_plus]
+!    elseif master_str >= 2:
+!        $mood_hunger = '<font color="red">HUNGER</font>'
+!    else
+!        $mood_hunger = '<font color="red"><b>!!!SEVERE HUNGER!!</b></font>'
+!    end 
+!end
+
+!*p '<div id = "settings"><<$setting_display>></div>'
+!*p '<div id = "settings_ex"><<$setting_display_c>></div>'
+!*p '<div id = "settings_ex2"><<$setting_display_c2>></div>'
+!*p '<div id = "settings_2r"><<$setting_display_r>></div>'
+!*p '<div id = "master_short_ava"><img src = "<<$master_ava>>"></div>'
+!if master_vampire >= 1:
+!    if master_str >= 4:
+!        '<div id = "master_short_ava"><a href = "EXEC: gt ''master_stat''"><img src = "content\pic\master\vampire_0.png"></a></div>'
+!    elseif master_str >= 2:
+!        '<div id = "master_short_ava"><a href = "EXEC: gt ''master_stat''"><img src = "content\pic\master\vampire_1.png"></a></div>'
+!    else
+!        '<div id = "master_short_ava"><a href = "EXEC: gt ''master_stat''"><img src = "content\pic\master\vampire_2.png"></a></div>'
+!    end
+!end
+
+
+
+!options
+if ui_style = 2:
+	if city_form ! 1000: *p '<div id="options_icon" class="tooltip-bottom" tooltip-data="게임 설정"><a href = "EXEC: prev_city_form = city_form & city_form = 1000 & gt ''city_menu_form''"><img src="content\pic\ui\grimdark\buttons\gear.png"></a></div>'
+else
+	if city_form ! 1000: *p '<div id="options_icon" class="tooltip-bottom" tooltip-data="게임 설정"><a href = "EXEC: prev_city_form = city_form & city_form = 1000 & gt ''city_menu_form''"><img src="content\pic\buttons\gear.png"></a></div>'
+end
+
+!console button, only in developer versions
+if instr($title_fix, 'Dev') ! 0: *p '<div id="console_icon"><a class="tooltip-bottom" tooltip-data="콘솔 명령" href = "EXEC: dynamic $console"><img src="content\pic\buttons\gear_console.png"></a></div>'
+
+if city_form = 1000:
+	*p '<div style="position:absolute;top:595px;left:79px"><img src = "content/pic/소리.png"></div>'
+	*p '<div style="position:absolute;top:589px;left:95px;font-family:경기천년제목 Medium;"><table><tr><td style="width:100px"><font color="#FFD700" size="5">배경음악 :</font></td><td><a href = 1><img src="content/pic/buttons/Minus.png"></a></td><td><center><font color="#FFD700" size="5"><<music_volume>>%</font></center></td><td><a href = 2><img src="content/pic/buttons/Plus.png"></a></td><td><a href = 3><img src="content/pic/buttons/close_button.png"></a></td></tr>'
+	*nl '<tr><td style="width:100px"><font color="#FFD700" size="5">효과음악 :</font></td><td><a href = 4><img src="content/pic/buttons/Minus.png"></a></td><td><center><font color="#FFD700" size="5"><<sound_volume>>%</font></center></td><td><a href = 5><img src="content/pic/buttons/Plus.png"></a></td><td><a href = 6><img src="content/pic/buttons/close_button.png"></a></td></tr></table></div>'
+	dynamic $volume_controls
+end
+*p '<div id = "settings"><<$setting_display>></div>'
+*p '<div id = "settings_ex" style="left:<<iif(city_form = 1000,570,100)>>px"><<$setting_display_c>></div>'
+*p '<div id = "settings_ex2"><<$setting_display_c2>></div>'
+*p '<div id = "settings_2r"><<$setting_display_r>></div>'
+
+if sbros = 1:
+	sbros = 0
+	gt 'city_menu_form'
+end
+
+if city_form ! 1000 and city_form < 2000:
+	if sound_on = 1:
+		*p '<div id = "back_home"><a class="tooltip-left-up" tooltip-data="집으로 가기" href = "EXEC: menu_form = 0 & city_form = estate_location[$estate] & gs ''$city_random_event'', ''home'' & play ''content/snd/door.wav'' & is_home = 1 & gt ''menu_form''"><img src="content\pic\buttons\home_button.png"></a></div>'
+	else
+		*p '<div id = "back_home"><a class="tooltip-left-up" tooltip-data="집으로 가기" href = "EXEC: menu_form = 0 & city_form = estate_location[$estate] & gs ''$city_random_event'', ''home'' & is_home = 1 & gt ''menu_form''"><img src="content\pic\buttons\home_button.png"></a></div>'
+	end
+end
+
+!Travel buttons added to the city menu - crushboss (simplified - ImperatorAugustus)
+if city_form ! 1000 and city_form < 2000 and exam_in_progress = 0:
+	$quick_move_action = "show"
+	gs 'sjm_UI_UIadds'
+else
+	$quick_move_action = "none"
+end
+
+------------ city_screen ------------

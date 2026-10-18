@@ -1,0 +1,140 @@
+# interaction_screen
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1329 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'interaction_screen': gs 'snk_room_bridge', 'guard', 'interaction_screen'
+! JO9 MOD END J9M1329
+gs '_layout'
+if $special_action[txt] ! '':
+	dynamic $special_action[txt]
+end
+
+if nsfw = 0:
+	if $bg[$place] ! '':
+! JO9 MOD START J9M1328 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+		*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content/pic/bg/<<$bg[$place]>>.png"></div>')
+! JO9 MOD END J9M1328
+	end
+	if $bg_path ! '':
+! JO9 MOD START J9M1327 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+		*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content/pic/<<$bg_path>>.png"></div>')
+! JO9 MOD END J9M1327
+	end
+	if $special_image_full[txt] ! '':
+! JO9 MOD START J9M1326 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+		*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="<<$special_image_full[txt]>>"></div>')
+! JO9 MOD END J9M1326
+	elseif $special_image[txt] ! '':
+! JO9 MOD START J9M1325 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+		*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content/pic/<<$special_image[txt]>>"></div>')
+! JO9 MOD END J9M1325
+	end
+end
+
+! JO9 MOD START J9M1324 | 2026-10-15_z_inline_text_prefix | changed block; context may be included
+! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($text[txt], '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $text[txt] = $mid($text[txt], len($jo9_leading_empty) + 1, len($text[txt]))
+! JO9 MOD END J9M1324
+*p '<div id = "text"><<$text[txt]>></div>'
+
+!Displays the slave’s fullimage on the first screen during sex training - not wanted by the community - crushboss
+!if $interaction_type = 'self_sex_lesson':
+!	if nsfw = 0:
+!		if txt = 1:
+!			*p func('display_fullimage', 'slave', 'bg')
+!			else
+! JO9 MOD START J9M1323 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+!			*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content/pic/<<$bg_path>>.png"></div>')
+! JO9 MOD END J9M1323
+!		end
+!	end
+!end
+
+if $interaction_type = 'self_sex_lesson_special':
+	if txt = 1 or txt = 5:
+		if nsfw = 0: *p func('display_fullimage', 'slave', 'bg')
+	end
+end
+
+if $interaction_type = 'chestbuster':
+! JO9 MOD START J9M1322 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	!if txt = 2 and nsfw = 0: *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content/pic/<<$bg_path>>.png"></div>')
+! JO9 MOD END J9M1322
+	if nsfw = 0 and txt > 2:
+		$bg_path = "scene/event_chestbuster"
+		g = rand(1, picMax["event_chestbuster"])
+		if g > 1: $bg_path += '_' + $str(g)
+! JO9 MOD START J9M1321 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+		*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content/pic/<<$bg_path>>.png"></div>')
+! JO9 MOD END J9M1321
+	end
+end
+
+if show_slave_fullimage = 1:
+	npc = 0
+	if nsfw = 0: *p func('display_fullimage', 'slave', 'bg')
+elseif show_assistant_fullimage = 1:
+	npc = 1
+	!$npc_id = '<<$assistant_name>>'
+	$npc_id = 'ваша_ассистентка'
+	if nsfw = 0: *p func('display_fullimage', 'assistant', 'bg')
+elseif show_prisoner_fullimage = 1:
+	npc = 0
+	if nsfw = 0: *p func('display_fullimage', 'prisoner', 'bg')
+elseif show_cow_fullimage = 1:
+	npc = 0
+	if nsfw = 0: *p func('display_fullimage', 'cow', 'bg')
+elseif show_pig_fullimage = 1:
+	npc = 0
+	if nsfw = 0: *p func('display_fullimage', 'pig', 'bg')
+elseif show_harpy_fullimage = 1:
+	npc = 0
+	if nsfw = 0: *p func('display_fullimage', 'harpy', 'bg')
+elseif show_farmhand_fullimage = 1:
+	npc = 0
+	if nsfw = 0: *p func('display_fullimage', 'farmhand', 'bg')
+end
+
+if npc = 0:
+	*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<$place_name[$place]>></div><<$place_location[$place]>><br>'
+	*nl '참고 정보:</center></div>'
+	*p '<div id = "side_panel_text"><span class="jo9-reference-body"><<$place_info[$place]>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style></div>'
+elseif npc = 1 and $npc_name[$npc_id] ! '':
+! JO9 MOD START J9M1320 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	if nsfw = 0 and $npc_image[$npc_id] ! '': *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content/pic/characters/<<$npc_image[$npc_id]>>.png"></div>')
+! JO9 MOD END J9M1320
+	*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<$npc_name[$npc_id]>></div><<$npc_status[$npc_id]>><br>'
+	*nl '참고 정보:</center></div>'
+	*p '<div id = "side_panel_text"><<$npc_attitude[npc_attitude[$npc_id]]>>'
+	*nl '<span class="jo9-reference-body"><<$npc_info[$npc_id]>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style></div>'
+end
+
+$info_bar = ''
+*p '<div id = "interaction_stat_bar"><<$info_bar>></div>'
+
+!Not needed - crushboss
+!if (res < 0 or sin > 0) and $interaction_type ! 'torture' and $interaction_type ! 'present_torture' and $interaction_type ! 'prisoner_torture' and $interaction_type ! '':
+!	npc = 1
+!	$npc_id = '<<$slave_name>>'
+!	if nsfw = 0: *p func('display_fullimage', 'slave', 'bg')
+!end
+
+if sound_on = 1 and $play_sound[txt] ! '': play 'content/snd/<<$play_sound[txt]>>.wav', sound_volume
+if $play_sound[txt] ! '': $play_sound[txt] = ''
+
+! JO9 MOD START RELEASE_NAVIGATION_FIX | 2026-10-18_release_navigation_fix
+if txt > 1 or (txt = 1 and $text[0] ! ''):
+	addobj '<img src = "content\pic\buttons\back_button.png">'
+else
+	addobj '<img src = "content\pic\buttons\noback_button.png">'
+end
+! JO9 MOD END RELEASE_NAVIGATION_FIX
+addobj '<img src = "content\pic\buttons\forward_button.png">'
+
+!Tutorial sex training - bug fix - crushboss
+if exam_in_progress = 1 and $interaction_type = 'self_sex_lesson' and txt > 4:
+	killobj
+	gt 'demo_menu_form'
+end
+
+------------ interaction_screen ------------

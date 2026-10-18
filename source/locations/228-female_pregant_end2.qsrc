@@ -1,0 +1,18 @@
+# female_pregant_end2
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2655 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'female_pregant_end2': gs 'snk_room_bridge', 'guard', 'female_pregant_end2'
+! JO9 MOD END J9M2655
+!Экран завершения сюжетной миссии
+$backimage = 'content/pic/title.png'
+MAINDESC_X = 1
+MAINDESC_Y = 1
+MAINDESC_W = 1278
+MAINDESC_H = 798
+$yes = {gt 'Start'}
+'<div id = "title_scroll"><img src = "content\pic\scroll_large.png"></div>'
+! JO9 MOD START J9M2654 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+'<div id = "title_scroll_text"> 교구에 머무는 내내, 당신은 현지 교구민들의 보살핌 속에 둘러싸여 있었다. 임신 말기와 출산도 비교적 순조롭게 지나갔다. 자기와 아이에게 이보다 더 나은 환경은 찾을 수 없다는 걸 깨달은 당신은, 세속의 삶으로 돌아가지 않고 교구에 남기로 결심했다. 게다가 교황청의 추기경들은 오래전부터 당신에게 노골적인 추파를 보내고 있었다. 싱글맘이 이 이상 뭘 더 바라겠는가? </div>'
+! JO9 MOD END J9M2654
+*p {<div id = "approve_low"><a href = 'EXEC: dynamic $yes'><img src="content\pic\buttons\approve.png"></a></div>}
+------------ female_pregant_end2 ------------

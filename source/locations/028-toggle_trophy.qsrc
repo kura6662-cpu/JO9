@@ -1,0 +1,17 @@
+# toggle_trophy
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2818 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'toggle_trophy': gs 'snk_room_bridge', 'guard', 'toggle_trophy'
+! JO9 MOD END J9M2818
+!Toggles the display of the trophies on or off - crushboss
+if toggle_trophy = 0:
+ 	toggle_trophy = 1
+ 	*p '<div id = "toggle_button_trophy"><a href = "EXEC: gs ''toggle_trophy''"><img src = "content\pic\buttons\dual_used_trophy.png"></a></div>'
+else
+ 	toggle_trophy = 0
+ 	*p '<div id = "toggle_button_trophy"><a href = "EXEC: gs ''toggle_trophy''"><img src = "content\pic\buttons\dual_active_trophy.png"></a></div>'
+end
+
+if toggle_trophy = 0: gs 'trophy_room'
+
+------------ toggle_trophy ------------

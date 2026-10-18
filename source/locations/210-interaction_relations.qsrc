@@ -1,0 +1,782 @@
+# interaction.relations
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2933 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'interaction.relations': gs 'snk_room_bridge', 'guard', 'interaction.relations'
+! JO9 MOD END J9M2933
+
+!Отношения рабыни и ассистентки - mrross
+
+!Вопрос о настроении ассистентки
+!IF interaction = menu_feeling_assistant:
+! repulse = -2
+! $interaction_type = 'talk_assistant'
+! txt_count = ndex_a
+! msg 'Ассистентка:<br>Любовь к мастеру1: <<assistant["pos_slave_love"]>><br>Любовь к мастеру2: <<assistant["pos_slave_love2"]>><br>Любовь к мастеру3: <<assistant["pos_slave_love3"]>><br>Любовь к мастеру4: <<assistant["pos_slave_love4"]>><br>Любовь к мастеру5: <<assistant["pos_slave_love5"]>><br>Любовь к мастеру6: <<assistant["pos_slave_love6"]>>'
+! copyarr '$text', '$assistant_mood_list'
+!END
+
+!Вопрос к ассистентке - что ты думаешь о воспитуемой?
+IF interaction = menu_relation_assistant:
+ repulse = -2
+ $interaction_type = 'talk_assistant'
+ txt_count = 6
+ sa_rel = 2
+ gs 'origins_relations'
+END
+
+!isolate assistant - slave Ограничить общение с ассистенткой на время
+IF interaction = menu_isolate_slave:
+    $interaction_type = 'talk'
+    txt_count = 1
+    if slave['isolate'] <= 0:
+        $text[1] = '  Вы запрещаете рабыне общаться с ассистенткой на любые личные темы и приказываете ограничить разговоры вопросами быта и обучения. <<$slave_name>> с поклоном отвечает вам, что выполнит вашу волю. Вы прекрасно понимаете, что ваш запрет продержится не дольше нескольких дней, однако это поможет на время заморозить отношения ассистентки и рабыни.'
+        slave['isolate'] = 5
+    else
+        $text[1] = '  Вы разрешаете рабыне общаться с ассистенткой на любые личные темы. <<$slave_name>> с поклоном отвечает вам, что выполнит вашу волю. Посмотрим, к чему это приведёт.'
+        slave['isolate'] = 0
+    end
+END
+!smear assistant - slave Охладить оношение к ассистентке
+IF interaction = menu_smear_slave:
+    $interaction_type = 'talk'
+    txt_count = 1
+    if slave['smear'] = 0:
+        $text[1] = '  Вы напоминаете рабыне, что <<$assistant_name>> - не её подруга, а ваша помощница, и её цель - помочь вам обучить рабыню, чтобы вы могли побыстрее её продать. По лицу рабыни вы видите, что она поняла смысл ваших слов и обдумывает их. Вы надеетесь, что она сделает правильные выводы.'
+        slave['smear'] = 5
+    else
+        $text[1] = '  Вы напоминаете рабыне, что <<$assistant_name>> - не её подруга, а ваша помощница, и её цель - помочь вам обучить рабыню, чтобы вы могли побыстрее её продать. Рабыня кивает с несколько отстранённым видом - вы уже говорили ей это недавно, и она не услышала для себя ничего нового.'
+    end
+END
+!praise assistant - slave Вызвать сочувствие к ассистентке
+IF interaction = menu_praise_slave:
+    $interaction_type = 'talk'
+    txt_count = 1
+    if slave['praise'] = 0:
+        $text[1] = '  Вы напоминаете рабыне, что <<$assistant_name>> - живой чувствующий человек, прошедший через те же злоключения, которые достались на долю ассистентки. Рабыня задумывается, выслушав ваши слова. Вы надеетесь, что её отношение к ассистентке хоть немного улучшится.'
+        slave['praise'] = 5
+    else
+        $text[1] = '  Вы напоминаете рабыне, что <<$assistant_name>> - живой чувствующий человек, прошедший через те же злоключения, которые достались на долю ассистентки. Рабыня молча выслушивает вас и едва заметно пожимает плечами - похоже, на этот раз ваши слова её не впечатлили.'
+    end
+END
+
+!isolate slave - assistant Ограничить общение с рабыней на время
+IF interaction = menu_isolate_assistant:
+    $interaction_type = 'talk_assistant'
+    txt_count = 1
+     if assistant['isolate'] <= 0:
+        $text[1] = '  Вы запрещаете ассистентке общаться с воспитуемой на любые личные темы и приказываете ограничить разговоры вопросами быта и обучения. <<$assistant_name>> с поклоном отвечает вам, что выполнит вашу волю. Вы прекрасно понимаете, что ваш запрет не продержится вечно, однако это поможет на время заморозить отношения ассистентки и рабыни.'
+        assistant['isolate'] = 5
+    else
+        $text[1] = '  Вы разрешаете ассистентке общаться с воспитуемой на любые личные темы. <<$assistant_name>> с поклоном отвечает вам, что выполнит вашу волю. Посмотрим, к чему это приведёт.'
+        assistant['isolate'] = 0
+    end
+END
+!smear slave - assistant Охладить оношение к рабыне
+IF interaction = menu_smear_assistant:
+    $interaction_type = 'talk_assistant'
+    txt_count = 1
+    if assistant['smear'] = 0:
+        $text[1] = '  Вы напоминаете ассистентке, что <<$slave_name>> - лишь товар, который будет продан после процесса подготовки, и что эмоционально привязыватся к ней - плохая идея. По лицу ассистентки вы видите, что она поняла смысл ваших слов и обдумывает их. Вы надеетесь, что она сделает правильные выводы.'
+        assistant['smear'] = 5
+    else
+        $text[1] = '  Вы напоминаете ассистентке, что <<$slave_name>> - лишь товар, который будет продан после процесса подготовки, и что эмоционально привязыватся к ней - плохая идея. Ассистентка кивает с несколько отстранённым видом - вы уже говорили ей это недавно, и она не услышала для себя ничего нового.'
+    end
+END
+!praise slave - assistant Вызвать сочувствие к рабыне
+IF interaction = menu_praise_assistant:
+    $interaction_type = 'talk_assistant'
+    txt_count = 1
+    if assistant['praise'] = 0:
+        $text[1] = '  Вы напоминаете ассистентке, что <<$slave_name>> - живой чувствующий человек, прошедший через те же злоключения, которые достались на долю ассистентки. Ассистентка задумывается, выслушав ваши слова. Вы надеетесь, что её отношение к воспитуемой хоть немного улучшится.'
+        assistant['praise'] = 5
+    else
+        $text[1] = '  Вы напоминаете ассистентке, что <<$slave_name>> - живой чувствующий человек, прошедший через те же злоключения, которые достались на долю ассистентки.  Ассистентка молча выслушивает вас и едва заметно пожимает плечами - похоже, на этот раз ваши слова её не впечатлили.'
+    end
+END
+
+
+
+
+!Отношения рабыни и ассистентки - mrross
+!Групповая трудотерапия - mrross
+IF interaction = menu_teambuilding_1:
+  !Автоодевание - загрузка пресета
+  i_aw = slave["aw_service"] 
+  aw_msg = 1 
+  dynamic $aw_preset_load
+  !/Автоодевание - загрузка пресета
+  repulse = -3
+  complex_repulse = -3    
+  if slave["service_affinity"] < 0: complex_repulse += 2
+  if slave["service_affinity"] > 0: talent_bonus = 5
+  if slave["<<assistant['id']>>"] < acc_rel['bad1']: complex_repulse += 2
+  if assistant["<<slave['id']>>"] < acc_rel['bad1']: complex_repulse += 2    
+  $interaction_type = 'make_slave_assistant_do'
+  couch_skill = (assistant["service"] + slave["service"])/2
+  slave_skill = slave["service"]
+  misc_bonus = learn_bonus["service"]   
+  $target_skill = 'slave_rate["service"]'
+  $target_skill_two = 'assistant_rate["service"]'
+  $target_affinity = 'service_affinity'
+  gs 'picture_selector'
+  $refuse_txt = '<<$slave_name>> отказывается работать в команде с ассистенткой. Ну, если она предпочитает насилие - это несложно устроить...'
+  txt_count = 3
+  $text[1] = '<<$assistant_name>> и <<$slave_name>> вместе принимаются за приготовление пищи, после чего следует генеральная уборка. Это - не обычное обучение. Задача ваших рабынь сегодня заключается в том, чтобы выполнить каждую задачу в четыре руки, во всём помогая друг другу.'
+  $text[2] = 'Здесь крайне важна слаженность действий, обе участницы должны думать не только за себя, но и за свою партнёршу. Обе должны научиться сдерживать свою неприязнь ради общего дела. В теории это должно вызвать у них чувство взаимной симпатии.'
+  if slave['teambuilding_1'] = 0 and assistant['teambuilding_1'] = 0:
+      $text[3] = 'Ваши рабыни очень неплохо справляются с задачей. Ужин мог бы быть немного вкуснее и пол мог блестеть чуточку ярче, но зато девушки явно потеплели друг к другу, на их лицах можно видеть удовлетворённые улыбки. Совместный труд определённо сближает.'
+  else
+      $text[3] = 'Рабыни выполнили задачу, но вы не заметили в их действиях былого энтузиазма. Заученные движения, отрешённые взгляды, сухие короткие фразы - вряд ли такое взаимодействие поможет сплотить ваших подопечных. Возможно, стоит подождать дня три, прежде чем вновь проводить подобные эксперименты.' 
+  end
+  sin_potential = 3
+  add_assistant_hygiene = house_mess + 2
+  add_slave_hygiene = house_mess + 2
+  add_master_hygiene = 0
+  $special_part = {
+    if slave["service_affinity"] ! 0 and slave["service_affinity_revealed"] = 0: slave["service_affinity_revealed"] = 1
+    house_mess_rate -= (slave["service"]*16)
+    if house_mess < 0: house_mess = 0
+    if house_mess_rate < 0: house_mess_rate = 0
+    dynamic $house_cleaning
+    if slave["cook_affinity"] ! 0 and slave["cook_affinity_revealed"] = 0: slave["cook_affinity_revealed"] = 1
+    if cooked_food < slave["cook"]: cooked_food = (slave["cook"] + assistant["cook"]) / 2
+    show_food = 1
+    gs '#food_base'
+    gs '$food_choice'
+    dynamic $slave_energy_drop
+    dynamic $assistant_energy_drop
+    dynamic $slave_energy_drop
+    dynamic $assistant_energy_drop
+! JO9 MOD START COG_DIRECT_88 | 2026-10-16_innate_learning_traits
+    dynamic 'slave_rate["cook"] += func(''jo9_learning_xp'', (skill_rise), slave[''jo9_learning_trait''], ''cook'')'
+! JO9 MOD END COG_DIRECT_88
+! JO9 MOD START COG_DIRECT_89 | 2026-10-16_innate_learning_traits
+    dynamic 'assistant_rate["cook"] += func(''jo9_learning_xp'', (skill_rise), assistant[''jo9_learning_trait''], ''cook'')'
+! JO9 MOD END COG_DIRECT_89
+    if slave['teambuilding_1'] = 0 and assistant['teambuilding_1'] = 0:
+      slave['teambuilding_1'] = 3
+      assistant['teambuilding_1'] = 3
+      slave["<<assistant['id']>>"] += 15
+      assistant["<<slave['id']>>"] += 15
+    else
+      slave['teambuilding_1'] = 3
+      assistant['teambuilding_1'] = 3
+    end
+  }
+END
+
+!Групповая гимнастика - mrross
+IF interaction = menu_teambuilding_2:
+    !Автоодевание - загрузка пресета
+    i_aw = slave["aw_stamina"] 
+    aw_msg = 1 
+    dynamic $aw_preset_load
+    !/Автоодевание - загрузка пресета
+    $interaction_type = 'make_slave_assistant_do'
+    repulse = -3
+    complex_repulse = -3    
+    if slave['energy'] > 3: complex_repulse = 0
+    if slave['energy'] < 0: complex_repulse -= slave['energy']
+    if slave["sport_affinity"] < 0: complex_repulse += 2
+    IF slave["sport_affinity"] > 0:
+      talent_bonus = 5
+      complex_repulse = -100
+    END
+    if slave["<<assistant['id']>>"] < acc_rel['bad1']: complex_repulse += 1
+    if assistant["<<slave['id']>>"] < acc_rel['bad1']: complex_repulse += 1    
+    couch_skill = (assistant["stamina"] + slave["stamina"])/2
+    slave_skill = slave["stamina"]
+    misc_bonus = learn_bonus["stamina"]   
+    $target_skill = 'slave_rate["stamina"]'
+    $target_skill_two = 'assistant_rate["stamina"]'
+    $target_affinity = 'sport_affinity'
+    gs 'picture_selector'
+    $refuse_txt = '<<$slave_name>> отказывается заниматься спортом с ассистенткой. Ну, если она предпочитает насилие - это несложно устроить...'
+    txt_count = 2
+    $text[1] = '    Вы приказываете рабыне и ассистентке вместе заняться гимнастикой. Ход вашей мысли прост: совместная деятельность сближает. Если <<$assistant_name>> и <<$slave_name>> будут выполнять совместные упражнения, им придётся идти на контакт и помогать друг другу.'
+    if slave["<<assistant['id']>>"] < acc_rel['bad2'] or assistant["<<slave['id']>>"] < acc_rel['bad2']:
+      $text[2] = '    Возможно, ваша логика в своей основе верна, но вы не учли того, что <<$assistant_name>> и <<$slave_name>> уже вызывают друг у друга неприязнь. Занимаются они вполсилы, стараются не дотрагиваться и не смотреть друг на друга. Таким образом вы добьётесь скорее отрицательного эффекта. Попробуйте сначала другие методы.'
+    else
+      $text[2] = '    <<$assistant_name>> и <<$slave_name>> вместе выполняют комплекс гимнастических упражнений, который требует от них близкого взаимодействия и поддержки друг друга. Кажется, вам удалось добиться нужного уровня взаимодействия между ними - девушки улыбаются и понимают друг друга с полуслова. Такие упражнения можно делать хоть каждый день, если не жалко времени.'
+    end
+    sin_potential = 3
+    add_assistant_hygiene = 10
+    add_slave_hygiene = 10
+    add_house_mess = 5   
+    add_master_hygiene = 0 
+    $special_part = {
+      if slave["sport_affinity_revealed"] = 0 and slave["sport_affinity"] = 1: slave["sport_affinity_revealed"] = 1
+      slave["calories"] -= 2
+      assistant["calories"] -= 2
+      dynamic $slave_energy_drop
+      dynamic $assistant_energy_drop
+      if slave["<<assistant['id']>>"] < acc_rel['bad2'] or assistant["<<slave['id']>>"] < acc_rel['bad2']:
+        slave["<<assistant['id']>>"] -= 1
+        assistant["<<slave['id']>>"] -= 1    
+      else
+        slave["<<assistant['id']>>"] += 3
+        assistant["<<slave['id']>>"] += 3    
+      end
+      slave['teambuilding_2'] = 1
+      assistant['teambuilding_2'] = 1
+    }
+END
+
+
+!Поход в ресторан втроём - mrross
+IF interaction = menu_teambuilding_3:
+ $interaction_type = 'prise_date'
+ slave['teambuilding_3'] = 1
+ assistant['teambuilding_3'] = 1
+ prise_level = 5
+ slave['promise_reward'] = 0
+ prise_potence = 4 + (slave["moral"]*2 + slave["rational"] + slave["instinct"] + slave["spoil"] - slave["fear"])*4 - already_done_curslave[interaction]
+ if slave["passion_fame"] = -1:  prise_potence = prise_potence/2
+ if slave["passion_sweets"] < 0: prise_potence -= 4
+ if prise_potence <= 0: prise_potence = 1
+ if slave["passion_sweets"] > 0: prise_potence += prise_potence
+ date_success = 5
+ if prise_potence < 40: date_success = 4
+ if prise_potence < 10: date_success = 3
+ if prise_potence < 5: date_success = 2
+ if prise_potence <= 1: date_success = 1
+ IF date_success > 2:
+  slave['promise_reward'] = 0
+  if slave["sin"] = 0 and slave["pride"] < 4: slave_rate["temper"] += 1 & slave_rate["moral"] += 2
+ END
+ prise_cost = 12
+ add_master_hygiene = 3
+ add_slave_hygiene = 3
+ add_house_mess = 1
+ slave["<<assistant['id']>>"] += date_success
+ assistant["<<slave['id']>>"] += date_success
+ $text[1] = '  <<$date_treesome_description[1]>>'
+ $text[2] = '  <<$date_treesome_result[date_success]>>'
+ $place = 'restaurant'
+ daily_reward_count += 1
+ special_food = 1
+ assistant["special_food"] = 1
+ if slave["passion_fame"] ! 0 and slave["passion_fame_revealed"] = 0: slave["passion_fame_revealed"] = 1
+ if slave["passion_sweets"] ! 0 and slave["passion_sweets_revealed"] = 0: slave["passion_sweets_revealed"] = 1
+ $special_part = {
+    if date_success > assistant['pos_slave_date']: assistant['pos_slave_date'] = date_success
+    if master_mood['pos_self_food'] < 1: master_mood['pos_self_food'] = 1
+    dynamic $assistant_energy_drop
+    assistant["rewarded_today"] += prise_level*3
+ }
+END
+
+!Поход на пляж втроём - mrross
+IF interaction = menu_teambuilding_35:
+ $interaction_type = 'prise_date'
+ slave['teambuilding_35'] = 1
+ assistant['teambuilding_35'] = 1
+ prise_level = 3
+ slave['promise_reward'] = 0
+ prise_potence = slave["stamina"] + slave["temper"] + (slave["moral"]*2 + slave["rational"] + slave["instinct"] + slave["spoil"])*2 - slave["fear"] - already_done_curslave[interaction]
+ if slave["passion_fame"] = -1:  prise_potence = prise_potence/2
+ if slave["water_attitude"] = -1: prise_potence -= prise_potence
+ if prise_potence <= 0: prise_potence = 1
+ if slave["passion_fame"] > 0:  prise_potence += prise_potence
+ if slave["water_attitude"] = 2: prise_potence += prise_potence
+ date_success = 5
+ if prise_potence < 40: date_success = 4
+ if prise_potence < 10: date_success = 3
+ if prise_potence < 5: date_success = 2
+ if prise_potence <= 1: date_success = 1
+ IF date_success > 2:
+  slave['promise_reward'] = 0
+  if slave["sin"] = 0 and slave["pride"] < 4: slave_rate["temper"] += 1 & slave_rate["moral"] += 2
+ END
+ prise_cost = 4
+ master_hygiene = 1
+ slave["hygiene"] = 1
+ add_master_hygiene = 0
+ add_slave_hygiene = 0
+ add_house_mess = 2
+ slave["<<assistant['id']>>"] += date_success
+ assistant["<<slave['id']>>"] += date_success
+ $text[1] = '  <<$date_treesome_description[2]>>'
+ $text[2] = '  <<$date_treesome_result[date_success]>>'
+ $place = 'beach'
+ gs 'picture_selector'
+ daily_reward_count += 1
+ slave["calories"] -= 1
+ assistant["calories"] -= 1
+ if slave["passion_fame"] ! 0 and slave["passion_fame_revealed"] = 0: slave["passion_fame_revealed"] = 1
+ $special_part = {
+    dynamic $assistant_energy_drop
+    assistant["rewarded_today"] += prise_level*3
+ }
+END
+
+!Высказать чувства в лицо - mrross
+IF interaction = menu_provoke_1:
+   $interaction_type = 'talk_assistant'
+    slave['provoke_1'] = 1
+    assistant['provoke_1'] = 1
+    txt_count = 2
+    $text[1] = '  Вы вызываете воспитуемоую и ассистентку, ставите их перед собой и приказываете честно высказать вслух всё то, что они думают друг о друге. Всё то, что раньше они говорили вам только наедине, когда вторая не слышит. Вы строго предупреждаете девушек, что знаете их чувства друг к другу с их же слов, и та, кто не будет говорить откровенно, будет наказана, поэтому нет смысла лгать и изворачиваться.'
+    if slave['<<assistant["id"]>>'] >= acc_rel['good3'] and assistant['<<slave["id"]>>'] >= acc_rel['good3']:
+        $text[2] = '   Повинуясь вашему приказу, ассистентка говорит, что <<$slave_name>> - её лучшая подруга, и хотя у неё, разумеется, есть свои недостатки, они ничего не значат. Воспитуемая улыбается в ответ, отвечает в том же духе и ненароком берёт вторую девушку за руку. Вы понимаете, что ваш план не удался. Чувства не всегда бывают негативными. Но ведь вы знали, что девушки хорошо друг к другу относятся, правда?'
+        slave['<<assistant["id"]>>'] += 5
+        assistant['<<slave["id"]>>'] += 5
+    elseif slave['<<assistant["id"]>>'] >= acc_rel['bad1'] and assistant['<<slave["id"]>>'] >= acc_rel['bad1']:
+        $text[2] = '   Девушки явно смущены вашим приказом. <<$assistant_name>>, чувствуя большую ответственность, начинает пересказывать свои чувства, которые она испытывает к воспитуемой. <<$slave_name>> слегка краснеет и хмурится. Не всё услышанное приходится ей по душе. В свою очередь она тоже высказывает всё в лицо ассистентке. Отношения между ними сильно не поколебались, но зерно раздора явно посеяно.'
+        slave['<<assistant["id"]>>'] -= 5
+        assistant['<<slave["id"]>>'] -= 5
+    else
+        $text[2] = '   Не стесняясь в выражениях, <<$slave_name>> высказывает ассистентке в глаза всё, что о ней думает. Лицо вашей помощницы наливается красным, и она тоже не лезет в карман за словом. Некоторое время девушки кричат друг на друга, пока вы своим приказом не заставляете их замолчать. Цель выполнена.'        
+        slave['<<assistant["id"]>>'] -= 10
+        assistant['<<slave["id"]>>'] -= 10
+        dynamic $slave_energy_drop
+        dynamic $assistant_energy_drop
+    end
+END
+
+!Отчитать обеих за вину рабыни - mrross
+IF interaction = menu_provoke_2:
+    $interaction_type = 'abuse'
+    txt_count = 3
+    $text[1] = '  Вы вызываете воспитуемоую и ассистентку, ставите их перед собой и говорите, что крайне недовольны ими обеими. То, что <<$slave_name>> провинилась - само по себе плохо, но ожидаемо, как от любой недовоспитанной рабыни. Но вот <<$assistant_name>> вас разочаровала. Она сделала недостаточно для того, чтобы воспитуемая вела себя как ей подобает.' 
+    if slave['provoke_2'] = 0 and assistant['provoke_2'] = 0:
+        $text[2] = '  Ваша ассистентка растеряна и шокирована подобными обвинениями, но ей нечего возразить. Она лишь недобрым взглядом смотрит на воспитуемую, и вы понимаете, что той придётся несладко. <<$slave_name>> тоже замечает её взгляд и втягивает голову в плечи. Всё правильно, так и должно быть. Вы возвращаетесь к обсуждению вины воспитуемой.'
+        slave['<<assistant["id"]>>'] -= 10
+        assistant['<<slave["id"]>>'] -= 10
+    else
+        $text[2] = '  <<$assistant_name>> и <<$slave_name>> обе выслушивают ваши слова, потупив взгляд. Почему ваша ассистентка реагирует не так, как вы бы хотели? Где этот испепеляющий взгляд, где возмущение несправедливыми обвинениями? Возможно, вы слишком часто используете этот инструмент воздействия, и рабыни не воспринимают его всерьёз. Попробуйте повторить дней через пять. А сейчас надо хотя бы разобраться с виной воспитуемой.'
+        slave['<<assistant["id"]>>'] -= 2
+        assistant['<<slave["id"]>>'] -= 2
+    end
+    slave['provoke_2'] = 5
+    assistant['provoke_2'] = 5
+    abuse = 1
+    $text[3] = '  <<$abuse_torture_reaction["<<$slave_psy_status>>"]>>'
+    torture_fear = master_domination*2 + master_supermacy*2
+    torture_intensity = 1
+    $play_sound[1] = '<<$cry[slave["age"]]>>'
+    dynamic $slave_energy_drop
+    dynamic $assistant_energy_drop
+END
+
+!Наказание рабыни ассистенткой - mrross
+IF interaction = menu_provoke_3:
+    $interaction_type = 'torture'
+    painful = 1
+    txt_count = 3
+    current_scars = slave_rate["scars"]
+    $text[1] = '  Вы приказываете ассистентке зафиксировать провинившуюся рабыню на скамье для наказаний. После того, как <<$assistant_name>> выполнила ваше распоряжение, вы приказываете ей взять розги и выступить в роли воспитателя. Ассистентка берёт розгу и бросает нерешительный взгляд на обнажённые ягодицы воспитуемой.'
+    if assistant['<<slave["id"]>>'] >= acc_rel['bad1']:
+        $text[2] = '  <<$assistant_name>> покорно исполняет вашу волю. Вы видите, как её рука ритмично поднимается и резко опускается, как на нежной коже воспитуемой появляются новые и новые алые полосы, как её обнажённая плоть вздрагивает с каждым ударом.'
+        slave['<<assistant["id"]>>'] -= 10
+        assistant['<<slave["id"]>>'] -= 2
+    else
+        $text[2] = '  <<$assistant_name>> с недоброй ухмылкой взмахивает розгой - и в следующий момент обрушивает хлёсткий удар на ягодицы воспитуемой. <<$slave_name>> взвизгивает от неожиданности, но по горящим глазам вашей помощницы вы видите, что она только начала. Вы обеспокоенно следите за действиями ассистентки, надеясь, что она не сильно испортит вашу собственность.'
+        slave['<<assistant["id"]>>'] -= 20
+        assistant['<<slave["id"]>>'] -= 10
+        slave_rate["scars"] += 10
+        assistant["pos_sa_sadist"] = 3
+    end
+    $text[3] = '  <<$light_torture_reaction["<<$slave_psy_status>>"]>>'
+    torture_fear = 5 - (assistant['<<slave["id"]>>'] / 20)
+    sensitivity_threshold = 2
+    torture_intensity = 3
+    slave['threat_pain'] = 0
+    scarification = 1
+    add_slave_hygiene = 3
+    add_assistant_hygiene = 5
+    add_house_mess = 5
+    easy_for_master = 1
+    damage = assistant["stamina"] - (assistant['<<slave["id"]>>'] / 20)
+    $special_bg = $cane[slave_type]
+    $play_sound[1] = '<<$whip_sound>>'
+    if dungeon = 1: $place = 'dungeon'
+    $special_part = {
+        slave['<<assistant["id"]>>'] += slave_rate["scars"] - current_scars
+        killvar 'current_scars'
+        dynamic $assistant_energy_drop
+        slave['provoke_3'] = 1
+        assistant['provoke_3'] = 1
+    }
+    !Статистика
+    master['flaggCount'] += 1
+    slave['flaggCount'] += 1
+END
+
+!Борьба в грязи - mrross
+IF interaction = menu_provoke_4:
+    $interaction_type = 'competition'
+    txt_count = 2
+    current_bruises = slave_rate["bruises"]
+    $special_bg = $fighting[slave_type]
+    repulse = 1
+    complex_repulse = 1
+    bruising = 1
+    res = slave["obedience"] - repulse
+    if slave['domini_dictum'] = 1: res = 0
+    $refuse_txt = '   <<$slave_name>> отказывается выполнять ваше распоряжение. Кажется, кого-то давно не пороли.'
+    $text[1] = '  Вы объявляете своим подопечным, что решили немного развлечься и устроить женский бой в грязи. К счастью, по соседству имеется грязевой бассейн для таких мероприятий. <<$slave_name>> и <<$assistant_name>> раздеваются догола, спускаются в бассейн и встают по колено в грязи, разминая суставы и оглядывая друг друга оценивающими взглядами. Вы даёте отмашку.'
+    $slave_won = '  В ходе энергичного и крайне забавного на вид поединка обе девушки как следует вываляли друг дружку в грязи, так что вы даже сразу не смогли определить, кто именно победил. Но когда оставшаяся сверху девушка частично стёрла грязь с лица, вы объявили, что победила <<$slave_name>>. Теперь её следует наградить. Вы надеетесь, что этот поединок усилит чувство соперничества между подопечными.'
+    $assistant_won = '  В ходе энергичного и крайне забавного на вид поединка обе девушки как следует вываляли друг дружку в грязи, так что вы даже сразу не смогли определить, кто именно победил. Но когда оставшаяся сверху девушка частично стёрла грязь с лица, вы объявили, что победила <<$assistant_name>>. Теперь её следует наградить. Вы надеетесь, что этот поединок усилит чувство соперничества между подопечными.'
+    $competition_draw = '  В ходе энергичного и крайне забавного на вид поединка обе девушки как следует вываляли друг дружку в грязи, но в результате никто так и не одержал верх, зато мероприятие явно подняло настроение вашим подопечным - они смеются и подшучивают друг над другом. Вы разочарованно констатируете для себя, что не добились желаемого результата - отношения между подопечными не только не испортились, но, кажется, даже стали лучше.'
+    if slave["gladiatrix_affinity"] < 0: complex_repulse += 2
+    if slave["gladiatrix_affinity"] > 0: talent_bonus = 5
+    couch_skill = assistant["gladiatrix"]
+    $target_skill = 'slave_rate["gladiatrix"]'
+    $target_skill_two = 'assistant_rate["gladiatrix"]'
+    sin_potential = 4
+    $target_affinity = 'gladiatrix_affinity'
+    slave_skill = slave["gladiatrix"]
+    assistant_skill = assistant["gladiatrix"]
+    slave_skill_2 = slave["stamina"]
+    assistant_skill_2 = assistant["stamina"]
+    slave_skill_3 = slave["temper"]
+    assistant_skill_3 = assistant["temper"]
+    add_slave_hygiene = 20
+    add_assistant_hygiene = 20
+    add_master_hygiene = 0
+    add_house_mess = 20
+    relation_bonus = 5
+    $special_part = {
+        if slave["gladiatrix_affinity"] ! 0 and slave["gladiatrix_affinity_revealed"] = 0: slave["gladiatrix_affinity_revealed"] = 1
+        slave["calories"] -= 2
+        assistant["calories"] -= 2        
+        if diligence >= 0 and slave["gladiatrix"] < 5: slave_rate["ego"] += 1 + learn_bonus["gladiatrix"]
+        dynamic $assistant_energy_drop
+        dynamic $slave_energy_drop
+        damage = competition_result
+        if competition_result < 0: damage = damage * (-1)
+        if damage > 0: dynamic $slave_damaged
+        assistant_rate["bruises"] += slave_rate["bruises"] - current_bruises
+        if competition_result > 3:
+            assistant_rate["bruises"] += 10
+        elseif competition_result < -3:
+            slave_rate["bruises"] += 10
+        else
+            assistant_rate["bruises"] += 3
+            slave_rate["bruises"] += 3
+        end
+        slave['provoke_4'] = 1
+        assistant['provoke_4'] = 1
+        }
+    if hall = 1:  $place = 'hall'
+END
+
+
+!Двойное связывание - mrross
+IF interaction = menu_provoke_5:
+    $interaction_type = 'competition'
+    txt_count = 2
+    $special_bg = $fighting[slave_type]
+    repulse = 1
+    complex_repulse = 1
+    res = slave["obedience"] - repulse
+    if slave['domini_dictum'] = 1: res = 0
+    $refuse_txt = '   <<$slave_name>> отказывается выполнять ваше распоряжение. Кажется, кого-то давно не пороли.'
+    $text[1] = '  Вы объявляете своим подопечным, что придумали новую забаву - вы свяжете обеих девушек вместе и посмотрите, как они будут выпутываться. Первая, кто распутается, получит награду. <<$assistant_name>> по вашей команде приносит заранее приготовленные верёвки, и вы приступаете. Спустя полчаса нелёгких трудов вы отступаете на несколько шагов и окидываете взглядом живую статую из опутаных и стянутых верёвками двух обнажённых девичьих тел.'
+    $slave_won = '  По вашей команде девушки одновременно начинают свои попытки выпутаться из сложной ситуации, в которой оказались благодаря вашему мастерству связывания. Сначала у одной из них получилось освободить пальцы, затем плечо, вскоре она нащупала узел - и вот уже <<$slave_name>> уверенно встаёт на ноги над всё ещё барахтающейся в верёвках ассистенткой. Кажется, победитель определён.'
+    $assistant_won = '  По вашей команде девушки одновременно начинают свои попытки выпутаться из сложной ситуации, в которой оказались благодаря вашему мастерству связывания. Сначала у одной из них получилось освободить пальцы, затем плечо, вскоре она нащупала узел - и вот уже <<$assistant_name>> уверенно встаёт на ноги над всё ещё барахтающейся в верёвках воспитуемой. Кажется, победитель определён.'
+    $competition_draw = '  По вашей команде девушки одновременно начинают свои попытки выпутаться из сложной ситуации, в которой оказались благодаря вашему мастерству связывания. Сначала кажется, что они так и будут бестолково дёргаться и забавно пыхтеть, но в какой-то момент они вдруг почти одновременно скидывают верёвки и одновременно встают на ноги, ещё и помогая друг другу. Кажется, это ничья, и, кажется, они жульничали. Но формально наказывать их не за что.'
+    if slave["calisthenics_affinity"] < 0: complex_repulse += 2
+    if slave["calisthenics_affinity"] > 0: talent_bonus = 5
+    couch_skill = assistant["calisthenics"]
+    $target_skill = 'slave_rate["calisthenics"]'
+    $target_skill_two = 'assistant_rate["calisthenics"]'
+    sin_potential = 4
+    $target_affinity = 'calisthenics_affinity'
+    slave_skill = slave["calisthenics"]
+    assistant_skill = assistant["calisthenics"]
+    slave_skill_2 = slave["stamina"]
+    assistant_skill_2 = assistant["stamina"]
+    slave_skill_3 = slave["temper"]
+    assistant_skill_3 = assistant["temper"]
+    add_slave_hygiene = 5
+    add_assistant_hygiene = 5
+    add_master_hygiene = 0
+    add_house_mess = 5
+    master_bondage_rate += 10
+    relation_bonus = 3
+    if master_bondage < 2: 
+        $interaction_type = 'talk'
+        $text[2] = '  По вашей команде девушки одновременно начинают свои попытки выпутаться из сложной ситуации, в которой оказались благодаря вашему мастерству связывания. Увы, похоже, мастерство подкачало. Уметь свзывать - это хорошо, но уметь свзывать так, чтобы можно было выпутаться - это искусство, и вы его ещё явно не освоили. Разочарованный, вы помогаете девушкам выбраться из верёвочных пут. Зато вы немного научились вязать.'
+        $special_part = {
+            slave["calories"] -= 1
+            assistant["calories"] -= 1
+            dynamic $assistant_energy_drop
+            dynamic $slave_energy_drop
+            slave['provoke_5'] = 1
+            assistant['provoke_5'] = 1
+        }
+    else
+        $special_part = {
+            if slave["calisthenics_affinity"] ! 0 and slave["calisthenics_affinity_revealed"] = 0: slave["calisthenics_affinity_revealed"] = 1
+            slave["calories"] -= 1
+            assistant["calories"] -= 1
+            dynamic $assistant_energy_drop
+            dynamic $slave_energy_drop
+            slave['provoke_5'] = 1
+            assistant['provoke_5'] = 1
+        }
+    end
+    if dungeon = 1: $place = 'dungeon'
+    gs 'picture_selector'
+END
+
+
+!Лекция о множественности миров для ассистентки
+IF interaction = menu_tolerant_assistant_world:
+    $interaction_type = 'lecture_assistant'
+    txt_count = 2    
+    $text[1] = '  Вы рассказываете ассистентке о том, что существует множество разных миров. Факт рождения в одном из них не делает человека лучше или хуже. В конечном счёте в Вечный Рим попадают люди из примитивных и развитых миров поровну, и Туманам глубоко плевать на их уровень развития. Не является ничьей заслугой или проклятьем тот факт, что человек родился именно в своём мире, а не в любом другом. Надо быть выше этого.'
+    $text_2 = '  <<$assistant_name>> бессмысленно хлопает глазами и накручивает волосы на палец. По её пустым глазам вы видите, что она не поняла ни слова из того, что вы пытались ей сказать. Либо вам не хватает навыка учителя, либо ей не хватает интеллекта или кругозора.'
+    $text_3 = '  <<$assistant_name>> слушает вас явно через силу. Вашим аргументам сложно пробиться через её личные убеждения и печальный жизненный опыт. Видимо, вам придётся ещё много раз повторять попытки добиться её понимания по этому вопросу.'
+    $text_4 = '  <<$assistant_name>> слушает вас очень внимательно, и вы видите понимание на её лице. Отрадно - это значит, что понадобится ещё несколько уроков, и вам удастся воспитать у вашей ассистентки терпимость к людям из иных миров.'
+    $text_5 = '  <<$assistant_name>> полностью осознала мысль, которую вы пытались до неё донести. Больше она не доставит вам проблем, развязывая конфликты с людьми из иных миров.'    
+    $lecture_theme = 'tolerant_world'
+    $special_part = {}
+END
+
+!Лекция о вреде расизма для ассистентки
+IF interaction = menu_tolerant_assistant_nation:
+    $interaction_type = 'lecture_assistant'
+    txt_count = 2
+    $text[1] = '  Вы рассказываете ассистентке о том, что существует множество народов, обладающих разными культурами, и различия в их культурах не делают эти народы лучше или хуже. Напротив, культурное многообразие делает мир интересней, а носителей иных культур нужно воспринимать не как смешных дикарей, а как людей, способных научить тебя новым интересным вещам.'
+    $text_2 = '  <<$assistant_name>> бессмысленно хлопает глазами и накручивает волосы на палец. По её пустым глазам вы видите, что она не поняла ни слова из того, что вы пытались ей сказать. Либо вам не хватает навыка учителя, либо ей не хватает интеллекта или кругозора.'
+    $text_3 = '  <<$assistant_name>> слушает вас явно через силу. Вашим аргументам сложно пробиться через её личные убеждения и печальный жизненный опыт. Видимо, вам придётся ещё много раз повторять попытки добиться её понимания по этому вопросу.'
+    $text_4 = '  <<$assistant_name>> слушает вас очень внимательно, и вы видите понимание на её лице. Отрадно - это значит, что понадобится ещё несколько уроков, и вам удастся воспитать у вашей ассистентки терпимость к людям других наций.'
+    $text_5 = '  <<$assistant_name>> полностью осознала мысль, которую вы пытались до неё донести. Больше она не доставит вам проблем, развязывая конфликты с людьми других наций.'    
+    $lecture_theme = 'tolerant_nation'
+    $special_part = {}
+END
+
+!Лекция о социальном устройстве для ассистентки
+IF interaction = menu_tolerant_assistant_family:
+    $interaction_type = 'lecture_assistant'
+    txt_count = 2
+    $text[1] = '  Вы рассказываете ассистентке о том, что все люди рождаются одинаковыми. Да, какие-то люди родились в богатых семьях, а какие-то - в бедных, но это, по большому счёту, вопрос везения. Неконструктивно завидовать человеку или презирать его из-за того, что ему повезло больше или меньше, чем тебе. Тем более что девушки, ставшие рабынями в Вечном Риме, теперь равны по статусу, и их прошлое не имеет никакого значения.'
+    $text_2 = '  <<$assistant_name>> бессмысленно хлопает глазами и накручивает волосы на палец. По её пустым глазам вы видите, что она не поняла ни слова из того, что вы пытались ей сказать. Либо вам не хватает навыка учителя, либо ей не хватает интеллекта или кругозора.'
+    $text_3 = '  <<$assistant_name>> слушает вас явно через силу. Вашим аргументам сложно пробиться через её личные убеждения и печальный жизненный опыт. Видимо, вам придётся ещё много раз повторять попытки добиться её понимания по этому вопросу.'
+    $text_4 = '  <<$assistant_name>> слушает вас очень внимательно, и вы видите понимание на её лице. Отрадно - это значит, что понадобится ещё несколько уроков, и вам удастся воспитать у вашей ассистентки терпимость к людям из других социальных классов.'
+    $text_5 = '  <<$assistant_name>> полностью осознала мысль, которую вы пытались до неё донести. Больше она не доставит вам проблем, развязывая конфликты с людьми других социальных классов.'    
+    $lecture_theme = 'tolerant_family'
+    $special_part = {}
+END
+
+!Лекция о гуманизме для ассистентки
+IF interaction = menu_tolerant_assistant_work:
+    $interaction_type = 'lecture_assistant'
+    txt_count = 2
+    $text[1] = '  Вы рассказываете ассистентке о том, что успех человека в жизни во многом зависит от обстоятельств, от него не зависящих. Огромное значение имеет то, в какой семье и каком мире ты родился, как тебя воспитывали, чему учили, что ты успел повидать за время взросления. Человеческая личность складывается из всех этих элементов как из кирпичиков. Неправильно презирать людей, которым с их кирпичиками не повезло.'
+    $text_2 = '  <<$assistant_name>> бессмысленно хлопает глазами и накручивает волосы на палец. По её пустым глазам вы видите, что она не поняла ни слова из того, что вы пытались ей сказать. Либо вам не хватает навыка учителя, либо ей не хватает интеллекта или кругозора.'
+    $text_3 = '  <<$assistant_name>> слушает вас явно через силу. Вашим аргументам сложно пробиться через её личные убеждения и печальный жизненный опыт. Видимо, вам придётся ещё много раз повторять попытки добиться её понимания по этому вопросу.'
+    $text_4 = '  <<$assistant_name>> слушает вас очень внимательно, и вы видите понимание на её лице. Отрадно - это значит, что понадобится ещё несколько уроков, и вам удастся воспитать у вашей ассистентки терпимость к людям разного социального статуса.'
+    $text_5 = '  <<$assistant_name>> полностью осознала мысль, которую вы пытались до неё донести. Больше она не доставит вам проблем, развязывая конфликты с людьми разного социального статуса'    
+    $lecture_theme = 'tolerant_work'
+    $special_part = {}
+END
+
+!Лекция о конфликте миров для ассистентки
+IF interaction = menu_bigotry_assistant_world:
+    $interaction_type = 'lecture_assistant'
+    txt_count = 2    
+    $text[1] = '  Вы рассказываете ассистентке о том, что конфликт - нормальное состояние общества, а каждый человек склонен делить окружающих на своих и чужих. И люди из разных миров естественным образом становятся врагами друг другу. Выходцы из похожих миров, напротив, тянутся друг к другу и поддерживают связи, создавая тем самым почву для бесконечной вражды с иномирцами.'
+    $text_2 = '  <<$assistant_name>> бессмысленно хлопает глазами и накручивает волосы на палец. По её пустым глазам вы видите, что она не поняла ни слова из того, что вы пытались ей сказать. Либо вам не хватает навыка учителя, либо ей не хватает интеллекта или кругозора.'
+    $text_3 = '  <<$assistant_name>> слушает вас явно через силу. Вашим аргументам сложно пробиться через её личные убеждения и печальный жизненный опыт. Видимо, вам придётся ещё много раз повторять попытки добиться её понимания по этому вопросу.'
+    $text_4 = '  <<$assistant_name>> слушает вас очень внимательно, и вы видите понимание на её лице. Отрадно - это значит, что понадобится ещё несколько уроков, и вам удастся воспитать у вашей ассистентки нетерпимость к людям из иных миров.'
+    $text_5 = '  <<$assistant_name>> полностью осознала мысль, которую вы пытались до неё донести. Теперь она будет косо смотреть на выходцев из любых миров, непохожих на её родной.'    
+    $lecture_theme = 'bigotry_world'
+    $special_part = {
+        if assistant['bigotry_world'] >=20: 
+            assistant['tolerant_world'] = 0
+            assistant['bigotry_world'] = 0
+        end
+    }      
+END
+
+!Лекция по расовой теории для ассистентки
+IF interaction = menu_bigotry_assistant_nation:
+    $interaction_type = 'lecture_assistant'
+    txt_count = 2
+    $text[1] = '  Вы рассказываете ассистентке о различиях между человеческими (и не только) расами, о концепции жизненного пространства и прочих спорных моментах. Мир Вечного Рима представляет вам массу возможностей проиллюстрировать эти теории на практике взаимоотношений людей, зверолюдов и прочих народов, широко предствленных в самом Вечном городе и на его окраинах.'
+    $text_2 = '  <<$assistant_name>> бессмысленно хлопает глазами и накручивает волосы на палец. По её пустым глазам вы видите, что она не поняла ни слова из того, что вы пытались ей сказать. Либо вам не хватает навыка учителя, либо ей не хватает интеллекта или кругозора.'
+    $text_3 = '  <<$assistant_name>> слушает вас явно через силу. Вашим аргументам сложно пробиться через её личные убеждения и печальный жизненный опыт. Видимо, вам придётся ещё много раз повторять попытки добиться её понимания по этому вопросу.'
+    $text_4 = '  <<$assistant_name>> слушает вас очень внимательно, и вы видите понимание на её лице. Отрадно - это значит, что понадобится ещё несколько уроков, и вам удастся воспитать у вашей ассистентки нетерпимость к людям других наций.'
+    $text_5 = '  <<$assistant_name>> полностью осознала мысль, которую вы пытались до неё донести. Теперь она будет косо смотреть на людей других рас и наций.'    
+    $lecture_theme = 'bigotry_nation'
+    $special_part = {
+        if assistant['bigotry_nation'] >=20: 
+            assistant['tolerant_nation'] = 0
+            assistant['bigotry_nation'] = 0
+        end
+    }       
+END
+
+!Лекция по классовой теории для ассистентки
+IF interaction = menu_bigotry_assistant_family:
+    $interaction_type = 'lecture_assistant'
+    txt_count = 2
+    $text[1] = '  Вы рассказываете ассистентке о том, что все люди рождаются разными. Да что тут объяснять? Если ты родился в семье аристократов или богачей, тебе уже открыто больше дорог и возможностей, чем ребёнку крестьян или офисных рабочих. Трудно переоценить важность социального класса, в котором ты родился. Разные уровни образования, воспитания и материальной обеспеченности формируют совершенно разных людей.'
+    $text_2 = '  <<$assistant_name>> бессмысленно хлопает глазами и накручивает волосы на палец. По её пустым глазам вы видите, что она не поняла ни слова из того, что вы пытались ей сказать. Либо вам не хватает навыка учителя, либо ей не хватает интеллекта или кругозора.'
+    $text_3 = '  <<$assistant_name>> слушает вас явно через силу. Вашим аргументам сложно пробиться через её личные убеждения и печальный жизненный опыт. Видимо, вам придётся ещё много раз повторять попытки добиться её понимания по этому вопросу.'
+    $text_4 = '  <<$assistant_name>> слушает вас очень внимательно, и вы видите понимание на её лице. Отрадно - это значит, что понадобится ещё несколько уроков, и вам удастся воспитать у вашей ассистентки нетерпимость к людям из других социальных классов.'
+    $text_5 = '  <<$assistant_name>> полностью осознала мысль, которую вы пытались до неё донести. Теперь она будет косо смотреть на людей других социальных классов.' 
+    $lecture_theme = 'bigotry_family'
+    $special_part = {
+        if assistant['bigotry_family'] >=20: 
+            assistant['tolerant_family'] = 0
+            assistant['bigotry_family'] = 0
+        end
+    }        
+END
+
+!Лекция по социальному дарвинизму для ассистентки
+IF interaction = menu_bigotry_assistant_work:
+    $interaction_type = 'lecture_assistant'
+    txt_count = 2
+    $text[1] = '  Вы рассказываете ассистентке о том, что достижения каждого человека - это его личная заслуга. Сильные амбициозные люди добиваются невероятных результатов, способны выбраться из любой ямы и вознестись на вершину. Если ты ничего не добился в жизни - в этом виноват только ты и никто кроме. Видимо, ты просто не способен на большее.'
+    $text_2 = '  <<$assistant_name>> бессмысленно хлопает глазами и накручивает волосы на палец. По её пустым глазам вы видите, что она не поняла ни слова из того, что вы пытались ей сказать. Либо вам не хватает навыка учителя, либо ей не хватает интеллекта или кругозора.'
+    $text_3 = '  <<$assistant_name>> слушает вас явно через силу. Вашим аргументам сложно пробиться через её личные убеждения и печальный жизненный опыт. Видимо, вам придётся ещё много раз повторять попытки добиться её понимания по этому вопросу.'
+    $text_4 = '  <<$assistant_name>> слушает вас очень внимательно, и вы видите понимание на её лице. Отрадно - это значит, что понадобится ещё несколько уроков, и вам удастся воспитать у вашей ассистентки нетерпимость к людям разного социального статуса.'
+    $text_5 = '  <<$assistant_name>> полностью осознала мысль, которую вы пытались до неё донести. Теперь она будет косо смотреть на людей, чьи успехи в жизни сильно отличаются от её достижений в ту или иную сторону.'    
+    $lecture_theme = 'bigotry_work'
+    $special_part = {
+        if assistant['bigotry_work'] >=20: 
+            assistant['tolerant_work'] = 0
+            assistant['bigotry_work'] = 0
+        end
+    }      
+END
+
+!Лекция о множественности миров для воспитуемой
+IF interaction = menu_tolerant_slave_world:
+    $interaction_type = 'lecture_slave'
+    txt_count = 2        
+    $text[1] = '  Вы рассказываете воспитуемой о том, что существует множество разных миров. Факт рождения в одном из них не делает человека лучше или хуже. В конечном счёте в Вечный Рим попадают люди из примитивных и развитых миров поровну, и Туманам глубоко плевать на их уровень развития. Не является ничьей заслугой или проклятьем тот факт, что человек родился именно в своём мире, а не в любом другом. Надо быть выше этого.'
+    $text_2 = '  <<$slave_name>> бессмысленно хлопает глазами и накручивает волосы на палец. По её пустым глазам вы видите, что она не поняла ни слова из того, что вы пытались ей сказать. Либо вам не хватает навыка учителя, либо ей не хватает интеллекта или кругозора.'
+    $text_3 = '  <<$slave_name>> слушает вас явно через силу. Вашим аргументам сложно пробиться через её личные убеждения и печальный жизненный опыт. Видимо, вам придётся ещё много раз повторять попытки добиться её понимания по этому вопросу.'
+    $text_4 = '  <<$slave_name>> слушает вас очень внимательно, и вы видите понимание на её лице. Отрадно - это значит, что понадобится ещё несколько уроков, и вам удастся воспитать у вашей воспитуемой терпимость к людям из иных миров.'
+    $text_5 = '  <<$slave_name>> полностью осознала мысль, которую вы пытались до неё донести. Больше она не доставит вам проблем, развязывая конфликты с людьми из иных миров.'    
+    $refuse_text = '   <<$slave_name>> отказывается подчиняться. Она заслуживает наказания.'
+    $lecture_theme = 'tolerant_world'
+    $special_part = {}
+END
+
+!Лекция о вреде расизма для воспитуемой
+IF interaction = menu_tolerant_slave_nation:
+    $interaction_type = 'lecture_slave'
+    txt_count = 2        
+    $text[1] = '  Вы рассказываете воспитуемой о том, что существует множество народов, обладающих разными культурами, и различия в их культурах не делают эти народы лучше или хуже. Напротив, культурное многообразие делает мир интересней, а носителей иных культур нужно воспринимать не как смешных дикарей, а как людей, способных научить тебя новым интересным вещам.'
+    $text_2 = '  <<$slave_name>> бессмысленно хлопает глазами и накручивает волосы на палец. По её пустым глазам вы видите, что она не поняла ни слова из того, что вы пытались ей сказать. Либо вам не хватает навыка учителя, либо ей не хватает интеллекта или кругозора.'
+    $text_3 = '  <<$slave_name>> слушает вас явно через силу. Вашим аргументам сложно пробиться через её личные убеждения и печальный жизненный опыт. Видимо, вам придётся ещё много раз повторять попытки добиться её понимания по этому вопросу.'
+    $text_4 = '  <<$slave_name>> слушает вас очень внимательно, и вы видите понимание на её лице. Отрадно - это значит, что понадобится ещё несколько уроков, и вам удастся воспитать у вашей воспитуемой терпимость к людям других наций.'
+    $text_5 = '  <<$slave_name>> полностью осознала мысль, которую вы пытались до неё донести. Больше она не доставит вам проблем, развязывая конфликты с людьми других наций.'    
+    $refuse_text = '   <<$slave_name>> отказывается подчиняться. Она заслуживает наказания.'
+    $lecture_theme = 'tolerant_nation'
+    $special_part = {}
+END
+
+!Лекция о социальном устройстве для воспитуемой
+IF interaction = menu_tolerant_slave_family:
+    $interaction_type = 'lecture_slave'
+    txt_count = 2    
+    $text[1] = '  Вы рассказываете воспитуемой о том, что все люди рождаются одинаковыми. Да, какие-то люди родились в богатых семьях, а какие-то - в бедных, но это, по большому счёту, вопрос везения. Неконструктивно завидовать человеку или презирать его из-за того, что ему повезло больше или меньше, чем тебе. Тем более что девушки, ставшие рабынями в Вечном Риме, теперь равны по статусу, и их прошлое не имеет никакого значения.'
+    $text_2 = '  <<$slave_name>> бессмысленно хлопает глазами и накручивает волосы на палец. По её пустым глазам вы видите, что она не поняла ни слова из того, что вы пытались ей сказать. Либо вам не хватает навыка учителя, либо ей не хватает интеллекта или кругозора.'
+    $text_3 = '  <<$slave_name>> слушает вас явно через силу. Вашим аргументам сложно пробиться через её личные убеждения и печальный жизненный опыт. Видимо, вам придётся ещё много раз повторять попытки добиться её понимания по этому вопросу.'
+    $text_4 = '  <<$slave_name>> слушает вас очень внимательно, и вы видите понимание на её лице. Отрадно - это значит, что понадобится ещё несколько уроков, и вам удастся воспитать у вашей воспитуемой терпимость к людям из других социальных классов.'
+    $text_5 = '  <<$slave_name>> полностью осознала мысль, которую вы пытались до неё донести. Больше она не доставит вам проблем, развязывая конфликты с людьми других социальных классов.'    
+    $refuse_text = '   <<$slave_name>> отказывается подчиняться. Она заслуживает наказания.'
+    $lecture_theme = 'tolerant_family'
+    $special_part = {}
+END
+
+!Лекция о гуманизме для воспитуемой
+IF interaction = menu_tolerant_slave_work:
+    $interaction_type = 'lecture_slave'
+    txt_count = 2    
+    $text[1] = '  Вы рассказываете воспитуемой о том, что успех человека в жизни во многом зависит от обстоятельств, от него не зависящих. Огромное значение имеет то, в какой семье и каком мире ты родился, как тебя воспитывали, чему учили, что ты успел повидать за время взросления. Человеческая личность складывается из всех этих элементов как из кирпичиков. Неправильно презирать людей, которым с их кирпичиками не повезло.'
+    $text_2 = '  <<$slave_name>> бессмысленно хлопает глазами и накручивает волосы на палец. По её пустым глазам вы видите, что она не поняла ни слова из того, что вы пытались ей сказать. Либо вам не хватает навыка учителя, либо ей не хватает интеллекта или кругозора.'
+    $text_3 = '  <<$slave_name>> слушает вас явно через силу. Вашим аргументам сложно пробиться через её личные убеждения и печальный жизненный опыт. Видимо, вам придётся ещё много раз повторять попытки добиться её понимания по этому вопросу.'
+    $text_4 = '  <<$slave_name>> слушает вас очень внимательно, и вы видите понимание на её лице. Отрадно - это значит, что понадобится ещё несколько уроков, и вам удастся воспитать у вашей воспитуемой терпимость к людям разного социального статуса.'
+    $text_5 = '  <<$slave_name>> полностью осознала мысль, которую вы пытались до неё донести. Больше она не доставит вам проблем, развязывая конфликты с людьми разного социального статуса'    
+    $refuse_text = '   <<$slave_name>> отказывается подчиняться. Она заслуживает наказания.'
+    $lecture_theme = 'tolerant_work'
+    $special_part = {}    
+END
+
+
+!Лекция о конфликте миров для ассистентки
+IF interaction = menu_bigotry_slave_world:
+    $interaction_type = 'lecture_slave'
+    txt_count = 2    
+    $text[1] = '  Вы рассказываете воспитуемой о том, что конфликт - нормальное состояние общества, а каждый человек склонен делить окружающих на своих и чужих. И люди из разных миров естественным образом становятся врагами друг другу. Выходцы из похожих миров, напротив, тянутся друг к другу и поддерживают связи, создавая тем самым почву для бесконечной вражды с иномирцами.'
+    $text_2 = '  <<$slave_name>> бессмысленно хлопает глазами и накручивает волосы на палец. По её пустым глазам вы видите, что она не поняла ни слова из того, что вы пытались ей сказать. Либо вам не хватает навыка учителя, либо ей не хватает интеллекта или кругозора.'
+    $text_3 = '  <<$slave_name>> слушает вас явно через силу. Вашим аргументам сложно пробиться через её личные убеждения и печальный жизненный опыт. Видимо, вам придётся ещё много раз повторять попытки добиться её понимания по этому вопросу.'
+    $text_4 = '  <<$slave_name>> слушает вас очень внимательно, и вы видите понимание на её лице. Отрадно - это значит, что понадобится ещё несколько уроков, и вам удастся воспитать у вашей воспитуемой нетерпимость к людям из иных миров.'
+    $text_5 = '  <<$slave_name>> полностью осознала мысль, которую вы пытались до неё донести. Теперь она будет косо смотреть на выходцев из любых миров, непохожих на её родной.'    
+    $lecture_theme = 'bigotry_world'
+    $special_part = {
+        if slave['bigotry_world'] >=20: 
+            slave['tolerant_world'] = 0
+            slave['bigotry_world'] = 0
+        end
+    }     
+END
+
+!Лекция по расовой теории для ассистентки
+IF interaction = menu_bigotry_slave_nation:
+    $interaction_type = 'lecture_slave'
+    txt_count = 2
+    $text[1] = '  Вы рассказываете воспитуемой о различиях между человеческими (и не только) расами, о концепции жизненного пространства и прочих спорных моментах. Мир Вечного Рима представляет вам массу возможностей проиллюстрировать эти теории на практике взаимоотношений людей, зверолюдов и прочих народов, широко предствленных в самом Вечном городе и на его окраинах.'
+    $text_2 = '  <<$slave_name>> бессмысленно хлопает глазами и накручивает волосы на палец. По её пустым глазам вы видите, что она не поняла ни слова из того, что вы пытались ей сказать. Либо вам не хватает навыка учителя, либо ей не хватает интеллекта или кругозора.'
+    $text_3 = '  <<$slave_name>> слушает вас явно через силу. Вашим аргументам сложно пробиться через её личные убеждения и печальный жизненный опыт. Видимо, вам придётся ещё много раз повторять попытки добиться её понимания по этому вопросу.'
+    $text_4 = '  <<$slave_name>> слушает вас очень внимательно, и вы видите понимание на её лице. Отрадно - это значит, что понадобится ещё несколько уроков, и вам удастся воспитать у вашей воспитуемой нетерпимость к людям других наций.'
+    $text_5 = '  <<$slave_name>> полностью осознала мысль, которую вы пытались до неё донести. Теперь она будет косо смотреть на людей других рас и наций.'    
+    $lecture_theme = 'bigotry_nation'
+    $special_part = {
+        if slave['bigotry_nation'] >=20: 
+            slave['tolerant_nation'] = 0
+            slave['bigotry_nation'] = 0
+        end
+    }    
+END
+
+!Лекция по классовой теории для ассистентки
+IF interaction = menu_bigotry_slave_family:
+    $interaction_type = 'lecture_slave'
+    txt_count = 2
+    $text[1] = '  Вы рассказываете воспитуемой о том, что все люди рождаются разными. Да что тут объяснять? Если ты родился в семье аристократов или богачей, тебе уже открыто больше дорог и возможностей, чем ребёнку крестьян или офисных рабочих. Трудно переоценить важность социального класса, в котором ты родился. Разные уровни образования, воспитания и материальной обеспеченности формируют совершенно разных людей.'
+    $text_2 = '  <<$slave_name>> бессмысленно хлопает глазами и накручивает волосы на палец. По её пустым глазам вы видите, что она не поняла ни слова из того, что вы пытались ей сказать. Либо вам не хватает навыка учителя, либо ей не хватает интеллекта или кругозора.'
+    $text_3 = '  <<$slave_name>> слушает вас явно через силу. Вашим аргументам сложно пробиться через её личные убеждения и печальный жизненный опыт. Видимо, вам придётся ещё много раз повторять попытки добиться её понимания по этому вопросу.'
+    $text_4 = '  <<$slave_name>> слушает вас очень внимательно, и вы видите понимание на её лице. Отрадно - это значит, что понадобится ещё несколько уроков, и вам удастся воспитать у вашей воспитуемой нетерпимость к людям из других социальных классов.'
+    $text_5 = '  <<$slave_name>> полностью осознала мысль, которую вы пытались до неё донести. Теперь она будет косо смотреть на людей других социальных классов.' 
+    $lecture_theme = 'bigotry_family'
+    $special_part = {
+        if slave['bigotry_family'] >=20: 
+            slave['tolerant_family'] = 0
+            slave['bigotry_family'] = 0
+        end
+    }
+END
+
+!Лекция по социальному дарвинизму для ассистентки
+IF interaction = menu_bigotry_slave_work:
+    $interaction_type = 'lecture_slave'
+    txt_count = 2
+    $text[1] = '  Вы рассказываете воспитуемой о том, что достижения каждого человека - это его личная заслуга. Сильные амбициозные люди добиваются невероятных результатов, способны выбраться из любой ямы и вознестись на вершину. Если ты ничего не добился в жизни - в этом виноват только ты и никто кроме. Видимо, ты просто не способен на большее.'
+    $text_2 = '  <<$slave_name>> бессмысленно хлопает глазами и накручивает волосы на палец. По её пустым глазам вы видите, что она не поняла ни слова из того, что вы пытались ей сказать. Либо вам не хватает навыка учителя, либо ей не хватает интеллекта или кругозора.'
+    $text_3 = '  <<$slave_name>> слушает вас явно через силу. Вашим аргументам сложно пробиться через её личные убеждения и печальный жизненный опыт. Видимо, вам придётся ещё много раз повторять попытки добиться её понимания по этому вопросу.'
+    $text_4 = '  <<$slave_name>> слушает вас очень внимательно, и вы видите понимание на её лице. Отрадно - это значит, что понадобится ещё несколько уроков, и вам удастся воспитать у вашей воспитуемой нетерпимость к людям разного социального статуса.'
+    $text_5 = '  <<$slave_name>> полностью осознала мысль, которую вы пытались до неё донести. Теперь она будет косо смотреть на людей, чьи успехи в жизни сильно отличаются от её достижений в ту или иную сторону.'    
+    $lecture_theme = 'bigotry_work'
+    $special_part = {
+        if slave['bigotry_work'] >=20: 
+            slave['tolerant_work'] = 0
+            slave['bigotry_work'] = 0
+        end
+    }
+END
+
+
+
+
+------------ interaction.relations ------------

@@ -1,0 +1,20 @@
+# slave_to_harpy
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2886 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'slave_to_harpy': gs 'snk_room_bridge', 'guard', 'slave_to_harpy'
+! JO9 MOD END J9M2886
+!move slave to harpy (to be called with 'gs')
+
+if slave_state = CONST_INT['slave_exist'] and slave['domini_dictum'] = 0:
+	if slave['obedience'] + slave['fear'] < 0:
+		interaction = menu_deny_barn & gt 'interaction'
+	elseif slave['neg_barn'] > 0 and slave['obedience'] + slave['fear'] < 4:
+		interaction = menu_deny_barn & gt 'interaction'
+	elseif slave['neg_barn_plus'] > 0 and slave['obedience'] + slave['fear'] < 6:
+		interaction = menu_deny_barn & gt 'interaction'
+	end
+end
+
+dynamic $swap_slave_instances, 'slave', 'harpy'
+
+------------ slave_to_harpy ------------

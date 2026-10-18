@@ -1,0 +1,259 @@
+# init_game
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2809 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'init_game': gs 'snk_room_bridge', 'guard', 'init_game'
+! JO9 MOD END J9M2809
+!Initialize Game - this is loaded before init_custom_game, hero_creation, and hero_customization (story mode)
+!settings for master stats
+$master_ava = 'content\pic\master\master_noble_sepia.png'
+$master_ava_color = 'content\pic\master\master_noble.png'
+$master_name = '잭'
+
+gs '#var_base'
+!if hero_choice > 100: gs '#var_base_woman'
+
+hero_choice = 1
+
+
+master_str = 0
+master_cha = 0
+master_style = 0
+master_libido = 0
+master_energy = 0
+master_tutor = 0
+master_fighter = 0
+master_butler = 0
+master_artdirector = 0
+master_medic = 0
+master_mage = 0
+master_torture = 0
+master_domination = 0
+master_bondage = 0
+master_flagelation = 0
+master_petting = 0
+master_oral = 0
+master_penetration = 0
+master_fetish = 0
+female["boobs"] = 0
+!Другие стартовые переменные
+stock_limit = 8
+bath = 1
+kitchen = 1
+dungeon = 0
+lab = 0
+library = 0
+barn = 0
+!{flute = 1
+guitar = 1
+piano = 1
+cello = 1
+violin = 1}
+musical_instruments = 1
+svine = 0
+horse = 1
+dog = 1
+$dog_name = '제이크'
+arachnidSpider = 0
+polypusvermin = 0
+cooked_food = -1
+$защита[0] = 'блок'
+$суперудар[1] = ''
+$суперудар[2] = ''
+$суперудар[3] = ''
+$суперудар[4] = ''
+$суперудар[5] = ''
+$суперудар[6] = ''
+$master_wpn = 'безоружный'
+$master_armor = 'без_брони'
+$master_scnd = ''
+$master_back_wpn = ''
+$master_left_wpn = ''
+$master_right_wpn = ''
+$master_arm_wpn = ''
+$master_leg_wpn = ''
+$master_cloth = 'man_rugs'
+$master_head_gear = 'none'
+$master_earring = 'none'
+$master_amulet = 'none'
+$master_ring = 'none'
+$master_karman = 'none'
+$assistant["armor"] = 'без_брони'
+$slave["armor"] = 'без_брони'
+$estate = 'white_house'
+$starting_area = '백색 도시'
+faction_fame['neutral'] = 0
+faction_fame['taurus'] = 0
+faction_fame['serpis'] = 0
+faction_fame['korvus'] = 0
+faction_fame['kamira'] = 0
+faction_fame['RedLight'] = 0
+faction_fame['centralkvartal'] = 0
+faction_fame['otchuzhdenie'] = 0
+faction_fame['fogs'] = 0
+faction_fame['eastkvartal'] = 0
+faction_fame['futaland'] = 0
+faction_fame['russiankvartal'] = 0
+faction_purchase_futaland = 0
+faction_purchase_kamira = 0
+faction_purchase_serpis = 0
+faction_purchase_taurus = 0
+faction_purchase_korvus = 0
+faction_purchase_neutral = 0
+faction_purchase_RedLight = 0
+faction_purchase_centralkvartal = 0
+faction_purchase_otchuzhdenie = 0
+faction_purchase_fogs = 0
+faction_purchase_eastkvartal = 0
+faction_purchase_russiankvartal = 0
+vibrator = 1
+get_initial_slave = 1
+brand_rate = 0
+$current_sub = ''
+slave["rewarded_today"] = 0
+assistant["rewarded_today"] = 0
+
+IF hero_choice = 114 or hero_choice = 119 or hero_choice = 120 or hero_choice = 12 or hero_choice = 17 or hero_choice = 18:
+	master_vampire = 1
+ELSE
+	master_vampire = 0
+END
+
+!Game Option Variables
+nsfw = 0
+no_loli = 0
+no_milf = 0
+no_mindbreak = 0
+no_guro = 0
+no_futa = 1
+no_debug = 1
+game_version = 0
+$slave_assistant_management = "show"
+!Initialize Cheat Variables - crushboss
+cheat_a = 0
+cheat_b = 0
+cheat_c = 0
+cheat_d = 0
+cheat_e = 0
+cheat_f = 0
+cheat_g = 0
+cheat_h = 0
+cheat_i = 0
+cheat_j = 0
+cheat_k = 0
+cheat_l = 0
+cheat_ioff = 0
+cheat_all_basic = 0
+cheat_all_low = 0
+cheat_all = 0
+cheat_all_max = 0
+extended_rental_cheat = 0
+!Initialize Variables - crushboss
+$special_age = ''
+daycount = 0
+slave[$npc_id] = 0
+demand_rating[$npc_id] = 0
+purse = 0
+daily_reward_count = 0
+spell_adverto_servili = 0
+spell_Vulnus_sanare = 0
+slave['vs_bonus'] = 0
+a = 0
+change_loc = 1
+master_check = 0
+event_get['isabella'] = 0
+event_met['isabella'] = 0
+event_get['girl'] = 0
+event_met['girl'] = 0
+event_get['doagirls'] = 0
+event_met['doagirls'] = 0
+event_met['Julia'] = 0
+event_met['madelyn'] = 0
+event_get['madelyn'] = 0
+event_met['snegurochka'] = 0
+event_get['snegurochka'] = 0
+assistant_rules['sleep_condition'] = 0
+venera = 0
+venera2 = 0
+pelageya = 0
+pelageya2 = 0
+mira = 0
+zhanna = 0
+snezhana = 0
+madelyn = 0
+slave_exhaustion_fainted = 0
+slave_nearly_fainted = 0
+slave_stamina_fainted = 0
+assistant_exhaustion_fainted = 0
+assistant_nearly_fainted = 0
+assistant_stamina_fainted = 0
+auspex = 0
+female_virginity = 0
+female['fertility'] = 0
+female["fertility_revealed"] = 0
+female_nipple_piercing = 0
+sententia_veritas = 0
+sententia_veritas_casted = 0
+magna_magnifika = 0
+cruciato = 0
+tremendio = 0
+spell_Vulnus_sanare = 0
+spell_revelio = 0
+auspex_auto_cast = 0
+sententia_auto_cast = 0
+magna_magnifika_auto_cast = 0
+silent_auto_cast = 0
+slave['domini_dictum'] = 0
+prisoner['domini_dictum'] = 0
+assistant['domini_dictum'] = 0
+release_notes_message = 0
+difficulty_setting = 0
+assistant['nude'] = 0
+$estate = ''
+gladiatrix_contest_count = 1
+!Chariot Defaults - crushboss
+heavy_frame = 1
+heavy_boards = 1
+heavy_chasis = 1
+heavy_wheels = 1
+heavy_rider_armor = 1
+$preset_name[1] = '프리셋 1'
+$preset_name[2] = '프리셋 2'
+$preset_name[3] = '프리셋 3'
+$preset_name[4] = '프리셋 4'
+$preset_name[5] = '프리셋 5'
+$preset_name[6] = '프리셋 6'
+!Квесты
+active[$quest[1]] = 1
+active[$quest[3]] = 1
+active[$quest[11]] = 1
+!Статистика
+active[$quest[304]] = 1
+active[$quest[18]] = 1
+!Квесты
+active[$quest[1]] = 1
+active[$quest[3]] = 1
+active[$quest[11]] = 1
+
+ui_style = 2 &! grimdark
+demo_game = 0 &! tutorial
+story_mode = 0 &! normal start
+custom_game = 0 &! custom start
+difficulty_setting = 0 &! normal obedience difficulty
+
+!variables for unlocking explicit loli descriptions (either via market or via brothel [much cheaper])
+perv_revealed = 0 &! do-once flag
+likes_lolis = 0 &! flag set by market
+total_bought = 0 &! market counter
+lolis_bought = 0 &! market counter
+lolis_rented = 0 &! brothel counter
+total_bought_threshold = 6 &! market
+lolis_rented_threshold = 9 &! brothel
+
+!variables for Uncle Tom impotence challenge (only when lolis are enabled)
+is_perv = 0 &! starts at 3, drops to 2 when buying first loli slave, drops to 1 when buying another loli slave after renting a new home and acquiring a loli assistant
+loli_magic = 0 &! gate variable for is_perv reductions in slave_auction_buy, +1 when buying first loli slave, +1 when renting new home for the first time
+libido_msg = 0 &! suppresses repetition of progress messages from $calculate_attributes as libido grows
+
+END
+
+------------ init_game ------------

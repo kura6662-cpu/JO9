@@ -1,0 +1,1678 @@
+# generate_stock
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2854 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'generate_stock': gs 'snk_room_bridge', 'guard', 'generate_stock'
+! JO9 MOD END J9M2854
+!Generate new stock/slave
+!Overhauled by crushboss
+
+dynamic $clear_slave_instance, 'stock' &! clear any previous stock - ImperatorAugustus
+stock_state = CONST_INT['slave_exist'] &! this is the only place in the game where this state change occurs for stock - ImperatorAugustus
+
+$stock_features_list = ''
+
+$stock_epithet = '값이 싼'
+$stock_occupation_auk = '소녀'
+$stock_world_auk = '수수께끼 같은 세계'
+$stock_family_auk = '고아'
+
+if special_stock > 0:
+	!OPTIONAL OVERRIDE TO USE A SPECIFIC PRESET FROM JSON FILES (IT IS RECOMMENDED TO USE NUMBERS AFTER milf_last TO AVOID CHANCE OF RANDOM GENERATION)
+	stock_type = special_stock
+else
+	!NO TYPE OVERRIDE
+	!OPTIONAL OVERRIDES FOR AGE
+	if $special_age ! '':
+		seed_age = age_code[$special_age]
+		if seed_age = CONST_INT['loli_age']: meta_type = 1
+		if seed_age = CONST_INT['young_age']: meta_type = 2
+		if seed_age = CONST_INT['milf_age']: meta_type = 3
+		killvar '$special_age'
+	elseif cheat_e = 1 and no_loli ! 1:
+		meta_type = 1
+		cheat_f = 0
+		cheat_g = 0
+	elseif cheat_f = 1:
+		meta_type = 2
+		cheat_e = 0
+		cheat_g = 0
+	elseif cheat_g = 1 and no_milf ! 1:
+		meta_type = 3
+		cheat_e = 0
+		cheat_f = 0
+	else
+		!RANDOM AGE
+		:loop_meta
+			meta_type = rand(1,5)
+			if meta_type = 4: meta_type = 2
+			if meta_type = 5: meta_type = 3
+		if no_loli = 1 and meta_type = 1: jump 'loop_meta'
+		if no_milf = 1 and meta_type = 3: jump 'loop_meta'
+	end
+
+	!SELECT A RANDOM UNIQUE (PREVIOUSLY UNUSED) TYPE, OF APPROPRIATE AGE, FROM JSON FILES
+	:loop_type
+		if meta_type = 1: stock_type = rand(loli_first, loli_last)
+		if meta_type = 2: stock_type = rand(young_first, young_last)
+		if meta_type = 3: stock_type = rand(milf_first, milf_last)
+
+		!Keeps track of slaves you’ve already had and doesn’t allow duplicates - crushboss
+		!Reset num_count to avoid infinite loop, when there are no more new slaves
+		if num_count >= 88:
+			killvar 'num_count'
+			killvar 'prev_num_type'
+			num_count = 0
+			prev_num_type = 0
+		end
+	for i = 0 to num_count step 1: if stock_type = prev_num_type[i]: jump 'loop_type'
+
+	prev_num_type[num_count] = stock_type &! record that we have used this type
+	num_count += 1 &! increment total number of unique types used
+end &! AGE AND TYPE ARE NOW SET
+
+!LOAD PRESET CHARACTERISTICS (must do this first to avoid overwriting)
+gs 'get_stock_seed'
+
+! OPTIONAL OVERRIDE FOR AGE IN COMBINATION WITH special_stock TYPE OVERRIDE
+if special_stock > 0 and $special_age ! '': stock['age'] = age_code[$special_age]
+killvar '$special_age'
+
+!ROLL BASE STATS NOT ALREADY PRESET (3 in 15 chance for any stat to remain zero)
+stat_count = arrsize('$stockatr')
+attribute_sum = 12 &! do not overwrite non-zero stats from get_stock_seed on first pass - ImperatorAugustus
+i = 0
+!Slaves can now no longer generate with stats less than one. Prevents Farid from selling slaves with F- beauty and similar. -RedGreen3
+:loop
+	dynamic "
+		if <<$stockatr[i]>> = 0 or attribute_sum < 12:
+			gen = rand(1,12) &! 3 out of 15 chance to leave unchanged - ImperatorAugustus
+			if gen = 12:
+				<<$stockatr[i]>> = 5
+			elseif gen > 10:
+				<<$stockatr[i]>> = 4
+			elseif gen > 6:
+				<<$stockatr[i]>> = 3
+			elseif gen > 3:
+				<<$stockatr[i]>> = 2
+			elseif gen > 0:
+				<<$stockatr[i]>> = 1
+			end
+		end
+	"
+    if $stockatr[i] = 0:
+        $stockatr[i] = 1
+    end
+	
+	i += 1
+if i < stat_count: jump 'loop'
+
+
+!Farid will no longer sell mindbroken, dying, or ugly slaves. - RedGreen3
+
+!Added code to avoid having slaves with all bottomed out stats - crushboss (fixed, level 5 rolls were being overwritten - ImperatorAugustus)
+attribute_sum = stock['stamina'] + stock['beauty'] + stock['sensitivity'] + stock['intellect'] + stock['temper'] + stock['ego']
+if attribute_sum < 12:
+	i = 0
+	jump 'loop'
+end
+
+!TRANSLATE PRESET BEAUTY TO RATE (backgrounds can modify beauty rate)
+if stock['beauty'] = 0: stock_rate['beauty'] = 0
+if stock['beauty'] = 1: stock_rate['beauty'] = 10
+if stock['beauty'] = 2: stock_rate['beauty'] = 20
+if stock['beauty'] = 3: stock_rate['beauty'] = 40
+if stock['beauty'] = 4: stock_rate['beauty'] = 80
+if stock['beauty'] = 5: stock_rate['beauty'] = 160
+
+!TRANSLATE PRESET EXOTICISM TO RATE (backgrounds can modify exotic rate)
+if stock['exotic'] = 0: stock_rate['exotic'] = 0
+if stock['exotic'] = 1: stock_rate['exotic'] = 10
+if stock['exotic'] = 2: stock_rate['exotic'] = 20
+if stock['exotic'] = 3: stock_rate['exotic'] = 40
+if stock['exotic'] = 4: stock_rate['exotic'] = 80
+if stock['exotic'] = 5: stock_rate['exotic'] = 160
+
+!TRANSLATE PRESET WOUNDS TO RATE (backgrounds can modify wounds rate)
+if stock['wounds'] = 0: stock_rate['wounds'] = 0
+if stock['wounds'] = 1: stock_rate['wounds'] = 10
+if stock['wounds'] = 2: stock_rate['wounds'] = 20
+if stock['wounds'] = 3: stock_rate['wounds'] = 40
+if stock['wounds'] = 4: stock_rate['wounds'] = 80
+if stock['wounds'] = 5: stock_rate['wounds'] = 160
+
+!TRANSLATE PRESET BRUISES TO RATE (backgrounds can modify bruises rate)
+if stock['bruises'] = 0: stock_rate['bruises'] = 0
+if stock['bruises'] = 1: stock_rate['bruises'] = 10
+if stock['bruises'] = 2: stock_rate['bruises'] = 20
+if stock['bruises'] = 3: stock_rate['bruises'] = 40
+if stock['bruises'] = 4: stock_rate['bruises'] = 80
+if stock['bruises'] = 5: stock_rate['bruises'] = 160
+
+!TRANSLATE PRESET SCARS TO RATE (backgrounds can modify scars rate)
+if stock['scars'] = 0: stock_rate['scars'] = 0
+if stock['scars'] = 1: stock_rate['scars'] = 10
+if stock['scars'] = 2: stock_rate['scars'] = 20
+if stock['scars'] = 3: stock_rate['scars'] = 40
+if stock['scars'] = 4: stock_rate['scars'] = 80
+if stock['scars'] = 5: stock_rate['scars'] = 160
+
+!TRANSLATE PRESET HYGIENE TO RATE (backgrounds can modify hygiene rate)
+if stock['hygiene'] = 0: stock_rate['hygiene'] = 0
+if stock['hygiene'] = 1: stock_rate['hygiene'] = 10
+if stock['hygiene'] = 2: stock_rate['hygiene'] = 20
+if stock['hygiene'] = 3: stock_rate['hygiene'] = 40
+if stock['hygiene'] = 4: stock_rate['hygiene'] = 80
+if stock['hygiene'] = 5: stock_rate['hygiene'] = 160
+
+!CREATING RANDOM BACKGROUND IF NOT PRESET
+if $stock_world_description = '':
+	! -1, т.к. нет нулевого элемента в списке, далее та же фигня
+	chance = rand(1, arrsize('$origin_world') - 1)
+	$stock_world = $origin_world[chance]
+	chance = rand(1,3)
+	dynamic "$stock_world_description = $<<$stock_world>>_description[chance]"
+end
+
+if $stock_world = 'prehistoric':
+	$namebase = 'prehistoric'
+	stock["nation_index"] = 1
+	stock["world_index"] = 5
+	$stock_world_auk = '선사 시대의 세계'
+	stock_rate['exotic'] += 10
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['temper'] < 5: stock['temper'] += 1
+	if stock['ego'] > 1: stock['ego'] -= 1
+	if stock['intellect'] > 1: stock['intellect'] -= 1
+elseif $stock_world = 'barbarian':
+	$namebase = 'barbarian'
+	stock["nation_index"] = 2
+	stock["world_index"] = 5
+	$stock_world_auk = '야만의 세계'
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['temper'] < 5: stock['temper'] += 1
+	if stock['ego'] > 1: stock['ego'] -= 1
+	if stock['intellect'] > 1: stock['intellect'] -= 1
+elseif $stock_world = 'sns':
+	$namebase = 'barbarian'
+	stock["nation_index"] = 2
+	stock["world_index"] = 4
+	$stock_world_auk = '힘과 마법의 세계'
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['ego'] > 1: stock['ego'] -= 1
+	if stock['intellect'] > 1: stock['intellect'] -= 1
+elseif $stock_world = 'medieval':
+	$namebase = 'medieval'
+	stock["nation_index"] = 3
+	stock["world_index"] = 4
+	$stock_world_auk = '전통적인 농경 세계'
+	if stock['temper'] < 5: stock['temper'] -= 1
+	if stock['ego'] > 1: stock['ego'] -= 1
+	if stock['intellect'] > 1: stock['intellect'] -= 1
+	if stock['custom'] < 4: stock['custom'] += 1
+elseif $stock_world = 'highfantasy':
+	nc = rand(1,2)
+	if nc = 1:
+		$namebase = 'medieval'
+		stock["nation_index"] = 3
+	else
+		$namebase = 'fantasy'
+		stock["nation_index"] = 8
+	end
+	stock["world_index"] = 4
+	$stock_world_auk = '마법의 세계'
+	if stock['sensitivity'] < 5: stock['sensitivity'] += 1
+	stock_rate['exotic'] += 10
+elseif $stock_world = 'darkfantasy':
+	nc = rand(1,2)
+	if nc = 1:
+		$namebase = 'medieval'
+		stock["nation_index"] = 3
+	else
+		$namebase = 'barbarian'
+		stock["nation_index"] = 2
+	end
+	stock["world_index"] = 4
+	$stock_world_auk = '흑마법의 세계'
+	if stock['stamina'] > 1: stock['stamina'] -= 1
+	if stock['temper'] > 1: stock['temper'] -= 1
+	if stock['ego'] > 1: stock['ego'] -= 1
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+	if stock['intellect'] > 1: stock['intellect'] -= 1
+	if stock['pride'] > 1: stock['pride'] -= 1
+	stock_rate['exotic'] += 10
+	if stock['custom'] < 4: stock['custom'] += 2
+elseif $stock_world = 'steampunk':
+	$namebase = 'oldscool'
+	stock["nation_index"] = 4
+	stock["world_index"] = 3
+	$stock_world_auk = '스팀펑크 세계'
+	if stock['custom'] < 4: stock['custom'] += 1
+elseif $stock_world = 'industrial':
+	nc = rand(1,2)
+	if nc = 1:
+		$namebase = 'oldscool'
+		stock["nation_index"] = 4
+	else
+		$namebase = 'euro'
+		stock["nation_index"] = 5
+	end
+	stock["world_index"] = 3
+	$stock_world_auk = '산업이 발달한 세계'
+	if stock['custom'] < 4: stock['custom'] += 1
+elseif $stock_world = 'modern':
+	nc = rand(1,2)
+	if nc = 1:
+		$namebase = 'russian'
+		stock["nation_index"] = 6
+	else
+		$namebase = 'euro'
+		stock["nation_index"] = 5
+	end
+	stock["world_index"] = 2
+	$stock_world_auk = '경제적으로 발전한 세계'
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	if stock['stamina'] > 1: stock['stamina'] -= 1
+elseif $stock_world = 'cyberpunk':
+	nc = rand(1,2)
+	if nc = 1:
+		$namebase = 'russian'
+		stock["nation_index"] = 6
+	else
+		$namebase = 'euro'
+		stock["nation_index"] = 5
+	end
+	stock["world_index"] = 1
+	$stock_world_auk = '사이버펑크 세계'
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	if stock['temper'] > 1: stock['temper'] -= 1
+	if stock['stamina'] > 1: stock['stamina'] -= 1
+elseif $stock_world = 'utopia':
+	$namebase = 'utopia'
+	stock["nation_index"] = 7
+	stock["world_index"] = 1
+	$stock_world_auk = '목가적인 유토피아'
+	if stock['spoil'] < 5: stock['spoil'] += 1
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	stock_rate['exotic'] += 10
+	if stock['sensitivity'] < 4: stock['sensitivity'] += 2
+	if stock['pride'] < 5: stock['pride'] += 1
+elseif $stock_world = 'darkfuture':
+	$namebase = 'euro'
+	stock["nation_index"] = 5
+	stock["world_index"] = 2
+	$stock_world_auk = '전체주의 국가'
+	if stock['stamina'] > 1: stock['stamina'] -= 1
+	if stock['temper'] > 1: stock['temper'] -= 1
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	if stock['custom'] < 4: stock['custom'] += 2
+	if stock['temper'] > 2: stock['temper'] -= 2
+	if stock['ego'] > 2: stock['ego'] -= 2
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+	if stock['pride'] > 1: stock['pride'] = 1
+	if stock['fat'] > 1: stock['fat'] = 1
+elseif $stock_world = 'space':
+	nc = rand(1,2)
+	if nc = 1:
+		$namebase = 'utopia'
+		stock["nation_index"] = 7
+	else 
+		$namebase = 'euro'
+		stock["nation_index"] = 5
+	end
+	stock["world_index"] = 1
+	$stock_world_auk = '고도로 발달한 우주 문명'
+	if stock['stamina'] > 1: stock['stamina'] -= 1
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	stock_rate['exotic'] += 10
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+end
+
+!NAME (AFTER PICKING NAMEBASE)
+if $stock_name = '':
+	chance = rand(1, arrsize('$<<$namebase>>_name') - 1)
+	dynamic "$stock_name = $<<$namebase>>_name[chance]"
+end
+
+!FAMILY BACKGROUND (AFTER PICKING WORLD)
+if $stock_family_description = '':
+	chance = rand(1, arrsize('$<<$stock_world>>_family') - 1)
+	dynamic "$stock_family = $<<$stock_world>>_family[chance]"
+	$stock_family_description = $family_description[$stock_family]
+end
+
+if $stock_family = 'tribe':
+	stock["family_index"] = 5
+	$stock_family_auk = '야만 부족에서 자란'
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+elseif $stock_family = 'amazon':
+	stock["family_index"] = 5
+	$stock_family_auk = '용감한 아마존들에게 길러진'
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['temper'] < 5: stock['temper'] += 1
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+elseif $stock_family = 'nomad':
+	stock["family_index"] = 5
+	$stock_family_auk = '유목민에게 길러진'
+	if stock['stamina'] < 5: stock['stamina'] += 1
+elseif $stock_family = 'pesant':
+	stock["family_index"] = 4
+	$stock_family_auk = '농부의 딸'
+	if stock['stamina'] < 3: stock['stamina'] += 1
+	if stock['temper'] > 1: stock['temper'] -= 1
+	if stock['ego'] > 1: stock['ego'] -= 1
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+	if stock['custom'] < 3: stock['custom'] += 1
+	if stock['intellect'] > 1: stock['intellect'] -= 1
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+elseif $stock_family = 'hunter':
+	stock["family_index"] = 4
+	if stock['temper'] < 4: stock['temper'] += 1
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['intellect'] < 3: stock['intellect'] += 1
+	$stock_family_auk = '사냥꾼의 딸'
+elseif $stock_family = 'fisher':
+	stock["family_index"] = 4
+	if stock['temper'] > 1: stock['temper'] -= 1
+	if stock['custom'] < 3: stock['custom'] += 1
+	$stock_family_auk = '어부의 딸'
+elseif $stock_family = 'viking':
+	stock["family_index"] = 3
+	if stock['temper'] < 5: stock['temper'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	if stock['intellect'] > 1: stock['intellect'] -= 1
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+	$stock_family_auk = '바다 약탈자의 딸'
+elseif $stock_family = 'barbarian_king':
+	stock["family_index"] = 1
+	if stock['temper'] < 5: stock['temper'] += 1
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	if stock['spoil'] < 4: stock['spoil'] += 2
+	if stock['custom'] > 0: stock['custom'] = 0
+	$stock_family_auk = '야만족 공주'
+	$stock_occupation_auk = '귀부인'
+elseif $stock_family = 'orphan':
+	stock["family_index"] = 5
+	if stock['stamina'] > 1: stock['stamina'] -= 1
+	if stock['temper'] < 5: stock['temper'] += 1
+	if stock['pride'] > 1: stock['pride'] -= 1
+	if stock['intellect'] > 1: stock['intellect'] -= 1
+	$stock_family_auk = '고아'
+elseif $stock_family = 'bondman':
+	stock["family_index"] = 4
+	if stock['temper'] > 1: stock['temper'] -= 1
+	if stock['ego'] > 1: stock['ego'] -= 1
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+	if stock['custom'] < 3: stock['custom'] += 1
+	if stock['intellect'] > 1: stock['intellect'] -= 1
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+	$stock_family_auk = '농노 농가의 딸'
+elseif $stock_family = 'gypsy':
+	stock["family_index"] = 5
+	stock_rate['exotic'] += 10
+	if stock['temper'] < 5: stock['temper'] += 1
+	$stock_family_auk = '집시 야영지에서 자란'
+elseif $stock_family = 'church':
+	stock["family_index"] = 5
+	if stock['temper'] > 1: stock['temper'] -= 1
+	if stock['ego'] > 1: stock['ego'] -= 1
+	if stock['intellect'] < 3: stock['intellect'] += 1
+	if stock['custom'] < 4: stock['custom'] += 1
+	$stock_family_auk = '교회 고아원의 학생'
+elseif $stock_family = 'craftsman':
+	stock["family_index"] = 3
+	$stock_family_auk = '장인의 딸'
+elseif $stock_family = 'merchant':
+	stock["family_index"] = 3
+	if stock['spoil'] < 5: stock['spoil'] += 1
+	$stock_family_auk = '상인의 딸'
+elseif $stock_family = 'valetry':
+	stock["family_index"] = 4
+	if stock['custom'] < 4: stock['custom'] += 2
+	if stock['temper'] > 1: stock['temper'] -= 1
+	if stock['ego'] > 1: stock['ego'] -= 1
+	$stock_family_auk = '하녀의 딸'
+elseif $stock_family = 'knight':
+	stock["family_index"] = 2
+	if stock['spoil'] < 5: stock['spoil'] += 1
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	if stock['sensitivity'] < 5: stock['sensitivity'] += 1
+	$stock_family_auk = '영지를 가진 봉건 영주의 딸'
+elseif $stock_family = 'mprincess':
+	stock["family_index"] = 1
+	if stock['temper'] < 5: stock['temper'] += 1
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	if stock['spoil'] < 4: stock['spoil'] += 2
+	if stock['custom'] > 0: stock['custom'] = 0
+	$stock_family_auk = '공주'
+elseif $stock_family = 'farmers':
+	stock["family_index"] = 3
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['intellect'] > 1: stock['intellect'] -= 1
+	if stock['pride'] > 1: stock['pride'] -= 1
+	if stock['custom'] < 5: stock['custom'] += 1
+	$stock_family_auk = '농부의 딸'
+elseif $stock_family = 'workhouse':
+	stock["family_index"] = 5
+	if stock['stamina'] > 1: stock['stamina'] -= 1
+	if stock['temper'] > 1: stock['temper'] -= 1
+	if stock['ego'] > 1: stock['ego'] -= 1
+	if stock['pride'] > 2: stock['pride'] -= 2
+	if stock['custom'] < 4: stock['custom'] += 2
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+	$stock_family_auk = '떠돌이 고아 노동자'
+elseif $stock_family = 'proletarian':
+	stock["family_index"] = 4
+	if stock['stamina'] > 1: stock['stamina'] -= 1
+	if stock['pride'] > 1: stock['pride'] -= 1
+	$stock_family_auk = '공장 노동자의 딸'
+elseif $stock_family = 'clerk':
+	stock["family_index"] = 3
+	if stock['intellect'] < 4: stock['intellect'] += 1
+	$stock_family_auk = '사무원의 딸'
+elseif $stock_family = 'naturalist':
+	stock["family_index"] = 3
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	$stock_family_auk = '과학자 겸 박물학자의 딸'
+elseif $stock_family = 'ingeneer':
+	stock["family_index"] = 3
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	$stock_family_auk = '기술자의 딸'
+elseif $stock_family = 'doctor':
+	stock["family_index"] = 3
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	$stock_family_auk = '유명한 의사의 딸'
+elseif $stock_family = 'servant':
+	stock["family_index"] = 3
+	if stock['custom'] < 4: stock['custom'] += 2
+	if stock['temper'] > 1: stock['temper'] -= 1
+	if stock['ego'] > 1: stock['ego'] -= 1
+	$stock_family_auk = '부잣집 하인의 딸'
+elseif $stock_family = 'magnat':
+	stock["family_index"] = 2
+	if stock['spoil'] < 5: stock['spoil'] += 1
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	if stock['sensitivity'] < 5: stock['sensitivity'] += 1
+	$stock_family_auk = '거물의 집안에서 자란'
+elseif $stock_family = 'bankeer':
+	stock["family_index"] = 2
+	if stock['spoil'] < 5: stock['spoil'] += 1
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	if stock['sensitivity'] < 5: stock['sensitivity'] += 1
+	$stock_family_auk = '부유한 은행가의 딸'
+elseif $stock_family = 'mayor':
+	stock["family_index"] = 2
+	if stock['spoil'] < 5: stock['spoil'] += 1
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	if stock['sensitivity'] < 5: stock['sensitivity'] += 1
+	$stock_family_auk = '영향력 있는 정치인의 딸'
+elseif $stock_family = 'mafiosi':
+	stock["family_index"] = 2
+	if stock['spoil'] < 5: stock['spoil'] += 1
+	if stock['temper'] < 5: stock['temper'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+	$stock_family_auk = '마피아 집안에서 자란'
+elseif $stock_family = 'orpnange':
+	stock["family_index"] = 5
+	if stock['ego'] > 1: stock['ego'] -= 1
+	if stock['pride'] > 1: stock['pride'] -= 1
+	if stock['custom'] < 5: stock['custom'] += 1
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+	$stock_family_auk = '고아원 원생'
+elseif $stock_family = 'worker':
+	stock["family_index"] = 4
+	$stock_family_auk = '평범한 노동자 가정에서 자란'
+elseif $stock_family = 'policeman':
+! JO9 MOD START J9M2853 | 2026-10-15_policeman_family_index_fix | changed block; context may be included
+	stock["family_index"] = 4 &! JO9_POLICEMAN_FAMILY_INDEX_FIX_20261015 (was 54)
+! JO9 MOD END J9M2853
+	$stock_family_auk = '경찰관의 딸'
+elseif $stock_family = 'manager':
+	stock["family_index"] = 3
+	$stock_family_auk = '사무원의 딸'
+elseif $stock_family = 'biologist':
+	stock["family_index"] = 3
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	$stock_family_auk = '지식인 가정에서 자란'
+elseif $stock_family = 'programmer':
+	stock["family_index"] = 3
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	$stock_family_auk = '중산층 가정에서 자란'
+elseif $stock_family = 'surgeon':
+	stock["family_index"] = 2
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['beauty'] < 5: stock_rate['beauty'] += 20
+	if stock['spoil'] < 5: stock['spoil'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	$stock_family_auk = '성공한 성형외과 의사의 딸'
+elseif $stock_family = 'businessman':
+	stock["family_index"] = 2
+	if stock['spoil'] < 5: stock['spoil'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	$stock_family_auk = '성공한 사업가의 딸'
+elseif $stock_family = 'finance':
+	stock["family_index"] = 2
+	if stock['spoil'] < 5: stock['spoil'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	$stock_family_auk = '성공한 금융가의 딸'
+elseif $stock_family = 'general':
+	stock["family_index"] = 2
+	if stock['custom'] < 5: stock['custom'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	$stock_family_auk = '장군의 딸'
+elseif $stock_family = 'poet':
+	stock["family_index"] = 3
+	if stock['sensitivity'] < 5: stock['sensitivity'] += 1
+	if stock['expression'] < 4: stock['expression'] += 1
+	$stock_family_auk = '시인 집안에서 자란'
+elseif $stock_family = 'operator':
+	stock["family_index"] = 3
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	$stock_family_auk = '생산 기지 운영자의 딸'
+elseif $stock_family = 'artist':
+	stock["family_index"] = 3
+	if stock['sensitivity'] < 5: stock['sensitivity'] += 1
+	if stock['art'] < 4: stock['art'] += 1
+	$stock_family_auk = '예술가 집안에서 자란'
+elseif $stock_family = 'architect':
+	stock["family_index"] = 3
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	$stock_family_auk = '건축가 집안에서 자란'
+elseif $stock_family = 'jailer':
+	stock["family_index"] = 4
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+	$stock_family_auk = '간수의 딸'
+elseif $stock_family = 'bioreactor':
+	stock["family_index"] = 4
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+	$stock_family_auk = '바이오리액터 운영자의 딸'
+elseif $stock_family = 'minitruth':
+	stock["family_index"] = 5
+	if stock['intellect'] < 3: stock['intellect'] += 1
+	$stock_family_auk = '진리부 관료의 딸'
+elseif $stock_family = 'anter':
+	stock["family_index"] = 5
+	if stock['custom'] < 5: stock['custom'] += 1
+	$stock_family_auk = '산업 개미굴 속에서 자란'
+elseif $stock_family = 'freetrader':
+	stock["family_index"] = 3
+	if stock['secretary'] < 3: stock['secretary'] += 1
+	if stock['intellect'] < 4: stock['intellect'] += 1
+	$stock_family_auk = '무역용 트럭에서 자란'
+elseif $stock_family = 'asteroid':
+	stock["family_index"] = 4
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	$stock_family_auk = '소행성 시추 기지에서 자란'
+elseif $stock_family = 'astrofarm':
+	stock["family_index"] = 2
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	$stock_family_auk = '우주 정거장에서 자란'
+elseif $stock_family = 'astrogator':
+	stock["family_index"] = 3
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	$stock_family_auk = '발전한 행성에서 자란'
+elseif $stock_family = 'admiral':
+	stock["family_index"] = 3
+	if stock['custom'] < 3: stock['custom'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	if stock['spoil'] < 5: stock['spoil'] += 1
+	$stock_family_auk = '제독의 딸'
+elseif $stock_family = 'nanofarmacist':
+	stock["family_index"] = 2
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	$stock_family_auk = '궤도 정거장에서 자란'
+elseif $stock_family = 'gendesigner':
+	stock["family_index"] = 3
+	if stock['beauty'] < 5: stock_rate['beauty'] += 40
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	$stock_family_auk = '유명한 유전자 설계자의 딸'
+end
+
+!OCCUPATION
+if $stock_occupation_description = '' and stock['age'] ! CONST_INT['loli_age']:
+	chance = rand(1, arrsize('$<<$stock_family>>_occupation') - 1)
+	dynamic "$stock_occupation = $<<$stock_family>>_occupation[chance]"
+	$stock_occupation_description = $occupation_description[$stock_occupation]
+end
+
+if $stock_occupation = 'tribal_girl':
+	stock["work_index"] = 5
+	$stock_occupation_auk = '소녀'
+	if stock['stamina'] < 3: stock['stamina'] += 1
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+elseif $stock_occupation = 'shaman':
+	stock["work_index"] = 3
+	$stock_occupation_auk = '샤먼'
+	if stock['intellect'] < 3: stock['intellect'] += 1
+	if stock['enchanter'] < 4: stock['enchanter'] += 1
+	if stock['nurse'] < 5: stock['nurse'] += 1
+elseif $stock_occupation = 'huntress':
+	stock["work_index"] = 4
+	$stock_occupation_auk = '여사냥꾼'
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['gladiatrix'] < 5:  stock['gladiatrix'] += 1
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+elseif $stock_occupation = 'heroine':
+	stock["work_index"] = 3
+	$stock_occupation_auk = '영웅 여전사'
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['stamina'] < 3: stock['stamina'] = 3
+	if stock['gladiatrix'] < 4: stock['gladiatrix'] = 4
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+	if stock['temper'] < 5: stock['temper'] += 1
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+elseif $stock_occupation = 'bride':
+	stock["work_index"] = 4
+	$stock_occupation_auk = '처녀'
+	stock['virginity'] = 0
+	if stock['sensitivity'] < 5: stock['sensitivity'] += 1
+	if stock['temper'] > 1: stock['temper'] -= 1
+elseif $stock_occupation = 'viking_wife':
+	stock["work_index"] = 4
+	$stock_occupation_auk = '젊은 바이킹의 아내'
+	stock['virginity'] = 2
+	if stock['temper'] > 1: stock['temper'] -= 1
+	if stock['cook'] < 3: stock['cook'] += 1
+	if stock['service'] < 3: stock['service'] += 1
+	if stock['sub_hug'] < 4: stock['sub_hug'] += 1
+	if stock['sub_kiss'] < 4: stock['sub_kiss'] += 2
+	if stock['sub_vaginal'] < 4: stock['sub_vaginal'] += 2
+	if stock['sub_masturbation'] < 4: stock['sub_masturbation'] += 1
+	if stock['sub_exhibit'] < 4: stock['sub_exhibit'] += 1
+	if stock['sub_humiliation'] < 4: stock['sub_humiliation'] += 1
+elseif $stock_occupation = 'herbalist':
+	stock["work_index"] = 3
+	$stock_occupation_auk = '약초사'
+	if stock['nurse'] < 5: stock['nurse'] += 1
+elseif $stock_occupation = 'witch':
+	stock["work_index"] = 4
+	$stock_occupation_auk = '마녀'
+	if stock['intellect'] < 2: stock['intellect'] += 2
+	if stock['enchanter'] < 2: stock['enchanter'] += 2
+	if stock['ego'] < 2: stock['ego'] += 2
+elseif $stock_occupation = 'thief':
+	stock["work_index"] = 5
+	$stock_occupation_auk = '도둑'
+elseif $stock_occupation = 'beggar':
+	stock["work_index"] = 4
+	if stock['expression'] < 4: stock['expression'] += 2
+	if stock['pet'] < 4: stock['pet'] += 1
+	if stock['stamina'] > 1: stock['stamina'] -= 1
+	if stock['pride'] > 1: stock['pride'] = 1
+	if stock['intellect'] > 1: stock['intellect'] -= 1
+	stock['fat'] = 0
+	stock['starvation'] += rand(0, 10)
+	$stock_occupation_auk = '거지'
+elseif $stock_occupation = 'gypsy':
+	stock["work_index"] = 5
+	if stock['expression'] < 4: stock['expression'] += 2
+	if stock['calisthenics'] < 4: stock['calisthenics'] += 2
+	if stock['enchanter'] < 3: stock['enchanter'] += 1
+	if stock['music'] < 3: stock['music'] += 1
+	if stock['art'] < 2: stock['art'] += 1
+	$stock_occupation_auk = '점쟁이'
+elseif $stock_occupation = 'whore':
+	stock["work_index"] = 5
+	stock['virginity'] = 2
+	if stock['stamina']> 1: stock['stamina'] -= 1
+	if stock['pride']> 1: stock['pride'] -= 1
+	if stock['pride']> 0: stock['pride'] -= 1
+	if stock['sub_hug'] < 5: stock['sub_hug'] += 1
+	if stock['sub_hug'] < 3: stock['sub_hug'] += 1
+	if stock['sub_kiss'] < 5: stock['sub_kiss'] += 1
+	if stock['sub_kiss'] < 2: stock['sub_kiss'] += 1
+	if stock['sub_bj'] < 4: stock['sub_bj'] += 2
+	if stock['sub_vaginal'] < 4: stock['sub_vaginal'] += 2
+	if stock['sub_vaginal'] < 3: stock['sub_vaginal'] += 1
+	if stock['sub_anal'] < 5: stock['sub_anal'] += 1
+	if stock['sub_exhibit'] < 4: stock['sub_exhibit'] += 2
+	if stock['sub_humiliation'] < 4: stock['sub_humiliation'] += 2
+	$stock_occupation_auk = '길거리 창녀'
+elseif $stock_occupation = 'markitane':
+	stock["work_index"] = 5
+	stock['virginity'] = 2
+	if stock['pride']> 1: stock['pride'] -= 1
+	if stock['temper'] < 5: stock['temper'] += 1
+	if stock['sub_hug'] < 5: stock['sub_hug'] += 1
+	if stock['sub_hug'] < 3: stock['sub_hug'] += 1
+	if stock['sub_kiss'] < 5: stock['sub_kiss'] += 1
+	if stock['sub_kiss'] < 2: stock['sub_kiss'] += 1
+	if stock['sub_bj'] < 4: stock['sub_bj'] += 2
+	if stock['sub_vaginal'] < 4: stock['sub_vaginal'] += 2
+	if stock['sub_vaginal'] < 3: stock['sub_vaginal'] += 1
+	if stock['sub_anal'] < 5: stock['sub_anal'] += 1
+	if stock['sub_exhibit'] < 4: stock['sub_exhibit'] += 2
+	if stock['sub_humiliation'] < 4: stock['sub_humiliation'] += 2
+	$stock_occupation_auk = '길 위의 창녀'
+elseif $stock_occupation = 'brothel':
+	stock["work_index"] = 5
+	stock['virginity'] = 2
+	if stock['custom'] < 5: stock['custom'] += 1
+	if stock['sub_hug'] < 5: stock['sub_hug'] += 1
+	if stock['sub_hug'] < 3: stock['sub_hug'] += 1
+	if stock['sub_kiss'] < 5: stock['sub_kiss'] += 1
+	if stock['sub_kiss'] < 2: stock['sub_kiss'] += 1
+	if stock['sub_bj'] < 4: stock['sub_bj'] += 2
+	if stock['sub_vaginal'] < 4: stock['sub_vaginal'] += 2
+	if stock['sub_vaginal'] < 3: stock['sub_vaginal'] += 1
+	if stock['sub_anal'] < 5: stock['sub_anal'] += 1
+	if stock['sub_exhibit'] < 4: stock['sub_exhibit'] += 2
+	if stock['sub_humiliation'] < 4: stock['sub_humiliation'] += 2
+	$stock_occupation_auk = '사창가 창녀'
+elseif $stock_occupation = 'nun':
+	stock["work_index"] = 4
+	stock['virginity'] = 0
+	stock['sub_vaginal'] = 0
+	stock['sub_anal'] = 0
+	stock['sub_bj'] = 0
+	if stock['nurse'] < 5: stock['nurse'] += 1
+	if stock['service'] < 5: stock['service'] += 1
+	if stock['secretary'] < 5: stock['secretary'] += 1
+	$stock_occupation_auk = '수녀'
+elseif $stock_occupation = 'valertry':
+	stock["work_index"] = 4
+	if stock['service'] < 3: stock['service'] += 3
+	if stock['custom'] < 5: stock['custom'] += 1
+	if stock['pride'] > 1: stock['pride'] -= 1
+	$stock_occupation_auk = '하녀'
+elseif $stock_occupation = 'sorceress':
+	stock["work_index"] = 3
+	stock['virginity'] = 0
+	stock['sub_vaginal'] = 0
+	stock['sub_anal'] = 0
+	stock['sub_bj'] = 0
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	if stock['custom'] < 5: stock['custom'] += 1
+	if stock['service'] < 4: stock['service'] += 2
+	if stock['cook'] < 5: stock['cook'] += 1
+	if stock['enchanter'] < 4: stock['enchanter'] += 2
+	$stock_occupation_auk = '여마법사의 제자'
+elseif $stock_occupation = 'thug':
+	stock["work_index"] = 5
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['stamina'] < 3: stock['stamina'] = 3
+	if stock['gladiatrix'] < 3: stock['gladiatrix'] += 3
+	if stock['intellect'] > 1: stock['intellect'] -= 1
+	if stock['temper'] < 5: stock['temper'] += 1
+	$stock_occupation_auk = '노상강도'
+elseif $stock_occupation = 'poor_bride':
+	if meta_type = 3:
+		$stock_occupation = 'poor_wife'
+	else
+		stock['virginity'] = 0
+		stock['sub_vaginal'] = 0
+		stock['sub_anal'] = 0
+		stock['sub_bj'] = 0
+	end
+	stock["work_index"] = 5
+	$stock_occupation_auk = '평민'
+elseif $stock_occupation = 'poor_wife':
+	stock["work_index"] = 4
+	stock['virginity'] = 2
+	if stock['temper'] > 1: stock['temper'] -= 1
+	if stock['cook'] < 5: stock['cook'] += 1
+	if stock['service'] < 5: stock['service'] += 1
+	if stock['sub_hug'] < 5: stock['sub_hug'] += 1
+	if stock['sub_kiss'] < 4: stock['sub_kiss'] += 2
+	if stock['sub_vaginal'] < 4: stock['sub_vaginal'] += 2
+	$stock_occupation_auk = '평민의 아내'
+elseif $stock_occupation = 'brigand':
+	stock["work_index"] = 5
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['stamina'] < 3: stock['stamina'] = 3
+	if stock['gladiatrix'] < 3: stock['gladiatrix'] += 3
+	if stock['intellect'] > 1: stock['intellect'] -= 1
+	if stock['temper'] < 5: stock['temper'] += 1
+	$stock_occupation_auk = '산적'
+elseif $stock_occupation = 'noble_bride':
+	if meta_type = 3:
+		$stock_occupation = 'noble_wife'
+	else
+		stock['virginity'] = 0
+		stock['sub_vaginal'] = 0
+		stock['sub_anal'] = 0
+		stock['sub_bj'] = 0
+	end
+	stock["work_index"] = 2
+	$stock_occupation_auk = '귀족 아가씨'
+elseif $stock_occupation = 'noble_wife':
+	stock["work_index"] = 2
+	stock['virginity'] = 2
+	if stock['temper'] > 1: stock['temper'] -= 1
+	if stock['music'] < 5: stock['music'] += 1
+	if stock[['art']] < 5: stock['art'] += 1
+	if stock['sub_hug'] < 5: stock['sub_hug'] += 1
+	if stock['sub_kiss'] < 4: stock['sub_kiss'] += 2
+	if stock['sub_vaginal'] < 4: stock['sub_vaginal'] += 2
+	$stock_occupation_auk = '영주의 아내'
+elseif $stock_occupation = 'barbarian_princess':
+	! JO9_BARBARIAN_PRINCESS_GENERAL_OCCUPATION_20261015
+	! JO9_BARBARIAN_PRINCESS_OCCUPATION_20261015 (사용자 확정: 미혼 공주라 처녀·성 경험 0)
+	stock['virginity'] = 0
+	stock['sub_vaginal'] = 0
+	stock['sub_anal'] = 0
+	stock['sub_bj'] = 0
+	if stock['expression'] < 5: stock['expression'] += 1
+	if stock['calisthenics'] < 5: stock['calisthenics'] += 1
+	if stock['gladiatrix'] < 5: stock['gladiatrix'] += 1
+	stock['cook'] = 0
+	stock['service'] = 0
+	stock["work_index"] = 5
+elseif $stock_occupation = 'mprincess':
+	stock['virginity'] = 0
+	stock['sub_vaginal'] = 0
+	stock['sub_anal'] = 0
+	stock['sub_bj'] = 0
+	if stock['expression'] < 5: stock['expression'] += 1
+	if stock['calisthenics'] < 5: stock['calisthenics'] += 1
+	if stock['music'] < 5: stock['music'] += 1
+	if stock['art'] < 5: stock['art'] += 1
+	stock["work_index"] = 5
+	$stock_occupation_auk = '여왕의 딸'
+elseif $stock_occupation = 'farmer':
+	stock["work_index"] = 4
+	if stock['service'] < 5: stock['service'] += 1
+	if stock['cook'] < 5: stock['cook'] += 1
+	$stock_occupation_auk = '목화 수확꾼'
+elseif $stock_occupation = 'milker':
+	stock["work_index"] = 4
+	if stock['service'] < 5: stock['service'] += 1
+	if stock['cook'] < 5: stock['cook'] += 1
+	$stock_occupation_auk = '젖 짜는 처녀'
+elseif $stock_occupation = 'swiner':
+	stock["work_index"] = 4
+	if stock['service'] < 5: stock['service'] += 1
+	if stock['cook'] < 5: stock['cook'] += 1
+	$stock_occupation_auk = '돼지치기'
+elseif $stock_occupation = 'weaver':
+	stock["work_index"] = 4
+	if stock['service'] < 5: stock['service'] += 1
+	$stock_occupation_auk = '직조공'
+elseif $stock_occupation = 'freaser':
+	stock["work_index"] = 4
+	if stock['service'] < 5: stock['service'] += 1
+	$stock_occupation_auk = '밀링머신 조작원'
+elseif $stock_occupation = 'maid':
+	stock["work_index"] = 4
+	if stock['service'] < 3: stock['service'] += 3
+	if stock['custom'] < 5: stock['custom'] += 1
+	if stock['pride'] > 1: stock['pride'] -= 1
+	$stock_occupation_auk = '하녀'
+elseif $stock_occupation = 'sufragist':
+	stock["work_index"] = 4
+	if stock['pride'] < 5: stock['pride'] += 1
+	if stock['pride'] < 4: stock['pride'] += 1
+	if stock['temper'] < 5: stock['temper'] += 1
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	if stock['custom'] > 1: stock['custom'] -= 1
+	if stock['expression'] < 4: stock['expression'] += 2
+	$stock_occupation_auk = '서프러제트'
+elseif $stock_occupation = 'nurse':
+	stock["work_index"] = 4
+	if stock['nurse'] < 3: stock['nurse'] += 3
+	if stock['service'] < 5: stock['service'] += 1
+	if stock['cook'] < 5: stock['cook'] += 1
+	if stock['secretary'] < 5: stock['secretary'] += 1
+	$stock_occupation_auk = '간호사'
+elseif $stock_occupation = 'teacher':
+	stock["work_index"] = 4
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	if stock['expression'] < 5: stock['expression'] += 1
+	if stock['secretary'] < 5: stock['secretary'] += 1
+	if stock['service'] < 5: stock['service'] += 1
+	if stock['cook'] < 5: stock['cook'] += 1
+	$stock_occupation_auk = '초등학교 교사'
+elseif $stock_occupation = 'oficiant':
+	stock["work_index"] = 4
+	if stock['expression'] < 5: stock['expression'] += 1
+	if stock['service'] < 5: stock['service'] += 1
+	if stock['cook'] < 5: stock['cook'] += 1
+	$stock_occupation_auk = '웨이트리스'
+elseif $stock_occupation = 'avanturiste':
+	stock["work_index"] = 4
+	if stock['expression'] < 3: stock['expression'] += 3
+	if stock['sub_seduce'] < 3: stock['sub_seduce'] += 3
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	if stock['spoil'] < 5: stock['spoil'] +=1
+	if stock['custom'] > 1: stock['custom'] -= 1
+	if stock['sub_hug'] < 5: stock['sub_hug'] += 1
+	if stock['sub_kiss'] < 5: stock['sub_kiss'] += 1
+	$stock_occupation_auk = '세속 여성 모험가'
+elseif $stock_occupation = 'rich_bride':
+	if meta_type = 3:
+		$stock_occupation = 'rich_wife'
+	else
+		stock['virginity'] = 0
+		stock['sub_vaginal'] = 0
+		stock['sub_anal'] = 0
+		stock['sub_bj'] = 0
+	end
+	stock["work_index"] = 2
+	$stock_occupation_auk = '부유한 신부'
+elseif $stock_occupation = 'rich_wife':
+	stock["work_index"] = 2
+	stock['virginity'] = 2
+	if stock['temper'] > 1: stock['temper'] -= 1
+	if stock['music'] < 5: stock['music'] += 1
+	if stock['art'] < 5: stock['art'] += 1
+	if stock['sub_hug'] < 5: stock['sub_hug'] += 1
+	if stock['sub_kiss'] < 4: stock['sub_kiss'] += 2
+	if stock['sub_vaginal'] < 4: stock['sub_vaginal'] += 2
+	$stock_occupation_auk = '부자의 아내'
+elseif $stock_occupation = 'punk':
+	stock["work_index"] = 4
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+	if stock['custom'] > 1: stock['custom'] -= 1
+	if stock['temper'] < 5: stock['temper'] += 1
+	if stock['expression'] < 5: stock['expression'] += 1
+	if stock['music'] < 5: stock['music'] += 1
+	if stock['art'] < 5: stock['art'] += 1
+	if stock['gladiatrix'] < 5: stock['gladiatrix'] += 1
+	$stock_occupation_auk = '펑크'
+elseif $stock_occupation = 'student':
+	stock["work_index"] = 3
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	if stock['expression'] < 5: stock['expression'] += 1
+	if stock['secretary'] < 5: stock['secretary'] += 1
+	$stock_occupation_auk = '학생'
+elseif $stock_occupation = 'secretary':
+	stock["work_index"] = 4
+	if stock['expression'] < 5: stock['expression'] += 1
+	if stock['secretary'] < 3: stock['secretary'] += 3
+	if stock['service'] < 5: stock['service'] += 1
+	if stock['ego'] > 1: stock['ego'] -= 1
+	if stock['custom'] < 5: stock['custom'] += 1
+	$stock_occupation_auk = '비서'
+elseif $stock_occupation = 'voleyball':
+	stock["work_index"] = 3
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['stamina'] < 4: stock['stamina'] = 4
+	if stock['temper'] < 5: stock['temper'] += 1
+	if stock['fat'] > 1: stock['fat'] = 1
+	if stock['calisthenics'] < 5: stock['calisthenics'] += 1
+	$stock_occupation_auk = '배구 선수'
+elseif $stock_occupation = 'karateka':
+	stock["work_index"] = 3
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['stamina'] < 4: stock['stamina'] = 4
+	if stock['temper'] < 5: stock['temper'] += 1
+	if stock['gladiatrix'] < 3: stock['gladiatrix'] += 3
+	$stock_occupation_auk = '킥복서'
+elseif $stock_occupation = 'hymnast':
+	stock["work_index"] = 3
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['stamina'] < 4: stock['stamina'] = 4
+	if stock['temper'] < 5: stock['temper'] += 1
+	if stock['fat'] > 1: stock['fat'] = 1
+	if stock['calisthenics'] < 3: stock['calisthenics'] += 3
+	if stock['sensitivity'] < 5: stock['sensitivity'] += 1
+	$stock_occupation_auk = '체조 선수'
+elseif $stock_occupation = 'policewoman':
+	stock["work_index"] = 4
+	if stock['expression'] < 5: stock['expression'] += 1
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['gladiatrix'] < 4: stock['gladiatrix'] += 2
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+	if stock['secretary'] < 5: stock['secretary'] += 1
+	if stock['nurse'] < 5: stock['nurse'] += 1
+	$stock_occupation_auk = '경찰관'
+elseif $stock_occupation = 'model':
+	stock["work_index"] = 2
+	if stock['beauty'] < 4: stock_rate['beauty'] = 80
+	if stock['expression'] < 5: stock['expression'] += 1
+	if stock['calisthenics'] < 4: stock['calisthenics'] += 2
+	if stock['pride'] < 5: stock['pride'] += 1
+	if stock['dressage'] < 5: stock['dressage'] += 1
+	if stock['fat'] > 0: stock['fat'] = 1
+	$stock_occupation_auk = '사진 모델'
+elseif $stock_occupation = 'hacker':
+	stock["work_index"] = 3
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	if stock['intellect'] < 4: stock['intellect'] = 4
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['secretary'] < 5: stock['secretary'] += 1
+	$stock_occupation_auk = '해커'
+elseif $stock_occupation = 'writer':
+	stock["work_index"] = 3
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	if stock['expression'] < 4: stock['expression'] += 2
+	$stock_occupation_auk = '여성 소설 작가'
+elseif $stock_occupation = 'major':
+	stock["work_index"] = 2
+	if stock['temper'] < 5: stock['temper'] += 1
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	if stock['calisthenics'] < 5: stock['calisthenics'] += 1
+	if stock['sub_seduce'] < 5: stock['sub_seduce'] += 1
+	if stock['sub_bj'] < 5: stock['sub_bj'] += 1
+	if stock['sub_hug'] < 5: stock['sub_hug'] += 1
+	if stock['sub_kiss'] < 5: stock['sub_kiss'] += 1
+	$stock_occupation_auk = '제트셋의 일원'
+elseif $stock_occupation = 'artist':
+	stock["work_index"] = 3
+	if stock['stamina'] > 1: stock['stamina'] -= 1
+	if stock['expression'] < 5: stock['expression'] += 1
+	if stock['sensitivity'] < 5: stock['sensitivity'] += 1
+	$stock_occupation_auk = '예술가'
+elseif $stock_occupation = 'mind_contol':
+	stock["work_index"] = 3
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['secretary'] < 5: stock['secretary'] += 1
+	if stock['enchanter'] < 5: stock['enchanter'] += 1
+	$stock_occupation_auk = '정신 지배 경찰관'
+elseif $stock_occupation = 'time_plice':
+	stock["work_index"] = 3
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['expression'] < 5: stock['expression'] += 1
+	if stock['gladiatrix'] < 3: stock['gladiatrix'] += 3
+	if stock['secretary'] < 5: stock['secretary'] += 1
+	$stock_occupation_auk = '시간 경찰관'
+elseif $stock_occupation = 'jailer':
+	stock["work_index"] = 4
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['ego'] < 5: stock['ego'] += 1
+	$stock_occupation_auk = '여교도관'
+elseif $stock_occupation = 'anter':
+	stock["work_index"] = 4
+	if stock['stamina'] > 1: stock['stamina'] -= 1
+	if stock['sensitivity'] > 1: stock['sensitivity'] -= 1
+	if stock['temper'] > 1: stock['temper'] -= 1
+	if stock['ego'] > 1: stock['ego'] -= 1
+	if stock['pride'] > 1: stock['pride'] -= 1
+	if stock['intellect'] > 1: stock['intellect'] -= 1
+	if stock['custom'] < 5: stock['custom'] += 1
+	if stock['service'] < 5: stock['service'] += 1
+	$stock_occupation_auk = '평범한 노동자'
+elseif $stock_occupation = 'academy':
+	stock["work_index"] = 3
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	if stock['gladiatrix'] < 5: stock['gladiatrix'] += 1
+	if stock['secretary'] < 5: stock['secretary'] += 1
+	if stock['pride'] < 5: stock['pride'] += 1
+	$stock_occupation_auk = '스타플릿 아카데미 졸업생'
+elseif $stock_occupation = 'mech':
+	stock["work_index"] = 3
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['temper'] < 5: stock['temper'] += 1
+	if stock['gladiatrix'] < 4: stock['gladiatrix'] += 2
+	if stock['service'] < 5: stock['service'] += 1
+	$stock_occupation_auk = '거대 인간형 전투 로봇 조종사'
+elseif $stock_occupation = 'contraband':
+	stock["work_index"] = 3
+	if stock['expression'] < 4: stock['expression'] += 2
+	if stock['gladiatrix'] < 5: stock['gladiatrix'] += 1
+	if stock['secretary'] < 5: stock['secretary'] += 1
+	if stock['ego'] < 5: stock['ego'] += 1
+	if stock['intellect'] < 5: stock['intellect'] += 1
+	if stock['custom'] > 1: stock['custom'] -= 1
+	$stock_occupation_auk = '밀수업자'
+elseif $stock_occupation = 'astrofarmer':
+	stock["work_index"] = 3
+	if stock['temper'] > 1: stock['temper'] -= 1
+	if stock['service'] < 5: stock['service'] += 1
+	if stock['cook'] < 5: stock['cook'] += 1
+	$stock_occupation_auk = '궤도 농장 운영자'
+elseif $stock_occupation = 'installer':
+	stock["work_index"] = 3
+	if stock['stamina'] < 5: stock['stamina'] += 1
+	if stock['service'] < 5: stock['service'] += 1
+	$stock_occupation_auk = '궤도 정비공'
+end
+
+!FERTILITY
+stock['cycle_day'] = rand(1,35)
+if stock['age'] = CONST_INT['loli_age']:
+	stock['fertility'] = -2 &! immature
+elseif stock['fertility_revealed'] = 0 and stock['fertility'] = 0:
+	if rand(1, 15) = 3:
+		stock['fertility'] = -1 &! sterile
+	else
+		stock['fertility'] = 0 &! fertile
+	end
+end
+
+if special_stock = 0:
+	!Make slaves more unique - crushboss
+	if stock['age'] = CONST_INT['loli_age']: a = 15
+	if stock['age'] = CONST_INT['young_age']: a = 10
+	if stock['age'] = CONST_INT['milf_age']: a = 8
+	if rand(1, a) = 1: stock_rate['beauty'] += rand(10,50)
+	if rand(1, a) = 1: stock_rate['exotic'] += rand(10,50)
+	if rand(1, a) = 1: stock_rate['fame'] += rand(1,25)
+	if rand(1, a) = 1: stock['stamina'] += rand(1,2)
+	if rand(1, a) = 1: stock['sensitivity'] += rand(1,2)
+	if rand(1, a) = 1: stock['temper'] += rand(1,2)
+	if rand(1, a) = 1: stock['ego'] += rand(1,2)
+	if rand(1, a) = 1: stock['pride'] -= rand(1,2)
+	if rand(1, a) = 1: stock['intellect'] += rand(1,2)
+
+	if rand(1, a) = 1: stock['service'] += rand(1,2)
+	if rand(1, a) = 1: stock['expression'] += rand(1,2)
+	if rand(1, a) = 1: stock['secretary'] += rand(1,2)
+	if rand(1, a) = 1: stock['calisthenics'] += rand(1,2)
+	if rand(1, a) = 1: stock['gladiatrix'] += rand(1,2)
+	if rand(1, a) = 1: stock['cook'] += rand(1,2)
+	if rand(1, a) = 1: stock['dressage'] += rand(1,2)
+	if rand(1, a) = 1: stock['pet'] += rand(1,2)
+	if rand(1, a) = 1: stock['cowSK'] += rand(1,2)
+	if rand(1, a) = 1: stock['nurse'] += rand(1,2)
+	if rand(1, a) = 1: stock['enchanter'] += rand(1,2)
+	if rand(1, a) = 1: stock['calisthenics'] += rand(1,2)
+	if rand(1, a) = 1: stock['music'] += rand(1,2)
+
+	if meta_type = 2:
+		!YOUNG SLAVES SOMETIMES HAVE SEXUAL EXPERIENCE
+		if rand(1,2) = 1: stock['sub_masturbation'] += 1
+		if rand(1,3) = 1: stock['sub_masturbation'] += 1
+		if rand(1,4) = 1: stock['sub_anal'] += 1
+		if rand(1,3) = 1: stock['sub_bj'] += 1
+		if rand(1,4) = 1:
+			stock['virginity'] = 2
+			if stock['sub_hug'] < 2: stock['sub_hug'] += 1
+			if stock['sub_kiss'] < 2: stock['sub_kiss'] += 1
+			if stock['sub_vaginal'] < 1: stock['sub_vaginal'] += 1
+			if rand(1,3) = 1: stock['sub_anal'] += 1
+			if rand(1,3) = 1: stock['sub_bj'] += 1
+		end
+	elseif meta_type = 3:
+		!ADULT SLAVES USUALLY HAVE SEXUAL EXPERIENCE
+		if stock['sub_hug'] < 3: stock['sub_hug'] += 1
+		if stock['sub_kiss'] < 3: stock['sub_kiss'] += 1
+		if rand(1,2) = 1: stock['sub_masturbation'] += 1
+		if rand(1,3) = 1: stock['sub_masturbation'] += 1
+		if rand(1,4) = 1: stock['sub_masturbation'] += 1
+		if rand(1,4) = 1: stock['sub_anal'] += 1
+		if rand(1,3) = 1: stock['sub_bj'] += 1
+		if rand(1,4) > 1:
+			stock['virginity'] = 2
+			if stock['sub_hug'] < 4: stock['sub_hug'] += 1
+			if stock['sub_kiss'] < 4: stock['sub_kiss'] += 1
+			if stock['sub_seduce'] < 3: stock['sub_seduce'] += 1
+			if stock['sub_vaginal'] < 3: stock['sub_vaginal'] += 2
+			if rand(1,3) = 1: stock['sub_anal'] += 1
+			if rand(1,4) = 1: stock['sub_anal'] += 1
+			if rand(1,2) = 1: stock['sub_bj'] += 1
+			if rand(1,3) = 1: stock['sub_bj'] += 1
+		end
+	end
+
+	!TRAITS - viginity chance - crushboss
+	if stock['virginity'] = 0:
+		if stock['age'] = CONST_INT['loli_age'] and rand(1,100) <= 20:
+			stock['virginity'] = 2
+		elseif stock['age'] = CONST_INT['young_age'] and rand(1,100) <= 50:
+			stock['virginity'] = 2
+		elseif stock['age'] = CONST_INT['milf_age'] and rand(1,100) <= 80:
+			stock['virginity'] = 2
+		end
+	end
+
+	!EXTRA SEXUAL EXPERIENCE FOR NON-VIRGINS
+	if stock['virginity'] > 1:
+		if rand(1, a) = 1: stock['sub_vaginal'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_fisting'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_threesome'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_dp'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_tp'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_gangbang'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_zoosex'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_bestiality'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_horse'] += rand(1,3)
+		!if rand(1, a) = b: stock['sub_tentacles'] += rand(1,3) &! implausible as a random chance for all slaves, should be set for specific backgrounds only
+		!if rand(1, a) = b: stock['sub_arachnidspider'] += rand(1,3) &! implausible as a random chance for all slaves, should be set for specific backgrounds only
+		!if rand(1, a) = b: stock['sub_polypusvermin'] += rand(1,3) &! implausible as a random chance for all slaves, should be set for specific backgrounds only
+		if rand(1, a) = 1: stock['sub_hug'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_kiss'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_bj'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_anal'] += rand(1,3)
+		if rand(1, a) = 1: stock['anal_stretch'] = rand(1,3)
+		if rand(1, a) = 1: stock['sub_exhibit'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_humiliation'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_hj'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_fj'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_paizuri'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_tongue'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_dt'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_asslik'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_seduce'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_masturbation'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_dildo'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_enema'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_mazo'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_selfpain'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_piss'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_kopro'] += rand(1,3)
+		if rand(1, a) = 1: stock['sub_bukkake'] += rand(1,3)
+		if rand(1, a) = 1: stock["sub_nipplefuck"] += rand(1,3)
+		if rand(1, a) = 1: stock["sub_lesbiansex1"] += rand(1,3)
+		if rand(1, a) = 1: stock["sub_lesbiansex2"] += rand(1,3)
+		if rand(1, a) = 1: stock["sub_lesbiansex3"] += rand(1,3)
+		if rand(1, a) = 1: stock["sub_lesbiansex4"] += rand(1,3)
+		
+		if rand(1, 8) = 4:
+			!CHANCE OF A PARASITE IF HYMEN BROKEN
+			stock['parasite'] = 1
+		elseif stock['fertility'] = 0:
+			!CHANCE OF NORMAL PREGNANCY IF FERTILE
+			if rand(1, 12) = 6: stock['pregnant'] = 1
+		end
+	end
+
+	!TRAITS
+	stock['metabolism'] = rand(1,5)
+	if rand(1, 10) = 1: stock['nymphomania'] = rand(-1,1)
+	if rand(1, 10) = 1: stock['masochism'] = rand(-1,2)
+	if rand(1, 10) = 1: stock['exhibitionism'] = rand(-1,2)
+	if rand(1, 6) = 1: stock['perversion'] = rand(-1,2)
+	if stock['perversion'] = 1: stock['perversion'] = 2 &! allowed values are -1, 0, 2, so change 1 to 2
+	if rand(1, 7) = 1: stock['homosexualism'] = rand(-1,2)
+	if rand(1, 6) = 1: stock['abuse_attitude'] = rand(-1,2)
+	if rand(1, 6) = 1: stock['darkness_attitude'] = rand(-1,2)
+	if rand(1, 6) = 1: stock['blood_attitude'] = rand(-1,2)
+	if rand(1, 6) = 1: stock['fire_attitude'] = rand(-1,2)
+	if rand(1, 6) = 1: stock['water_attitude'] = rand(-1,2)
+	if rand(1, 6) = 1: stock['vermin_attitude'] = rand(-1,2)
+	if rand(1, 6) = 1: stock['deprivation_attitude'] = rand(-1,2)
+	if rand(1, 6) = 1: stock['passion_comfort'] = rand(-1,2)
+	if rand(1, 6) = 1: stock['passion_luxury'] = rand(-1,2)
+	if rand(1, 6) = 1: stock['passion_sweets'] = rand(-1,2)
+	if rand(1, 6) = 1: stock['passion_fame'] = rand(-1,2)
+	if rand(1, 6) = 1: stock['courage'] = rand(-1,2)
+	if rand(1, 6) = 1: stock['grace'] = rand(-1,1)
+	if rand(1, 6) = 1: stock['sport_affinity'] = rand(-1,1)
+
+	if rand(1, 7) = 7: stock['expression_affinity'] = 1
+	if rand(1, 7) = 7: stock['pet_affinity'] = 1
+	if rand(1, 7) = 7: stock['dressage_affinity'] = 1
+	if rand(1, 7) = 7: stock['cowSK_affinity'] = 1 
+	if rand(1, 7) = 7: stock['nurse_affinity'] = 1
+	if rand(1, 7) = 7: stock['service_affinity'] = 1
+	if rand(1, 7) = 7: stock['cook_affinity'] = 1
+	if rand(1, 7) = 7: stock['gladiatrix_affinity'] = 1
+	if rand(1, 7) = 7: stock['enchanter_affinity'] = 1
+	if rand(1, 7) = 7: stock['art_affinity'] = 1
+	if rand(1, 7) = 7: stock['music_affinity'] = 1
+	if rand(1, 7) = 7: stock['calisthenics_affinity'] = 1
+	if rand(1, 7) = 7: stock['secretary_affinity'] = 1
+
+	!if a = 31:
+	! chance = rand(1,2)
+	! stock['memory'] = iif(chance = 1, -1, 1)
+	!end
+
+	if rand(1, 6) = 1: stock['meekness'] = rand(-2,5)
+	if rand(1, 6) = 1: stock['selfesteem'] = rand(-1,1)
+	if rand(1, 6) = 1: stock['dexterity'] = rand(-1,1)
+	if rand(1, 6) = 1: stock['compassion'] = rand(-1,2)
+
+	!ILLNESS
+	if rand(1, 5) = 1: stock['ill'] = 1
+
+	!CHARACTERISTICS THAT ARE DERIVED FROM RATE (BRUISES, SCARS, HYGIENE, AROUSAL, WOUNDS, FAME)
+	if rand(1, 15) = 8:
+		chance = rand(1,15)
+		if chance > 0: s = 10
+		if chance > 5: s = 20
+		if chance > 9: s = 40
+		if chance > 12: s = 80
+		if chance = 15: s = 160
+		stock_rate['wounds'] = s
+	end
+
+	if rand(1, 8) = 4 or stock_rate['wounds'] >= 80:
+		chance = rand(1,15)
+		if chance > 0: s = 10
+		if chance > 5: s = 20
+		if chance > 9: s = 40
+		if chance > 12: s = 80
+		if chance = 15: s = 160
+		stock_rate['scars'] = s
+	end
+
+	if rand(1, 5) = 4 or stock_rate['wounds'] >= 20:
+		chance = rand(1,15)
+		if chance > 0: s = 10
+		if chance > 5: s = 20
+		if chance > 9: s = 40
+		if chance > 12: s = 80
+		if chance = 15: s = 160
+		stock_rate['bruises'] = s
+	end
+
+	if rand(1,5) > 1: stock_rate['hygiene'] = rand(0,40) &! fixed to set rate instead of setting hygiene directly (but not too much of it) - ImperatorAugustus
+
+	!BODY MODIFICATIONS
+	if stock['age'] ! CONST_INT['loli_age']:
+		if rand(1, a) = 1: stock['makeup'] = 3 &! tattoo makeup
+		!if rand(1, a) = 1: stock['fiend_tattoo'] = 1 &! implausible as a random chance for all slaves, should be set for specific backgrounds only (slaves originating in the Eternal Rome)
+		if rand(1, a) = 1: stock['tattoo'] = rand(1,5)
+		if rand(1, a) = 1: stock['nipple_piercing'] = 1
+		if rand(1, a) = 1: stock['clit_piercing'] = 1
+		if rand(1, a) = 1: stock['ear_piercing'] = 1
+		if rand(1, a) = 1: stock['tongue_piercing'] = 1
+		if rand(1, a) = 1: stock['belly_piercing'] = 1
+		if rand(1, a) = 1: stock['nostril_piercing'] = 1
+		if rand(1, a) = 1: stock['nose_piercing'] = 1
+		if rand(1, 20) = 3: stock['tongue_split'] = 1
+		if rand(1, 20) = 3: stock['scarification'] = 1
+	end
+end &! end of randomization to make slaves more unique
+
+!Code for testing the new better vanilla slave system - crushboss'
+!stock['nymphomania_revealed'] = 2
+!stock['masochism_revealed'] = 2
+!stock['exhibitionism_revealed'] = 2
+!stock['perversion_revealed'] = 2
+!stock['homosexualism_revealed'] = 2
+!stock['abuse_attitude_revealed'] = 2
+!stock['darkness_attitude_revealed'] = 2
+!stock['blood_attitude_revealed'] = 2
+!stock['fire_attitude_revealed'] = 2
+!stock['water_attitude_revealed'] = 2
+!stock['vermin_attitude_revealed'] = 2
+!stock['deprivation_attitude_revealed'] = 2
+!stock['passion_comfort_revealed'] = 2
+!stock['passion_luxury_revealed'] = 2
+!stock['passion_sweets_revealed'] = 2
+!stock['passion_fame_revealed'] = 2
+!stock['courage_revealed'] = 2
+!stock['metabolism_revealed'] = 2
+!stock['sport_affinity_revealed'] = 2
+!stock['expression_affinity_revealed'] = 2
+!stock['pet_affinity_revealed'] = 2
+!stock['dressage_affinity_revealed'] = 2
+!stock['cowSK_affinity_revealed'] = 2
+!stock['nurse_affinity_revealed'] = 2
+!stock['service_affinity_revealed'] = 2
+!stock['cook_affinity_revealed'] = 2
+!stock['gladiatrix_affinity_revealed'] = 2
+!stock['enchanter_affinity_revealed'] = 2
+!stock['art_affinity_revealed'] = 2
+!stock['music_affinity_revealed'] = 2
+!stock['calisthenics_affinity_revealed'] = 2
+!stock['secretary_affinity_revealed'] = 2
+!stock['meekness_revealed'] = 2
+!stock['selfesteem_revealed'] = 2
+!stock['compassion_revealed'] = 2
+!End of Testing Code'
+
+
+!Makes it harder to train in both gladiatrix and pet or pony since they use opposing skills - crushboss | and cow added - Pianocat
+if stock['gladiatrix'] > 2: stock['dressage'] = 0 & stock['pet'] = 0
+if stock['dressage'] > 2 or stock['pet'] > 2 or stock['cowSK'] > 0: stock['gladiatrix'] = 0
+if stock['gladiatrix_affinity'] = 1: stock['cowSK_affinity'] = 0 & stock['dressage_affinity'] = 0 & stock['pet_affinity'] = 0
+
+!Testing Code - crushboss
+if cheat_h = 1 and get_girl = 0: gs 'generate_stock_testing'
+if cheat_j = 1 and get_girl = 0: gs 'generate_stock_maximum_testing'
+if cheat_l = 1:
+	stock['energy'] = 5
+	stock['metabolism'] = 5
+	if stock['stamina'] < 3: stock['stamina'] += 2
+	if stock['beauty'] < 3: stock_rate['beauty'] += 40
+	if stock['exotic'] < 1: stock_rate['exotic'] += rand(0,70)
+	if stock['meekness'] <= 0: stock['meekness'] = rand(0,3)
+	if rand(1,4) = 2:
+		if stock['perversion'] <= 0: stock['perversion'] = 2
+	end
+	if stock['nymphomania'] < 0: stock['nymphomania'] = rand(0,1)
+	if stock['homosexualism'] <= 0: stock['homosexualism'] = rand(0,1)
+	if stock['selfesteem'] <= 0: stock['selfesteem'] = rand(0,1)
+	if stock['abuse_attitude'] >= 0: stock['abuse_attitude'] = rand(-1,0)
+	if stock['passion_fame'] <= 0: stock['passion_fame'] = rand(0,1)
+	if stock['passion_comfort'] <= 0: stock['passion_comfort'] = rand(0,1)
+	if stock['courage'] > 0: stock['courage'] = 0
+	if stock['masochism'] > 0: stock['masochism'] = 0
+	if stock['gladiatrix_affinity'] < 1 and stock['dressage_affinity'] < 1: stock['gladiatrix_affinity'] = rand(0,1)
+	if stock['gladiatrix_affinity'] < 1 and stock['dressage_affinity'] < 1: stock['dressage_affinity'] = rand(0,1)
+end
+!End of Testing Code
+
+!METABOLISM
+if stock['stamina'] = 5: stock['metabolism'] += 1
+if stock['stamina'] = 1: stock['metabolism'] -= 1
+if stock['metabolism'] < 1: stock['metabolism'] = 1
+if stock['metabolism'] > 5: stock['metabolism'] = 5
+
+!Align characteristics (calculate attribute values from rates, enforce upper/lower bounds)
+dynamic $replace($dyn_calc_slave_attrs, 'dyn'+'slave', 'stock')
+
+!Record starting values
+stock['weight_before'] = stock['fat']
+stock['base_exotic'] = stock['exotic']
+!APPLY EXOTICISM RATE FOR TATTOOS
+if stock['tattoo'] > 0: stock_rate['exotic'] += 3
+if stock['tattoo'] > 1: stock_rate['exotic'] += 2
+if stock['tattoo'] > 2: stock_rate['exotic'] += 8
+if stock['tattoo'] > 3: stock_rate['exotic'] += 14
+if stock['tattoo'] > 4: stock_rate['exotic'] += 13
+!TRANSLATE BEAUTY RATE TO BASE BEAUTY (converting this way because bruises and scars can impact it)
+if stock_rate['beauty'] >= 0:   stock['base_beauty'] = 0
+if stock_rate['beauty'] >= 10:  stock['base_beauty'] = 1
+if stock_rate['beauty'] >= 20:  stock['base_beauty'] = 2
+if stock_rate['beauty'] >= 40:  stock['base_beauty'] = 3
+if stock_rate['beauty'] >= 80:  stock['base_beauty'] = 4
+if stock_rate['beauty'] >= 160: stock['base_beauty'] = 5
+
+
+!$slave_name = $seed_name[slave_type]
+!slave['ill'] = 0
+!slave['parasite'] = 0
+!$slave['boobs_img'] = $seed_boobs_img[slave_type]
+!$slave['pussy_img'] = $seed_pussy_img[slave_type]
+!slave['brand'] = 4
+!tattoo_brand = slave['brand']
+!stats alignment
+!slave["energy"] = slave["metabolism"]
+!slave["hygiene"] = 2
+!slave["exotic"] = seed_exotic[slave_type]
+!slave["bcheck"] = 0
+!slave["neg_slave"] = 1 + slave["pride"] + slave["temper"] + slave["ego"] - slave["custom"]
+!slave['cycle_day'] = RAND (1,28)
+!slave["calories"] = 3
+!$slave['fullimage'] = $fullimage[slave_type]
+!$slave['ava'] = $seed_ava[slave_type]
+!$slave['ava_gray'] = $seed_ava_gray[slave_type]
+!$slave['ava_clear'] = $seed_ava_clear[slave_type]
+!EQUIP
+!$slave["wpn"] = 'безоружный'
+!$slave["armor"] = 'без_брони'
+!$slave["scnd"] = ''
+!$slave["back_wpn"] = ''
+!$slave["left_wpn"] = ''
+!$slave["right_wpn"] = ''
+!$slave["arm_wpn"] = ''
+!$slave["leg_wpn"] = ''
+!$slave["cloth"] = 'slavecostume'
+IF slave_type = 908:
+	$slave["wpn"] = 'кинжал'
+	$slave["armor"] = 'кожан'
+	$slave["left_wpn"] = 'стилет'
+	$slave["right_wpn"] = 'кинжал'
+	$slave["back_wpn"] = ''
+	$slave["cloth"] = 'bellydance'
+	slave["ear_piercing"] = 1
+	slave["manicure"] = 5
+	slave["perfume"] = 1
+	slave["hygiene"] = 0
+	slave_rate["hygiene"] = 0
+	slave["epilation"] = 12
+	slave["hairstyle"] = 7
+	slave["pos_gentle"] = 2
+	slave['pos_slave_clean'] = 2
+	$slave["earrings"] = 'incrusted_earrings'
+	$slave["gloves"] = 'laced_gloves'
+	$slave["boots"] = 'pointes'
+	$slave["ring_left"] = 'incrusted_ring'
+	$slave["ring_right"] = 'incrusted_ring'
+	slave_rules['sleep_condition'] = 0
+	slave_rules['food_type'] = 2
+	slave_rules['eats_remains'] = 0
+	slave_rules['food_portion'] = 4
+	slave_rules['washes'] = 1
+	slave_rules['blowjob'] = 1
+	slave_rules['v_balls'] = 1
+	slave_rules['forces'] = 1
+	slave_rules['master'] = 1
+	slave_rules['tentacle'] = 1
+	IF spawn_semen < 120:
+		spawn_semen = 120
+	else
+		spawn_semen += 60
+	END
+	slave["metabolism"] = 3
+END
+IF slave_type = 2598 or slave_type = 2599 or slave_type = 2600 or slave_type = 2601 or slave_type = 2602 or slave_type = 2603:
+	$slave["wpn"] = 'безоружный'
+	$slave["armor"] = 'без_брони'
+	$slave["scnd"] = ''
+	$slave["back_wpn"] = ''
+	$slave["left_wpn"] = ''
+	$slave["right_wpn"] = ''
+	$slave["arm_wpn"] = ''
+	$slave["leg_wpn"] = ''
+	$slave["cloth"] = 'anal_tail'
+	$slave["headband"] = ''
+	$slave["earrings"] = ''
+	$slave["collar"] = 'leather_collar'
+	$slave["gloves"] = ''
+	$slave["boots"] = ''
+	$slave["nipplerings"] = 'nipple_chain'
+	$slave["clitring"] = ''
+	$slave["ring_left"] = ''
+	$slave["ring_right"] = ''
+	$slave["navel"] = ''
+	$slave["tongue"] = ''
+	slave["full_piercing"] = 0
+ 	slave["nipple_piercing"] = 1
+ 	slave["clit_piercing"] = 0
+ 	slave["ear_piercing"] = 0
+ 	slave["tongue_piercing"] = 0
+ 	slave["belly_piercing"] = 0
+ 	slave["nostril_piercing"] = 0
+ 	slave["nose_piercing"] = 1
+ 	slave["scarification"] = 0
+ 	slave["tattoo_timeup"] = 0
+ 	slave["tattoo"] = 0
+ 	slave["fiend_tattoo"] = 0
+ 	slave["manicure"] = 0
+	slave["perfume"] = 0
+	slave["hygiene"] = 0
+	slave_rate["hygiene"] = 0
+END
+
+!psy determination if not preset
+if $stock_psy_basic = '':
+	a = rand(1,4)
+	if a = 1: $stock_psy_basic = 'reluctant'
+	if a = 2: $stock_psy_basic = 'soft'
+	if a = 3: $stock_psy_basic = 'optimistic'
+	if a = 4: $stock_psy_basic = iif(stock['sensitivity'] >= 4, 'lachrymose', 'depresive')
+end
+
+!SELECT ONE EPITHET FOR DESCRIBING THE SLAVE (PRIORITIZED LOW TO HIGH)
+if stock['exotic'] >= 2: $stock_epithet = '아주 특이한'
+if stock['temper'] = 4: $stock_epithet = '흥분해 있는'
+if stock['stamina'] = 4: $stock_epithet = '강하고 건강한'
+if stock['fat'] = 1: $stock_epithet = '얇은 천 처럼 늘씬한'
+if stock['beauty'] = 3: $stock_epithet = '매력적인'
+if stock['beauty'] = 4: $stock_epithet = '사랑스러운'
+if stock['stamina'] = 5: $stock_epithet = '흔치않은 강한 몸의'
+if stock['sensitivity'] = 4: $stock_epithet = '상냥하고 애정깊은'
+if stock['sensitivity'] = 5: $stock_epithet = '꽃처럼 다정한'
+! JO9 MOD START TBV_STOCK_TOP_EPITHET | 2026-10-17_trait_value
+if stock['beauty'] >= 5: $stock_epithet = '보석처럼 완벽한'
+! JO9 MOD END TBV_STOCK_TOP_EPITHET
+if stock['temper'] = 5: $stock_epithet = '뜨겁고 화끈한'
+
+!EQUIP
+$stock['wpn'] = 'безоружный'
+$stock['armor'] = 'без_брони'
+$stock['scnd'] = ''
+
+$stock['back_wpn'] = ''
+$stock['left_wpn'] = ''
+$stock['right_wpn'] = ''
+$stock['arm_wpn'] = ''
+$stock['leg_wpn'] = ''
+
+$stock['cloth'] = 'голая'
+
+! JO9 MOD START COG_GENERATE | 2026-10-16_innate_learning_traits
+! 신규 무작위 생성만 추첨: 1~3 천재, 4~6 백치, 7~100 특성 없음.
+! 고정 프리셋과 기존 인물에는 추첨하지 않는다. 지성과 자아의 이후 변화는 기존 규칙을 따른다.
+if special_stock = 0:
+ stock['jo9_learning_trait'] = 0
+ jo9_learning_roll = rand(1,100)
+ if jo9_learning_roll <= 3:
+  stock['jo9_learning_trait'] = 1
+  stock['intellect'] = 5
+  stock_rate['intellect'] = 0
+ elseif jo9_learning_roll <= 6:
+  stock['jo9_learning_trait'] = -1
+  stock['intellect'] = 0
+  stock_rate['intellect'] = 0
+ end
+end
+stock['neg_slave'] = 1 + stock['pride'] + stock['temper'] + stock['ego'] + stock['intellect'] - stock['rational'] - stock['custom']
+! JO9 MOD END COG_GENERATE
+stock['newness'] = 10 - brand_reputation
+stock['diet_portion'] = 2 &! stable diet
+
+!ENERGY
+stock['calories'] = stock['stamina']
+stock['energy'] = stock['stamina']
+
+!DEVOTION STARTS AT NEGATIVE TEN RATE SO FORCING RULES DOES NOT EXTEND DEVOTION RAMP
+stock_rate['moral'] = -10
+
+!SANITY CHECK
+if (stock['temper'] + stock['ego'] + stock['pride']) < 3: stock['temper'] = 0 & stock['pride'] = 0 &! temper and pride would drop to zero at the next update, so take that into account for display - ImperatorAugustus
+
+!PREPARE TRAIT LIST FOR DISPLAY (NOT EVERYTHING IS VISIBLE BEFORE ACQUISITION)
+! JO9 MOD START TRAITS_GENERATE | 2026-10-17_traits_batch
+! 생성 과정에서 외모 누적값이 변할 수 있으므로 최종 외모로 후보를 판단합니다.
+gs 'jo9_traits_value', 'refresh', 'stock'
+if special_stock = 0: gs 'jo9_traits', 'generate'
+gs 'jo9_traits_value', 'refresh', 'stock'
+gs 'jo9_traits_personality', 'gradecheck', 'stock'
+! JO9 MOD END TRAITS_GENERATE
+gs '$stock_traits'
+
+!Fixes the starving message you get on the 2nd day of getting a new slave or assistant - crushboss
+!stock_rate['fat'] = 2
+!stock['starvation'] = -5
+
+!Reset variables used - crushboss
+chance = 0
+a = 0
+b = 0
+s = 0
+
+!Calculate stock rating and specializations - crushboss
+gs '$slave_price', 'stock' &! merged $slave_price_stock into $slave_price - ImperatorAugustus
+
+!gs '#txt'
+!gs '#txt_2'
+
+special_stock = 0
+
+------------ generate_stock ------------

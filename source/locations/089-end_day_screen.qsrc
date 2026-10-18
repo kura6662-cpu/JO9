@@ -1,0 +1,1512 @@
+# end_day_screen
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1297 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'end_day_screen': gs 'snk_room_bridge', 'guard', 'end_day_screen'
+! JO9 MOD END J9M1297
+!End Day Screen
+!Overhauled by crushboss
+
+gs '_layout'
+
+killvar '$text'
+menu_form = 0
+$info_bar = ''
+$place = ''
+$npc_id = ''
+$interaction_type = ''
+$bg_path = ''
+png = 0
+npc = 0
+
+if end_day_phase = 0:
+	end_day_phase = 1
+	$toplay = 'night' & dynamic $play_music &! due to an engine bug the night music will sometimes continue playing during the day - ImperatorAugustus
+end
+
+if end_day_phase = 2:
+	dynamic $home_sounds
+end
+
+if exam_in_progress = 1:
+	gs 'demo_estate'
+	slave['energy'] = slave['stamina']
+end
+
+if slave_auto_rest = 1:
+	slave_auto_rest = 0
+	$text = $idle[rand(1,5)]
+	$bg_path = func('display_pic', 'slave', 'rest', 'girls/normal_scenes/')
+	$place = 'bedroom'
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if slave_auto_cook = 1:
+	slave_auto_cook = 0
+	assistant_auto_cook = 0
+	master_auto_cook = 0
+	room1_auto_cook = 0
+	room2_auto_cook = 0
+	room3_auto_cook = 0
+	room4_auto_cook = 0	
+	$bg_path = func('display_pic', 'slave', 'cook', 'girls/normal_scenes/')
+	$place = 'kitchen'
+	slave_skill = min(slave['cook'], max(1, slave['mood']))
+	dynamic $replace("$text = '  <<$slave_cook_description[min(slave_skill, cooked_food_plus)]>>'", 'dyn'+'slave', 'slave') &! description based on lesser of meal quality or skill
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if assistant_auto_cook = 1:
+	assistant_auto_cook = 0
+	master_auto_cook = 0
+	slave_auto_cook = 0
+	room1_auto_cook = 0
+	room2_auto_cook = 0
+	room3_auto_cook = 0
+	room4_auto_cook = 0	
+	$bg_path = func('display_pic', 'assistant', 'cook', 'girls/normal_scenes/')
+	$place = 'kitchen'
+	slave_skill = min(assistant['cook'], max(1, assistant['mood']))
+	dynamic $replace("$text = '  <<$slave_cook_description[min(slave_skill, cooked_food_plus)]>>'", 'dyn'+'slave', 'assistant') &! description based on lesser of meal quality or skill
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+
+!메이드 요리
+if room1_auto_cook = 1:
+	assistant_auto_cook = 0
+	master_auto_cook = 0
+	slave_auto_cook = 0
+	room1_auto_cook = 0
+	room2_auto_cook = 0
+	room3_auto_cook = 0
+	room4_auto_cook = 0		
+	$bg_path = func('display_pic', 'room1', 'cook', 'girls/normal_scenes/')
+	$place = 'kitchen'
+	slave_skill = min(room1['cook'], max(1, room1['mood']))
+	dynamic $replace("$text = '<<$slave_cook_description[max(slave_skill, cooked_food_plus)]>>'", 'dyn'+'slave', 'room1')
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if room2_auto_cook = 1:
+	assistant_auto_cook = 0
+	master_auto_cook = 0
+	slave_auto_cook = 0
+	room1_auto_cook = 0
+	room2_auto_cook = 0
+	room3_auto_cook = 0
+	room4_auto_cook = 0		
+	$bg_path = func('display_pic', 'room2', 'cook', 'girls/normal_scenes/')
+	$place = 'kitchen'
+	slave_skill = min(room2['cook'], max(1, room2['mood']))
+	dynamic $replace("$text = '<<$slave_cook_description[max(slave_skill, cooked_food_plus)]>>'", 'dyn'+'slave', 'room2')
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if room3_auto_cook = 1:
+	assistant_auto_cook = 0
+	master_auto_cook = 0
+	slave_auto_cook = 0
+	room1_auto_cook = 0
+	room2_auto_cook = 0
+	room3_auto_cook = 0
+	room4_auto_cook = 0		
+	$bg_path = func('display_pic', 'room3', 'cook', 'girls/normal_scenes/')
+	$place = 'kitchen'
+	slave_skill = min(room3['cook'], max(1, room3['mood']))
+	dynamic $replace("$text = '<<$slave_cook_description[max(slave_skill, cooked_food_plus)]>>'", 'dyn'+'slave', 'room3')
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if room4_auto_cook = 1:
+	assistant_auto_cook = 0
+	master_auto_cook = 0
+	slave_auto_cook = 0
+	room1_auto_cook = 0
+	room2_auto_cook = 0
+	room3_auto_cook = 0
+	room4_auto_cook = 0		
+	$bg_path = func('display_pic', 'room4', 'cook', 'girls/normal_scenes/')
+	$place = 'kitchen'
+	slave_skill = min(room4['cook'], max(1, room4['mood']))
+	dynamic $replace("$text = '<<$slave_cook_description[max(slave_skill, cooked_food_plus)]>>'", 'dyn'+'slave', 'room4')
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if master_auto_cook = 1:
+	master_auto_cook = 0
+	assistant_auto_cook = 0
+	slave_auto_cook = 0
+	room1_auto_cook = 0
+	room2_auto_cook = 0
+	room3_auto_cook = 0
+	room4_auto_cook = 0
+	if kitchen > 0:
+		$bg_path = 'scene\master_cooking'
+		g = rand(1, picMax['master_cooking'])
+		if g > 1: $bg_path += '_' + $str(g)
+		$place = 'kitchen'
+		$text = $master_cook_description[cooked_food_plus] &! description based on meal quality
+	else
+		$place = 'study'
+		$text = $replace($master_cook_description[cooked_food_plus], 'the kitchen', '당신의 통조림 식량 더미')
+	end
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if master_eats_dinner = 1:
+	master_eats_dinner = 0
+	! if the slaver ate out during the day, he skips dinner unless it would raise his strength
+	! eating high quality food can raise master health up to one level below the food quality grade (max of A+ health with S+ food)
+	if sound_on = 1: play 'content/snd/dinner.wav', sound_volume
+	if kitchen > 0: 
+		$place = 'kitchen'
+	else
+		$place = 'study'
+	end
+!	$bg_path = 'scene/show_food'
+!	g = rand(1, picMax['show_food'])
+!	if g > 1: $bg_path += '_' + $str(g) 
+	$text = '  오늘 저녁 식사:<br> <center><<$meal_name[$cooked_meal]>></center>'
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+
+!도나버전이식 알몸으로 음식을 사러 가면 나오는 이벤트
+if 	assistant_buying_food = 1 and $item_name[$assistant["cloth"]] = '알몸' and $assistant_state > CONST_INT['no_slave'] :
+	assistant_buying_food = 0
+	$place = 'gastronom'
+	$bg_path = $assistant["fullimage"]
+! JO9 MOD START J9M1296 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+	$text = '<<$assistant_name>>(은)는 알몸으로 식재료를 사러 나갔다 <br><br><br><br>[<<$assistant_name>>]<br>&nbsp;:"-대충 부끄러워 하는 내용-."</div>'
+! JO9 MOD END J9M1296
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+!매춘 이미지 출력 파트
+if 메이드1손님 = 1:  
+    메이드1손님 = 0
+    if room1['virginity'] < 2: 
+        $bg_path = func('display_pic', 'room1', 'defloration', 'girls/sex_scenes/')
+! JO9 MOD START J9M1295 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+        $text = '<<$room1_name>>(은)는 귀족에게 처녀를 따이고 돌아왔다 <br><br><br><br>[<<$room1_name>>]<br>&nbsp;:"내 순결이..."</div>'
+! JO9 MOD END J9M1295
+    else    
+        $bg_path = func('display_pic', 'room1', 'gangbang', 'girls/sex_scenes/')
+! JO9 MOD START J9M1294 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+        $text = '<<$room1_name>>에게 매춘을 시켰다.</div>'   
+! JO9 MOD END J9M1294
+    end
+    
+	if assistant_quiet_rule = 0: jump 'loop'
+end    
+
+if 메이드2손님 = 1:  
+    메이드2손님 = 0
+    $bg_path = func('display_pic', 'room2', 'gangbang', 'girls/sex_scenes/')
+! JO9 MOD START J9M1293 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+    $text = '<<$room2_name>>에게 매춘을 시켰다.</div>'   
+! JO9 MOD END J9M1293
+	if assistant_quiet_rule = 0: jump 'loop'
+end  
+if 메이드3손님 = 1:  
+    메이드3손님 = 0
+    $bg_path = func('display_pic', 'room3', 'gangbang', 'girls/sex_scenes/')
+! JO9 MOD START J9M1292 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+    $text = '<<$room3_name>>에게 매춘을 시켰다.</div>'   
+! JO9 MOD END J9M1292
+	if assistant_quiet_rule = 0: jump 'loop'
+end  
+if 메이드4손님 = 1:  
+    메이드4손님 = 0
+    $bg_path = func('display_pic', 'room4', 'gangbang', 'girls/sex_scenes/')
+! JO9 MOD START J9M1291 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+    $text = '<<$room4_name>>에게 매춘을 시켰다.</div>'   
+! JO9 MOD END J9M1291
+	if assistant_quiet_rule = 0: jump 'loop'
+end  
+
+if slave_auto_wash > 0:
+	slave_auto_wash = 0
+	$bg_path = func('display_pic', 'slave', 'wash', 'girls/normal_scenes/')
+	$place = 'bathroom'
+	$text = $slave_washes_master
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if assistant_auto_wash > 0:
+	assistant_auto_wash = 0
+	$bg_path = func('display_pic', 'assistant', 'wash', 'girls/normal_scenes/')
+	$place = 'bathroom'
+	$text = $assistant_washes_master
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+!도나이식 메이드 목욕
+if room1_auto_wash > 0:
+	room1_auto_wash = 0
+	$bg_path = func('display_pic', 'room1', 'wash', 'girls/normal_scenes/')
+	$place = 'bathroom'
+	$text = $room1_washes_master
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if room2_auto_wash > 0:
+	room2_auto_wash = 0
+	$bg_path = func('display_pic', 'room2', 'wash', 'girls/normal_scenes/')
+	$place = 'bathroom'
+	$text = $room2_washes_master
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if room3_auto_wash > 0:
+	room3_auto_wash = 0
+	$bg_path = func('display_pic', 'room3', 'wash', 'girls/normal_scenes/')
+	$place = 'bathroom'
+	$text = $room3_washes_master
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if room4_auto_wash > 0:
+	room4_auto_wash = 0
+	$bg_path = func('display_pic', 'room4', 'wash', 'girls/normal_scenes/')
+	$place = 'bathroom'
+	$text = $room4_washes_master
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+
+if slave_auto_tentacle = 3 - end_day_phase:
+	slave_auto_tentacle = 0 &! reset first - two branches because of quiet rule
+	$bg_path = func('display_pic', 'slave', 'tentacles', 'girls/sex_scenes/')
+	$place = 'study'
+! JO9 MOD START J9M1290 | 2026-10-16_meiki_tentacle_success_safe_icon | changed block; context may be included
+	if slave['sub_tentacles'] > tentacle_size or slave['virginity'] = 4:
+		if slave['virginity'] = 4:
+			$text = '%명기착정성공'
+		else
+			$text = '  <<$slave_name>>는 양동이를 들고 안개 괴물 우리로 간다. 이전 경험 덕분에 그녀는 자제력을 잃지 않고 해낸다. 만족할 줄 모르는 미끈한 촉수 몇 개가 그녀의 모든 구멍을 파고드는 동안, 그녀는 다른 촉수들을 붙잡고 그것들을 양동이 안으로 직접 짜낸다. 획득한 안개 괴물 정액: <<semen_gain[max(0, tentacle_size - spawn_milked)]>>'
+		end
+! JO9 MOD END J9M1290
+		decade_semen += semen_gain[max(0, tentacle_size - spawn_milked)]
+		spawn_milked += slave['sub_tentacles']
+		if spawn_milked > tentacle_size: tentacle_state = 2 &! satisfied
+		if felicity = 1 and $quest12 ! 'fail' and active[$quest[12]] = 1 and slave_type ! 2572: $quest12 = 'fail' & $quest12_failreason = '노예상, 당신의 노예에게 당신의 괴물를 돌보게 하지 않았던 모양이군.'
+		if assistant_quiet_rule = 0: jump 'loop'
+	else
+		$text = '  <<$slave_name>>는 양동이를 들고 안개 괴물 우리로 간다. 하지만 그 물건을 짜내려는 그녀의 노력은 아무 성과도 내지 못한다. 강력한 촉수들에 휘감긴 채, 네 노예는 현실감각을 완전히 잃고 안개 괴물이 그녀의 구멍들에 씨앗을 퍼부을 때까지 절정에 절정을 거듭한다.'
+		jump 'loop'
+	end
+end
+
+if assistant_auto_tentacle = 3 - end_day_phase:
+	assistant_auto_tentacle = 0 &! reset first - two branches because of quiet rule
+	$bg_path = func('display_pic', 'assistant', 'tentacles', 'girls/sex_scenes/')
+	$place = 'study'
+! JO9 MOD START J9M1289 | 2026-10-16_meiki_tentacle_success_safe_icon | changed block; context may be included
+	if assistant['sub_tentacles'] > tentacle_size or assistant['virginity'] = 4:
+		if assistant['virginity'] = 4:
+			$text = '%명기착정성공'
+		else
+			$text = '  <<$assistant_name>>는 양동이를 들고 안개 괴물 우리로 간다. 이전 경험 덕분에 그녀는 자제력을 잃지 않고 해낸다. 만족할 줄 모르는 미끈한 촉수 몇 개가 그녀의 모든 구멍을 파고드는 동안, 그녀는 다른 촉수들을 붙잡고 그것들을 양동이 안으로 직접 짜낸다. 획득한 안개 괴물 정액: <<semen_gain[max(0, tentacle_size - spawn_milked)]>>'
+		end
+! JO9 MOD END J9M1289
+		decade_semen += semen_gain[max(0, tentacle_size - spawn_milked)]
+		spawn_milked += assistant['sub_tentacles']
+		if spawn_milked > tentacle_size: tentacle_state = 2 &! satisfied
+		if felicity = 1 and $quest12 ! 'fail' and active[$quest[12]] = 1 and assistant_type ! 2572: $quest12 = 'fail' & $quest12_failreason = '노예상, 당신의 조수에게 당신의 괴물를 돌보게 하지 않았던 모양이군.'
+		if assistant_quiet_rule = 0: jump 'loop'
+	else
+		$text = '  <<$assistant_name>>는 양동이를 들고 안개 괴물 우리로 간다. 하지만 그 물건을 짜내려는 그녀의 노력은 아무 성과도 내지 못한다. 강력한 촉수들에 휘감긴 채, 네 조수는 현실감각을 완전히 잃고 안개 괴물이 그녀의 구멍들에 씨앗을 퍼부을 때까지 절정에 절정을 거듭한다.'
+		jump 'loop'
+	end
+end
+
+
+!도나이식 메이드 촉수 착정
+if room1_auto_tentacle = 3 - end_day_phase:
+	room1_auto_tentacle = 0 &! reset first - two branches because of quiet rule
+	$bg_path = func('display_pic', 'room1', 'tentacles', 'girls/sex_scenes/')
+	$place = 'study'
+! JO9 MOD START J9M1288 | 2026-10-16_meiki_tentacle_success_safe_icon, 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+	if room1['sub_tentacles'] > tentacle_size or room1['virginity'] = 4:
+		if room1['virginity'] = 4:
+			$text = '%명기착정성공'
+		else
+			$text = '<<$room1_name>>(은)는 손에 양동이를 들고 안개 괴물 우리로 다가갔다. 경험이 있던 탓인지, 이번엔 다행히도 기절은 하지 않았다. 끝없는 욕망을 품은 촉수들이, 온 몸 골이란 골을 탐닉하며 쑤셔대던 중, 손으로 하날 낚아채서 양동이로 쳐박았다.<br><br> 안개 괴물 산란액 획득량 : <<semen_gain[max(0, tentacle_size - spawn_milked)]>>'
+		end
+! JO9 MOD END J9M1288
+		decade_semen += semen_gain[max(0, tentacle_size - spawn_milked)]
+		spawn_milked += room1['sub_tentacles']
+		if felicity = 1 and $quest12 ! 'fail' and active[$quest[12]] = 1 and room1_type ! 2572: $quest12 = 'fail' & $quest12_failreason = '"안개 괴물을 다루게 하라 말 했을텐데, 노예상."'
+		if assistant_quiet_rule = 0: jump 'loop'
+	else
+! JO9 MOD START J9M1287 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+		$text = '<<$room1_name>>(은)는 손에 양동이를 들고 안개 괴물 우리로 다가갔다. 하지만 어쩐 일인지, 무슨 시도에도 별다른 소용이 없어보인다. 강대한 힘의 촉수들이 <<$room1_name>> 몸을 휘둘러 감싸 미친듯이 쑤셔댔고, 그 희멀건한 산란액들이 몸 속 깊이 수정되는 동안, 몇 번이고 절정만을 느끼고 있었다.'
+! JO9 MOD END J9M1287
+		jump 'loop'
+	end
+end
+
+if room2_auto_tentacle = 3 - end_day_phase:
+	room2_auto_tentacle = 0 
+	$bg_path = func('display_pic', 'room2', 'tentacles', 'girls/sex_scenes/')
+	$place = 'study'
+! JO9 MOD START J9M1286 | 2026-10-16_meiki_tentacle_success_safe_icon, 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+	if room2['sub_tentacles'] > tentacle_size or room2['virginity'] = 4:
+		if room2['virginity'] = 4:
+			$text = '%명기착정성공'
+		else
+			$text = '<<$room2_name>>(은)는 손에 양동이를 들고 안개 괴물 우리로 다가갔다. 경험이 있던 탓인지, 이번엔 다행히도 기절은 하지 않았다. 끝없는 욕망을 품은 촉수들이, 온 몸 골이란 골을 탐닉하며 쑤셔대던 중, 손으로 하날 낚아채서 양동이로 쳐박았다.<br><br> 안개 괴물 산란액 획득량 : <<semen_gain[max(0, tentacle_size - spawn_milked)]>>'
+		end
+! JO9 MOD END J9M1286
+		decade_semen += semen_gain[max(0, tentacle_size - spawn_milked)]
+		spawn_milked += room2['sub_tentacles']
+		if felicity = 1 and $quest12 ! 'fail' and active[$quest[12]] = 1 and room2_type ! 2572: $quest12 = 'fail' & $quest12_failreason = '"안개 괴물을 다루게 하라 말 했을텐데, 노예상."'
+		if assistant_quiet_rule = 0: jump 'loop'
+	else
+! JO9 MOD START J9M1285 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+		$text = '<<$room2_name>>(은)는 손에 양동이를 들고 안개 괴물 우리로 다가갔다. 하지만 어쩐 일인지, 무슨 시도에도 별다른 소용이 없어보인다. 강대한 힘의 촉수들이 <<$room2_name>> 몸을 휘둘러 감싸 미친듯이 쑤셔댔고, 그 희멀건한 산란액들이 몸 속 깊이 수정되는 동안, 몇 번이고 절정만을 느끼고 있었다.'
+! JO9 MOD END J9M1285
+		jump 'loop'
+	end
+end
+
+if room3_auto_tentacle = 3 - end_day_phase:
+	room3_auto_tentacle = 0 
+	$bg_path = func('display_pic', 'room3', 'tentacles', 'girls/sex_scenes/')
+	$place = 'study'
+! JO9 MOD START J9M1284 | 2026-10-16_meiki_tentacle_success_safe_icon, 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+	if room3['sub_tentacles'] > tentacle_size or room3['virginity'] = 4:
+		if room3['virginity'] = 4:
+			$text = '%명기착정성공'
+		else
+			$text = '<<$room3_name>>(은)는 손에 양동이를 들고 안개 괴물 우리로 다가갔다. 경험이 있던 탓인지, 이번엔 다행히도 기절은 하지 않았다. 끝없는 욕망을 품은 촉수들이, 온 몸 골이란 골을 탐닉하며 쑤셔대던 중, 손으로 하날 낚아채서 양동이로 쳐박았다.<br><br> 안개 괴물 산란액 획득량 : <<semen_gain[max(0, tentacle_size - spawn_milked)]>>'
+		end
+! JO9 MOD END J9M1284
+		decade_semen += semen_gain[max(0, tentacle_size - spawn_milked)]
+		spawn_milked += room3['sub_tentacles']
+		if felicity = 1 and $quest12 ! 'fail' and active[$quest[12]] = 1 and room3_type ! 2572: $quest12 = 'fail' & $quest12_failreason = '"안개 괴물을 다루게 하라 말 했을텐데, 노예상."'
+		if assistant_quiet_rule = 0: jump 'loop'
+	else
+! JO9 MOD START J9M1283 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+		$text = '<<$room3_name>>(은)는 손에 양동이를 들고 안개 괴물 우리로 다가갔다. 하지만 어쩐 일인지, 무슨 시도에도 별다른 소용이 없어보인다. 강대한 힘의 촉수들이 <<$room3_name>> 몸을 휘둘러 감싸 미친듯이 쑤셔댔고, 그 희멀건한 산란액들이 몸 속 깊이 수정되는 동안, 몇 번이고 절정만을 느끼고 있었다.'
+! JO9 MOD END J9M1283
+		jump 'loop'
+	end
+end
+
+if room4_auto_tentacle = 3 - end_day_phase:
+	room4_auto_tentacle = 0 
+	$bg_path = func('display_pic', 'room4', 'tentacles', 'girls/sex_scenes/')
+	$place = 'study'
+! JO9 MOD START J9M1282 | 2026-10-16_meiki_tentacle_success_safe_icon, 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+	if room4['sub_tentacles'] > tentacle_size or room4['virginity'] = 4:
+		if room4['virginity'] = 4:
+			$text = '%명기착정성공'
+		else
+			$text = '<<$room4_name>>(은)는 손에 양동이를 들고 안개 괴물 우리로 다가갔다. 경험이 있던 탓인지, 이번엔 다행히도 기절은 하지 않았다. 끝없는 욕망을 품은 촉수들이, 온 몸 골이란 골을 탐닉하며 쑤셔대던 중, 손으로 하날 낚아채서 양동이로 쳐박았다.<br><br> 안개 괴물 산란액 획득량 : <<semen_gain[max(0, tentacle_size - spawn_milked)]>>'
+		end
+! JO9 MOD END J9M1282
+		decade_semen += semen_gain[max(0, tentacle_size - spawn_milked)]
+		spawn_milked += room4['sub_tentacles']
+		if felicity = 1 and $quest12 ! 'fail' and active[$quest[12]] = 1 and room4_type ! 2572: $quest12 = 'fail' & $quest12_failreason = '"안개 괴물을 다루게 하라 말 했을텐데, 노예상."'
+		if assistant_quiet_rule = 0: jump 'loop'
+	else
+! JO9 MOD START J9M1281 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+		$text = '<<$room4_name>>(은)는 손에 양동이를 들고 안개 괴물 우리로 다가갔다. 하지만 어쩐 일인지, 무슨 시도에도 별다른 소용이 없어보인다. 강대한 힘의 촉수들이 <<$room4_name>> 몸을 휘둘러 감싸 미친듯이 쑤셔댔고, 그 희멀건한 산란액들이 몸 속 깊이 수정되는 동안, 몇 번이고 절정만을 느끼고 있었다.'
+! JO9 MOD END J9M1281
+		jump 'loop'
+	end
+end
+
+if slave_auto_clean = 3 - end_day_phase:
+	slave_auto_clean = 0
+	assistant_auto_clean = 0
+	master_auto_clean = 0
+	room1_auto_clean = 0
+	room2_auto_clean = 0
+	room3_auto_clean = 0
+	room4_auto_clean = 0
+	$bg_path = func('display_pic', 'slave', 'clean', 'girls/normal_scenes/')
+	$place = 'study'
+	slave_skill = slave['service']
+	if slave['mood'] < 0 and slave_skill > 0: slave_skill = max(1, slave_skill + slave['mood'])
+	dynamic $replace("$text = '  <<$slave_cleans_description[slave_skill]>>'", 'dyn'+'slave', 'slave') &! evaluate delayed sub-expressions
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if assistant_auto_clean = 3 - end_day_phase:
+	assistant_auto_clean = 0
+	slave_auto_clean = 0
+	master_auto_clean = 0
+	room1_auto_clean = 0
+	room2_auto_clean = 0
+	room3_auto_clean = 0
+	room4_auto_clean = 0
+	$bg_path = func('display_pic', 'assistant', 'clean', 'girls/normal_scenes/')
+	$place = 'study'
+	dynamic $replace("$text = '  <<$slave_cleans_description[assistant[""service""]]>>'", 'dyn'+'slave', 'assistant') &! evaluate delayed sub-expressions
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+!도나이식 메이드 청소
+if room1_auto_clean = 3 - end_day_phase:
+	assistant_auto_clean = 0
+	slave_auto_clean = 0
+	master_auto_clean = 0
+	room1_auto_clean = 0
+	room2_auto_clean = 0
+	room3_auto_clean = 0
+	room4_auto_clean = 0	
+	$bg_path = func('display_pic', 'room1', 'clean', 'girls/normal_scenes/')
+	$place = 'study'
+	dynamic $replace("$text = '<<$slave_cleans_description[room1[""service""]]>>'", 'dyn'+'slave', 'room1') 
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if room2_auto_clean = 3 - end_day_phase:
+	assistant_auto_clean = 0
+	slave_auto_clean = 0
+	master_auto_clean = 0
+	room1_auto_clean = 0
+	room2_auto_clean = 0
+	room3_auto_clean = 0
+	room4_auto_clean = 0	
+	$bg_path = func('display_pic', 'room2', 'clean', 'girls/normal_scenes/')
+	$place = 'study'
+	dynamic $replace("$text = '<<$slave_cleans_description[room2[""service""]]>>'", 'dyn'+'slave', 'room2') 
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if room3_auto_clean = 3 - end_day_phase:
+	assistant_auto_clean = 0
+	slave_auto_clean = 0
+	master_auto_clean = 0
+	room1_auto_clean = 0
+	room2_auto_clean = 0
+	room3_auto_clean = 0
+	room4_auto_clean = 0	
+	$bg_path = func('display_pic', 'room3', 'clean', 'girls/normal_scenes/')
+	$place = 'study'
+	dynamic $replace("$text = '<<$slave_cleans_description[room3[""service""]]>>'", 'dyn'+'slave', 'room3') 
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if room4_auto_clean = 3 - end_day_phase:
+	assistant_auto_clean = 0
+	slave_auto_clean = 0
+	master_auto_clean = 0
+	room1_auto_clean = 0
+	room2_auto_clean = 0
+	room3_auto_clean = 0
+	room4_auto_clean = 0	
+	$bg_path = func('display_pic', 'room4', 'clean', 'girls/normal_scenes/')
+	$place = 'study'
+	dynamic $replace("$text = '<<$slave_cleans_description[room4[""service""]]>>'", 'dyn'+'slave', 'room4') 
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+
+if master_auto_clean = 1:
+	master_auto_clean = 0
+	assistant_auto_clean = 0
+	slave_auto_clean = 0
+	room1_auto_clean = 0
+	room2_auto_clean = 0
+	room3_auto_clean = 0
+	room4_auto_clean = 0
+	$bg_path = 'scene/master_clean'
+	g = rand(1, picMax['master_clean'])
+	if g > 1: $bg_path += '_' + $str(g)
+	$place = 'study'
+	$text = $master_clean_description[master_butler]
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if assistant_washed_slave = 3 - end_day_phase:
+	assistant_washed_slave = 0
+	$bg_path = func('display_pic', 'slave, assistant', 'lesbath', 'girls/normal_scenes/')
+	$place = 'bathroom'
+	$text = $assistant_washes_slave
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+!도나이식 메이드 목욕
+if room1_washed_slave = 3 - end_day_phase:
+	room1_washed_slave = 0
+	$bg_path = func('display_pic', 'slave, room1', 'lesbath', 'girls/normal_scenes/')
+	$place = 'bathroom'
+	$text = $room1_washes_slave
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if room2_washed_slave = 3 - end_day_phase:
+	room2_washed_slave = 0
+	$bg_path = func('display_pic', 'slave, room2', 'lesbath', 'girls/normal_scenes/')
+	$place = 'bathroom'
+	$text = $room2_washes_slave
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+
+if room3_washed_slave = 3 - end_day_phase:
+	room3_washed_slave = 0
+	$bg_path = func('display_pic', 'slave, room3', 'lesbath', 'girls/normal_scenes/')
+	$place = 'bathroom'
+	$text = $room3_washes_slave
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+
+if room4_washed_slave = 3 - end_day_phase:
+	room4_washed_slave = 0
+	$bg_path = func('display_pic', 'slave, room4', 'lesbath', 'girls/normal_scenes/')
+	$place = 'bathroom'
+	$text = $room4_washes_slave
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if slave_auto_bathing = 3 - end_day_phase:
+	slave_auto_bathing = 0
+	$bg_path = func('display_pic', 'slave', 'bath', 'girls/normal_scenes/')
+	$place = 'bathroom'
+	dynamic $replace("$text = '<<$bathing_slave_alone[$slave_psy_status]>>'", 'dyn'+'slave', 'slave') &! evaluate delayed sub-expressions with substitution
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+!도나이식 개인실 씻기
+if room1_auto_bathing = 3 - end_day_phase:
+	room1_auto_bathing = 0
+	$bg_path = func('display_pic', 'room1', 'bath', 'girls/normal_scenes/')
+	$place = 'bathroom'
+	dynamic $replace("$text = '<<$bathing_slave_alone[$room1_psy_status]>>'", 'dyn'+'slave', 'room1') 
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if room2_auto_bathing = 3 - end_day_phase:
+	room2_auto_bathing = 0
+	$bg_path = func('display_pic', 'room2', 'bath', 'girls/normal_scenes/')
+	$place = 'bathroom'
+	dynamic $replace("$text = '<<$bathing_slave_alone[$room2_psy_status]>>'", 'dyn'+'slave', 'room2') 
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if room3_auto_bathing = 3 - end_day_phase:
+	room3_auto_bathing = 0
+	$bg_path = func('display_pic', 'room3', 'bath', 'girls/normal_scenes/')
+	$place = 'bathroom'
+	dynamic $replace("$text = '<<$bathing_slave_alone[$room3_psy_status]>>'", 'dyn'+'slave', 'room3') 
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if room4_auto_bathing = 3 - end_day_phase:
+	room4_auto_bathing = 0
+	$bg_path = func('display_pic', 'room4', 'bath', 'girls/normal_scenes/')
+	$place = 'bathroom'
+	dynamic $replace("$text = '<<$bathing_slave_alone[$room4_psy_status]>>'", 'dyn'+'slave', 'room4') 
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if bath = 0 and assistant_state = CONST_INT['slave_exist'] and assistant['hygiene'] > 2 and assistant['energy'] > 0 and farmhand_state = CONST_INT['slave_exist'] and farmhand['hygiene'] > 1 and farmhand['energy'] > 0 and sparks > 2:
+	$place = 'onsen'
+	$text = '  위생을 유지하기 위해 <<$assistant_name>>와 <<$farmhand_name>>는 공중목욕탕에 가서 몸을 씻었다 (비용: 2 스파크).'
+	assistant_rate['angst'] -= (assistant['custom'] + assistant['instinct'] + assistant['rational'] + assistant['moral'])
+	farmhand_rate['angst'] -= (farmhand['custom'] + farmhand['instinct'] + farmhand['rational'] + farmhand['moral'])
+	assistant['pos_games'] = max(assistant['pos_games'], 2)
+	farmhand['pos_games'] = max(farmhand['pos_games'], 2)
+	sparks -= 2
+	assistant['half_action'] += 2
+	farmhand['half_action'] += 2
+	dynamic $replace($dyn_slave_bathed, 'dyn'+'slave', 'assistant')
+	dynamic $replace($dyn_slave_bathed, 'dyn'+'slave', 'farmhand')
+	if assistant_quiet_rule = 0: jump 'loop'
+else
+	if assistant_state = CONST_INT['slave_exist'] and assistant['hygiene'] > 2 and assistant['energy'] > 0 and sparks > 2:
+		if bath = 0:
+			$place = 'onsen'
+			$text = '  위생을 유지하기 위해 <<$assistant_name>>는 공중목욕탕에 가서 몸을 씻었다 (비용: 2 스파크).'
+			assistant_rate['angst'] -= (assistant['custom'] + assistant['instinct'] + assistant['rational'] + assistant['moral'])
+			assistant['pos_games'] = max(assistant['pos_games'], 2)
+			sparks -= 2
+			assistant['half_action'] += 2
+		else
+			$place = 'bathroom'
+			$bg_path = func('display_pic', 'assistant', 'bath', 'girls/normal_scenes/')
+			dynamic $replace("$text = '<<$bathing_slave_alone[$assistant_psy_status]>>'", 'dyn'+'slave', 'assistant') &! evaluate delayed sub-expressions with substitution
+			assistant['half_action'] += 1
+		end
+		dynamic $replace($dyn_slave_bathed, 'dyn'+'slave', 'assistant')
+		if assistant_quiet_rule = 0: jump 'loop'
+	end
+	if farmhand_state = CONST_INT['slave_exist'] and farmhand['hygiene'] > 2 and farmhand['energy'] > 0 and sparks > 2 and $farmhand_psy_status ! '':
+		if bath = 0:
+			$place = 'onsen'
+			$text = '  위생을 유지하기 위해 <<$farmhand_name>>는 공중목욕탕에 가서 몸을 씻었다 (비용: 2 스파크).'
+			farmhand_rate['angst'] -= (farmhand['custom'] + farmhand['instinct'] + farmhand['rational'] + farmhand['moral'])
+			farmhand['pos_games'] = max(farmhand['pos_games'], 2)
+			sparks -= 2
+			farmhand['half_action'] += 2
+		else
+			$place = 'bathroom'
+			$bg_path = func('display_pic', 'farmhand', 'bath', 'girls/normal_scenes/')
+			dynamic $replace("$text = '<<$bathing_slave_alone[$farmhand_psy_status]>>'", 'dyn'+'slave', 'farmhand') &! evaluate delayed sub-expressions with substitution
+			farmhand['half_action'] += 1
+		end
+		dynamic $replace($dyn_slave_bathed, 'dyn'+'slave', 'farmhand')
+		if assistant_quiet_rule = 0: jump 'loop'
+	end
+end
+
+if slave_beg_for_sex = 1:
+	slave_beg_for_sex = 0
+	$bg_path = $slave["fullimage"]
+	dynamic $replace("$text = '<<$slave_begs_for_sex[rand(1,10)]>>'", 'dyn'+'slave', 'slave')
+	$place = 'bedroom'
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+if assistant_beg_for_sex = 1:
+	assistant_beg_for_sex = 0
+	$bg_path = $assistant["fullimage"]
+	dynamic $replace("$text = '<<$slave_begs_for_sex[rand(1,10)]>>'", 'dyn'+'slave', 'assistant')
+	$place = 'bedroom'
+	npc = 1
+	$npc_id = 'ваша_ассистентка'
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if slave_will_masturbate = 1 and previous_energy >= 0:
+	slave_will_masturbate = 0
+	$place = 'bedroom'
+	$bg_path = func('display_pic', 'slave', 'masturbation', 'girls/sex_scenes/')
+	$subskill = 'slave["sub_masturbation"]'
+	$subskill_xp = 'slave["sub_masturbation_xp"]'
+	dynamic $replace($dyn_advance_sex_skills_nolesson, 'dyn'+'slave', 'slave')
+	if slave['no_orgasm_rule'] = 0:
+		$text = '  당신은 노예가 자위하는 현장을 붙잡았지만, 그녀는 멈추지 않는다. <<$slave_name>>는 당신의 눈을 바라보며 더 거칠고 다급하게 손가락질하고, 이내 머리를 뒤로 젖히고 오르가즘의 경련 속에서 몸부림치며 쾌락의 신음을 흘린다.'
+		slave_rate['mood'] += slave['arousal']
+		slave_rate['arousal'] -= ((slave['sub_masturbation']*3) + (slave['arousal']*3))
+		slave['pos_orgasm'] += 1 &! moodlet exponentially decays in next_day -ImperatorAugustus
+	elseif slave['no_orgasm_rule'] = 1:
+		if slave['rules_broken'] = 1 or slave['arousal'] > slave['obedience']:
+			$text = '  당신은 노예가 자위하는 현장을 붙잡았지만, 그녀는 멈추지 않는다. 당신은 그녀가 계속하게 두면서도, 그녀는 사정할 수 없다는 사실을 떠올린다. 그럼에도 <<$slave_name>>는 제때 멈추지 못하거나 멈추고 싶어 하지 않으며, 오르가즘의 신음을 숨기지 못한다. 이제 그녀를 벌해야 한다…'
+			slave_rate['arousal'] -= ((slave['sub_masturbation']*3) + (slave['arousal']*3))
+			slave['pos_orgasm'] += 1 &! moodlet exponentially decays in next_day -ImperatorAugustus
+			dynamic $sin_gained_now, 'slave', 4
+			slave['caught_masturbating'] = 3 &! how many days to remember being caught
+		else
+			$text = '  당신은 노예가 자위하는 현장을 붙잡았지만, 그녀는 멈추지 않는다. 당신은 그녀가 계속하게 두면서도, 그녀는 사정할 수 없다는 사실을 떠올린다. 당신의 뜻에 복종한 <<$slave_name>>는 막판에 멈추며 자신을 절정에 이르게 하지 않는다. 가엾게도 스스로를 지치게 할 뿐이다…'
+			slave_rate['arousal'] += (slave['sub_masturbation'] * slave['arousal'])
+			slave_rate['custom'] += 1
+		end
+	end
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+!도나이식 개인실 자위
+if room1_will_masturbate = 1 and previous_energy >= 0:
+	room1_will_masturbate = 0
+	$place = 'bedroom'
+	$bg_path = func('display_pic', 'room1', 'masturbation', 'girls/sex_scenes/')
+	$subskill = 'room1["sub_masturbation"]'
+	$subskill_xp = 'room1["sub_masturbation_xp"]'
+	dynamic $replace($dyn_advance_sex_skills_nolesson, 'dyn'+'slave', 'room1')
+! JO9 MOD START J9M1280 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+	$text = '자위 현장을 붙잡았지만, 노예는 멈추지 않았다. 되려 쳐다 보는게 더 흥분되는지, <<$room1_name>> 손이 더 격렬하게 쑤셔댔다. 점점 움찔거리며, 허리가 휠정도로 엄청난 절정에 달하는 듯 했다. 아주 만족스러운 신음과 함께.<br><br>'
+! JO9 MOD END J9M1280
+	room1_rate['mood'] += room1['arousal']
+	room1_rate['arousal'] -= ((room1['sub_masturbation']*6) + (room1['arousal']*6))
+	room1['pos_orgasm'] += 1 
+	room1_rate['arousal'] = 0
+	jump 'loop' 
+end
+
+if room2_will_masturbate = 1 and previous_energy >= 0:
+	room2_will_masturbate = 0
+	$place = 'bedroom'
+	$bg_path = func('display_pic', 'room2', 'masturbation', 'girls/sex_scenes/')
+	$subskill = 'room2["sub_masturbation"]'
+	$subskill_xp = 'room2["sub_masturbation_xp"]'
+	dynamic $replace($dyn_advance_sex_skills_nolesson, 'dyn'+'slave', 'room2')
+! JO9 MOD START J9M1279 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+	$text = '자위 현장을 붙잡았지만, 노예는 멈추지 않았다. 되려 쳐다 보는게 더 흥분되는지, <<$room2_name>> 손이 더 격렬하게 쑤셔댔다. 점점 움찔거리며, 허리가 휠정도로 엄청난 절정에 달하는 듯 했다. 아주 만족스러운 신음과 함께.<br><br>'
+! JO9 MOD END J9M1279
+	room2_rate['mood'] += room2['arousal']
+	room2_rate['arousal'] -= ((room2['sub_masturbation']*6) + (room2['arousal']*6))
+	room2['pos_orgasm'] += 1 
+	room2_rate['arousal'] = 0
+	jump 'loop' 
+end
+
+if room3_will_masturbate = 1 and previous_energy >= 0:
+	room3_will_masturbate = 0
+	$place = 'bedroom'
+	$bg_path = func('display_pic', 'room3', 'masturbation', 'girls/sex_scenes/')
+	$subskill = 'room3["sub_masturbation"]'
+	$subskill_xp = 'room3["sub_masturbation_xp"]'
+	dynamic $replace($dyn_advance_sex_skills_nolesson, 'dyn'+'slave', 'room3')
+! JO9 MOD START J9M1278 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+	$text = '자위 현장을 붙잡았지만, 노예는 멈추지 않았다. 되려 쳐다 보는게 더 흥분되는지, <<$room3_name>> 손이 더 격렬하게 쑤셔댔다. 점점 움찔거리며, 허리가 휠정도로 엄청난 절정에 달하는 듯 했다. 아주 만족스러운 신음과 함께.<br><br>'
+! JO9 MOD END J9M1278
+	room3_rate['mood'] += room3['arousal']
+	room3_rate['arousal'] -= ((room3['sub_masturbation']*6) + (room3['arousal']*6))
+	room3['pos_orgasm'] += 1
+	room3_rate['arousal'] = 0 
+	jump 'loop' 
+end
+
+if room4_will_masturbate = 1 and previous_energy >= 0:
+	room4_will_masturbate = 0
+	$place = 'bedroom'
+	$bg_path = func('display_pic', 'room4', 'masturbation', 'girls/sex_scenes/')
+	$subskill = 'room4["sub_masturbation"]'
+	$subskill_xp = 'room4["sub_masturbation_xp"]'
+	dynamic $replace($dyn_advance_sex_skills_nolesson, 'dyn'+'slave', 'room4')
+! JO9 MOD START J9M1277 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+	$text = '자위 현장을 붙잡았지만, 노예는 멈추지 않았다. 되려 쳐다 보는게 더 흥분되는지, <<$room4_name>> 손이 더 격렬하게 쑤셔댔다. 점점 움찔거리며, 허리가 휠정도로 엄청난 절정에 달하는 듯 했다. 아주 만족스러운 신음과 함께.<br><br>'
+! JO9 MOD END J9M1277
+	room4_rate['mood'] += room4['arousal']
+	room4_rate['arousal'] -= ((room4['sub_masturbation']*6) + (room4['arousal']*6))
+	room4['pos_orgasm'] += 1 
+	room4_rate['arousal'] = 0
+	jump 'loop' 
+end
+
+if slave_masturbating_anyway = 1 and previous_energy >= 0:
+	slave_masturbating_anyway = 0
+	$place = 'bedroom'
+	$bg_path = func('display_pic', 'slave', 'masturbation', 'girls/sex_scenes/')
+	$subskill = 'slave["sub_masturbation"]'
+	$subskill_xp = 'slave["sub_masturbation_xp"]'
+	dynamic $replace($dyn_advance_sex_skills_nolesson, 'dyn'+'slave', 'slave')
+	if slave['obedience'] + slave['no_orgasm_rule'] >= slave['arousal']:
+		$text = '  당신은 노예가 자위하는 현장을 붙잡았고, 그녀는 즉시 멈춘다. 당신이 정한 규칙을 어겼다는 걸 알고 있기 때문이다.'
+		slave_rate['arousal'] += slave['sub_masturbation'] + (slave['arousal']*3)
+	else
+		$text = '  당신은 노예가 자위하는 현장을 붙잡았지만, 그녀는 당신이 정한 규칙을 어기고 있다는 사실을 신경 쓸 만큼 복종적이지도, 침착하지도 않다. 그녀의 움직임은 날카롭고 다급해지고, 이내 그녀는 머리를 뒤로 젖히고 오르가즘의 경련 속에서 몸부림치며 쾌락의 신음을 흘린다.'
+		slave_rate['arousal'] -= ((slave['sub_masturbation']*3) + (slave['arousal']*3))
+		slave['pos_orgasm'] += 1 &! moodlet exponentially decays in next_day -ImperatorAugustus
+	end
+	dynamic $sin_gained_now, 'slave', 4
+	slave['caught_masturbating'] = 3 &! how many days to remember being caught
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+if tentacle_grow_event = 1:
+	$place = 'study'
+	$text = $tentacle_grow[tentacle_size]
+	lab_store['slime'] += semen_gain[tentacle_size]
+	tentacle_size += 1 &! increment before setting bg_path
+	$bg_path = 'scene\tentacle_growth_<<tentacle_size>>'
+	tentacle_hp = 0
+	tentacle_grow_event = 0
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+if tentacle_death_event = 1:
+	$text = $tentacle_death[tentacle_size]
+	$place = 'study'
+	$bg_path = 'scene\tentacle_death'
+	lab_store['slime'] += semen_gain[tentacle_size]
+	pet_tentacle = 0
+	tentacle_size = 0
+	tentacle_hp = 0
+	tentacle_death_event = 0
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+if end_of_the_day = 1:
+	$text = $nothing_special
+	$place = 'bedroom'
+!	$bg_path = 'scene/night'
+!	g = rand(1, picMax['night'])
+!	if g > 1: $bg_path += '_' + $str(g)
+	end_of_the_day = 0
+	jump 'loop'
+end
+
+if cow_escape = 1:
+	$place = 'barn'
+	$text = '  당신의 노예는 축사에서 이 밤을 견디지 못하고, 밤중에 집으로 돌아온다. 이것 때문에 그녀를 벌하고 다시 축사에 넣을 수는 있지만, 다음번에도 축사를 떠나지 않게 하려면 가둬 두어야 할지도 모른다. 어쨌든 축사 밖에서 보낸 이 밤은 그녀의 훈련에 아무 좋은 결과도 주지 못했을 것이다…'
+	$bg_path = $cow["fullimage"]
+	dynamic $sin_gained_now, 'cow', cow['cowSK'] &! guilt cap set to cow training level, was uncapped before - ImperatorAugustus
+	cow['neg_barn'] = 2
+	cow['neg_barn_plus'] = 1
+	cow_escape = 0
+	barn_first_night = 0
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+
+if barn_first_night = 1:
+	$place = 'barn' 
+	$bg_path = $cow["fullimage"]
+	$text = '이 문장을 읽고 있다면 뭔가 잘못된 것이다.'
+	if cow['barn_custom'] = 0:
+		$text = '  당신의 젖소의 정신은 망가져 있다. 그녀는 축사에 있든 다른 곳에 있든 신경 쓰지 않는다. 하지만 생산량은 분명 꽤 낮은 수준에 머물 것이다.'
+		no_more_barn_update = 1
+	elseif cow['barn_custom'] = 6:
+		$text = '  새벽에 당신은 축사로 간다: 당신의 젖소는 분명 새 환경을 행복해하는 모습이다. 이 새로운 삶은 정확히 그녀가 필요로 하고 원하는 것이다: 당신이 팔아 버리기로 선택하기 전까지, 아니면 영원히, 그녀는 그곳에 머물 수 있다.'
+	elseif cow['barn_custom'] = 5:
+		$text = '  첫날 밤이 지난 뒤 <<$cow_name>>는 꽤 자신감 있어 보이고, 익숙한 영역에 들어온 듯하다. 아직 더 좋아질 여지는 있지만, 결국 그녀는 생산적이고 행복한 젖소가 될 것이다.'
+	elseif cow['barn_custom'] = 4:
+		$text = '  축사에서 첫날 밤을 보낸 뒤, <<$cow_name>>가 익숙한 환경에 들어온 듯하다는 점은 알 수 있지만 그다지 자신감 있어 보이지는 않는다. 하지만 결국 새 처지를 받아들인다면 완벽한 젖소가 될 수도 있다.'
+	elseif cow['barn_custom'] = 3:  
+		$text = '  하룻밤이 지난 뒤, 당신의 (잠재적) 젖소가 축사 경험이 부족하고 예전 삶을 아직 포기하지 않았다는 것이 분명히 보인다. 하지만 경험이 충분히 쌓인다면, 그녀의 정신이 저항하더라도 하루하루 조금씩 더 받아들일 수 있을 것이다…'
+	elseif cow['barn_custom'] = 2:
+		$text = '  하룻밤이 지난 뒤, 당신의 (잠재적) 젖소가 축사 경험이 부족하고 예전 삶을 아직 포기하지 않았다는 것이 분명히 보인다. 더 나쁜 것은, 그녀의 정신 상태가 불안정해 보여 <<$cow_name>>가 자신의 운명을 받아들이기 전에 먼저 망가져 버릴 가능성이 높다는 점이다.'
+	elseif cow['barn_custom'] = 1:
+		$text = '  아침에 당신은 외양간으로 간다: 당신의 노예는 분명 끔찍한 밤을 보냈다. 그녀는 서서 당신에게 집으로 데려가 달라고 애원한다. 그 목소리에는 불안이 서려 있다: 분명 그녀는 아직 축사에 들어갈 준비가 되어 있지 않다… <<$cow_name>>를 여기에 가둬 둘 수는 있지만, 그녀의 정신에는 재앙이 될 것이다.'
+	end
+	barn_first_night = 0
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+if barn_first_decade = 1 and no_more_barn_update = 0:
+	$place = 'barn' 
+	$bg_path = $cow["fullimage"]
+	$text = '이 문장을 읽고 있다면 뭔가 잘못된 것이다.'
+	if cow['barn_custom'] = 0:
+		$text = '  축사에서 한 열흘을 보낸 뒤, 당신의 젖소의 정신이 망가졌다는 것은 분명하다. 그녀는 여기에 있든 다른 데 있든 신경 쓰지 않는다. 젖소로서의 기술은 천천히 늘겠지만, 생산량은 분명 꽤 낮은 수준에 머물 것이다.'
+	elseif cow['barn_custom'] = 6:
+		$text = '  네가 외양간에 넣은 여자는 이제 완벽한 젖소가 되었다. 그녀는 자신이 속한 외양간 외의 다른 곳에서 행복하게 살 수 없게 될 가능성이 높다. 우유 생산을 위해 그녀를 그곳에 계속 두거나, 그녀가 완벽하게 만족해할 공영 목장에 팔 수 있다.'
+	elseif cow['barn_custom'] = 5:
+		$text = '  열흘 뒤, 네 젖소는 거의 새 역할을 받아들였고, 짚더미 위에서 빈둥거리며 착유와 임신을 기다리며 제법 행복하게 지낸다. 그녀는 완벽한 젖소가 되는 올바른 길 위에 있다.'
+	elseif cow['barn_custom'] = 4:
+		$text = '  당신의 젖소는 축사에서 한 열흘을 보냈다: 이제 그녀는 단지 젖을 짜는 젖소라는 새 역할을 거의 받아들였고, 그것을 좋아하는 듯도 보이지만, 정신은 손상되어 있다. 당신이 직접 훈련을 마무리해 준다면 그녀가 그 "변모"를 끝내는 데 도움이 될 수 있겠지만… 그냥 흘러가게 두는 편이 더 쉽지 않을까?'
+	elseif cow['barn_custom'] = 3:
+		$text = '  한 열흘이 지나도 당신의 젖소는 여전히 축사를 새로운 집으로 받아들이기를 꺼린다. 하지만 시간은 기적을 일으키고, 당신 노예의 정신은 그녀가 완전히 망가지기 전에 자신을 젖소로 여기게 될 희망을 품을 만큼은 강하다.'
+	elseif cow['barn_custom'] = 2:
+		$text = '  한 열흘이 지난 뒤, 당신의 젖소는 여전히 자신을 단지 젖 짜는 젖소로 여기기 어려워할 만큼 정신 상태가 비참하다. 아마 그녀는 버티지 못할 것이고, 새 지위를 받아들이기 훨씬 전에 정신이 산산조각 날 것이다.'
+	elseif cow['barn_custom'] = 1:
+		$text = '  한 열흘이 지나도 당신의 젖소는 여전히 축사에 익숙해지지 못했다: 이곳에서의 삶은 그녀에게 악몽이고, 머지않아 그녀의 정신이 결국 망가질 가능성이 크다. 하지만, 어쨌든, 젖소에게 멀쩡한 정신이 꼭 필요하긴 한가?'
+	end 
+	barn_first_decade = 0
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+if slave_attack = 1:
+	$place = 'bedroom'
+	dynamic $sin_gained_now, 'slave'
+	slave['angst'] += 1
+	slave_rate['angst'] = 10
+	! added angst increase for slave attacking master - ImperatorAugustus
+	количество_врагов = 1
+	$враг[1] = 'воспитуемая'
+	slave['beaten'] = 1
+	slave['beaten_ever'] = 1
+	$fight_return = 'end_day_screen'
+	fighting_experience = slave['gladiatrix']
+	msg '  위협을 느끼며 잠에서 깬 당신은 본능적으로 침대 밖으로 몸을 굴린다. 방금 전까지 당신이 누워 있던 자리에 칼이 꽂혀 있다! <<$slave_name>>가 부엌에서 그 칼을 훔쳐 당신을 죽이기로 결심한 모양이다!'
+	combatant = 0 &! master is in the defending slot
+	$toplay = 'girl'
+	gt 'начать_бой'
+end
+
+if slave['menstruation'] = 1:
+	$text = $menstrual_anounce
+	$place = 'bedroom'
+	$bg_path = 'scene\menstruation'
+	g = rand(1, picMax['menstruation'])
+	if g > 1: $bg_path += '_' + $str(g)
+	slave['menstruation'] = 2
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+if assistant['menstruation'] = 1:
+	$text = $menstrual_anounce_assistant
+	$place = 'bedroom'
+	$bg_path = 'scene\menstruation'
+	g = rand(1, picMax['menstruation'])
+	if g > 1: $bg_path += '_' + $str(g)
+	assistant['menstruation'] = 2
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+!Egglaying - fixed - crushboss (revised and added note about barn taking excess eggs from fridge to sell - ImperatorAugustus)
+if total_eggs_laid_today > 0:
+	$text = ''
+	$end_day_screen_collect_eggs = {
+		if dynslave['egg_time'] > 0 and dynslave_state = CONST_INT['slave_exist']:
+			$text += ' <<$dynslave_name>>가 당신을 위해 신선한 알을 하나 낳았다.<br>'
+			decade_eggs += 1
+			dynslave['egg_time'] = 0
+		end
+	}
+	dynamic $do_for_each_slave_in_list, '$end_day_screen_collect_eggs', '$unfrozen_slave_characters'
+	$place = 'bedroom'
+	if kitchen > 0: $place = 'kitchen'
+	$bg_path = 'scene\egg_birth'
+	g = rand(1, picMax['egg_birth'])
+	if g > 1: $bg_path += '_' + $str(g)
+	if fridge_space > 0: fridge['eggs'] += min(fridge_space, total_eggs_laid_today) &! if you have an egglayer in your barn, excess eggs (more than 5) will be sold tomorrow night
+	total_eggs_laid_today = 0 &! excess eggs that cannot fit in the fridge are discarded
+	if assistant_quiet_rule = 0: jump 'loop'
+end
+
+!Rules Broken Message - Improved and fixed - crushboss
+if rules_broken_message = 1 and slave_state = CONST_INT['slave_exist']:
+	$text = '  <<$slave_name>>는 당신이 정한 규칙을 어기고 있다는 사실을 숨기려고조차 하지 않는다.'
+	if slave['silence_rule_broken']: $text += ' 그녀는 침묵을 지키지 않는다.'
+	if slave['humility_rule_broken']: $text += ' 그녀는 겸손하게 굴지 않는다.'
+	if slave['no_shit_rule_broken']: $text += ' 그녀는 화장실을 사용한다.'
+	if slave['pet_rule_broken']: $text += ' 그녀는 애완동물처럼 행동하지 않는다.'
+	if slave['blowjob_rule_broken']: $text += ' 그녀는 아침 블로우잡을 해 주지 않는다.'
+	if slave['urinal_rule_broken']: $text += ' 그녀는 당신의 소변을 받으려 하지 않는다.'
+	if slave['toilet_rule_broken']: $text += ' 그녀는 당신의 똥을 받아내지 않는다.'
+	if slave['v_balls_rule_broken']: $text += ' 그녀는 질 구슬을 착용하지 않는다.'
+	$text += ' 이것은 무시할 수 없다!'
+
+	$place = 'study'
+	$bg_path = $slave["fullimage"]
+	rules_broken_message = 0
+	dynamic $sin_gained_now, 'slave'
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+!Starvation Warning Message - Improved and fixed - crushboss
+if cheat_no_starve = 0 and slave['starvation_warning'] = 1 and slave_state ! CONST_INT['no_slave']:
+	$place = 'study'
+	$text = '   당신은 노예에게 굶주림의 징후가 보인다는 것을 알아차린다. 분명 그녀는 충분한 음식을 받지 못하고 있으며, 이것은 건강에 해로울 것이다. 식사량을 늘리거나 부담을 줄여야 한다.'
+	slave['starvation_warning'] = 2 &! will be reset in next_day when no longer starving
+	$bg_path = $slave["fullimage"]
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+!Starvation Warning Message - duplicated for assistant - ImperatorAugustus
+if cheat_no_starve = 0 and assistant['starvation_warning'] = 1 and assistant_state ! CONST_INT['no_slave']:
+	$place = 'study'
+	$text = '   당신은 조수에게 굶주림의 징후가 보인다는 것을 알아차린다. 분명 그녀는 충분한 음식을 받지 못하고 있으며, 이것은 건강에 해로울 것이다. 식사량을 늘리거나 부담을 줄여야 한다.'
+	assistant['starvation_warning'] = 2 &! will be reset in next_day when no longer starving
+	$bg_path = $assistant["fullimage"]
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+!Slave Suicide Event - Overhauled - crushboss
+if slave_suicide = 1 and assistant['supervise_rule'] = 1:
+	$place = 'study'
+	$text = '  <<$assistant_name>>의 성실한 감시 덕분에, 그녀는 <<$slave_name>>가 자살을 시도하는 현장을 발견하고 피 묻은 칼을 빼앗는다. <<$assistant_name>>는 당신을 깨워 방금 무슨 일이 있었는지 알린다. <<$slave_name>>에게는 치료가 필요하다!'
+	slave_suicide = 0
+	slave_rate['wounds'] += slave['stamina']*25
+	slave_rate['scars'] += rand(0,30)
+	dynamic $sin_gained_now, 'slave'
+	dynamic $master_energy_drop
+	dynamic $slave_energy_drop
+	dynamic $slave_energy_drop
+	dynamic $assistant_energy_drop
+	master_moodlet['neg_slave_suicidal'] = 1
+	gs '$mod_master_drop', 1
+	gs '$mood_drop', 'slave', 1
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+elseif slave_suicide = 1 and assistant['supervise_rule'] = 0:
+	$place = 'study'
+	$text = '  당신은 노예가 피 웅덩이 속에 바닥에 누워 있는 것을 발견한다. 그녀는 숨을 쉬지 않는다. 이런 일은 가끔 일어나지만, 매번 기분 나쁜 일이다 - 스파크 낭비다. 이제 새 노예를 사야 한다…'
+	slave_suicide = 0
+	master_moodlet['neg_slave_died'] = 10
+	dynamic $master_energy_drop
+	gs '$mod_master_drop', 1
+	$bg_path = 'girls/normal_scenes/suicide'
+	g = rand(1, picMax['suicide'])
+	if g > 1: $bg_path += '_' + $str(g)
+	dynamic $clear_slave_instance, 'slave'
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+
+if slave_escape = 1:
+	$place = 'study'
+	$bg_path = 'scene/escape'
+	g = rand(1, picMax['escape'])
+	if g > 1: $bg_path += '_' + $str(g)
+	$text = '  당신이 자는 동안, <<$slave_name>>는 문 열쇠를 훔쳐 거리로 빠져나가는 데 성공했다. 아침이 되자 그녀는 사라지고 없었다. 그녀가 거리에서 혼자 살아남을 수 있을 가능성은 낮지만, 이제 새 노예를 사야 한다…'
+	!новый мудлет для обозначения сбежавших рабынь
+	master_moodlet['neg_escape'] = 10
+	gs '$mod_master_drop', 1
+	slave_escape = 0
+	dynamic $clear_slave_instance, 'slave'
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+!Magical Brand works like it should now - added code section - crushboss
+if slave_escape = 2:
+	$place = 'study'
+	$bg_path = 'scene/escape'
+	g = rand(1, picMax['escape'])
+	if g > 1: $bg_path += '_' + $str(g)
+	$text = '  당신이 자는 동안, <<$slave_name>>는 문 열쇠를 훔쳐 거리로 빠져나가는 데 성공했다. 아침이 되자 그녀는 사라지고 없었다. 하지만 그녀에게 당신의 마법 낙인이 있기 때문에, 당신은 마법으로 그녀를 쉽게 추적해 별다른 사건 없이 데려온다…'
+	slave['virtue'] = 0
+	dynamic $sin_gained_now, 'slave'
+	slave['angst'] += 1
+	slave_rate['angst'] += 10
+	! added angst increase for failed escape - ImperatorAugustus
+	master_mage_rate += master_mage
+	dynamic $master_energy_drop
+	dynamic $master_energy_drop
+	dynamic $slave_energy_drop
+	dynamic $slave_energy_drop
+	slave_rate['rational'] += 5
+	master_moodlet['neg_rebell'] = 1 &! slave returned, so different moodlet - ImperatorAugustus
+	gs '$mod_master_drop', 1
+	slave_escape = 0
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+!Slave is returned if wearing a slave collar and has your brand - crushboss
+if slave_escape = 3:
+	$place = 'study'
+	$bg_path = 'scene/escape'
+	g = rand(1, picMax['escape'])
+	if g > 1: $bg_path += '_' + $str(g)
+	$text = '  당신이 자는 동안, <<$slave_name>>는 문 열쇠를 훔쳐 거리로 빠져나가는 데 성공했다. 아침이 되자 그녀는 사라지고 없었다. 하지만 그녀에게 당신의 낙인이 있고 노예 목걸이도 차고 있었기 때문에, 그녀는 거리에서 발견되어 길드 사람이 당신의 아파트로 데려다 준다…'
+	slave['virtue'] = 0
+	dynamic $sin_gained_now, 'slave'
+	slave['angst'] += 1
+	slave_rate['angst'] += 10
+	! added angst increase for failed escape - ImperatorAugustus
+	dynamic $slave_energy_drop
+	dynamic $slave_energy_drop
+	slave_rate['rational'] += 5
+	master_moodlet['neg_rebell'] = 1 &! slave returned, so different moodlet - ImperatorAugustus
+	gs '$mod_master_drop', 1
+	slave_escape = 0
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+!Slave is returned if wearing a slave collar and the guild brand - crushboss
+if slave_escape = 4:
+	$place = 'study'
+	$bg_path = 'scene/escape'
+	g = rand(1, picMax['escape'])
+	if g > 1: $bg_path += '_' + $str(g)
+	$text = '  당신이 자는 동안, <<$slave_name>>는 문 열쇠를 훔쳐 거리로 빠져나가는 데 성공했다. 아침이 되자 그녀는 사라지고 없었다. 하지만 그녀에게 길드 낙인이 있고 노예 목걸이도 차고 있었기 때문에, 그녀는 거리에서 발견되어 길드에 인계된다. 다음 날 아침 길드 대표가 당신의 문을 두드리고, 그녀가 도망치게 둔 것을 꾸짖는다. 당신은 평판을 조금 잃는다.'
+	slave['virtue'] = 0
+	dynamic $sin_gained_now, 'slave'
+	slave['angst'] += 1
+	slave_rate['angst'] += 10
+	! added angst increase for failed escape - ImperatorAugustus
+	dynamic $slave_energy_drop
+	dynamic $slave_energy_drop
+	slave_rate['rational'] += 5
+	guild_reputation_rate -= 2
+	master_moodlet['neg_rebell'] = 1 &! slave returned, so different moodlet - ImperatorAugustus
+	gs '$mod_master_drop', 1
+	slave_escape = 0
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+if slave_died = 1:
+	slave_died = 0
+	$bg_path = $slave["fullimage"] &! retrieve image before clear_slave_instance
+	$place = 'study'
+	$text = '  내 노예는 깨어나지 못했다. 비참한 상태가 끝내 드러난 것이다. 이제 새 노예를 사야 한다…'
+	dynamic $clear_slave_instance, 'slave'
+	master_moodlet['neg_slave_died'] = 10
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+if assistant_died = 1:
+	assistant_died = 0
+	$bg_path = $assistant["fullimage"] &! retrieve image before clear_slave_instance
+	$place = 'study'
+	$text = '  내 조수는 깨어나지 못했다. 비참한 상태가 끝내 드러난 것이다. 이제 새 조수를 훈련시켜야 한다…'
+	dynamic $clear_slave_instance, 'assistant'
+	master_moodlet['neg_slave_died'] = 10
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+if prisoner_died = 1:
+	prisoner_died = 0
+	$bg_path = $prisoner["fullimage"] &! retrieve image before clear_slave_instance
+	$place = 'dungeon'
+	$text = '  내 죄수는 깨어나지 못했다. 비참한 상태가 끝내 드러난 것이다. 참 스파크 아까운 일이다…'
+	dynamic $clear_slave_instance, 'prisoner'
+	master_moodlet['neg_slave_died'] = 10
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+if farmhand_died = 1:
+	farmhand_died = 0
+	$bg_path = $farmhand["fullimage"] &! retrieve image before clear_slave_instance
+	$place = 'barn'
+	$text = '  내 농장 일꾼은 깨어나지 못했다. 비참한 상태가 끝내 드러난 것이다. 이제 새 농장 일꾼을 훈련시켜야 한다…'
+	dynamic $clear_slave_instance, 'farmhand'
+	master_moodlet['neg_slave_died'] = 10
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+if cow_died = 1:
+	cow_died = 0
+	$bg_path = $cow["fullimage"] &! retrieve image before clear_slave_instance
+	$place = 'barn'
+	$text = '  내 젖소는 깨어나지 못했다. 비참한 상태가 끝내 드러난 것이다. 이제 새 젖소를 훈련시켜야 한다…'
+	dynamic $clear_slave_instance, 'cow'
+	master_moodlet['neg_slave_died'] = 10
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+if harpy_died = 1:
+	harpy_died = 0
+	$bg_path = $harpy["fullimage"] &! retrieve image before clear_slave_instance
+	$place = 'barn'
+	$text = '  내 산란형은 깨어나지 못했다. 비참한 상태가 끝내 드러난 것이다. 이제 새 산란형을 훈련시켜야 한다…'
+	dynamic $clear_slave_instance, 'harpy'
+	master_moodlet['neg_slave_died'] = 10
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+if pig_died = 1:
+	pig_died = 0
+	$bg_path = $pig["fullimage"] &! retrieve image before clear_slave_instance
+	$place = 'barn'
+	$text = '  내 돼지는 깨어나지 못했다. 비참한 상태가 끝내 드러난 것이다. 이제 새 돼지를 훈련시켜야 한다…'
+	dynamic $clear_slave_instance, 'pig'
+	master_moodlet['neg_slave_died'] = 10
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+if pig_slaughtered_x = 1:
+	pig_slaughtered_x = 0
+	$bg_path = $farmhand["fullimage"]
+	$place = 'barn'
+	$text = '  당신의 농장 일꾼이 축사의 돼지가 충분히 살쪘고, 당신의 지시에 따라 도축했다고 보고한다.'
+	if pig_state > CONST_INT['no_slave']: $text += ' 그녀는 돼지를 대신할 죄수를 축사로 데려갔다.'
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+if barn_harpy_eggs > 0 and decade_eggs = barn_harpy_eggs and farmhand_state = CONST_INT['slave_exist']:
+	$bg_path = $farmhand["fullimage"]
+	$place = 'barn'
+	$text = '  당신의 농장 일꾼이 당신의 산란형이 하루에 약 <<barn_harpy_eggs>>개의 알을 낳고 있다고 보고한다.'
+	barn_harpy_eggs = 0 &! prevent infinite loop
+	jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+end
+
+if assistant_quiet_rule = 1 and EndOfDayEventCnt = 0:
+	$text = '  저녁은 별다른 사건 없이 지나간다.'
+	$place = 'bedroom'
+!	$bg_path = 'scene/night'
+!	g = rand(1, picMax['night'])
+!	if g > 1: $bg_path += '_' + $str(g)
+	jump 'loop'
+end
+
+a = rand(2,15) &! TODO 2.3
+if slave['parasite'] > a:
+	$return_lock = $curloc
+	interaction = 9921
+	gt 'interaction'
+end
+
+if assistant['parasite'] > a:
+	$return_lock = $curloc
+	interaction = 9922
+	gt 'interaction'
+end
+
+if prisoner['parasite'] > a:
+	$return_lock = $curloc
+	interaction = 9923
+	gt 'interaction'
+end
+
+if active[$quest[3]] = 1 and noble_status = 1:
+	active[$quest[3]] = 0
+	gt 'epic_win' &! returns to end_day_screen if user chooses to continue playing
+end
+END
+IF grand_final = 1:
+	grand_final = 0
+	gt 'epic_win_marsjinn'
+END
+
+if end_day_phase = 1:
+	gs '$end_day_variable_reset'
+	gs '$combat_variable_reset'
+	end_day_phase = 2 &! indicates beginning of next day - disables night music and triggers scenes delayed due to exhaustion (3 - 2 = 1)
+	gt $curloc
+end
+
+!Post Patrician Quest - crushboss
+if $quest12 = 'fail':
+	$place = 'bedroom'
+	$text = '  밤사이 당신의 집은 암살자들에게 습격당했다. 당신은 속수무책으로 제압당했다. 그들은 도끼로 당신의 손과 발을 잘라 냈다. 그러고는 당신을 침대에 묶어 둔 채 집에 불을 질렀다. 당신이 불타 죽어 가는 비명은 몇 블록 밖까지 들렸을 것이다.'
+	$text += ' 당신이 마지막으로 들은 것은 암살자 중 하나가 이렇게 말하는 소리였다: "' + $quest12_failreason + '"'
+	dynamic $death, $text
+	! execution stops at the line above
+end
+
+!Auto Casting Rules - crushboss (must be done after $end_day_variable_reset - ImperatorAugustus)
+!Auspex
+if auspex_auto_cast = 1 and auspex ! 1 and already_done_today['61'] = 0 and $master_head_gear ! 'raven_crown' and sparks > 1:
+	already_done_today['61'] = 1 &! necessary to avoid looping, because interaction redirects back to here before incrementing the counter
+	$return_lock = $curloc
+	interaction = menu_auspex
+	gt 'interaction'
+end
+
+!Magna Magnifika
+if magna_magnifika_auto_cast = 1 and magna_magnifika = 0 and already_done_today['65'] = 0 and $master_head_gear ! 'raven_crown' and sparks > 4 and master_mage > 0:
+	already_done_today['65'] = 1 &! necessary to avoid looping, because interaction redirects back to here before incrementing the counter
+	$return_lock = $curloc
+	interaction = menu_magna_magnifika
+	gt 'interaction'
+end
+
+!Sententia Veritas
+if sententia_auto_cast = 1 and already_done_today['64'] = 0 and slave_state = CONST_INT['slave_exist'] and sparks > 4 and master_mage > 1:
+	already_done_today['64'] = 1 &! necessary to avoid looping, because interaction redirects back to here before incrementing the counter
+	$return_lock = $curloc
+	interaction = menu_sententia_veritas
+	gt 'interaction'
+end
+
+!Delayed consequences of ill or parasite-infected slaves being sold to clients or given to the guild - ImperatorAugustus
+if end_day_guild_visit = 0:
+	if gave_guild_ill_slave > 0 or gave_guild_parasite_slave > 0:
+		$place = $replace($estate, 'house', 'street_rental')
+		npc = 1
+		$npc_id = 'master_vong'
+! JO9 MOD START J9M1276 | 2026-10-15_trim_leading_body_blank_lines, 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+		$text[1] = '문을 두드리는 소리에 누구인지 확인하니, 웡 나으리가 굉장히 화난 표정을 하고 있었다.'
+		$text[2] = '[웡 나으리]<br>&nbsp;자네가 조합에 데려왔던 노예<<IIF(gave_guild_parasite_slave > 1 or gave_guild_ill_slave > 1, "들", "")>>,'
+! JO9 MOD END J9M1276
+		if gave_guild_ill_slave > 0 and gave_guild_parasite_slave > 0 and gave_guild_parasite_slave = gave_guild_ill_slave:
+			if gave_guild_parasite_slave > 1:
+				$text[2] += '몸 속에 안개 괴물 애벌래에 병까지 나있더군. 간신히 내가 시간맞춰 조치했지만, 책임을 물어야 할 걸세. 계급 -15,'
+			else
+				$text[2] += '몸 속에 안개 괴물 유충에 병까지 나있더군. 간신히 내가 시간맞춰 조치했지만, 책임을 물어야 할 걸세. 계급 -15,'
+			end
+			guild_reputation_rate -= min(guild_reputation_rate, 90)
+		elseif gave_guild_parasite_slave > 0:
+			if gave_guild_parasite_slave > 1:
+				$text[2] += '몸에 안개 괴물 유충 애벌레들이 들어있더군. 간신히 내가 시간맞춰 조치했지만, 책임을 물어야 할 걸세. 계급 -10'
+			else
+				$text[2] += '몸에 안개 괴물 유충이 들어있더군. 간신히 내가 시간맞춰 조치했지만, 책임을 물어야 할 걸세. 계급 -10'
+			end
+			guild_reputation_rate -= min(guild_reputation_rate, 80)
+		elseif gave_guild_ill_slave > 0:
+			if gave_guild_ill_slave > 1:
+				$text[2] += '병에 걸려 있더군. 한명도 아니고 말이야! 팔기 전에 다행히 발견해냈지만, 자넨 우리 관계를 <<IIF(guild_reputation > 0, "다시 쌓기", "얻기")>> 힘들거야. 계급 -10'
+			else
+				$text[2] += '병에 걸려 있더군. 팔기 전에 다행히 발견해냈지만, 자넨 우리 관계를 <<IIF(guild_reputation > 0, "다시 쌓기", "얻기")>> 힘들거야. 계급 -10'
+			end
+			guild_reputation_rate -= min(guild_reputation_rate, 10 * gave_guild_ill_slave)
+		end
+		if gave_guild_parasite_slave > 0 and parasite_slave_warned_before = 1:
+			$text[2] += '</div>'
+! JO9 MOD START J9M1275 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+			$text[3] = '당신은 조합 훈련사로써 전문성이 없다 간주되어, 조합에서 방출되었다.<br><br><center>~ Game Over ~ </center>'
+! JO9 MOD END J9M1275
+			dynamic $death, $text
+		elseif gave_guild_parasite_slave > 0:
+			$text[2] += '<br> 다시는 이딴 실수 저지르지 마!.</div>'
+! JO9 MOD START J9M1274 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+			$text[3] = '당신은 벌금과 함께 평판이 추락했다. '
+! JO9 MOD END J9M1274
+			master_mood_rate -= 20
+			gs '$mod_master_drop', 5
+			parasite_slave_warned_before = 1
+		end
+		gs '$mod_master_drop', 1
+		gave_guild_ill_slave = 0
+		gave_guild_parasite_slave = 0
+		end_day_guild_visit = 1
+		jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+	elseif sold_ill_slave > 0 or sold_parasite_slave > 0:
+		$place = $replace($estate, 'house', 'street_rental')
+		npc = 1
+		$npc_id = 'mistress_angelika'
+! JO9 MOD START J9M1273 | 2026-10-15_trim_leading_body_blank_lines, 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+		$text[1] = '문을 쿵쿵대는 소리에 달려나가보니, 여주인 안젤리카가 심술 가득한 얼굴로 나를 쏘아보았다.'
+		$text[2] = '<<$안젤>>[여주인 안젤리카]<br>&nbsp;<<$master_name>>! 당신이 넘겼던 <<IIF(sold_parasite_slave > 1 or sold_ill_slave > 1, "노예들이", "노예가")>>'
+! JO9 MOD END J9M1273
+		if sold_ill_slave > 0 and sold_parasite_slave > 0 and sold_ill_slave = sold_parasite_slave:
+			if sold_parasite_slave > 1:
+				$text[2] += '안개 괴물 유충 애벌래들에게 감염되고 병까지 갖고 있었어! 고객이 눈치채고 직접 기술소까지 가 그걸 치료했었다고! 계급 -10'
+			else
+				$text[2] += '안개 괴물 유충에 감염되고 병까지 갖고 있었어! 고객이 눈치채고 직접 기술소까지 가 그걸 치료했었다고! 계급 -10'
+			end
+			guild_reputation_rate = 0
+			brand_rate = 0
+		elseif sold_parasite_slave > 0:
+			if sold_parasite_slave > 1:
+				$text[2] += '안개 괴물 유충 애벌래들에게 감염되어 있었다고! 그 몸안에 안개 괴물 새끼가 자라면서 노예를 먹어치워 버렸어! 계급 -5'
+			else
+				$text[2] += '안개 괴물 유충에 감염되어 있었다고! 그 몸안에 안개 괴물 새끼가 자라면서 노예를 먹어치워 버렸어! 계급 -5'
+			end
+			guild_reputation_rate = 0
+			brand_rate = 0
+		elseif sold_ill_slave > 0:
+			if sold_ill_slave > 1:
+				$text[2] += '매독을 갖고 있었어! 그것도 한명이 아니라! 덕택에 고객들이 기술소에 직접 데려가 치료했고. 이 때문에 조합 명성에 악영향을 끼쳤어! 우리 신의를 <<IIF(guild_reputation > 0, "다시 얻기", "쌓기")>> 힘들거야! 계급 -5'
+			else
+				$text[2] += '매독을 갖고 있었어! 덕택에 고객이 기술소에 직접 데려가 치료했고. 이 때문에 조합 명성에 악영향을 끼쳤어! 우리 신의를 <<IIF(guild_reputation > 0, "다시 얻기", "쌓기")>> 힘들거야! 계급 -5'
+			end
+			guild_reputation_rate -= min(guild_reputation_rate, 10 * sold_ill_slave)
+			brand_rate -= 10
+		end
+		if sold_parasite_slave > 0 and parasite_slave_warned_before = 1:
+			$text[2] += '</font>'
+! JO9 MOD START J9M1272 | 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+			$text[3] = '당신은 조합 훈련사로써 전문성이 없다 간주되어, 조합에서 방출되었다.<br><br><center>~ Game Over ~</center>'
+! JO9 MOD END J9M1272
+			dynamic $death, $text
+		elseif sold_parasite_slave > 0:
+			$text[2] += '<br> 이런 소문은 그야말로 삽시간에 퍼져나간다구! 당신은 아직 내 덕분에 조합원인 거라고! 다시는 이딴 실수 하지마!</font>'
+			master_mood_rate -= 20
+			gs '$mod_master_drop', 5
+			master_moodlet['neg_slave_died'] = 10
+			parasite_slave_warned_before = 1
+		end
+		$text += '</div>'
+		gs '$mod_master_drop', 1
+		sold_ill_slave = 0
+		sold_parasite_slave = 0
+		end_day_guild_visit = 1
+		jump 'loop' &! assistant_quiet_rule does not suppress this - ImperatorAugustus
+	end
+end
+
+if slave_assistant_sex > 0:
+	$bg_path = func('display_pic', 'slave, assistant', 'lesbiansex3', 'girls/sex_scenes/')
+	slave_assistant_sex = 0
+! Если секс без любви
+	if slave_assistant_rape = 1:
+		if slave_rules['orgasm_prohibited'] = 1:
+			if slave_orgasm_anyway = 1:
+				$text = '모든 집안일을 마친 뒤, 조수는 노예의 손을 잡고 그녀의 방으로 데려간다. 잠시 후, 호기심이 생긴 당신은 반쯤 열린 문틈으로 들여다보고, 진정한 여성 간의 사랑을 세세한 부분까지 즐겁게 감상한다. 노예에게 절정 금지 규칙을 상기시켜 주고 싶어지지만, 바로 그 순간 그녀의 몸이 오르가즘으로 떨린다. 아아, 규칙이 깨지고 말았다.'
+				slave_orgasm_anyway = 0
+			else
+				$text = '모든 집안일을 마친 뒤, 조수는 노예의 손을 잡고 그녀의 방으로 데려간다. 잠시 후, 호기심이 생긴 당신은 반쯤 열린 문틈으로 들여다보며 진정한 여성 간의 사랑을 세세한 부분까지 즐겁게 지켜본다. 당신을 눈치챈 <<$slave_name>>는 벌떡 일어나 절정 금지를 거의 잊을 뻔했다며 당신에게 사과한다.'
+			end
+		else
+			$text = '모든 집안일을 마친 뒤, 조수는 노예의 손을 잡고 그녀의 방으로 데려간다. 잠시 후, 호기심이 생긴 당신은 살짝 열린 문틈으로 들여다보며 진정한 여성 간의 사랑을 세세한 부분까지 즐겁게 지켜본다. 당신은 일부러 몸을 숨기지는 않지만, 그래도 두 사람의 즐거운 행위를 방해하지 않으려 한다. 화려한 마무리를 기다린 뒤, 당신은 조수에게 윙크하고 잠자리에 든다.'
+		end
+		slave_assistant_rape = 0
+		jump 'loop'
+	elseif slave_assistant_rape = 2:
+		$text = '모든 집안일을 마친 뒤, 조수는 노예의 손을 잡고 그녀의 방으로 데려간다. 노예의 눈에는 눈물이 고이고 입술은 떨리고 있다; 분명 앞으로 닥칠 일을 그녀는 달가워하지 않는다. 잠시 후, 당신이 괜찮은지 확인하러 들어가 보니, 욕정에 사로잡힌 조수가 착용식 딜도로 축 늘어진 노예의 몸을 범하고 있다. 노예는 저항하지 않고, 그저 얼굴에 콧물을 문지르며 침대에서 떨어지지 않으려 애쓸 뿐이다.'
+		slave_assistant_rape = 0
+		jump 'loop'
+	elseif slave_assistant_rape = 3:
+		if slave_rules['orgasm_prohibited'] = 1:
+			if slave_orgasm_anyway = 1:
+				$text = '모든 집안일을 마친 뒤, 조수는 노예의 손을 잡고 그녀의 방으로 데려간다. 노예의 눈에는 눈물이 고이고 입술은 떨리고 있다; 분명 앞으로 닥칠 일을 그녀는 달가워하지 않는다. 잠시 후, 당신이 괜찮은지 확인하러 들어가 보니, 욕정에 사로잡힌 조수가 착용식 딜도로 노예를 범하고 있다. 노예는 저항하지 않는다; 오히려 적극적으로 협조하며, 당신 눈앞에서 절정해 버린다. 아아, 그녀는 당신의 금지를 어기고 말았다.'
+				slave_orgasm_anyway = 0
+			else
+				$text = '모든 집안일을 마친 뒤, 조수는 노예의 손을 잡고 그녀의 방으로 데려간다. 노예의 눈에는 눈물이 고이고 입술은 떨리고 있다; 분명 앞으로 닥칠 일을 그녀는 달가워하지 않는다. 잠시 후, 당신이 괜찮은지 확인하러 들어가 보니, 욕정에 사로잡힌 조수가 착용식 딜도로 노예를 범하고 있다. 노예 역시 분명 즐기고는 있지만, 절정 금지 명령을 어기지 않기 위해 억누르고 있다. 두 사람은 나름의 타협점에 도달한 듯하다.'
+			end
+		else
+			$text = '모든 집안일을 마친 뒤, 조수는 노예의 손을 잡고 그녀의 방으로 데려간다. 노예의 얼굴은 굳어 있지만, 앞으로 일어날 일을 받아들일 준비는 된 듯하다. 잠시 후, 당신이 괜찮은지 확인하러 들어가 보니, 욕정에 사로잡힌 조수가 착용식 딜도로 노예를 범하고 있다. 노예는 저항하지 않는다; 오히려 한 손으로 자신의 클리토리스를 문지르며 성실하게 협조하고 있다. 모든 것이 문제없이 돌아가는 듯하다.'
+		end
+		slave_assistant_rape = 0
+		jump 'loop'
+	end
+! Если разрешено мастурбировать
+	IF slave_will_masturbate = 1:
+		$place = 'bedroom'
+		IF slave_rules['orgasm_prohibited'] = 0:
+			$text = '모든 집안일을 마친 뒤, 조수는 노예의 손을 잡고 그녀의 방으로 데려간다. 잠시 후, 호기심이 생긴 당신은 살짝 열린 문틈으로 들여다보며 진정한 여성 간의 사랑을 세세한 부분까지 즐겁게 지켜본다. 당신은 일부러 몸을 숨기지는 않지만, 그래도 두 사람의 즐거운 행위를 방해하지 않으려 한다. 화려한 마무리를 기다린 뒤, 당신은 조수에게 윙크하고 잠자리에 든다.'
+		elseif slave_rules['orgasm_prohibited'] = 1 and unenforced_slave_rule_orgasm_broken = 1:
+			$text = '잠기지 않은 문 앞을 지나가다가, 문 너머에서 익숙한 소리가 들려온다. 문을 벌컥 열어젖히자 당신은 가장 흥미로운 순간의 훈련생과 조수의 정사를 방해하게 된다. 당신은 노예에게 절정 금지를 상기시키고 싶지만, 바로 그 순간 그녀의 몸이 오르가즘으로 떨린다. 아아, 규칙이 깨지고 말았다. 한편 <<$assistant_name>>는 손가락으로 스스로를 절정에 이르게 한다.'
+		else:
+			$text = '잠기지 않은 문 앞을 지나가다가, 문 너머에서 익숙한 소리가 들려온다. 문을 벌컥 열어젖히자 당신은 가장 흥미로운 순간의 훈련생과 조수의 정사를 방해하게 된다. <<$slave_name>>는 벌떡 일어나 절정 금지를 거의 잊을 뻔했다며 당신에게 사과한다. 한편 <<$assistant_name>>는 손가락으로 스스로를 절정에 이르게 한다.'
+		END
+		slave_will_masturbate = 0
+		jump 'loop'
+	END
+! Если запрещено мастурбировать
+	IF slave_masturbating_anyway = 1:
+		$place = 'bedroom'
+		IF unenforced_slave_rule_masturbation_broken = 0 and unenforced_slave_rule_orgasm_broken = 0:
+			$text = '잠기지 않은 문 앞을 지나가다가, 문 너머에서 익숙한 소리가 들려온다. 문을 벌컥 열어젖히자 당신은 가장 흥미로운 순간의 훈련생과 조수의 정사를 방해하게 된다. <<$slave_name>>는 벌떡 일어나 당신에게 사과한다—결국 당신의 자위 금지는 레즈비언 섹스에도 그대로 적용되기 때문이다. 한편 <<$assistant_name>>는 손가락으로 스스로를 절정에 이르게 한다.'
+		elseif slave_rules['orgasm_prohibited'] = 1 and unenforced_slave_rule_orgasm_broken = 0:
+			$text = '잠기지 않은 문 앞을 지나가다가, 문 너머에서 익숙한 소리가 들려온다. 문을 벌컥 열어젖히자 당신은 가장 흥미로운 순간의 훈련생과 조수의 정사를 방해하게 된다. <<$slave_name>>는 벌떡 일어나 절정 금지를 거의 잊을 뻔했다며 당신에게 사과한다. 아아, 그녀는 이미 자위 금지까지 어기고 말았다. 한편 <<$assistant_name>>는 손가락으로 스스로를 절정에 이르게 한다.'
+		else
+			$text = '잠기지 않은 문 앞을 지나가다가, 문 너머에서 익숙한 소리가 들려온다. 문을 벌컥 열어젖히자 당신은 가장 흥미로운 순간의 훈련생과 조수의 정사를 방해하게 된다. 당신은 노예에게 자위 금지와 절정 금지를 상기시키고 싶지만, 바로 그 순간 그녀의 몸이 오르가즘으로 떨린다. 그녀는 한꺼번에 두 규칙을 어겼고, 이것은 도저히 용납할 수 없다. 한편 <<$assistant_name>>는 손가락으로 스스로를 절정에 이르게 한다.'
+		END
+		slave_masturbating_anyway = 0
+		jump 'loop'
+	END
+end
+
+if catfight = 1:
+	catfight = 0
+	$place = 'study'
+if slave_assistant_rape = -1:
+	if wpn_used = 0:
+		$text = '노예는 조수와 섹스하기를 거부했고, 어느 순간 상황은 통제 불능이 되었다. 당신이 개입해야 했지만, 그때쯤에는 두 여자 모두의 외모가 이미 망가진 뒤였다—멍, 찰과상, 뜯겨 나간 머리카락 뭉치, 전부 손님들이 싫어하는 것들이다. 안타까운 일이다. 어쩌면 이제 상황을 통제해야 할 때인지도 모른다, 그렇지 않으면 파산하게 될 것이다. 게다가 노예는 당신의 뜻을 거슬렀으니 벌해야 한다.'
+	else
+		$text = '노예는 조수와 섹스하기를 거부했고, 어느 순간 상황은 통제 불능이 되었다. 당신이 개입하기도 전에 무기가 번뜩이고 피가 튀었다. 당신은 분노한 채 두 여자를 서로 반대편으로 떼어 놓았지만, 피해는 이미 생긴 뒤였다. 갈등을 해결할 때까지는 그녀들에게서 무기를 빼앗는 편이 좋을지도 모른다. 게다가 노예는 당신의 뜻을 거슬렀으니 벌해야 한다.'
+	end
+	slave_assistant_rape = 0
+else 
+	if wpn_used = 0:
+		$text = '당신의 노예와 조수는 하찮은 일로 말다툼을 벌였고, 어느 순간 상황은 통제 불능이 되었다. 당신이 개입해야 했지만, 그때쯤에는 두 여자 모두의 외모가 이미 망가진 뒤였다—멍, 찰과상, 뜯겨 나간 머리카락 뭉치, 전부 손님들이 싫어하는 것들이다. 안타까운 일이다. 어쩌면 이제 상황을 통제해야 할 때인지도 모른다, 그렇지 않으면 파산하게 될 것이다.'
+	else
+		$text = '당신의 노예와 조수는 하찮은 일로 말다툼을 벌였고, 어느 순간 상황은 통제 불능이 되었다. 당신이 개입하기도 전에 무기가 번뜩이고 피가 튀었다. 당신은 분노한 채 두 여자를 서로 반대편으로 떼어 놓았지만, 피해는 이미 생긴 뒤였다. 문제가 정리될 때까지는 그녀들에게서 무기를 빼앗는 편이 좋을지도 모른다.'
+	end
+end
+
+	$bg_path = func('display_pic', 'slave', 'beat', 'girls/torture_scenes/battering/', 'any_age')
+!-----Заменить на селектор картинок
+  jump 'loop'
+end
+
+end_day_guild_visit = 0 &! reset for tomorrow
+end_day_phase = 0 &! reset for tomorrow
+
+
+if exam_in_progress = 1:
+	gt 'demo_menu_form'
+else
+	gs 'interior_restore'
+	gt 'menu_form'
+end
+
+:loop
+
+EndOfDayEventCnt += 1 &! something noteworthy happened (suppresses 'evening passes without incident' scene when assistant quiet rule is enabled) - resets to zero in next_day
+
+! JO9 MOD START J9M1271 | 2026-10-08_persistent_image_cycle, 2026-10-15_z_inline_text_prefix | changed block; context may be included
+if $place ! '': *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\<<$bg[$place]>>.png"></div>')
+! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($text, '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $text = $mid($text, len($jo9_leading_empty) + 1, len($text))
+! JO9 MOD END J9M1271
+*p '<div id = "text"><<$text>></div>'
+
+! JO9 MOD START J9M1270 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+if nsfw = 0 and $bg_path ! '': *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$bg_path>>.png"></div>')
+! JO9 MOD END J9M1270
+
+if npc = 1:
+	$info_bar = ''
+	if nsfw = 1:
+! JO9 MOD START J9M1269 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+		*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\empty.png"></div>')
+! JO9 MOD END J9M1269
+	elseif $npc_image[$npc_id] ! '':
+! JO9 MOD START J9M1268 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+		*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\characters\<<$npc_image[$npc_id]>>.png"></div>')
+! JO9 MOD END J9M1268
+	end
+	*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<$npc_name[$npc_id]>></div><<$npc_status[$npc_id]>><br>'
+	*nl '참고 정보:'
+	*nl '</center></div>'
+	*p '<div id = "side_panel_text"><<$npc_attitude[npc_attitude[$npc_id]]>>'
+	*nl '<span class="jo9-reference-body"><<$npc_info[$npc_id]>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style></div>'
+else
+	$info_bar = ''
+	*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<$place_name[$place]>></div><<$place_location[$place]>><br>'
+	*nl '참고 정보:</center></div>'
+	*nl '<div id = "side_panel_text"><span class="jo9-reference-body"><<$place_info[$place]>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style></div>'
+end
+
+!Info bar not currently used in end_day_screen - crushboss
+!*p '<div id = "interaction_stat_bar"><<$info_bar>></div>'
+
+addobj '<img src = "content\pic\buttons\forward_button.png">'
+txt = 1 & $text[2] = '   ' &! make forward button return to this location
+
+------------ end_day_screen ------------

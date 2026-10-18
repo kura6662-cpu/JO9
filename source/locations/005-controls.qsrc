@@ -1,0 +1,18 @@
+# controls
+! Readable view; authoritative fields are in ../locations.json.
+if snk_room_target > 0 and $curloc = 'controls': gs 'snk_room_bridge', 'guard', 'controls'
+! JO9 MOD START J9M3013 | 2026-10-14_hide_outer_frame_on_startup | changed block; context may be included
+*p '<style id="jo9_startup_no_outer_frame">body:before,body:after{display:none!important;}</style>'
+! JO9 MOD END J9M3013
+!controls hint
+
+*p '<div id = "title_scroll"><img src = "content\pic\scroll_large.png"></div>'
+*p '<div id = "title_scroll_text">    이 게임의 조작은 오직 마우스만으로 할 수 있습니다. 상호작용 가능한 클릭 요소 위에 커서를 올리면 커서가 손 모양으로 바뀝니다.'
+*nl '    거의 모든 행동은 중앙 메뉴에서 사용할 수 있지만, 가장 흔한 행동들에는 단축 수단도 있습니다. 요리, 청소, 목욕, 성행위, 착유, 처벌, 보상 명령은 캐릭터 초상화 아래의 빠른 버튼으로 내릴 수 있습니다(해당 행동이 필요할 때). 집에 있을 때 노예/조수 화면에서 규칙을 설정해 누가 청소와 요리를 맡을지 정할 수 있습니다(초상화를 클릭하거나 <b>S</b> 또는 <b>A</b>를 누르세요). 학사모 그림이 있는 큰 버튼은 훈련 과정 목록을 엽니다. 노예 화면에서 기술을 클릭해 개인 수업을 시작할 수도 있고, 조수 화면 옆의 버튼으로 조수에게 수업을 맡길 수도 있습니다.'
+*nl '    일부 선택지는 회색으로 표시되는데, 이는 사용할 수 없다는 뜻입니다. 이유는 요구 조건을 충족하지 못했기 때문일 수 있습니다. 보통은 더 많은 정보를 보기 위해 회색 텍스트를 클릭할 수 있습니다(또는 메뉴에서 버튼 아이콘 왼쪽 아래의 작은 화살표 위에 커서를 올릴 수 있습니다).'
+*nl '    클릭 가능한 왼쪽 및 오른쪽 화살표가 표시될 때는 보통 <b>SPACE</b>를 누르면 오른쪽 화살표를 클릭한 것과 같습니다. 일부 메뉴를 닫고 일부 장소에서 나가려면 <b>ESC</b>를 누르세요. 집에서는 <b>D</b>를 눌러 마스터 화면을 열 수 있습니다.'
+*nl '    즐겁게 플레이하세요!</div>'
+
+*p '<div id = "close_scroll"><a href = "EXEC: gt ''main_menu''"><img src = "content\pic\buttons\close_button.png"></a></div>'
+
+------------ controls ------------

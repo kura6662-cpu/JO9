@@ -1,0 +1,170 @@
+# assistant_private_room
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1423 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'assistant_private_room': gs 'snk_room_bridge', 'guard', 'assistant_private_room'
+! JO9 MOD END J9M1423
+$place = "assistant_private_room"
+gs '_layout'
+gs '$newloc'
+gs '$slave_traits'
+killvar 'menu_form'
+killvar '$info_bar'
+
+dynamic $assistant_pass_out
+dynamic $master_pass_out &! master should be last
+
+assistant_mood_plus = IIF(assistant['mood'] < 0, 5 - assistant['mood'], assistant['mood'])
+
+if $assistant_info_text = '':
+	if assistant_state = CONST_INT['slave_exist']: dynamic $replace("$assistant_info_text = '<<$psy_status[$assistant_psy_status]>>'", 'dyn'+'slave', 'assistant') &! evaluate delayed sub-expressions with substitution
+	if assistant_state = CONST_INT['slave_faint']: $assistant_info_text = '<br> <<$assistant_name>>의 낮은 신음이 터지며 몸이 고꾸라졌다. 상태가 좋지 않은 모양이다, 쉬게하고 검진을 받아보게 하는게 좋을 것이다.'
+	if assistant_state = CONST_INT['slave_dead']: $assistant_info_text = '<br> <<$assistant_name>>(이)가 .. 죽었다. 생기없는 사체가 바닥에서 뒹굴고 있다.'
+	if assistant_state = CONST_INT['no_slave']: $assistant_info_text = '<br> 조수개인실이 비어있다.'
+end
+
+! JO9 MOD START J9M1422 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\kikuboudoir.png"></div>')
+if assistant_state = CONST_INT['slave_exist'] and nsfw = 0: *p func('interior_change', 'jo9_html', '<div style="position:absolute;top:3px;left:150px;"><img src="content\pic\<<$assistant["fullimage"]>>.png"></div>')
+! JO9 MOD END J9M1422
+!*p '<div id = "text"><<$text>></div>'
+
+
+$text_display = ''
+
+func('$menu', 'spacer', 1)
+func('$menu', '===BEGIN===', 'column_0')
+    if assistant_state = CONST_INT['no_slave']:
+        func('$menu', 'exec', $menu_item_assistant_active_sex, empty, '섹스 불가', '조수가 없다.') 
+    else
+        func('$menu', 'goto', $menu_item_assistant_active_sex, menu_assistant_active_sex, 'interaction', 'interaction', '직접 섹스한다', '<<$assistant_name>>와 직접 조작으로 섹스')
+    end
+    if assistant_state = CONST_INT['no_slave']:
+        func('$menu', 'exec', $menu_item_assistant_active_sex, empty, '접대 불가', '조수가 없다.') 
+!    elseif    
+!        func('$menu', 'exec', $menu_item_assistant_active_sex, empty, '접대 불가', '조수의 등급이 낮다.')
+    else
+        func('$menu', 'interaction', $menu_item_maid, menu_entertain, '임원들을 접대한다',  '조수로 임원을 접대')
+    end    
+func('$menu', '===END===')
+
+*p '<div id = "bg"><<$text_display>></div>'
+
+if assistant_state > CONST_INT['no_slave']:
+	gs '$addon', 'info_box'
+	*p '<div id="barn_stat_bar">'
+		*nl '호 칭 : &nbsp;<<$assistant_name>><br>연 령 대 : &nbsp;<<$slave_age_name[assistant["age"]]>><br><a style="font-size:20px"><<$rating[rating]>></a>  노예 속성정보<br>'
+		$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'beauty', assistant['beauty'], 1)
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 외모 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $красота_справка & dynamic $msg, $красота_справка_2"><<$beauty[assistant["beauty"]]>></a>'
+		$tooltip_text = func('$addon', 'assistant_stat_tooltip_text', 'stamina')
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 체력 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $здоровье_справка & dynamic $msg, $здоровье_справка_2"><<$stamina[assistant["stamina"]]>></a>'
+		$tooltip_text = func('$addon', 'assistant_stat_tooltip_text', 'sensitivity')
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 감수성 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $чувствительность_справка & dynamic $msg, $чувствительность_справка_2"><<$sensitivity[assistant["sensitivity"]]>></a>'
+		$tooltip_text = func('$addon', 'assistant_stat_tooltip_text', 'temper')
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 성격 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $темперамент_справка & dynamic $msg, $темперамент_справка_2"><<$temper[assistant["temper"]]>></a>'
+		$tooltip_text = func('$addon', 'assistant_stat_tooltip_text', 'intellect')
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 지성 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $ум_справка & dynamic $msg, $ум_справка_2"><<$intellect[assistant["intellect"]]>></a>'
+		$tooltip_text = func('$addon', 'assistant_stat_tooltip_text', 'ego')
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 자아 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $характер_справка & dynamic $msg, $характер_справка_2"><<$ego[assistant["ego"]]>></a>'
+		$tooltip_text = func('$addon', 'assistant_stat_tooltip_text', 'pride', -1)
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 태도 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $гордыня_справка & dynamic $msg, $гордыня_справка_2"><<$pride[assistant["pride"]]>></a>'
+		!$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'exotic', assistant['exotic'], 1)
+		!*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 독특함		</font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $экзотичность_справка & dynamic $msg, $экзотичность_справка_2"><<$exotic[assistant["exotic"]]>></a>'
+		$tooltip_text = func('$addon', 'assistant_physique_tooltip_text', 'fat', assistant['fat'])
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 체형 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $жыр_справка & dynamic $msg, $жыр_справка_2"><<$fat[assistant["fat"]]>></a>'
+		!$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'style', assistant['style'], 1)
+		!*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 세련됨	</font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $стиль_справка & dynamic $msg, $стиль_справка_2"><<$style[assistant["style"]]>></a>'
+		$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'fame', assistant['fame'], 1)
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 인지도 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $слава_справка & dynamic $msg, $слава_справка_2"><<$girl_fame[assistant["fame"]]>></a>'
+		*nl '<div style="line-height:25%"></div><br>노예의 특성<div style="line-height:25%"><br></div><<$assistant_features_list>>'
+	*p '</div>'
+
+
+
+	!assistant lactation info - Pianocat ㅇㅇ ㅇㅋㅇㅋ
+	*p '<div id="stat_lactation">'
+		*p '<img src = "<<$master_ava_color>>"><div style="line-height:25%"><br></div><<$master_energy_stars>>'
+		$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'mood', master_mood, 1)
+		*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $mood_chart"><<$mood[master_mood_plus]>></a>'
+		$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'master_excitement', master_excitement, 1)
+		*nl '<div style="line-height:25%"><br></div><a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $excitement_chart"><<dyneval($vb_cycle_stat, IIF(max(master_moodlet["neg_boner"], master_moodlet["neg_blazing"]) = 0, 5 + master_excitement, 0), $excitement[master_excitement_plus])>></a>'
+		$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'hygiene', master_hygiene, -1)
+		*p '<div style="line-height:25%"><br></div><a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $hygiene_chart"><<$personal_hygiene[master_hygiene]>></a>'
+		*p '<div style="line-height:25%"><br></div>'
+	*p '</div><div id="stat_lactation_2">'
+		$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'cowSK', assistant['cowSK'], 1)
+		*p '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>"><<$slave_cowSK[assistant["cowSK"]]>></div><div style="line-height:25%"><br></div>'
+		*p '<<$slave_lactation[assistant["lactation"]]>><<$impregnation_rate[assistant["impregnation"]]>>'
+		*nl '<<$assistant_boobs>>'
+	*p '</div>'
+
+
+!	if master_excitement >= 0:
+!		*p '<div id ="impregnate_button"><a class="tooltip-bottom" tooltip-data="수유량 증가를 위해 교배한다" href = "EXEC: interaction = 1487 & gt ''interaction''"><img src="content\pic\buttons\impregnate.png"></a></div>'
+!	end
+	*p '<div id = "impregnate_button_milk">'
+		*p '<a class="tooltip-left-small-button" tooltip-data="착유 가능한 우유량" href = "EXEC: gs ''#var_base'' & msg $assistant_milk_quantity"><img src="content\pic\buttons\milk_drop_large.png" style="width:20px;height:22px;"></a></div>'
+		if assistant_state = CONST_INT['slave_faint']:
+			*p '<div id = "impregnate_button_tits">'
+			*p '<a class="tooltip-left-small-button" tooltip-data="당신의 소는 의식이 없다" href = "empty"><img src="content\pic\ui overhaul\milking_gray.png" style="width:20px;height:22px;"></a></div>'
+		elseif assistant['milk_summ'] < 10:
+			*p '<div id = "impregnate_button_tits">'
+			*p '<a class="tooltip-left-small-button" tooltip-data="착유할 정도의 우유가 없다 " href = "empty"><img src="content\pic\ui overhaul\milking_gray.png" style="width:20px;height:22px;"></a></div>'
+		else
+			*p '<div id = "impregnate_button_tits">'
+			*p '<a class="tooltip-left-small-button" tooltip-data="직접 젖 짜내기" href = "EXEC: interaction = menu_C_milking & gt ''interaction''"><img src="content\pic\ui overhaul\milking.png" style="width:20px;height:22px;"></a></div>'
+		end
+	*p '</div>'
+end
+
+if assistant_state = CONST_INT['slave_exist']:
+	*p '<div id = "barn_ava"><img src = "<<$assistant[''ava_clear'']>>.png"></div>'
+	*p '<div id = "barn_short_stat"><<$assistant_energy_stars>><div style="line-height:25%"><br></div>'
+		$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'mood', assistant['mood'], 1)
+		*p '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $mood_chart"><<$mood[assistant_mood_plus]>></a>'
+		$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'hygiene', assistant['hygiene'], -1)
+		*p '　<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>"><<$personal_hygiene[assistant["hygiene"]]>></div>'
+		*nl '<img src="content\pic\kalkulyator.png" width="15px" height="15px"> <<IIF(assistant["calories"] > 0, "+", "")>><<assistant["calories"]*100>> cal'
+		*nl '소유 기간 : <<assistant["age_count"]>> 일'
+	*p '</div>'
+elseif assistant_state = CONST_INT['slave_faint']:
+	*p '<div id = "barn_ava"><img src = "<<$assistant[''ava_gray'']>>.png"></div>'
+	*p '<div id = "barn_short_stat">의식 없음<br>'
+		$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'hygiene', assistant['hygiene'], -1)
+		*nl '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>"><<$personal_hygiene[assistant["hygiene"]]>></div>'
+	*p '</div>'
+	$assistant_info_text = '<<$assistant_name>>의 의식이 없다'
+	
+end
+
+if assistant_state ! CONST_INT['no_slave']: *p '<div id = "barn_stat_bar"><<$info_bar>></div>'
+
+! JO9 MOD START J9M1421 | 2026-10-15_z_inline_text_prefix | changed block; context may be included
+! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($assistant_info_text, '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $assistant_info_text = $mid($assistant_info_text, len($jo9_leading_empty) + 1, len($assistant_info_text))
+! JO9 MOD END J9M1421
+*p '<div id="text"><<$assistant_info_text>></div>'
+$assistant_info_text = ''
+
+if cheat_no_starve = 0 and assistant['starvation_warning'] = 1:
+	assistant['starvation_warning'] = 2 &! will be reset in next_day when no longer starving
+	msg '<<$경고>>조수가 굶주려 있다, 식사량이 부족한 모양이다.<br><br>당장 집으로 데려와 먹여두는 방법도 있다.'
+end
+
+if assistant_state > CONST_INT['no_slave'] and assistant["hygiene"] > 0: *p '<div id="fast_wash_assistant"><a class="tooltip-left-small-button" tooltip-data="소를 직접 씻긴다" href = "EXEC: interaction = menu_bath_C & gt ''interaction''"><img src="content\pic\buttons\fast_wash.png" style="width:19px;height:19px;"></a></div>'
+if assistant_state > CONST_INT['no_slave'] and assistant["hygiene"] > 0 and assistant_state = CONST_INT['slave_exist']: *p '<div id="fast_wash_assistant_assistant"><a class="tooltip-left-small-button" tooltip-data="조수에게 소를 씻기게 한다" href = "EXEC: interaction = menu_bath_C_A & gt ''interaction''"><img src="content\pic\buttons\fast_wash_assistant.png" style="width:19px;height:19px;"></a></div>'
+
+if milk_can = 1:
+	*p '<div id = "prison_milk_can"><img src="content/pic/milk_can.png" style="width:85px;height:132px;"></div>'
+	*p '<div id = "prison_milk_can_stock"><center><<milk_stock>></center></div>'
+end
+
+if assistant['ill'] ! 0:
+	if master_medic > 2 or assistant['nurse'] > 2:
+		*p '<div id = "slinfo_ill_2" class="tooltip-left-small-button" tooltip-data="<<$assistant_name>>: 질병"><img src="content\pic\buttons\z_ill.png"></a></div>'
+	end
+end
+
+*p '<div id = "side_panel_location_2"><font style="font-family:경기천년제목 Medium"><<$assistant_name>> 개인실</font><br><font size="2">~ Jack-O-Nine-Tails 2.4.0.0 & Kor Ver ~</font></div>'
+*p '<div id = "logo2"><a class="tooltip-left-up" tooltip-data="집으로 돌아간다" href = "EXEC: menu_form = 0 & gt ''menu_form''"><img src="content\pic\buttons\leave_quarter.png" style="width:75px;height:75px"></a></div>'
+------------ assistant_private_room ------------

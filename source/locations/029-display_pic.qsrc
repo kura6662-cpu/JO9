@@ -1,0 +1,446 @@
+# display_pic
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2819 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'display_pic': gs 'snk_room_bridge', 'guard', 'display_pic'
+! JO9 MOD END J9M2819
+
+if $args[2] = 'none':
+	$result = ''
+	exit
+end
+
+if code_defined['init_slave_image_characteristics'] = 0:
+	code_defined['init_slave_image_characteristics'] = 1 &! do-once
+
+	$music_acts[1] = 'singing'
+	$music_acts[2] = 'piano'
+	$music_acts[3] = 'percussion'
+	$music_acts[4] = 'strings'
+	$music_acts[5] = 'woodwind'
+
+	$init_slave_image_characteristics = {
+		! Getting slave info for showing pics lokplart
+		if $dynslave['hairColor'] = '' and dynslave_state ! CONST_INT['no_slave']:
+			if instr($dynslave['fullimage'], 'white') ! 0: 
+				$dynslave['hairColor'] = 'white'
+			elseif instr($dynslave['fullimage'], 'red') ! 0: 
+				$dynslave['hairColor'] = 'red'
+			elseif instr($dynslave['fullimage'], 'purple') ! 0: 
+				$dynslave['hairColor'] = 'purple'
+			elseif instr($dynslave['fullimage'], 'pink') ! 0: 
+				$dynslave['hairColor'] = 'pink'
+			elseif instr($dynslave['fullimage'], 'green') ! 0: 
+				$dynslave['hairColor'] = 'green'
+			elseif instr($dynslave['fullimage'], 'brown') ! 0: 
+				$dynslave['hairColor'] = 'brown'
+			elseif instr($dynslave['fullimage'], 'blue') ! 0: 
+				$dynslave['hairColor'] = 'blue'
+			elseif instr($dynslave['fullimage'], 'blond') ! 0: 
+				$dynslave['hairColor'] = 'blond'
+			elseif instr($dynslave['fullimage'], 'black') ! 0: 
+				$dynslave['hairColor'] = 'black'
+			end
+			if instr($dynslave['fullimage'], 'short') ! 0:
+				$dynslave['hairLen'] = 'short'
+			else
+				$dynslave['hairLen'] = 'long'
+			end
+		end
+	}
+end
+
+if $args[1] = 'music':
+	$args[1] = $music_acts[rand(1, 5)]
+elseif $args[1] = 'instruments':
+	$args[2] = $music_acts[rand(2, 5)]
+end
+
+if $args[0] ! '':
+	separator_index = instr($args[0], ',')
+	if separator_index ! 0:
+		$main_actor = $trim($mid($args[0], 1, separator_index - 1))
+		$secondary_actor = $trim($mid($args[0], separator_index + 1))
+	else
+		$main_actor = $args[0]
+		$secondary_actor = ''
+	end
+else
+	$main_actor = 'slave'
+	$secondary_actor = ''
+end
+
+!msg "main actor: " + $main_actor
+!msg "secondary_actor: " + $secondary_actor
+
+! getting main subject info
+if $main_actor = 'slave':
+	if $args[1] = 'fullimage':
+		$result = $slave['fullimage']
+		exit
+	else
+		dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'slave')
+		$main_spec_noNr = $slave['hairColor'] + '_' + $slave['hairLen'] + '_' + $age[slave['age']]
+		$main_gen_noNr = 'general_' + $age[slave['age']]
+		$unique_scene_tag = $slave_scene_tag    &!고유씬이미지태그
+		main_actor_type = slave_type
+	end
+elseif $main_actor = 'assistant':
+	if $args[1] = 'fullimage':
+		$result = $assistant['fullimage']
+		exit
+	else
+		dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'assistant')
+		$main_spec_noNr = $assistant['hairColor'] + '_' + $assistant['hairLen'] + '_' + $age[assistant['age']]
+		$main_gen_noNr = 'general_' + $age[assistant['age']]
+		$unique_scene_tag = $assistant_scene_tag    &!고유씬이미지태그
+		main_actor_type = assistant_type
+	end
+elseif $main_actor = 'cow':
+	if $args[1] = 'fullimage':
+		$result = $cow['fullimage']
+		exit
+	else
+		dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'cow')
+		$main_spec_noNr = $cow['hairColor'] + '_' + $cow['hairLen'] + '_' + $age[cow['age']]
+		$main_gen_noNr = 'general_' + $age[cow['age']]
+		$unique_scene_tag = $cow_scene_tag    &!고유씬이미지태그
+		main_actor_type = cow_type
+
+	end
+elseif $main_actor = 'prisoner':
+	if $args[1] = 'fullimage':
+		$result = $prisoner['fullimage']
+		exit
+	else
+		dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'prisoner')
+		$main_spec_noNr = $prisoner['hairColor'] + '_' + $prisoner['hairLen'] + '_' + $age[prisoner['age']]
+		$main_gen_noNr = 'general_' + $age[prisoner['age']]
+		$unique_scene_tag = $prisoner_scene_tag    &!고유씬이미지태그
+		main_actor_type = prisoner_type
+	end
+elseif $main_actor = 'stock':
+	if $args[1] = 'fullimage':
+		$result = $stock['fullimage']
+		exit
+	else
+		dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'stock')
+		$main_spec_noNr = $stock['hairColor'] + '_' + $stock['hairLen'] + '_' + $age[stock['age']]
+		$main_gen_noNr = 'general_' + $age[stock['age']]
+		$unique_scene_tag = $stock_scene_tag    &!고유씬이미지태그
+		main_actor_type = stock_type
+
+	end
+elseif $main_actor = 'farmhand':
+	if $args[1] = 'fullimage':
+		$result = $farmhand['fullimage']
+		exit
+	else
+		dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'farmhand')
+		$main_spec_noNr = $farmhand['hairColor'] + '_' + $farmhand['hairLen'] + '_' + $age[farmhand['age']]
+		$main_gen_noNr = 'general_' + $age[farmhand['age']]
+		$unique_scene_tag = $farmhand_scene_tag    &!고유씬이미지태그
+		main_actor_type = farmhand_type
+	end
+elseif $main_actor = 'room1':
+	if $args[1] = 'fullimage':
+		$result = $room1['fullimage']
+		exit
+	else
+		dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'room1')
+		$main_spec_noNr = $room1['hairColor'] + '_' + $room1['hairLen'] + '_' + $age[room1['age']]
+		$main_gen_noNr = 'general_' + $age[room1['age']]
+		$unique_scene_tag = $room1_scene_tag    &!고유씬이미지태그
+		main_actor_type = assistant_type
+	end	
+elseif $main_actor = 'room2':
+	if $args[1] = 'fullimage':
+		$result = $room2['fullimage']
+		exit
+	else
+		dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'room2')
+		$main_spec_noNr = $room2['hairColor'] + '_' + $room2['hairLen'] + '_' + $age[room2['age']]
+		$main_gen_noNr = 'general_' + $age[room2['age']]
+		$unique_scene_tag = $room2_scene_tag    &!고유씬이미지태그
+		main_actor_type = assistant_type
+	end	
+elseif $main_actor = 'room3':
+	if $args[1] = 'fullimage':
+		$result = $room3['fullimage']
+		exit
+	else
+		dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'room3')
+		$main_spec_noNr = $room3['hairColor'] + '_' + $room3['hairLen'] + '_' + $age[room3['age']]
+		$main_gen_noNr = 'general_' + $age[room3['age']]
+		$unique_scene_tag = $room3_scene_tag    &!고유씬이미지태그
+		main_actor_type = assistant_type
+	end	
+elseif $main_actor = 'room4':
+	if $args[1] = 'fullimage':
+		$result = $room4['fullimage']
+		exit
+	else
+		dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'room4')
+		$main_spec_noNr = $room4['hairColor'] + '_' + $room4['hairLen'] + '_' + $age[room4['age']]
+		$main_gen_noNr = 'general_' + $age[room4['age']]
+		$unique_scene_tag = $room4_scene_tag    &!고유씬이미지태그
+		main_actor_type = assistant_type
+	end		
+end
+
+$dir_path = $args[2]
+
+$picPath_seed_noNr =  main_actor_type + '_' + $args[1]
+!msg "$picPath_seed_noNr: " + $picPath_seed_noNr + " picMax: " + picMax[$picPath_seed_noNr] + " $dir_path: " + $dir_path
+!msg "main_actor_type: " + main_actor_type + " $secondary_actor: " + $secondary_actor + " $picPath_seed_noNr: " + $picPath_seed_noNr + " picMax: " + picMax[$picPath_seed_noNr]
+if main_actor_type ! 0 and $secondary_actor = '' and picMax[$picPath_seed_noNr] <> 0:
+	$picPath = $picPath_seed_noNr
+	$dir_path = "girls/sex_scenes/" + main_actor_type + '/'
+else
+	if $args[3] = 'any_age':
+		! special parameter that instructs us to omit the age portion of the image path (so we can still have matches for hair)
+		$main_spec_noNr = $replace($main_spec_noNr, '_' + $age[slave['age']], '')
+		$main_gen_noNr = $replace($main_gen_noNr, '_' + $age[slave['age']], '')
+	end
+
+	!msg "main spec: " + $main_spec_noNr
+	!msg "main gen: " + $main_gen_noNr
+
+	!' 모드 이식당시 부분getting secondary subject info (if it`s a composite image) and building the specific and general images pools accordingly
+	if $secondary_actor = '':
+		!if there`s only one actor, build the specific and general image pools as usual.
+		$picPath_spec_noNr = $args[1] + '_' + $main_spec_noNr + $unique_scene_tag    &!고유씬이미지태그
+		$picPath_gen_noNr = $args[1] + '_' + $main_gen_noNr
+	elseif $secondary_actor ! '':'
+	
+	!전용씬 있으면 우선선택
+	if $secondary_actor = '':
+		!if there`s only one actor, build the specific and general image pools as usual.
+		$picPath_spec_noNr = $args[1] + '_' + $main_spec_noNr
+		$picPath_gen_noNr = $args[1] + '_' + $main_gen_noNr
+
+		! 전용씬(고유 이미지) 우선 처리: 태그가 있고 실제 이미지가 존재하면 무조건 이 풀을 사용
+		if $unique_scene_tag <> '':
+			$picPath_unique_noNr = $picPath_spec_noNr + $unique_scene_tag
+			if picMax[$picPath_unique_noNr] <> 0:
+				$picPath_spec_noNr = $picPath_unique_noNr
+				$picPath_gen_noNr = $picPath_unique_noNr
+			end
+		end
+	elseif $secondary_actor ! '':
+		if $secondary_actor = 'slave':
+			dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'slave')
+			$secondary_spec_noNr = $slave['hairColor'] + '_' + $slave['hairLen'] + '_' + $age[slave['age']]
+			$secondary_gen_noNr = 'general_' + $age[slave['age']]
+		elseif $secondary_actor = 'assistant':
+			dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'assistant')
+			$secondary_spec_noNr = $assistant['hairColor'] + '_' + $assistant['hairLen'] + '_' + $age[assistant['age']]
+			$secondary_gen_noNr = 'general_' + $age[assistant['age']]
+		elseif $secondary_actor = 'cow':
+			dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'cow')
+			$secondary_spec_noNr = $cow['hairColor'] + '_' + $cow['hairLen'] + '_' + $age[cow['age']]
+			$secondary_gen_noNr = 'general_' + $age[cow['age']]	
+		elseif $secondary_actor = 'prisoner':
+			dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'prisoner')
+			$secondary_spec_noNr = $prisoner['hairColor'] + '_' + $prisoner['hairLen'] + '_' + $age[prisoner['age']]
+			$secondary_gen_noNr = 'general_' + $age[prisoner['age']]
+		elseif $secondary_actor = 'stock':
+			dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'stock')
+			$secondary_spec_noNr = $stock['hairColor'] + '_' + $stock['hairLen'] + '_' + $age[stock['age']]
+			$secondary_gen_noNr = 'general_' + $age[stock['age']]
+		elseif $secondary_actor = 'farmhand':
+			dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'farmhand')
+			$secondary_spec_noNr = $farmhand['hairColor'] + '_' + $farmhand['hairLen'] + '_' + $age[farmhand['age']]
+			$secondary_gen_noNr = 'general_' + $age[farmhand['age']]
+		elseif $secondary_actor = 'room1':
+			dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'room1')
+			$secondary_spec_noNr = $room1['hairColor'] + '_' + $room1['hairLen'] + '_' + $age[room1['age']]
+			$secondary_gen_noNr = 'general_' + $age[room1['age']]	
+		elseif $secondary_actor = 'room2':
+			dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'room2')
+			$secondary_spec_noNr = $room2['hairColor'] + '_' + $room2['hairLen'] + '_' + $age[room2['age']]
+			$secondary_gen_noNr = 'general_' + $age[room2['age']]	
+		elseif $secondary_actor = 'room3':
+			dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'room3')
+			$secondary_spec_noNr = $room3['hairColor'] + '_' + $room3['hairLen'] + '_' + $age[room3['age']]
+			$secondary_gen_noNr = 'general_' + $age[room3['age']]	
+		elseif $secondary_actor = 'room4':
+			dynamic $replace($init_slave_image_characteristics, 'dyn'+'slave', 'room4')
+			$secondary_spec_noNr = $room4['hairColor'] + '_' + $room4['hairLen'] + '_' + $age[room4['age']]
+			$secondary_gen_noNr = 'general_' + $age[room4['age']]
+		elseif $secondary_actor = 'young':
+			$secondary_spec_noNr = 'general_young'
+			$secondary_gen_noNr = 'general_young'
+		elseif $secondary_actor = 'milf':
+			$secondary_spec_noNr = 'general_milf'
+			$secondary_gen_noNr = 'general_milf'
+		elseif $secondary_actor = 'loli':
+			$secondary_spec_noNr = 'general_loli'
+			$secondary_gen_noNr = 'general_loli'
+		elseif $secondary_actor = 'general':
+			if rand(1, 2) = 1:
+				$secondary_spec_noNr = 'general_young'
+				$secondary_gen_noNr = 'general_young'
+			else
+				$secondary_spec_noNr = 'general_milf'
+				$secondary_gen_noNr = 'general_milf'
+			end
+		end
+
+		if $args[3] = 'any_age':
+			! special parameter that instructs us to omit the age portion of the image path (so we can still have matches for hair)
+			$secondary_spec_noNr = $replace($secondary_spec_noNr, '_' + $age[slave['age']], '')
+			$secondary_gen_noNr = $replace($secondary_gen_noNr, '_' + $age[slave['age']], '')
+		end
+
+		!msg "sec spec: " + $secondary_spec_noNr
+		!msg "sec gen: " + $secondary_gen_noNr
+
+		! find eligible image pools for two actors
+
+		! identify specific image sets (in case images for both combinations A~B, B~A exist, random chance to use either set)
+		$picPath_doubleSpec_noNr = $main_spec_noNr + '~' + $secondary_spec_noNr &! A~B
+		if picMax[$args[1] + '_' + $picPath_doubleSpec_noNr] = 0 or rand(1,2) = 1:
+			$picPath_doubleSpec_noNr = $secondary_spec_noNr + '~' + $main_spec_noNr &! B~A
+			if picMax[$args[1] + '_' + $picPath_doubleSpec_noNr] = 0: $picPath_doubleSpec_noNr = $main_spec_noNr + '~' + $secondary_spec_noNr &! B&A is empty so revert to A~B (which might also be empty)
+		end
+		
+		! main-specific secondary-general (in case images for both combinations A~B, B~A exist, random chance to use either set)
+		$picPath_mainSpec_noNr = $main_spec_noNr + '~' + $secondary_gen_noNr &! A~B
+		if picMax[$args[1] + '_' + $picPath_mainSpec_noNr] = 0 or rand(1,2) = 1:
+			$picPath_mainSpec_noNr = $secondary_gen_noNr + '~' + $main_spec_noNr &! B~A
+			if picMax[$args[1] + '_' + $picPath_mainSpec_noNr] = 0: $picPath_mainSpec_noNr = $main_spec_noNr + '~' + $secondary_gen_noNr &! B&A is empty so revert to A~B (which might also be empty)
+		end
+
+		! secondary-specific main-general (in case images for both combinations A~B, B~A exist, random chance to use either set)
+		$picPath_secondarySpec_noNr = $secondary_spec_noNr + '~' + $main_gen_noNr &! A~B
+		if picMax[$args[1] + '_' + $picPath_secondarySpec_noNr] = 0 or rand(1,2) = 1:
+			$picPath_secondarySpec_noNr = $main_gen_noNr + '~' + $secondary_spec_noNr &! B~A
+			if picMax[$args[1] + '_' + $picPath_secondarySpec_noNr] = 0: $picPath_secondarySpec_noNr = $secondary_spec_noNr + '~' + $main_gen_noNr &! B&A is empty so revert to A~B (which might also be empty)
+		end
+
+		! both general (in case images for both combinations A~B, B~A exist, random chance to use either set)
+		$picPath_doubleGen_noNr = $main_gen_noNr + '~' + $secondary_gen_noNr &! A~B
+		if picMax[$args[1] + '_' + $picPath_doubleGen_noNr] = 0 or rand(1,2) = 1:
+			$picPath_doubleGen_noNr = $secondary_gen_noNr + '~' + $main_gen_noNr &! B~A
+			if picMax[$args[1] + '_' + $picPath_doubleGen_noNr] = 0: $picPath_doubleGen_noNr = $main_gen_noNr + '~' + $secondary_gen_noNr &! B&A is empty so revert to A~B (which might also be empty)
+		end
+
+		!msg "double spec pool: " + $picPath_doubleSpec_noNr
+		!msg "main spec pool: " + $picPath_mainSpec_noNr
+		!msg "sec spec pool: " + $picPath_secondarySpec_noNr
+		!msg "double gen pool: " + $picPath_doubleGen_noNr
+
+		! for specific image pool, use the most specific eligible non-empty image set (picMax > 0): doubleSpec, mainSpec, or secondarySpec
+		$picPath_spec_noNr = $args[1] + '_' + $picPath_doubleSpec_noNr
+		specific_image_type = 2
+		!msg "spec try 1: " + $picPath_spec_noNr
+		! doubleSpec is now the specific pool, mainSpec, secondarySpec and doubleGen have chance for selection as general pool
+		if picMax[$picPath_spec_noNr] = 0:
+			$picPath_spec_noNr = $args[1] + '_' + $picPath_mainSpec_noNr
+			specific_image_type = 5
+			!msg "spec try 2: " + $picPath_spec_noNr
+			! mainSpec is now the specific pool, secondarySpec and doubleGen have chance for selection as general pool
+			if picMax[$picPath_spec_noNr] = 0:
+				$picPath_spec_noNr = $args[1] + '_' + $picPath_secondarySpec_noNr
+				specific_image_type = 7
+				!msg "spec try 3: " + $picPath_spec_noNr
+				! secondarySpec is now the specific pool, doubleGen has chance for selection as general pool
+			end
+		end
+
+		! for general image pool, random between the remaining image pools (excluding empty sets and excluding the image set chosen for specific pool above)
+		! 0-1 are unused (doubleSpec is always used as specific path if any images exist), 2,3,4 = mainSpec, 5,6 = secondarySpec, 7 = doubleGen
+		pic_rand = rand(specific_image_type, 7)
+		if (pic_rand >= 2 and pic_rand <= 4): $picPath_gen_noNr = $args[1] + '_' + $picPath_mainSpec_noNr
+		if picMax[$picPath_gen_noNr] = 0 or (pic_rand = 5 or pic_rand = 6): $picPath_gen_noNr = $args[1] + '_' + $picPath_secondarySpec_noNr
+		if picMax[$picPath_gen_noNr] = 0 or (pic_rand = 7): $picPath_gen_noNr = $args[1] + '_' + $picPath_doubleGen_noNr
+	end
+
+	!msg $picPath_spec_noNr
+	!msg $picPath_gen_noNr
+
+	! choosing gen or spec
+	if picMax[$picPath_spec_noNr] ! 0 and picMax[$picPath_gen_noNr] ! 0:
+		pic_rand = rand(1, picMax[$picPath_spec_noNr] + picMax[$picPath_gen_noNr])
+		pic_type = picMax[$picPath_gen_noNr] - picMax[$picPath_spec_noNr] 
+		if pic_type <= 0:
+			if pic_rand > picMax[$picPath_gen_noNr] - (1 * (picMax[$picPath_gen_noNr] > 2)):
+				$picPath = $picPath_spec_noNr
+			else
+				$picPath = $picPath_gen_noNr
+				args[3] = 0 &! making the (safe?) assumption that general pics can be reused (see usage of args[3] below)
+			end
+		else
+			if pic_rand > ((picMax[$picPath_spec_noNr] + picMax[$picPath_gen_noNr]) / 2) - (pic_type / 3) + (1 * (picMax[$picPath_spec_noNr] = 1)):
+				$picPath = $picPath_gen_noNr
+				args[3] = 0 &! making the (safe?) assumption that general pics can be reused (see usage of args[3] below)
+			else
+				$picPath = $picPath_spec_noNr
+			end
+		end
+	elseif picMax[$picPath_spec_noNr] = 0:
+		$picPath = $picPath_gen_noNr
+		args[3] = 0 &! making the (safe?) assumption that general pics can be reused (see usage of args[3] below)
+	elseif picMax[$picPath_gen_noNr] = 0:
+		$picPath = $picPath_spec_noNr
+	else
+		$picPath = 'none'
+	end
+end
+
+! choosing image number (random selection without reusing last used number of the same path)
+if picMax[$picPath] = 0:
+	pic_rand = 1
+else
+	pic_rand = rand(1, picMax[$picPath])
+	! replacing pic if it is the same as last time and if it is possible (optional final parameter from caller can be an image number that should not be reused, for specific pics associated with one-time events)
+	if (pic_rand = last_pic[$picPath] or pic_rand = args[3]) and picMax[$picPath] > 1:
+		if pic_rand = picMax[$picPath]:
+			! select any number not at the end of the range
+			pic_rand = rand(1, picMax[$picPath] - 1)
+		elseif pic_rand = 1:
+			! select any number not at the beginning of the range
+			pic_rand = rand(2, picMax[$picPath])
+		elseif rand(1,2) = 1:
+			! last_pic/args[3] is not at the beginning or end of the range - 50% chance to select a number after last_pic/args[3]
+			pic_rand = rand(pic_rand + 1, picMax[$picPath])
+		else
+			! last_pic/args[3] is not at the beginning or end of the range - 50% chance to select a number before last_pic/args[3]
+			pic_rand = rand(1, pic_rand)
+		end
+	end
+	if pic_rand = args[3] and picMax[$picPath_gen_noNr] ! 0:
+		! could not find an alternative specific pic (args[3] must be non-zero if it matches pic_rand, and we reset args[3] above if it is a general pic, so we know we have a specific path)
+		! and at least one general pic exists - so use a random general pic instead
+		$picPath = $picPath_gen_noNr
+		pic_rand = rand(1, picMax[$picPath])
+	else
+		! normal case and args[3] failsafe if no general pic exists (this could only happen if we have just one specific pic and no general)
+		! remember selected number for next time we look for an image with this path
+		last_pic[$picPath] = pic_rand
+	end
+end
+
+!msg "chosen pic: " + $picPath
+
+! appending selected image number to gen or spec image path
+if pic_rand > 1:
+	$picPath = $dir_path + $picPath + '_' + $str(pic_rand)
+else
+	$picPath = $dir_path + $picPath &! numbered image filenames start from _2, do not append _1, do not use $replace($picPath, '_1') because _10 is a valid path
+end
+
+$result = $picPath
+
+killvar '$picPath_spec_noNr'
+killvar '$picPath_gen_noNr'
+killvar '$picPath'
+killvar '$picPath_seed_noNr'
+killvar '$dir_path'
+killvar 'new_pic_rand'
+killvar 'pic_rand'
+killvar 'pic_type'
+killvar 'main_actor_type'
+killvar '$unique_scene_tag' &!고유씬이미지태그
+
+------------ display_pic ------------

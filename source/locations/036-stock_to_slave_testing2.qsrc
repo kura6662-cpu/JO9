@@ -1,0 +1,98 @@
+# stock_to_slave_testing2
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2824 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'stock_to_slave_testing2': gs 'snk_room_bridge', 'guard', 'stock_to_slave_testing2'
+! JO9 MOD END J9M2824
+!Stock to Slave Testing Cheat2 - cheat_k - equip new slave with full piercings, tattoos, clothes, armor, weapons, and accessories
+!Created by crushboss
+
+if slave_type ! 2572:
+
+	!Slave Piercings
+	slave['nipple_piercing'] = 1
+	slave['clit_piercing'] = 1
+	slave['ear_piercing'] = 1
+	slave['tongue_piercing'] = 1
+	slave['belly_piercing'] = 1
+	slave['nostril_piercing'] = 1
+	slave['nose_piercing'] = 1
+	slave['tongue_split'] = 1
+	slave['scarification'] = 1
+
+	!Slave Clothing Inventory
+	slave_inventory['maid_dress'] = 1
+	slave_inventory['apron'] = 1
+	slave_inventory['nurse_dress'] = 1
+	slave_inventory['sailor_foku'] = 1
+	slave_inventory['leotard'] = 1
+	slave_inventory['chainmail_bikini'] = 1
+	slave_inventory['sun_dress'] = 1
+	slave_inventory['leather_corset'] = 1
+	slave_inventory['fluffy_stepins'] = 1
+	slave_inventory['high_boots'] = 1
+	slave_inventory['sneakers'] = 1
+	slave_inventory['tabi'] = 1
+	slave_inventory['glasses'] = 1
+	slave_inventory['nekomimi'] = 1
+	slave_inventory['leather_gloves'] = 1
+	slave_inventory['fluffy_gloves'] = 1
+	slave_inventory['rubber_gloves'] = 1
+	slave_inventory['plain_headband'] = 1
+	slave_inventory['leather_collar'] = 1
+	slave_inventory['spiked_collar'] = 1
+	slave_inventory['common_apron'] = 1
+	slave_inventory['enchanter_robe'] = 1
+	slave_inventory['laced_underwear'] = 1
+	slave_inventory['bellydance'] = 1
+	slave_inventory['anal_tail'] = 1
+	slave_inventory['pony_plume'] = 1
+	slave_inventory['ponygirl_harness'] = 1
+	slave_inventory['cow_gear'] = 1
+	slave_inventory['high_heels'] = 1
+	slave_inventory['hoofed_boots'] = 1
+
+	!Slave Makeup and Tattoos
+	if slave['age'] ! CONST_INT['loli_age']:
+		slave['makeup'] = 3
+		slave['fiend_tattoo'] = 1
+		slave['tattoo'] = 5
+	end
+	slave['manicure'] = 5
+	slave['perfume'] = 1
+	slave['hygiene'] = 0
+	slave_rate['hygiene'] = 0
+	slave['epilation'] = 12
+	slave['hairstyle'] = 7
+	slave['pos_gentle'] = 2
+	slave['pos_slave_clean'] = 1
+
+	!Slave Equipped Armor, Weapons, and Cloth
+	$slave['wpn'] = 'катана'
+	$slave['scnd'] = ''
+	$slave['armor'] = 'плейт'
+	$slave['right_wpn'] = 'катана'
+	$slave['left_wpn'] = 'кинжал'
+	if slave_type ! 2572: $slave['back_wpn'] = 'фламберг'
+	$slave['cloth'] = 'sun_dress'
+
+	!Slave Equipped Gear
+	$slave['earrings'] = 'incrusted_earrings'
+	$slave['collar'] = 'golden_collar'
+	$slave['headband'] = 'exotic_wig'
+	$slave['gloves'] = 'laced_gloves'
+	$slave['nipplerings'] = 'nipple_chain'
+	$slave['clitring'] = 'incrusted_earrings'
+	$slave['boots'] = 'high_boots'
+	$slave['ring_left'] = 'incrusted_ring'
+	$slave['ring_right'] = 'incrusted_ring'
+	$slave['navel'] = 'heavy_gauge_rings'
+	$slave['tongue'] = 'barbells'
+
+	!Slave Misc Attributes
+	if slave['age'] ! CONST_INT['loli_age']: slave['fertility'] = -1
+	slave['fertility_revealed'] = 1
+	!if slave['brand'] ! 4: slave['brand'] = 3
+
+end
+
+------------ stock_to_slave_testing2 ------------

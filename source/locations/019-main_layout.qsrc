@@ -1,0 +1,36 @@
+# main_layout
+! Readable view; authoritative fields are in ../locations.json.
+ui_style = 2
+! JO9_SINGLE_GRIMDARK_UI_20261014
+! JO9 MOD START J9M2813 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'main_layout': gs 'snk_room_bridge', 'guard', 'main_layout'
+! JO9 MOD END J9M2813
+!layout for a main game screen
+INTEGRATED_ACTIONS = 0
+if ui_style = 1:$backimage = 'content/pic/ui/old/bg_main_old.png'
+if ui_style = 2:$backimage = 'content/pic/ui/grimdark/bg_main.png'
+if ui_style = 0:$backimage = 'content/pic/ui/classic/bg_main.png'
+
+SHOWOBJS 0
+SHOWSTAT 0
+SHOWACTS 0
+
+!$onnewloc = '$newloc'
+
+LCOLOR = rgb(0,0,255)
+FCOLOR = rgb(0,0,0)
+
+$MAINDESC_BACKIMAGE = ''
+! removed non-existent path 'content/.png' -ImperatorAugustus
+MAINDESC_X = 1
+MAINDESC_Y = 1
+MAINDESC_W = 1280
+MAINDESC_H = 800
+
+$STATDESC_BACKIMAGE = ''
+! removed non-existent path 'content/.png' -ImperatorAugustus
+STATDESC_X = 810
+STATDESC_Y = 1
+STATDESC_W = 450
+STATDESC_H = 800
+------------ main_layout ------------

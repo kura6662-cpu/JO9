@@ -1,0 +1,21 @@
+# вторичные_атаки
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2903 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'вторичные_атаки': gs 'snk_room_bridge', 'guard', 'вторичные_атаки'
+! JO9 MOD END J9M2903
+!SECONDARY ATTACK MENU SELECTION
+gs '#боевые_предметы'
+gs '#суперудары'
+
+!creating menu
+$боевое_меню = ''
+$боевое_меню += "<a href='EXEC: dynamic $пинок'><font color='red'>발차기</font></a> (<font color='purple'>기절</font>/<font color='green'>집중</font>)<br>"
+$боевое_меню += "<a href='EXEC: dynamic $толчок'><font color='green'>밀치기</font></a> (<font color='red'>산만</font>/<font color='purple'>아드레날린</font>)<br>"
+$боевое_меню += "<a href='EXEC: dynamic $подсечка'><font color='purple'>다리걸기</font></a> (<font color='green'>불안정</font>/<font color='red'>회피</font>)<br>"
+if вторичная_атака[$вторичный] = 1 and $вторичный ! '': $боевое_меню += '<<$вторичная_атака_название[$вторичный]>><br>'
+$боевое_меню += "<br>"
+$боевое_меню += "<a href='EXEC: dynamic $вернуться_в_корень'>뒤로</a><br>"
+
+gt 'боевой_интерфейс'
+
+------------ вторичные_атаки ------------

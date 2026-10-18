@@ -1,0 +1,135 @@
+# jo9_fog_relay
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START FOG_RELAY_HELPER | 2026-10-17_fog_relay
+! 안개 순찰 전용. begin: 선봉 선택, handoff: 동료 패배 후 주인공 교대.
+! settle: 출전 동료의 결과를 한 번 정산. close/reset: 전투 임시값 정리.
+! 적의 배열·체력·상태는 여기서 재생성하지 않는다.
+if $args[0] = 'menu':
+ gs '$menu', 'exec_options', $menu_item_Joinbattle, 'gt "jo9_fog_relay", "begin", 0', '혼자 전투에 돌입한다'
+ if slave_state = CONST_INT['slave_exist'] and slave['energy'] > 0:
+  gs '$menu', 'exec_options', $menu_item_Joinbattle, 'gt "jo9_fog_relay", "begin", 1', '노예와 전투에 돌입한다'
+ end
+ if assistant_state = CONST_INT['slave_exist'] and assistant['energy'] > 0:
+  gs '$menu', 'exec_options', $menu_item_Joinbattle, 'gt "jo9_fog_relay", "begin", 2', '조수와 전투에 돌입한다'
+ end
+end
+
+if $args[0] = 'begin':
+ if $place ! 'edge_patrol': exit
+ if args[1] < 0 or args[1] > 2: exit
+ if args[1] = 1 and (slave_state ! CONST_INT['slave_exist'] or slave['energy'] <= 0): exit
+ if args[1] = 2 and (assistant_state ! CONST_INT['slave_exist'] or assistant['energy'] <= 0): exit
+ killvar 'jo9_fog'
+ ! 사용자 승인 페널티. 누적값이며 등급을 직접 지정하지 않는다.
+ jo9_fog['wounds_penalty'] = 80
+ jo9_fog['moral_penalty'] = 10
+ jo9_fog['mood_penalty'] = 10
+ combatant = args[1]
+ jo9_fog['actor'] = combatant
+ if combatant > 0: jo9_fog['active'] = 1
+ a = 0
+ killvar 'no_wpn'
+ get_weapon = 0
+ $итог_боя = ''
+ gt 'начать_бой'
+end
+
+if $args[0] = 'handoff':
+ if jo9_fog['active'] ! 1 or jo9_fog['switched'] ! 0 or combatant < 1: exit
+ ! 이전 출전자의 갑옷 효과를 제거한 후 결과를 정산한다.
+ dynamic $броня_снять[$броня]
+ gs 'jo9_fog_relay', 'settle'
+ jo9_fog['switched'] = 1
+ jo9_fog['resuming'] = 1
+ combatant = 0
+ get_weapon = 0
+ a = 0
+ killvar 'no_wpn'
+ $итог_боя = ''
+ msg '주인공이 전투를 이어받습니다. 사용할 장비를 선택하세요. 적의 남은 체력과 상태는 유지됩니다.'
+ gt 'начать_бой'
+end
+
+if $args[0] = 'finish':
+ if jo9_fog['active'] = 1 and combatant > 0: gs 'jo9_fog_relay', 'settle'
+end
+
+if $args[0] = 'settle':
+ if jo9_fog['active'] ! 1 or jo9_fog['settled'] ! 0: exit
+ jo9_fog['settled'] = 1
+ ! 3명 이상 적 전멸 시 원본이 사기를 덮어쓰기 전의 실제 값을 정산에 사용한다.
+ if jo9_fog['victory_snapshot'] = 1: дух_игрока = jo9_fog['spirit_before_victory']
+ ! 액터별 코드는 아래에 생성된다. 죽음 > 기절 > 사기 패배 순으로 판정한다.
+ if jo9_fog['actor'] = 1:
+  if здоровье_игрока <= 0:
+   msg '<<$slave_name>>이(가) 전투에서 사망했습니다.'
+   dynamic $clear_slave_instance, 'slave'
+  else
+   ! 기존 전투의 잔여 지구력→행동력 환산을 사용하고 전투 전 행동력 이상으로 회복시키지 않는다.
+   jo9_fog['energy_before'] = slave['energy']
+   slave['energy'] = -4
+   if выносливость_игрока >= 10: slave['energy'] = -3
+   if выносливость_игрока >= 15: slave['energy'] = -2
+   if выносливость_игрока >= 20: slave['energy'] = -1
+   if выносливость_игрока >= 25: slave['energy'] = 0
+   if выносливость_игрока >= 35: slave['energy'] = 1
+   if выносливость_игрока >= 45: slave['energy'] = 2
+   if выносливость_игрока >= 55: slave['energy'] = 3
+   if выносливость_игрока >= 65: slave['energy'] = 4
+   if выносливость_игрока >= 75: slave['energy'] = 5
+   slave['energy'] = min(slave['energy'], jo9_fog['energy_before'])
+   if выносливость_игрока <= 0:
+    slave_rate['wounds'] += jo9_fog['wounds_penalty']
+    slave['neg_slave_wounded'] = 1
+    msg '<<$slave_name>>이(가) 부상을 입고 기절했습니다.'
+   elseif дух_игрока <= 0:
+    slave_rate['moral'] -= jo9_fog['moral_penalty']
+    slave_rate['mood'] -= jo9_fog['mood_penalty']
+    msg '<<$slave_name>>이(가) 사기를 잃고 전투에서 물러났습니다. 당신에 대한 헌신과 기분이 저하되었습니다.'
+   end
+   dynamic $replace($dyn_calc_slave_attrs, 'dyn'+'slave', 'slave')
+  end
+ end
+ if jo9_fog['actor'] = 2:
+  if здоровье_игрока <= 0:
+   msg '<<$assistant_name>>이(가) 전투에서 사망했습니다.'
+   dynamic $clear_slave_instance, 'assistant'
+  else
+   ! 기존 전투의 잔여 지구력→행동력 환산을 사용하고 전투 전 행동력 이상으로 회복시키지 않는다.
+   jo9_fog['energy_before'] = assistant['energy']
+   assistant['energy'] = -4
+   if выносливость_игрока >= 10: assistant['energy'] = -3
+   if выносливость_игрока >= 15: assistant['energy'] = -2
+   if выносливость_игрока >= 20: assistant['energy'] = -1
+   if выносливость_игрока >= 25: assistant['energy'] = 0
+   if выносливость_игрока >= 35: assistant['energy'] = 1
+   if выносливость_игрока >= 45: assistant['energy'] = 2
+   if выносливость_игрока >= 55: assistant['energy'] = 3
+   if выносливость_игрока >= 65: assistant['energy'] = 4
+   if выносливость_игрока >= 75: assistant['energy'] = 5
+   assistant['energy'] = min(assistant['energy'], jo9_fog['energy_before'])
+   if выносливость_игрока <= 0:
+    assistant_rate['wounds'] += jo9_fog['wounds_penalty']
+    assistant['neg_slave_wounded'] = 1
+    msg '<<$assistant_name>>이(가) 부상을 입고 기절했습니다.'
+   elseif дух_игрока <= 0:
+    assistant_rate['moral'] -= jo9_fog['moral_penalty']
+    assistant_rate['mood'] -= jo9_fog['mood_penalty']
+    msg '<<$assistant_name>>이(가) 사기를 잃고 전투에서 물러났습니다. 당신에 대한 헌신과 기분이 저하되었습니다.'
+   end
+   dynamic $replace($dyn_calc_slave_attrs, 'dyn'+'slave', 'assistant')
+  end
+ end
+end
+
+if $args[0] = 'close':
+ if jo9_fog['active'] = 1:
+  combatant = 0
+  killvar 'jo9_fog'
+ end
+end
+
+if $args[0] = 'reset': killvar 'jo9_fog'
+! JO9 MOD END FOG_RELAY_HELPER
+
+------------ jo9_fog_relay ------------

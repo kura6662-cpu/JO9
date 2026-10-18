@@ -1,0 +1,264 @@
+# item_change
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2857 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'item_change': gs 'snk_room_bridge', 'guard', 'item_change'
+! JO9 MOD END J9M2857
+!change item in the selected slot
+if is_home = 0 and $return_lock ! 'none':
+	$return_lock = 'menu_form'
+	menu_form = 0
+	gs '$city_random_event', 'home' &! check for an event when returning home - ImperatorAugustus
+	dynamic $home_sounds &! before is_home = 1
+	is_home = 1
+end
+
+if slot < 20:
+
+	if slot = 1:
+	 	if $master_armor ! 'без_брони' and $master_armor ! '': dynamic '<<$master_armor>> += 1'
+	 	$master_armor = $new_item
+
+	elseif slot = 2:
+	 	if $master_back_wpn ! 'безоружный' and $master_back_wpn ! '': dynamic '<<$master_back_wpn>> += 1'
+	 	$master_back_wpn = $new_item
+
+	elseif slot = 3:
+	 	if $master_left_wpn ! 'безоружный' and $master_left_wpn ! '': dynamic '<<$master_left_wpn>> += 1'
+	 	$master_left_wpn = $new_item
+
+	elseif slot = 4:
+	 	if $master_right_wpn ! 'безоружный' and $master_right_wpn ! '': dynamic '<<$master_right_wpn>> += 1'
+	 	$master_right_wpn = $new_item
+
+	elseif slot = 5:
+	 	if $master_arm_wpn ! 'безоружный' and $master_arm_wpn ! '': dynamic '<<$master_arm_wpn>> += 1'
+	 	$master_arm_wpn = $new_item
+
+	elseif slot = 6:
+	 	if $master_leg_wpn ! 'безоружный' and $master_leg_wpn ! '': dynamic '<<$master_leg_wpn>> += 1'
+	 	$master_leg_wpn = $new_item
+
+	elseif slot = 7:
+	 	if $master_cloth ! '':
+			dynamic $item_property_off[$master_cloth]
+			dynamic '<<$master_cloth>> += 1'
+		end
+	 	$master_cloth = $new_item
+
+	elseif slot = 8:
+	 	if $master_head_gear ! '' and $master_head_gear ! 'none':
+			dynamic $item_property_off[$master_head_gear]
+			dynamic '<<$master_head_gear>> += 1'
+		end
+	 	$master_head_gear = $new_item
+
+	elseif slot = 9:
+	 	if $master_earring ! '' and $master_earring ! 'none':
+			dynamic $item_property_off[$master_earring]
+			dynamic '<<$master_earring>> += 1'
+		end
+	 	$master_earring = $new_item
+
+	elseif slot = 10:
+	 	if $master_amulet ! '' and $master_amulet ! 'none':
+			dynamic $item_property_off[$master_amulet]
+			dynamic '<<$master_amulet>> += 1'
+		end
+	 	$master_amulet = $new_item
+
+	elseif slot = 11:
+	 	if $master_ring ! '' and $master_ring ! 'none':
+			dynamic $item_property_off[$master_ring]
+			dynamic '<<$master_ring>> += 1'
+		end
+	 	$master_ring = $new_item
+
+	elseif slot = 12:
+	 	if $master_karman ! '' and $master_karman ! 'none':
+			dynamic $item_property_off[$master_karman]
+			dynamic '<<$master_karman>> += 1'
+		end
+	 	$master_karman = $new_item
+	end
+
+	dynamic 'if val(<<$new_item>>) >= max(1, args[0]): <<$new_item>> -= max(1, args[0])'
+	if $item_property[$new_item] ! '': dynamic $item_property[$new_item]
+
+	dynamic $show_item_description_and_image, $new_item
+
+	if $return_lock ! 'none':
+		$equip_choice = ''
+		gs '$newloc'
+		gt 'master_stat'
+	end
+
+elseif slot > 39:
+
+	if slot = 40:
+	 	if $assistant["armor"] ! 'без_брони' and $assistant["armor"] ! '': dynamic '<<$assistant["armor"]>> += 1'
+	 	$assistant["armor"] = $new_item
+	
+	elseif slot = 41:
+	 	if $assistant["back_wpn"] ! 'безоружный' and $assistant["back_wpn"] ! '': dynamic '<<$assistant["back_wpn"]>> += 1'
+	 	$assistant["back_wpn"] = $new_item
+	
+	elseif slot = 42:
+	 	if $assistant["left_wpn"] ! 'безоружный' and $assistant["left_wpn"] ! '': dynamic '<<$assistant["left_wpn"]>> += 1'
+	 	$assistant["left_wpn"] = $new_item
+	
+	elseif slot = 43:
+	 	if $assistant["right_wpn"] ! 'безоружный' and $assistant["right_wpn"] ! '': dynamic '<<$assistant["right_wpn"]>> += 1'
+	 	$assistant["right_wpn"] = $new_item
+
+	elseif slot = 44:
+		if $assistant["cloth"] ! '' and $item_name[$assistant["cloth"]] ! '-' and $item_name[$assistant["cloth"]] ! 'Naked': assistant_inventory[$assistant["cloth"]] += 1
+		$assistant["cloth"] = $new_item
+
+	elseif slot = 45:
+		if $assistant["headband"] ! '' and $item_name[$assistant["headband"]] ! '-': assistant_inventory[$assistant["headband"]] += 1 & dynamic $replace($item_property_off[$assistant["headband"]], 'dyn'+'slave', 'assistant')
+		$assistant["headband"] = $new_item
+
+	elseif slot = 46:
+		if $assistant["earrings"] ! '' and $item_name[$assistant["earrings"]] ! '-': assistant_inventory[$assistant["earrings"]] += 2
+		$assistant["earrings"] = $new_item
+
+	elseif slot = 47:
+		if $assistant["collar"] ! '' and $item_name[$assistant["collar"]] ! '-': assistant_inventory[$assistant["collar"]] += 1
+		$assistant["collar"] = $new_item
+
+	elseif slot = 48:
+		if $assistant["gloves"] ! '' and $item_name[$assistant["gloves"]] ! '-': assistant_inventory[$assistant["gloves"]] += 1
+		$assistant["gloves"] = $new_item
+
+	elseif slot = 49:
+		if $assistant["nipplerings"] ! '' and $item_name[$assistant["nipplerings"]] ! '-': assistant_inventory[$assistant["nipplerings"]] += 2
+		$assistant["nipplerings"] = $new_item
+
+	elseif slot = 50:
+		if $assistant["clitring"] ! '' and $item_name[$assistant["clitring"]] ! '-': assistant_inventory[$assistant["clitring"]] += 1
+		$assistant["clitring"] = $new_item
+
+	elseif slot = 51:
+		if $assistant["boots"] ! '' and $item_name[$assistant["boots"]] ! '-': assistant_inventory[$assistant["boots"]] += 1
+		$assistant["boots"] = $new_item
+
+	elseif slot = 52:
+		if $assistant["ring_left"] ! '' and $item_name[$assistant["ring_left"]] ! '-': assistant_inventory[$assistant["ring_left"]] += 1
+		$assistant["ring_left"] = $new_item
+
+	elseif slot = 53:
+		if $assistant["ring_right"] ! '' and $item_name[$assistant["ring_right"]] ! '-': assistant_inventory[$assistant["ring_right"]] += 1
+		$assistant["ring_right"] = $new_item
+
+	elseif slot = 54:
+		if $assistant["navel"] ! '' and $item_name[$assistant["navel"]] ! '-': assistant_inventory[$assistant["navel"]] += 1
+		$assistant["navel"] = $new_item
+
+	elseif slot = 55:
+		if $assistant["tongue"] ! '' and $item_name[$assistant["tongue"]] ! '-': assistant_inventory[$assistant["tongue"]] += 1
+		$assistant["tongue"] = $new_item
+	end
+
+	if assistant_inventory[$new_item] >= max(1, args[0]):
+		assistant_inventory[$new_item] -= max(1, args[0])
+	elseif inventory[$new_item] >= max(1, args[0]):
+		inventory[$new_item] -= max(1, args[0])
+	else
+		dynamic 'if val(<<$new_item>>) >= max(1, args[0]): <<$new_item>> -= max(1, args[0])' &! weapons and armor
+	end
+
+	dynamic $show_item_description_and_image, $new_item
+
+	if $return_lock ! 'none':
+		$equip_choice = $dyneval($replace($show_item_effects, 'dyn'+'slave', 'assistant'))
+		gs '$newloc'
+		gt 'assistant_stat'
+	end
+
+else 
+
+	if slot = 20:
+	 	if $slave["armor"] ! 'без_брони' and $slave["armor"] ! '': dynamic '<<$slave["armor"]>> += 1'
+	 	$slave["armor"] = $new_item
+
+	elseif slot = 21:
+	 	if $slave["back_wpn"] ! 'безоружный' and $slave["back_wpn"] ! '': dynamic '<<$slave["back_wpn"]>> += 1'
+	 	$slave["back_wpn"] = $new_item
+
+	elseif slot = 22:
+	 	if $slave["left_wpn"] ! 'безоружный' and $slave["left_wpn"] ! '': dynamic '<<$slave["left_wpn"]>> += 1'
+	 	$slave["left_wpn"] = $new_item
+
+	elseif slot = 23:
+	 	if $slave["right_wpn"] ! 'безоружный' and $slave["right_wpn"] ! '': dynamic '<<$slave["right_wpn"]>> += 1'
+	 	$slave["right_wpn"] = $new_item
+
+	elseif slot = 24:
+		if $slave["cloth"] ! '' and $item_name[$slave["cloth"]] ! '-' and $item_name[$slave["cloth"]] ! 'Naked': slave_inventory[$slave["cloth"]] += 1
+		$slave["cloth"] = $new_item
+
+	elseif slot = 25:
+		if $slave["headband"] ! '' and $item_name[$slave["headband"]] ! '-': slave_inventory[$slave["headband"]] += 1 & dynamic $replace($item_property_off[$slave["headband"]], 'dyn'+'slave', 'slave')
+		$slave["headband"] = $new_item
+
+	elseif slot = 26:
+		if $slave["earrings"] ! '' and $item_name[$slave["earrings"]] ! '-': slave_inventory[$slave["earrings"]] += 2
+		$slave["earrings"] = $new_item
+
+	elseif slot = 27:
+		if $slave["collar"] ! '' and $item_name[$slave["collar"]] ! '-': slave_inventory[$slave["collar"]] += 1
+		$slave["collar"] = $new_item
+
+	elseif slot = 28:
+		if $slave["gloves"] ! '' and $item_name[$slave["gloves"]] ! '-': slave_inventory[$slave["gloves"]] += 1
+		$slave["gloves"] = $new_item
+
+	elseif slot = 29:
+		if $slave["nipplerings"] ! '' and $item_name[$slave["nipplerings"]] ! '-': slave_inventory[$slave["nipplerings"]] += 2
+		$slave["nipplerings"] = $new_item
+
+	elseif slot = 30:
+		if $slave["clitring"] ! '' and $item_name[$slave["clitring"]] ! '-': slave_inventory[$slave["clitring"]] += 1
+		$slave["clitring"] = $new_item
+
+	elseif slot = 31:
+		if $slave["boots"] ! '' and $item_name[$slave["boots"]] ! '-': slave_inventory[$slave["boots"]] += 1
+		$slave["boots"] = $new_item
+
+	elseif slot = 32:
+		if $slave["ring_left"] ! '' and $item_name[$slave["ring_left"]] ! '-': slave_inventory[$slave["ring_left"]] += 1
+		$slave["ring_left"] = $new_item
+
+	elseif slot = 33:
+		if $slave["ring_right"] ! '' and $item_name[$slave["ring_right"]] ! '-': slave_inventory[$slave["ring_right"]] += 1
+		$slave["ring_right"] = $new_item
+
+	elseif slot = 34:
+		if $slave["navel"] ! '' and $item_name[$slave["navel"]] ! '-': slave_inventory[$slave["navel"]] += 1
+		$slave["navel"] = $new_item
+
+	elseif slot = 35:
+		if $slave["tongue"] ! '' and $item_name[$slave["tongue"]] ! '-': slave_inventory[$slave["tongue"]] += 1
+		$slave["tongue"] = $new_item
+	end
+
+	if slave_inventory[$new_item] >= max(1, args[0]):
+		slave_inventory[$new_item] -= max(1, args[0])
+	elseif inventory[$new_item] >= max(1, args[0]):
+		inventory[$new_item] -= max(1, args[0])
+	else
+		dynamic 'if val(<<$new_item>>) >= max(1, args[0]): <<$new_item>> -= max(1, args[0])' &! weapons and armor
+	end
+
+	dynamic $show_item_description_and_image, $new_item
+
+	if $return_lock ! 'none':
+		$equip_choice = $dyneval($replace($show_item_effects, 'dyn'+'slave', 'slave'))
+	 	gs '$newloc'
+	 	gt 'slave_stat'
+	end
+end
+
+if $return_lock = 'none': $return_lock = 'menu_form' &! used when giving items as gifts
+
+------------ item_change ------------

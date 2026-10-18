@@ -1,0 +1,25 @@
+# hero_customization
+! Readable view; authoritative fields are in ../locations.json.
+if snk_room_target > 0 and $curloc = 'hero_customization': gs 'snk_room_bridge', 'guard', 'hero_customization'
+! JO9 MOD START J9M3016 | 2026-10-14_hide_outer_frame_on_startup | changed block; context may be included
+*p '<style id="jo9_startup_no_outer_frame">body:before,body:after{display:none!important;}</style>'
+! JO9 MOD END J9M3016
+*p '<div id = "big_title_scroll"><img src = "content\pic\big_scroll_large1.png"></div>'
+*p '<div id = "center_text_column_4"> <center><b>성별 선택</center></b></div>'
+MAINDESC_X = 1
+MAINDESC_Y = 1
+MAINDESC_W = 1278
+MAINDESC_H = 798
+!AddOn - changed text output to reflect version number
+'<br><br><br><br><br><br><br><br><br>'
+$text_display = ''
+FUNC('$menu', '===BEGIN===', 'mainmenu13')
+FUNC('$menu', 'exec_options', $menu_item_Storyselect, 'gt "hero_customization_man"', '마스터')
+FUNC('$menu', '===END===')
+FUNC('$menu', '===BEGIN===', 'mainmenu14')
+FUNC('$menu', 'exec_options', $menu_item_Storyselect, 'gt "hero_customization_woman"', '여주인')
+FUNC('$menu', '===END===')
+*p '<div id = "main_menu"><<$text_display>></div>'
+LIST.ini.up = 1
+*p {<div id = "hero_choice_close_scroll"><a href = 'EXEC: gt "main_menu"'><img src = "content\pic\buttons\close_button.png"></a></div>}
+------------ hero_customization ------------

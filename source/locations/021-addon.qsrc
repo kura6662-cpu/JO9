@@ -1,0 +1,465 @@
+# $addon
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2816 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$addon': gs 'snk_room_bridge', 'guard', '$addon'
+! JO9 MOD END J9M2816
+!Updates changed databases cleans up old variables
+if $args[0] = 'update':
+	if $args[1] = 'full':
+		!Reload databases
+		gs 'interior_storage'
+		gs 'refresh_database'
+		gs 'interior_restore'
+
+! JO9 MOD START J9M2815 | 2026-10-15_refresh_message_ui_before_save_upgrade | changed block; context may be included
+! JO9_MESSAGE_LAYOUT_REFRESH_20261015
+! Saved UI settings must not retain retired button paths.
+$MSG_BACKIMAGE = 'content/pic/msg_bg.png'
+$MSG_OK_IMAGE = 'content/pic/buttons/ok-icon.png'
+$MSG_FORMAT = '<div id="ink">%TEXT%</div>'
+MSG_TEXT_X = 80
+MSG_TEXT_Y = 40
+MSG_TEXT_W = 370
+MSG_TEXT_H = 400
+MSG_OK_X = 250
+MSG_OK_Y = 340
+MSG_X = 200
+! JO9_MESSAGE_LAYOUT_REFRESH_END
+! JO9 MOD END J9M2815
+		!title fix
+		if $game_ver ! $title_fix:
+			if $game_ver ! '':
+				msg '<br><center>게임이<br>(<<$game_ver>>)<br>에서<br>(<<$title_fix>>)<br>로 업데이트되었습니다'
+			else
+				msg '<br><center>게임이<br>(<<$title_fix>>)<br>로 업데이트되었습니다'
+			end
+			if no_loli ! 1 and instr($title_fix, ' no-loli edition') > 0: no_loli = 1 &! added in 2.2.3 - ImperatorAugustus
+			$game_ver = $title_fix
+			
+			if slaver_stats_decay = 1: killvar 'slaver_stats_decay' & slaver_background_matters = 1 & master_check = 0 &! added in 2.3.0.1 - ImperatorAugustus
+			if fridge['flower'] > 0: fridge['grain'] = fridge['flower'] & fridge['flower'] = 0 &! added in 2.3.1 - ImperatorAugustus
+		end
+	end
+end
+
+if $args[0] = 'master_rate_stat_tooltip_text':
+	if args[2] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[3] = -1, 5, 0)]>> (<<dyneval('result = ' + $args[1+args[4]] + '_rate')>>/<<dyneval('result = ' + $args[1+args[4]] + '_rate_cap[0]')>>)"
+	elseif args[2] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[3] = -1, 4, 1)]>> (<<dyneval('result = ' + $args[1+args[4]] + '_rate')>>/<<dyneval('result = ' + $args[1+args[4]] + '_rate_cap[1]')>>)"
+	elseif args[2] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[3] = -1, 3, 2)]>> (<<dyneval('result = ' + $args[1+args[4]] + '_rate')>>/<<dyneval('result = ' + $args[1+args[4]] + '_rate_cap[2]')>>)"
+	elseif args[2] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[3] = -1, 2, 3)]>> (<<dyneval('result = ' + $args[1+args[4]] + '_rate')>>/<<dyneval('result = ' + $args[1+args[4]] + '_rate_cap[3]')>>)"
+	elseif args[2] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[3] = -1, 1, 4)]>> (<<dyneval('result = ' + $args[1+args[4]] + '_rate')>>/<<dyneval('result = ' + $args[1+args[4]] + '_rate_cap[4]')>>)"
+	elseif args[2] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[3] = -1, 0, 5)]>>"
+	elseif args[2] = 6:
+		$result = "<<$atr_name[$args[1]]>> S++"
+	end
+end
+
+if $args[0] = 'no_rate_stat_tooltip_text':
+	if args[2] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[3] = -1, 5, 0)]>>"
+	elseif args[2] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[3] = -1, 4, 1)]>>"
+	elseif args[2] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[3] = -1, 3, 2)]>>"
+	elseif args[2] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[3] = -1, 2, 3)]>>"
+	elseif args[2] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[3] = -1, 1, 4)]>>"
+	elseif args[2] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[3] = -1, 0, 5)]>>"
+	elseif args[2] = 6:
+		$result = "<<$atr_name[$args[1]]>> S++"
+	end
+end
+
+if $args[0] = 'no_rate_full_grade_tooltip_text':
+	if args[2] = -5:
+		$result = "<<$atr_name[$args[1]]>><<$full_grade[iif(args[3] = -1, 10, 0)]>>"
+	elseif args[2] = -4:
+		$result = "<<$atr_name[$args[1]]>><<$full_grade[iif(args[3] = -1, 9,  1)]>>"
+	elseif args[2] = -3:
+		$result = "<<$atr_name[$args[1]]>><<$full_grade[iif(args[3] = -1, 8,  2)]>>"
+	elseif args[2] = -2:
+		$result = "<<$atr_name[$args[1]]>><<$full_grade[iif(args[3] = -1, 7,  3)]>>"
+	elseif args[2] = -1:
+		$result = "<<$atr_name[$args[1]]>><<$full_grade[iif(args[3] = -1, 6,  4)]>>"
+	elseif args[2] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$full_grade[iif(args[3] = -1, 5,  5)]>>"
+	elseif args[2] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$full_grade[iif(args[3] = -1, 4,  6)]>>"
+	elseif args[2] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$full_grade[iif(args[3] = -1, 3,  7)]>>"
+	elseif args[2] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$full_grade[iif(args[3] = -1, 2,  8)]>>"
+	elseif args[2] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$full_grade[iif(args[3] = -1, 1,  9)]>>"
+	elseif args[2] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$full_grade[iif(args[3] = -1, 0,  10)]>>"
+	end
+end
+
+if $args[0] = 'no_label_stat_rate_tooltip_text':
+	!updated ranges to match #static_base - ImperatorAugustus
+	if slave[$args[1]] = 0:
+		$result = "<<slave_rate[$args[1]]>> (+10/-10)"
+	elseif slave[$args[1]] = 1:
+		$result = "<<slave_rate[$args[1]]>> (+20/-10)"
+	elseif slave[$args[1]] = 2:
+		$result = "<<slave_rate[$args[1]]>> (+40/-10)"
+	elseif slave[$args[1]] = 3:
+		$result = "<<slave_rate[$args[1]]>> (+80/-20)"
+	elseif slave[$args[1]] = 4:
+		$result = "<<slave_rate[$args[1]]>> (+160/-40)"
+	elseif slave[$args[1]] = 5:
+		$result = "<<slave_rate[$args[1]]>> (+10/-80)"
+	end
+end
+
+! used in auspex_list
+if $args[0] = 'assistant_no_label_stat_rate_tooltip_text':
+	!updated ranges to match #static_base - ImperatorAugustus
+	if assistant[$args[1]] = 0:
+		$result = "<<assistant_rate[$args[1]]>> (+10/-10)"
+	elseif assistant[$args[1]] = 1:
+		$result = "<<assistant_rate[$args[1]]>> (+20/-10)"
+	elseif assistant[$args[1]] = 2:
+		$result = "<<assistant_rate[$args[1]]>> (+40/-10)"
+	elseif assistant[$args[1]] = 3:
+		$result = "<<assistant_rate[$args[1]]>> (+80/-20)"
+	elseif assistant[$args[1]] = 4:
+		$result = "<<assistant_rate[$args[1]]>> (+160/-40)"
+	elseif assistant[$args[1]] = 5:
+		$result = "<<assistant_rate[$args[1]]>> (+10/-80)"
+	end
+end
+
+if $args[0] = 'physique_tooltip_text':
+	!updated ranges to match #static_base - ImperatorAugustus
+	if slave[$args[1]] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[0]>>; <<slave_rate[$args[1]]>> (+10/-10)"
+	elseif slave[$args[1]] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[5]>>; <<slave_rate[$args[1]]>> (+20/-10)"
+	elseif slave[$args[1]] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[4]>>; <<slave_rate[$args[1]]>> (+40/-10)"
+	elseif slave[$args[1]] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[3]>>; <<slave_rate[$args[1]]>> (+80/-20)"
+	elseif slave[$args[1]] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[2]>>; <<slave_rate[$args[1]]>> (+160/-40)"
+	elseif slave[$args[1]] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[0]>>; <<slave_rate[$args[1]]>> (+10/-80)"
+	end
+end
+
+if $args[0] = 'assistant_physique_tooltip_text':
+	!updated ranges to match #static_base - ImperatorAugustus
+	if assistant[$args[1]] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[0]>>; <<assistant_rate[$args[1]]>> (+10/-10)"
+	elseif assistant[$args[1]] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[5]>>; <<assistant_rate[$args[1]]>> (+20/-10)"
+	elseif assistant[$args[1]] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[4]>>; <<assistant_rate[$args[1]]>> (+40/-10)"
+	elseif assistant[$args[1]] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[3]>>; <<assistant_rate[$args[1]]>> (+80/-20)"
+	elseif assistant[$args[1]] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[2]>>; <<assistant_rate[$args[1]]>> (+160/-40)"
+	elseif assistant[$args[1]] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[0]>>; <<assistant_rate[$args[1]]>> (+10/-80)"
+	end
+end
+
+if $args[0] = 'prisoner_physique_tooltip_text':
+	if prisoner[$args[1]] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[0]>>"
+	elseif prisoner[$args[1]] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[5]>>"
+	elseif prisoner[$args[1]] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[4]>>"
+	elseif prisoner[$args[1]] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[3]>>"
+	elseif prisoner[$args[1]] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[2]>>"
+	elseif prisoner[$args[1]] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[0]>>"
+	end
+end
+
+if $args[0] = 'cow_physique_tooltip_text':
+	!updated ranges to match #static_base - ImperatorAugustus
+	if cow[$args[1]] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[0]>>; <<cow_rate[$args[1]]>> (+10/-10)"
+	elseif cow[$args[1]] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[5]>>; <<cow_rate[$args[1]]>> (+20/-10)"
+	elseif cow[$args[1]] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[4]>>; <<cow_rate[$args[1]]>> (+40/-10)"
+	elseif cow[$args[1]] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[3]>>; <<cow_rate[$args[1]]>> (+80/-20)"
+	elseif cow[$args[1]] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[2]>>; <<cow_rate[$args[1]]>> (+160/-40)"
+	elseif cow[$args[1]] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[0]>>; <<cow_rate[$args[1]]>> (+10/-80)"
+	end
+end
+
+if $args[0] = 'room1_physique_tooltip_text':
+	if room1[$args[1]] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[0]>> : <<room1_rate[$args[1]]>> (+10 ~ -10)"
+	elseif room1[$args[1]] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[5]>> : <<room1_rate[$args[1]]>> (+20 ~ -10)"
+	elseif room1[$args[1]] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[4]>> : <<room1_rate[$args[1]]>> (+40 ~ -10)"
+	elseif room1[$args[1]] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[3]>> : <<room1_rate[$args[1]]>> (+80 ~ -20)"
+	elseif room1[$args[1]] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[2]>> : <<room1_rate[$args[1]]>> (+160 ~ -40)"
+	elseif room1[$args[1]] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[0]>> : <<room1_rate[$args[1]]>> (+10 ~ -80)"
+	end
+end
+
+if $args[0] = 'room2_physique_tooltip_text':
+	if room2[$args[1]] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[0]>> : <<room2_rate[$args[1]]>> (+10 ~ -10)"
+	elseif room2[$args[1]] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[5]>> : <<room2_rate[$args[1]]>> (+20 ~ -10)"
+	elseif room2[$args[1]] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[4]>> : <<room2_rate[$args[1]]>> (+40 ~ -10)"
+	elseif room2[$args[1]] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[3]>> : <<room2_rate[$args[1]]>> (+80 ~ -20)"
+	elseif room2[$args[1]] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[2]>> : <<room2_rate[$args[1]]>> (+160 ~ -40)"
+	elseif room2[$args[1]] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[0]>> : <<room2_rate[$args[1]]>> (+10 ~ -80)"
+	end
+end
+
+if $args[0] = 'room3_physique_tooltip_text':
+	if room3[$args[1]] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[0]>> : <<room3_rate[$args[1]]>> (+10 ~ -10)"
+	elseif room3[$args[1]] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[5]>> : <<room3_rate[$args[1]]>> (+20 ~ -10)"
+	elseif room3[$args[1]] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[4]>> : <<room3_rate[$args[1]]>> (+40 ~ -10)"
+	elseif room3[$args[1]] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[3]>> : <<room3_rate[$args[1]]>> (+80 ~ -20)"
+	elseif room3[$args[1]] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[2]>> : <<room3_rate[$args[1]]>> (+160 ~ -40)"
+	elseif room3[$args[1]] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[0]>> : <<room3_rate[$args[1]]>> (+10 ~ -80)"
+	end
+end
+
+if $args[0] = 'room4_physique_tooltip_text':
+	if room4[$args[1]] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[0]>> : <<room4_rate[$args[1]]>> (+10 ~ -10)"
+	elseif room4[$args[1]] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[5]>> : <<room4_rate[$args[1]]>> (+20 ~ -10)"
+	elseif room4[$args[1]] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[4]>> : <<room4_rate[$args[1]]>> (+40 ~ -10)"
+	elseif room4[$args[1]] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[3]>> : <<room4_rate[$args[1]]>> (+80 ~ -20)"
+	elseif room4[$args[1]] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[2]>> : <<room4_rate[$args[1]]>> (+160 ~ -40)"
+	elseif room4[$args[1]] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[0]>> : <<room4_rate[$args[1]]>> (+10 ~ -80)"
+	end
+end
+
+if $args[0] = 'stat_tooltip_text':
+	!updated ranges to match #static_base - ImperatorAugustus
+	if slave[$args[1]] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 5, 0)]>>; <<slave_rate[$args[1]]>> (+10/-10)"
+	elseif slave[$args[1]] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 4, 1)]>>; <<slave_rate[$args[1]]>> (+20/-10)"
+	elseif slave[$args[1]] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 3, 2)]>>; <<slave_rate[$args[1]]>> (+40/-10)"
+	elseif slave[$args[1]] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 2, 3)]>>; <<slave_rate[$args[1]]>> (+80/-20)"
+	elseif slave[$args[1]] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 1, 4)]>>; <<slave_rate[$args[1]]>> (+160/-40)"
+	elseif slave[$args[1]] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 0, 5)]>>; <<slave_rate[$args[1]]>> (+10/-80)"
+	end
+end
+
+if $args[0] = 'assistant_stat_tooltip_text':
+	!bugfix: was checking slave stats instead of assistant - ImperatorAugustus
+	if assistant[$args[1]] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 5, 0)]>>; <<assistant_rate[$args[1]]>> (+10/-10)"
+	elseif assistant[$args[1]] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 4, 1)]>>; <<assistant_rate[$args[1]]>> (+20/-10)"
+	elseif assistant[$args[1]] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 3, 2)]>>; <<assistant_rate[$args[1]]>> (+40/-10)"
+	elseif assistant[$args[1]] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 2, 3)]>>; <<assistant_rate[$args[1]]>> (+80/-20)"
+	elseif assistant[$args[1]] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 1, 4)]>>; <<assistant_rate[$args[1]]>> (+160/-40)"
+	elseif assistant[$args[1]] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 0, 5)]>>; <<assistant_rate[$args[1]]>> (+10/-80)"
+	end
+end
+
+if $args[0] = 'cow_stat_tooltip_text':
+	!bugfix: was checking slave stats instead of cow - ImperatorAugustus
+	if cow[$args[1]] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 5, 0)]>>; <<cow_rate[$args[1]]>> (+10/-10)"
+	elseif cow[$args[1]] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 4, 1)]>>; <<cow_rate[$args[1]]>> (+20/-10)"
+	elseif cow[$args[1]] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 3, 2)]>>; <<cow_rate[$args[1]]>> (+40/-10)"
+	elseif cow[$args[1]] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 2, 3)]>>; <<cow_rate[$args[1]]>> (+80/-20)"
+	elseif cow[$args[1]] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 1, 4)]>>; <<cow_rate[$args[1]]>> (+160/-40)"
+	elseif cow[$args[1]] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 0, 5)]>>; <<cow_rate[$args[1]]>> (+10/-80)"
+	end
+end
+
+
+if $args[0] = 'room1_stat_tooltip_text':
+	if room1[$args[1]] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 5, 0)]>> : <<room1_rate[$args[1]]>> (+10 ~ -10)"
+	elseif room1[$args[1]] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 4, 1)]>> : <<room1_rate[$args[1]]>> (+20 ~ -10)"
+	elseif room1[$args[1]] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 3, 2)]>> : <<room1_rate[$args[1]]>> (+40 ~ -10)"
+	elseif room1[$args[1]] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 2, 3)]>> : <<room1_rate[$args[1]]>> (+80 ~ -20)"
+	elseif room1[$args[1]] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 1, 4)]>> : <<room1_rate[$args[1]]>> (+160 ~ -40)"
+	elseif room1[$args[1]] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 0, 5)]>> : <<room1_rate[$args[1]]>> (+10 ~ -80)"
+	end
+end
+
+if $args[0] = 'room2_stat_tooltip_text':
+	if room2[$args[1]] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 5, 0)]>> : <<room2_rate[$args[1]]>> (+10 ~ -10)"
+	elseif room2[$args[1]] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 4, 1)]>> : <<room2_rate[$args[1]]>> (+20 ~ -10)"
+	elseif room2[$args[1]] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 3, 2)]>> : <<room2_rate[$args[1]]>> (+40 ~ -10)"
+	elseif room2[$args[1]] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 2, 3)]>> : <<room2_rate[$args[1]]>> (+80 ~ -20)"
+	elseif room2[$args[1]] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 1, 4)]>> : <<room2_rate[$args[1]]>> (+160 ~ -40)"
+	elseif room2[$args[1]] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 0, 5)]>> : <<room2_rate[$args[1]]>> (+10 ~ -80)"
+	end
+end
+
+if $args[0] = 'room3_stat_tooltip_text':
+	if room3[$args[1]] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 5, 0)]>> : <<room3_rate[$args[1]]>> (+10 ~ -10)"
+	elseif room3[$args[1]] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 4, 1)]>> : <<room3_rate[$args[1]]>> (+20 ~ -10)"
+	elseif room3[$args[1]] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 3, 2)]>> : <<room3_rate[$args[1]]>> (+40 ~ -10)"
+	elseif room3[$args[1]] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 2, 3)]>> : <<room3_rate[$args[1]]>> (+80 ~ -20)"
+	elseif room3[$args[1]] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 1, 4)]>> : <<room3_rate[$args[1]]>> (+160 ~ -40)"
+	elseif room3[$args[1]] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 0, 5)]>> : <<room3_rate[$args[1]]>> (+10 ~ -80)"
+	end
+end
+
+if $args[0] = 'room4_stat_tooltip_text':
+	if room4[$args[1]] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 5, 0)]>> : <<room4_rate[$args[1]]>> (+10 ~ -10)"
+	elseif room4[$args[1]] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 4, 1)]>> : <<room4_rate[$args[1]]>> (+20 ~ -10)"
+	elseif room4[$args[1]] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 3, 2)]>> : <<room4_rate[$args[1]]>> (+40 ~ -10)"
+	elseif room4[$args[1]] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 2, 3)]>> : <<room4_rate[$args[1]]>> (+80 ~ -20)"
+	elseif room4[$args[1]] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 1, 4)]>> : <<room4_rate[$args[1]]>> (+160 ~ -40)"
+	elseif room4[$args[1]] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 0, 5)]>> : <<room4_rate[$args[1]]>> (+10 ~ -80)"
+	end
+end
+
+if $args[0] = 'stock_stat_tooltip_text':
+	!bugfix: was checking slave stats instead of stock - ImperatorAugustus
+	if stock[$args[1]] = 0:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 5, 0)]>>; <<stock_rate[$args[1]]>> (+10/-10)"
+	elseif stock[$args[1]] = 1:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 4, 1)]>>; <<stock_rate[$args[1]]>> (+20/-10)"
+	elseif stock[$args[1]] = 2:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 3, 2)]>>; <<stock_rate[$args[1]]>> (+40/-10)"
+	elseif stock[$args[1]] = 3:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 2, 3)]>>; <<stock_rate[$args[1]]>> (+80/-20)"
+	elseif stock[$args[1]] = 4:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 1, 4)]>>; <<stock_rate[$args[1]]>> (+160/-40)"
+	elseif stock[$args[1]] = 5:
+		$result = "<<$atr_name[$args[1]]>><<$skill_grade[iif(args[2] = -1, 0, 5)]>>; <<stock_rate[$args[1]]>> (+10/-80)"
+	end
+end
+
+
+if $args[0] = 'info_box':
+	$info_box[0] = "content\pic\buttons\info_0.png"
+	$info_box[1] = "content\pic\buttons\info_1.png"
+	$info_box[2] = "content\pic\buttons\info_2.png"
+	$info_box[3] = "content\pic\buttons\info_3.png"
+	$info_box[4] = "content\pic\buttons\info_4.png"
+	$info_box[5] = "content\pic\buttons\info_5.png"
+
+	$info_box_p[0] = "content\pic\buttons\info_5.png"
+	$info_box_p[1] = "content\pic\buttons\info_4.png"
+	$info_box_p[2] = "content\pic\buttons\info_3.png"
+	$info_box_p[3] = "content\pic\buttons\info_2.png"
+	$info_box_p[4] = "content\pic\buttons\info_1.png"
+	$info_box_p[5] = "content\pic\buttons\info_0.png"
+
+	$info_box_f[0] = "content\pic\buttons\info_3.png"
+	$info_box_f[1] = "content\pic\buttons\info_5.png"
+	$info_box_f[2] = "content\pic\buttons\info_4.png"
+	$info_box_f[3] = "content\pic\buttons\info_2.png"
+	$info_box_f[4] = "content\pic\buttons\info_1.png"
+	$info_box_f[5] = "content\pic\buttons\info_0.png"
+end
+
+if $args[0] = 'menu_form' or $args[0] = 'city_menu_form' and args[1] ! 0 and args[2] ! 0:
+
+!lillimerge, might want to rename this as Cheat Mode, for clarity
+	$setting_display += {<br><div id="under_gray">{ { { 위저드 모드 } } }<br></div>}
+	if wizard_mode ! 1:
+	 	$setting_display += '<br><div id="under">끔<br><div id = "clear"><a href = ''EXEC: wizard_mode = 1 & gt "<<$args[0]>>"''><img src = "content\pic\clear.png"></a></div></div>'
+	else
+	 	$setting_display += '<br><div id="under">켬<br><div id = "clear"><a href = ''EXEC: wizard_mode = 0 & gt "<<$args[0]>>"''><img src = "content\pic\clear.png"></a></div></div>'
+	end
+
+!lillimerge, not sure what the use of the turning on and off debug mode is
+	$setting_display += {<br><div id="under_gray">{ { { 디버그 } } }<br></div>}
+	if debug ! 1:
+	 	$setting_display += '<br><div id="under">끔<br><div id = "clear"><a href = ''EXEC: debug = 1 & gt "<<$args[0]>>"''><img src = "content\pic\clear.png"></a></div></div>'
+	else
+	 	$setting_display += '<br><div id="under">켬<br><div id = "clear"><a href = ''EXEC: debug = 0 & gt "<<$args[0]>>"''><img src = "content\pic\clear.png"></a></div></div>'
+	end
+
+	if $args[0] = 'city_menu_form':
+		$setting_display_c += '<br><div id="under">이전 <br><div id = "clear"><a href = ''EXEC: city_form = <<args[2]>> & gt "<<$args[0]>>"''><img src = "content\pic\clear.png"></a></div></div>'
+		if args[3] ! 0:
+			$setting_display_c2 += '<br><div id="under">다음 <br><div id = "clear"><a href = ''EXEC: city_form = <<args[3]>> & gt "<<$args[0]>>"''><img src = "content\pic\clear.png"></a></div></div>'
+		else
+			$setting_display_c2 += {<br><div id="under_gray"> 다음 <br></div>}
+		end
+	else
+		$setting_display_c += '<br><div id="under">이전 <br><div id = "clear"><a href = ''EXEC: <<$args[0]>> = <<args[2]>> & gt "<<$args[0]>>"''><img src = "content\pic\clear.png"></a></div></div>'
+		if args[3] ! 0:
+			$setting_display_c2 += '<br><div id="under">다음 <br><div id = "clear"><a href = ''EXEC: <<$args[0]>> = <<args[3]>> & gt "<<$args[0]>>"''><img src = "content\pic\clear.png"></a></div></div>'
+		else
+			$setting_display_c2 += {<br><div id="under_gray"> 다음 <br></div>}
+		end
+	end
+end
+
+------------ $addon ------------

@@ -1,0 +1,1903 @@
+# #variative
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2458 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '#variative': gs 'snk_room_bridge', 'guard', '#variative'
+! JO9 MOD END J9M2458
+!variable attributes database
+
+!for generate slave
+$stockatr[0] = 'stock["fat"]'
+$stockatr[1] = 'stock["beauty"]'
+$stockatr[2] = 'stock["stamina"]'
+$stockatr[3] = 'stock["sensitivity"]'
+$stockatr[4] = 'stock["temper"]'
+$stockatr[5] = 'stock["ego"]'
+$stockatr[6] = 'stock["pride"]'
+$stockatr[7] = 'stock["intellect"]'
+
+!Continuous, field dependence (derives from rate as continuous value, plus temporary bonuses)
+$cont_atr[0] = 'arousal'
+$cont_atr[1] = 'beauty'
+$cont_atr[2] = 'bruises'
+$cont_atr[3] = 'exotic'
+$cont_atr[4] = 'fame'
+$cont_atr[5] = 'hygiene'
+$cont_atr[6] = 'scars'
+$cont_atr[7] = 'style'
+$cont_atr[8] = 'wounds'
+
+cont_atr_min = 0
+cont_atr_threshold[0] = 0
+cont_atr_threshold[1] = 10
+cont_atr_threshold[2] = 20
+cont_atr_threshold[3] = 40
+cont_atr_threshold[4] = 80
+cont_atr_threshold[5] = 160
+cont_atr_max = 200
+
+$atr_name['arousal'] = '흥분도'
+$atr_name['beauty'] = '외모'
+$atr_name['bruises'] = '멍자국'
+$atr_name['exotic'] = '독특함'
+$atr_name['fame'] = '인지도'
+$atr_name['hygiene'] = '청결도'
+$atr_name['scars'] = '흉터'
+$atr_name['style'] = '세련됨'
+$atr_name['wounds'] = '부상'
+
+!Discrete, field independence (stats)
+$indep_atr[0] = 'fat'
+$indep_atr[1] = 'stamina'
+$indep_atr[2] = 'sensitivity'
+$indep_atr[3] = 'temper'
+$indep_atr[4] = 'ego'
+$indep_atr[5] = 'pride'
+$indep_atr[6] = 'intellect'
+$indep_atr[7] = 'custom'
+$indep_atr[8] = 'moral'
+$indep_atr[9] = 'angst'
+$indep_atr[10] = 'spoil'
+$indep_atr[11] = 'instinct'
+$indep_atr[12] = 'rational'
+$indep_atr[13] = 'fear'
+
+indep_atr_min_threshold[0] = -10
+	indep_atr_max_threshold[0] = 10
+indep_atr_min_threshold[1] = -10
+	indep_atr_max_threshold[1] = 20
+indep_atr_min_threshold[2] = -10
+	indep_atr_max_threshold[2] = 40
+indep_atr_min_threshold[3] = -20
+	indep_atr_max_threshold[3] = 80
+indep_atr_min_threshold[4] = -40
+	indep_atr_max_threshold[4] = 160
+indep_atr_min_threshold[5] = -80
+	indep_atr_max_threshold[5] = 10
+
+$atr_name['fat'] = '체형'
+$atr_name['stamina'] = '체력'
+$atr_name['sensitivity'] = '감수성'
+$atr_name['temper'] = '성격'
+$atr_name['ego'] = '자아'
+$atr_name['pride'] = '태도'
+$atr_name['intellect'] = '지성'
+$atr_name['custom'] = '습관'
+$atr_name['moral'] = '충성'
+$atr_name['angst'] = '불안'
+$atr_name['spoil'] = '응석'
+$atr_name['instinct'] = '사육'
+$atr_name['rational'] = '인식'
+$atr_name['fear'] = '두려움'
+
+!Discrete, field dependence (non-sexual skills)
+$dep_atr[0] = 'service'
+$dep_atr[1] = 'cook'
+$dep_atr[2] = 'nurse'
+$dep_atr[3] = 'secretary'
+$dep_atr[4] = 'gladiatrix'
+$dep_atr[5] = 'alchemy'
+$dep_atr[6] = 'enchanter'
+$dep_atr[7] = 'expression'
+$dep_atr[8] = 'calisthenics'
+$dep_atr[9] = 'art'
+$dep_atr[10] = 'music'
+$dep_atr[11] = 'pet'
+$dep_atr[12] = 'dressage'
+$dep_atr[13] = 'cowSK'
+
+$atr_name['service'] = '잡일과 청소'
+$atr_name['cook'] = '요리'
+$atr_name['nurse'] = '간호의학'
+$atr_name['secretary'] = '사무지식'
+$atr_name['gladiatrix'] = '전투술'
+$atr_name['alchemy'] = '연금술'
+$atr_name['enchanter'] = '마법력'
+$atr_name['expression'] = '수사학'
+$atr_name['calisthenics'] = '무용술'
+$atr_name['art'] = '미술성'
+$atr_name['music'] = '음악성'
+$atr_name['pet'] = '애완녀'
+$atr_name['dressage'] = '경마녀'
+$atr_name['cowSK'] = '젖소녀'
+
+!Discrete, field dependence (sexual sub-skills)
+!PETTING
+$sex_atr[0] = 'sub_hug'
+$sex_atr[1] = 'sub_hj'
+$sex_atr[2] = 'sub_fj'
+$sex_atr[3] = 'sub_paizuri'
+!ORAL
+$sex_atr[4] = 'sub_kiss'
+$sex_atr[5] = 'sub_tongue'
+$sex_atr[6] = 'sub_bj'
+$sex_atr[7] = 'sub_dt'
+$sex_atr[8] = 'sub_asslik'
+!PENETRATION
+$sex_atr[9] = 'sub_vaginal'
+$sex_atr[10] = 'sub_fisting'
+$sex_atr[11] = 'sub_anal'
+$sex_atr[12] = 'anal_stretch'
+!GROUP SEX
+$sex_atr[13] = 'sub_threesome'
+$sex_atr[14] = 'sub_dp'
+$sex_atr[15] = 'sub_tp'
+$sex_atr[16] = 'sub_gangbang'
+$sex_atr[17] = 'sub_bukkake'
+!XENOPHILY
+$sex_atr[18] = 'sub_zoosex'
+$sex_atr[19] = 'sub_bestiality'
+$sex_atr[20] = 'sub_horse'
+$sex_atr[21] = 'sub_tentacles'
+$sex_atr[22] = 'sub_arachnidspider'
+$sex_atr[23] = 'sub_polypusvermin'
+!FETISHISM
+$sex_atr[24] = 'sub_enema'
+$sex_atr[25] = 'sub_mazo'
+$sex_atr[26] = 'sub_selfpain'
+$sex_atr[27] = 'sub_piss'
+$sex_atr[28] = 'sub_kopro'
+!DEMONSTRATION
+$sex_atr[29] = 'sub_seduce'
+$sex_atr[30] = 'sub_masturbation'
+$sex_atr[31] = 'sub_dildo'
+$sex_atr[32] = 'sub_exhibit'
+$sex_atr[33] = 'sub_humiliation'
+!NIPPLEFUCK
+$sex_atr[34] = 'sub_nipplefuck'
+!LESBIAN SEX
+$sex_atr[35] = 'sub_lesbiansex1'
+$sex_atr[36] = 'sub_lesbiansex2'
+$sex_atr[37] = 'sub_lesbiansex3'
+$sex_atr[38] = 'sub_lesbiansex4'
+
+!master stats
+
+!continuous
+$hero_con[0] = 'none'
+$hero_con[1] = 'hygiene'
+$hero_con[2] = 'mess'
+$hero_con[3] = 'wounds'
+$hero_con[4] = 'str'
+$hero_con[5] = 'cha'
+$hero_con[6] = 'libido'
+
+!Discrete, field dependence
+$hero_dep[0] = 'none'
+$hero_dep[1] = 'petting'
+$hero_dep[2] = 'penetration'
+$hero_dep[3] = 'oral'
+$hero_dep[4] = 'fetish'
+$hero_dep[5] = 'tutor'
+$hero_dep[6] = 'butler'
+$hero_dep[7] = 'artdirector'
+$hero_dep[8] = 'medic'
+$hero_dep[9] = 'fighter'
+$hero_dep[10] = 'mage'
+$hero_dep[11] = 'domination'
+$hero_dep[12] = 'flagelation'
+$hero_dep[13] = 'torture'
+$hero_dep[14] = 'bondage'
+
+$atr_name['house_mess'] = '집 정리 상태'
+$atr_name['master_wounds'] = '건강 상태'
+$atr_name['master_str'] = '힘'
+$atr_name['master_cha'] = '통솔력'
+$atr_name['master_libido'] = '욕정'
+$atr_name['master_style'] = '매력'
+$atr_name['master_domination'] = '지배력'
+$atr_name['brand_reputation'] = '상표 평판'
+$atr_name['guild_reputation'] = '조합 계급'
+$atr_name['master_wealth'] = '생활수준'
+$atr_name['master_petting'] = '애무 기술'
+$atr_name['master_penetration'] = '삽입 기술'
+$atr_name['master_oral'] = '구강 기술'
+$atr_name['master_fetish'] = '이상성욕 기술'
+$atr_name['master_tutor'] = '지도력'
+$atr_name['master_butler'] = '관리력'
+$atr_name['master_artdirector'] = '예술 지식'
+$atr_name['master_medic'] = '의학 지식'
+$atr_name['master_fighter'] = '전투 기술'
+$atr_name['master_mage'] = '마법력'
+$atr_name['master_flagelation'] = '채찍 기술'
+$atr_name['master_torture'] = '고문 기술'
+$atr_name['master_bondage'] = '속박 기술'
+$atr_name['master_excitement'] = '발기력'
+$atr_name['cooked_food'] = '저녁식사 품질'
+$atr_name['mood'] = '기분'
+
+! JO9 MOD START RNL096 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$skill_grade[0] = ' F'
+$skill_grade[1] = ' D'
+$skill_grade[2] = ' C'
+$skill_grade[3] = ' B'
+$skill_grade[4] = ' A'
+$skill_grade[5] = ' S'
+! JO9 MOD END RNL096
+
+! JO9 MOD START RNL095 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$full_grade[0]  = ' F'
+$full_grade[1]  = ' D'
+! JO9 MOD END RNL095
+$full_grade[2]  = ' D+'
+! JO9 MOD START RNL094 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$full_grade[3]  = ' C'
+! JO9 MOD END RNL094
+$full_grade[4]  = ' C+'
+! JO9 MOD START RNL093 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$full_grade[5]  = ' B'
+! JO9 MOD END RNL093
+$full_grade[6]  = ' B+'
+! JO9 MOD START RNL092 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$full_grade[7]  = ' A'
+! JO9 MOD END RNL092
+$full_grade[8]  = ' A+'
+! JO9 MOD START RNL091 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$full_grade[9]  = ' S'
+! JO9 MOD END RNL091
+$full_grade[10] = ' S+'
+
+$mood_chart = '<div style="font-size: 80%"><center>기분<br>'
+$mood[10] = $dyneval($vb_cycle_stat, 0, '절망적')   & $mood_chart += $mood[10]+'<br>'
+$mood[9] =  $dyneval($vb_cycle_stat, 1, '우울함')   & $mood_chart += $mood[9]+'<br>'
+$mood[8] =  $dyneval($vb_cycle_stat, 2, '침울함')      & $mood_chart += $mood[8]+'<br>'
+$mood[7] =  $dyneval($vb_cycle_stat, 3, '부정적') & $mood_chart += $mood[7]+'<br>'
+$mood[6] =  $dyneval($vb_cycle_stat, 4, '피곤함') & $mood_chart += $mood[6]+'<br>'
+$mood[0] =  $dyneval($vb_cycle_stat, 5, '차분함')        & $mood_chart += $mood[0]+'<br>'
+$mood[1] =  $dyneval($vb_cycle_stat, 6, '긍정적')     & $mood_chart += $mood[1]+'<br>'
+$mood[2] =  $dyneval($vb_cycle_stat, 7, '만족함')  & $mood_chart += $mood[2]+'<br>'
+$mood[3] =  $dyneval($vb_cycle_stat, 8, '낙관적')     & $mood_chart += $mood[3]+'<br>'
+$mood[4] =  $dyneval($vb_cycle_stat, 9, '행복함')    & $mood_chart += $mood[4]+'<br>'
+$mood[5] =  $dyneval($vb_cycle_stat, 10,'황홀함')    & $mood_chart += $mood[5]
+$mood_chart += '</center></div>'
+
+if hero_choice < 100:
+! JO9 MOD START J9M2457 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+	$excitement_chart = '<center>발기력 -<br>'
+! JO9 MOD END J9M2457
+	$excitement[10] = '탈진함'    & $excitement_chart += dyneval($vb_cycle_stat, 0, $excitement[10])+'<br>'
+	$excitement[9] =  '늘어짐'      & $excitement_chart += dyneval($vb_cycle_stat, 1, $excitement[9])+'<br>'
+	$excitement[8] =  '무관심'      & $excitement_chart += dyneval($vb_cycle_stat, 2, $excitement[8])+'<br>'
+	$excitement[7] =  '질림'         & $excitement_chart += dyneval($vb_cycle_stat, 3, $excitement[7])+'<br>'
+	$excitement[6] =  '냉담함'        & $excitement_chart += dyneval($vb_cycle_stat, 4, $excitement[6])+'<br>'
+	$excitement[0] =  '차분함'    & $excitement_chart += dyneval($vb_cycle_stat, 5, $excitement[0])+'<br>'
+	$excitement[1] =  '발기함'      & $excitement_chart += dyneval($vb_cycle_stat, 6, $excitement[1])+'<br>'
+	$excitement[2] =  '흥분함'      & $excitement_chart += dyneval($vb_cycle_stat, 7, $excitement[2])+'<br>'
+	$excitement[3] =  '왕성함'       & $excitement_chart += dyneval($vb_cycle_stat, 8, $excitement[3])+'<br>'
+	$excitement[4] =  '열렬함'       & $excitement_chart += dyneval($vb_cycle_stat, 9, $excitement[4])+'<br>'
+	$excitement[5] =  '광폭함'      & $excitement_chart += dyneval($vb_cycle_stat, 10, $excitement[5])
+	$excitement_chart += '</center>'
+else
+	$excitement[10] = dyneval($vb_cycle, 0, '무성욕')
+	$excitement[9] = dyneval($vb_cycle, 0, '성욕 없음')
+	$excitement[8] = dyneval($vb_cycle, 0, '욕정 없음')
+	$excitement[7] = dyneval($vb_cycle, 0, '냉담함')
+	$excitement[6] = dyneval($vb_cycle, 0, '충족됨')
+	$excitement[0] = '차분함'
+	$excitement[1] = dyneval($vb_cycle, 5, '흥분')
+	$excitement[2] = dyneval($vb_cycle, 5, '점화됨')
+	$excitement[3] = dyneval($vb_cycle, 5, '충족되지 않음')
+	$excitement[4] = dyneval($vb_cycle, 5, '발정')
+	$excitement[5] = dyneval($vb_cycle, 5, '발정기')
+end
+$girl_fame[0] = dyneval($vb_cycle_skill, 0, '무명 노예')
+$girl_fame[1] = dyneval($vb_cycle_skill, 1, '알려진 노예')
+$girl_fame[2] = dyneval($vb_cycle_skill, 2, '유명한 노예')
+$girl_fame[3] = dyneval($vb_cycle_skill, 3, '저명한 노예')
+$girl_fame[4] = dyneval($vb_cycle_skill, 4, '스타 노예')
+$girl_fame[5] = dyneval($vb_cycle_skill, 5, '로마의 전설')
+
+$stamina[0] = dyneval($vb_cycle_skill, 0, '죽어감')
+$stamina[1] = dyneval($vb_cycle_skill, 1, '쇠약함')
+$stamina[2] = dyneval($vb_cycle_skill, 2, '평범함')
+$stamina[3] = dyneval($vb_cycle_skill, 3, '건강함')
+$stamina[4] = dyneval($vb_cycle_skill, 4, '강인함')
+$stamina[5] = dyneval($vb_cycle_skill, 5, '근육질')
+
+$beauty[0] = dyneval($vb_cycle_skill, 0, '추함')
+$beauty[1] = dyneval($vb_cycle_skill, 1, '평범함')
+$beauty[2] = dyneval($vb_cycle_skill, 2, '귀여움')
+$beauty[3] = dyneval($vb_cycle_skill, 3, '예쁨')
+$beauty[4] = dyneval($vb_cycle_skill, 4, '아름다움')
+! JO9 MOD START TBV_BEAUTY_LABEL | 2026-10-17_trait_value
+$beauty[5] = dyneval($vb_cycle_skill, 5, '눈부심')
+$beauty[6] = dyneval($vb_cycle_skill, 5, '절세의 미모 S++')
+! JO9 MOD END TBV_BEAUTY_LABEL
+
+$intellect[0] = dyneval($vb_cycle_skill, 0, '정신지체')
+$intellect[1] = dyneval($vb_cycle_skill, 1, '우둔함')
+$intellect[2] = dyneval($vb_cycle_skill, 2, '평범함')
+$intellect[3] = dyneval($vb_cycle_skill, 3, '영리함')
+$intellect[4] = dyneval($vb_cycle_skill, 4, '총명함')
+$intellect[5] = dyneval($vb_cycle_skill, 5, '지적임')
+
+$exotic[0] = dyneval($vb_cycle_skill, 0, '평범함')
+$exotic[1] = dyneval($vb_cycle_skill, 1, '색다름')
+$exotic[2] = dyneval($vb_cycle_skill, 2, '신비로움')
+$exotic[3] = dyneval($vb_cycle_skill, 3, '오묘함')
+$exotic[4] = dyneval($vb_cycle_skill, 4, '이국적임')
+$exotic[5] = dyneval($vb_cycle_skill, 5, '몽환적임')
+$exotic[6] = dyneval($vb_cycle_skill, 6, '신화적임')
+$exotic[7] = dyneval($vb_cycle_skill, 7, '완벽함')
+
+$fat[5] = dyneval($vb_cycle_skill, 0, '비만')
+$fat[4] = dyneval($vb_cycle_skill, 2, '통통한')
+$fat[3] = dyneval($vb_cycle_skill, 3, '육감적인')
+$fat[2] = dyneval($vb_cycle_skill, 4, '날씬한')
+$fat[1] = dyneval($vb_cycle_skill, 5, '모델 체형')
+$fat[0] = dyneval($vb_cycle_skill, 1, '앙상한')
+
+$sensitivity[0] = dyneval($vb_cycle_skill, 0, '무정함')
+$sensitivity[1] = dyneval($vb_cycle_skill, 1, '냉담함')
+$sensitivity[2] = dyneval($vb_cycle_skill, 2, '둔감함')
+$sensitivity[3] = dyneval($vb_cycle_skill, 3, '민감함')
+$sensitivity[4] = dyneval($vb_cycle_skill, 4, '다감함')
+$sensitivity[5] = dyneval($vb_cycle_skill, 5, '여림')
+
+$style[0] = dyneval($vb_cycle_skill, 0, '촌스러움')
+$style[1] = dyneval($vb_cycle_skill, 1, '무난함')
+$style[2] = dyneval($vb_cycle_skill, 2, '평범함')
+$style[3] = dyneval($vb_cycle_skill, 3, '세련됨')
+$style[4] = dyneval($vb_cycle_skill, 4, '근사함')
+$style[5] = dyneval($vb_cycle_skill, 5, '우아함')
+$style[6] = dyneval($vb_cycle_skill, 6, '아름다움')
+$style[7] = dyneval($vb_cycle_skill, 7, '눈부심')
+$style[8] = dyneval($vb_cycle_skill, 8, '품격있음')
+
+$temper[0] = dyneval($vb_cycle_skill, 0, '무관심함')
+$temper[1] = dyneval($vb_cycle_skill, 1, '차가움')
+$temper[2] = dyneval($vb_cycle_skill, 2, '내성적임')
+$temper[3] = dyneval($vb_cycle_skill, 3, '수동적임')
+$temper[4] = dyneval($vb_cycle_skill, 4, '적극적임')
+$temper[5] = dyneval($vb_cycle_skill, 5, '열정적임')
+
+$ego[0] = dyneval($vb_cycle_skill, 0, '우유부단')
+$ego[1] = dyneval($vb_cycle_skill, 1, '겁쟁이')
+$ego[2] = dyneval($vb_cycle_skill, 2, '소심함')
+$ego[3] = dyneval($vb_cycle_skill, 3, '주관적')
+$ego[4] = dyneval($vb_cycle_skill, 4, '단호함')
+$ego[5] = dyneval($vb_cycle_skill, 5, '완고함')
+
+$pride[0] = dyneval($vb_cycle_skill, 5, '개방적')
+$pride[1] = dyneval($vb_cycle_skill, 4, '솔직함')
+$pride[2] = dyneval($vb_cycle_skill, 3, '의존적')
+$pride[3] = dyneval($vb_cycle_skill, 2, '당당함')
+$pride[4] = dyneval($vb_cycle_skill, 1, '건방짐')
+$pride[5] = dyneval($vb_cycle_skill, 0, '오만함')
+
+! JO9 MOD START RNL090 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_service[0] = dyneval($vb_cycle_skill, 0, '잡일과 청소 F')
+$slave_service[1] = dyneval($vb_cycle_skill, 1, '잡일꾼 D')
+$slave_service[2] = dyneval($vb_cycle_skill, 2, '가정부 C')
+$slave_service[3] = dyneval($vb_cycle_skill, 3, '하녀 B')
+$slave_service[4] = dyneval($vb_cycle_skill, 4, '시종 A')
+$slave_service[5] = dyneval($vb_cycle_skill, 5, '집사 S')
+! JO9 MOD END RNL090
+
+! JO9 MOD START RNL089 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_cook[0] = dyneval($vb_cycle_skill, 0, '요리 F')
+$slave_cook[1] = dyneval($vb_cycle_skill, 1, '부엌 연수생 D')
+$slave_cook[2] = dyneval($vb_cycle_skill, 2, '식사담당 C')
+$slave_cook[3] = dyneval($vb_cycle_skill, 3, '요리사 B')
+$slave_cook[4] = dyneval($vb_cycle_skill, 4, '전문 요리사 A')
+$slave_cook[5] = dyneval($vb_cycle_skill, 5, '주방장 S')
+! JO9 MOD END RNL089
+
+! JO9 MOD START RNL088 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_nurse[0] = dyneval($vb_cycle_skill, 0, '간호의학 F')
+$slave_nurse[1] = dyneval($vb_cycle_skill, 1, '간호학생 D')
+$slave_nurse[2] = dyneval($vb_cycle_skill, 2, '구급대원 C')
+$slave_nurse[3] = dyneval($vb_cycle_skill, 3, '의료인 B')
+$slave_nurse[4] = dyneval($vb_cycle_skill, 4, '간호사 A')
+$slave_nurse[5] = dyneval($vb_cycle_skill, 5, '의사 S')
+! JO9 MOD END RNL088
+
+! JO9 MOD START RNL087 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_secretary[0] = dyneval($vb_cycle_skill, 0, '사무지식 F')
+$slave_secretary[1] = dyneval($vb_cycle_skill, 1, '인턴 D')
+$slave_secretary[2] = dyneval($vb_cycle_skill, 2, '사원 C')
+$slave_secretary[3] = dyneval($vb_cycle_skill, 3, '비서 B')
+$slave_secretary[4] = dyneval($vb_cycle_skill, 4, '감사원 A')
+$slave_secretary[5] = dyneval($vb_cycle_skill, 5, '섭정 S')
+! JO9 MOD END RNL087
+
+! JO9 MOD START RNL086 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_gladiatrix[0] = dyneval($vb_cycle_skill, 0, '전투술 F')
+$slave_gladiatrix[1] = dyneval($vb_cycle_skill, 1, '수련생 D')
+$slave_gladiatrix[2] = dyneval($vb_cycle_skill, 2, '도전자 C')
+$slave_gladiatrix[3] = dyneval($vb_cycle_skill, 3, '투사 B')
+$slave_gladiatrix[4] = dyneval($vb_cycle_skill, 4, '여검사 A')
+$slave_gladiatrix[5] = dyneval($vb_cycle_skill, 5, '여기사 S')
+! JO9 MOD END RNL086
+
+! JO9 MOD START RNL085 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_enchanter[0] = dyneval($vb_cycle_skill, 0, '마법력 F')
+$slave_enchanter[1] = dyneval($vb_cycle_skill, 1, '마법 수련생 D')
+$slave_enchanter[2] = dyneval($vb_cycle_skill, 2, '요술사 C')
+$slave_enchanter[3] = dyneval($vb_cycle_skill, 3, '마술사 B')
+$slave_enchanter[4] = dyneval($vb_cycle_skill, 4, '마법사 A')
+$slave_enchanter[5] = dyneval($vb_cycle_skill, 5, '여마도사 S')
+! JO9 MOD END RNL085
+
+! JO9 MOD START RNL084 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_alchemy[0] = dyneval($vb_cycle_skill, 0, '연금술 F')
+$slave_alchemy[1] = dyneval($vb_cycle_skill, 1, '연금 연습생 D')
+$slave_alchemy[2] = dyneval($vb_cycle_skill, 2, '수습 연금술사 C')
+$slave_alchemy[3] = dyneval($vb_cycle_skill, 3, '연금술사 B')
+$slave_alchemy[4] = dyneval($vb_cycle_skill, 4, '전문 연금술사 A')
+$slave_alchemy[5] = dyneval($vb_cycle_skill, 5, '고위 연금술사 S')
+! JO9 MOD END RNL084
+
+! JO9 MOD START RNL083 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_expression[0] = dyneval($vb_cycle_skill, 0, '수사학 F')
+$slave_expression[1] = dyneval($vb_cycle_skill, 1, '수사학 학생 D')
+$slave_expression[2] = dyneval($vb_cycle_skill, 2, '달변가 C')
+$slave_expression[3] = dyneval($vb_cycle_skill, 3, '연설가 B')
+$slave_expression[4] = dyneval($vb_cycle_skill, 4, '웅변가 A')
+$slave_expression[5] = dyneval($vb_cycle_skill, 5, '수사학자 S')
+! JO9 MOD END RNL083
+
+! JO9 MOD START RNL082 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_calisthenics[0] = dyneval($vb_cycle_skill, 0, '무용술 F')
+$slave_calisthenics[1] = dyneval($vb_cycle_skill, 1, '초보 무용수 D')
+$slave_calisthenics[2] = dyneval($vb_cycle_skill, 2, '단역 무용수 C')
+$slave_calisthenics[3] = dyneval($vb_cycle_skill, 3, '조연 무용수 B')
+$slave_calisthenics[4] = dyneval($vb_cycle_skill, 4, '주역 무용수 A')
+$slave_calisthenics[5] = dyneval($vb_cycle_skill, 5, '간판 무용수 S')
+! JO9 MOD END RNL082
+
+! JO9 MOD START RNL081 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_music[0] = dyneval($vb_cycle_skill, 0, '음악성 F')
+$slave_music[1] = dyneval($vb_cycle_skill, 1, '음악 연습생 D')
+$slave_music[2] = dyneval($vb_cycle_skill, 2, '연주자 C')
+$slave_music[3] = dyneval($vb_cycle_skill, 3, '음악가 B')
+$slave_music[4] = dyneval($vb_cycle_skill, 4, '전문 음악가 A')
+$slave_music[5] = dyneval($vb_cycle_skill, 5, '음악 예술가 S')
+! JO9 MOD END RNL081
+
+! JO9 MOD START RNL080 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_art[0] = dyneval($vb_cycle_skill, 0, '미술성 F')
+$slave_art[1] = dyneval($vb_cycle_skill, 1, '미술 학생 D')
+$slave_art[2] = dyneval($vb_cycle_skill, 2, '초보 미술가 C')
+$slave_art[3] = dyneval($vb_cycle_skill, 3, '미술가 B')
+$slave_art[4] = dyneval($vb_cycle_skill, 4, '화가 A')
+$slave_art[5] = dyneval($vb_cycle_skill, 5, '감각적 화가 S')
+! JO9 MOD END RNL080
+
+! JO9 MOD START RNL079 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_pet[0] = dyneval($vb_cycle_skill, 0, '애완녀 F')
+$slave_pet[1] = dyneval($vb_cycle_skill, 1, '들고양이 D')
+$slave_pet[2] = dyneval($vb_cycle_skill, 2, '안뜰 고양이 C')
+$slave_pet[3] = dyneval($vb_cycle_skill, 3, '집고양이 B')
+$slave_pet[4] = dyneval($vb_cycle_skill, 4, '애완 고양이 A')
+$slave_pet[5] = dyneval($vb_cycle_skill, 5, '완벽한 애완녀 S')
+! JO9 MOD END RNL079
+
+! JO9 MOD START RNL078 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_dressage[0] = dyneval($vb_cycle_skill, 0, '경마녀 F')
+$slave_dressage[1] = dyneval($vb_cycle_skill, 1, '망아지 D')
+$slave_dressage[2] = dyneval($vb_cycle_skill, 2, '조랑말 C')
+$slave_dressage[3] = dyneval($vb_cycle_skill, 3, '말 B')
+$slave_dressage[4] = dyneval($vb_cycle_skill, 4, '승마용 말 A')
+$slave_dressage[5] = dyneval($vb_cycle_skill, 5, '경마용 말 S')
+! JO9 MOD END RNL078
+
+! JO9 MOD START RNL077 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_cowSK[0] = dyneval($vb_cycle_skill, 0, '젖소녀 F')
+$slave_cowSK[1] = dyneval($vb_cycle_skill, 1, '작은 송아지 D')
+$slave_cowSK[2] = dyneval($vb_cycle_skill, 2, '암송아지 C')
+$slave_cowSK[3] = dyneval($vb_cycle_skill, 3, '암소 B')
+$slave_cowSK[4] = dyneval($vb_cycle_skill, 4, '젖소 A')
+$slave_cowSK[5] = dyneval($vb_cycle_skill, 5, '품위있는 젖소 S')
+! JO9 MOD END RNL077
+
+! JO9 MOD START RNL076 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_petting[0] = dyneval($vb_cycle_skill, 0, '애무 F')
+$slave_petting[1] = dyneval($vb_cycle_skill, 1, '애무 D')
+$slave_petting[2] = dyneval($vb_cycle_skill, 2, '애무 C')
+$slave_petting[3] = dyneval($vb_cycle_skill, 3, '애무 B')
+$slave_petting[4] = dyneval($vb_cycle_skill, 4, '애무 A')
+$slave_petting[5] = dyneval($vb_cycle_skill, 5, '애무 S')
+! JO9 MOD END RNL076
+
+! JO9 MOD START RNL075 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_oral[0] = dyneval($vb_cycle_skill, 0, '구강 쾌락 F')
+$slave_oral[1] = dyneval($vb_cycle_skill, 1, '구강 쾌락 D')
+$slave_oral[2] = dyneval($vb_cycle_skill, 2, '구강 쾌락 C')
+$slave_oral[3] = dyneval($vb_cycle_skill, 3, '구강 쾌락 B')
+$slave_oral[4] = dyneval($vb_cycle_skill, 4, '구강 쾌락 A')
+$slave_oral[5] = dyneval($vb_cycle_skill, 5, '구강 쾌락 S')
+! JO9 MOD END RNL075
+
+! JO9 MOD START RNL074 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_penetration[0] = dyneval($vb_cycle_skill, 0, '삽입 F')
+$slave_penetration[1] = dyneval($vb_cycle_skill, 1, '삽입 D')
+$slave_penetration[2] = dyneval($vb_cycle_skill, 2, '삽입 C')
+$slave_penetration[3] = dyneval($vb_cycle_skill, 3, '삽입 B')
+$slave_penetration[4] = dyneval($vb_cycle_skill, 4, '삽입 A')
+$slave_penetration[5] = dyneval($vb_cycle_skill, 5, '삽입 S')
+! JO9 MOD END RNL074
+
+! JO9 MOD START RNL073 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_orgy[0] = dyneval($vb_cycle_skill, 0, '단체 섹스 F')
+$slave_orgy[1] = dyneval($vb_cycle_skill, 1, '단체 섹스 D')
+$slave_orgy[2] = dyneval($vb_cycle_skill, 2, '단체 섹스 C')
+$slave_orgy[3] = dyneval($vb_cycle_skill, 3, '단체 섹스 B')
+$slave_orgy[4] = dyneval($vb_cycle_skill, 4, '단체 섹스 A')
+$slave_orgy[5] = dyneval($vb_cycle_skill, 5, '단체 섹스 S')
+! JO9 MOD END RNL073
+
+! JO9 MOD START RNL072 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_roleplay[0] = dyneval($vb_cycle_skill, 0, '노출 F')
+$slave_roleplay[1] = dyneval($vb_cycle_skill, 1, '노출 D')
+$slave_roleplay[2] = dyneval($vb_cycle_skill, 2, '노출 C')
+$slave_roleplay[3] = dyneval($vb_cycle_skill, 3, '노출 B')
+$slave_roleplay[4] = dyneval($vb_cycle_skill, 4, '노출 A')
+$slave_roleplay[5] = dyneval($vb_cycle_skill, 5, '노출 S')
+! JO9 MOD END RNL072
+
+! JO9 MOD START RNL071 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_fetishism[0] = dyneval($vb_cycle_skill, 0, '페티시즘 F')
+$slave_fetishism[1] = dyneval($vb_cycle_skill, 1, '페티시즘 D')
+$slave_fetishism[2] = dyneval($vb_cycle_skill, 2, '페티시즘 C')
+$slave_fetishism[3] = dyneval($vb_cycle_skill, 3, '페티시즘 B')
+$slave_fetishism[4] = dyneval($vb_cycle_skill, 4, '페티시즘 A')
+$slave_fetishism[5] = dyneval($vb_cycle_skill, 5, '페티시즘 S')
+! JO9 MOD END RNL071
+
+! JO9 MOD START RNL070 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_xenophily[0] = dyneval($vb_cycle_skill, 0, '이종 취향 F')
+$slave_xenophily[1] = dyneval($vb_cycle_skill, 1, '이종 취향 D')
+$slave_xenophily[2] = dyneval($vb_cycle_skill, 2, '이종 취향 C')
+$slave_xenophily[3] = dyneval($vb_cycle_skill, 3, '이종 취향 B')
+$slave_xenophily[4] = dyneval($vb_cycle_skill, 4, '이종 취향 A')
+$slave_xenophily[5] = dyneval($vb_cycle_skill, 5, '이종 취향 S')
+! JO9 MOD END RNL070
+
+! JO9 MOD START RNL069 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_nipplefuck[0] = dyneval($vb_cycle_skill, 0, '유두 성교 F')
+$slave_nipplefuck[1] = dyneval($vb_cycle_skill, 1, '유두 성교 D')
+$slave_nipplefuck[2] = dyneval($vb_cycle_skill, 2, '유두 성교 C')
+$slave_nipplefuck[3] = dyneval($vb_cycle_skill, 3, '유두 성교 B')
+$slave_nipplefuck[4] = dyneval($vb_cycle_skill, 4, '유두 성교 A')
+$slave_nipplefuck[5] = dyneval($vb_cycle_skill, 5, '유두 성교 S')
+! JO9 MOD END RNL069
+
+! JO9 MOD START RNL068 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_lesbiansex[0] = dyneval($vb_cycle_skill, 0, '레즈비언 섹스 F')
+$slave_lesbiansex[1] = dyneval($vb_cycle_skill, 1, '레즈비언 섹스 D')
+$slave_lesbiansex[2] = dyneval($vb_cycle_skill, 2, '레즈비언 섹스 C')
+$slave_lesbiansex[3] = dyneval($vb_cycle_skill, 3, '레즈비언 섹스 B')
+$slave_lesbiansex[4] = dyneval($vb_cycle_skill, 4, '레즈비언 섹스 A')
+$slave_lesbiansex[5] = dyneval($vb_cycle_skill, 5, '레즈비언 섹스 S')
+! JO9 MOD END RNL068
+
+
+! JO9 MOD START J9M2456 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$scars_chart = '<br><center>흉터 -<br><br>'
+! JO9 MOD END J9M2456
+$scars[5] = dyneval($vb_cycle_stat, 0,  '끔찍한 흉터')   & $scars_chart += $scars[5]+'<br>'
+$scars[4] = dyneval($vb_cycle_stat, 1,  '심각한 흉터')  & $scars_chart += $scars[4]+'<br>'
+$scars[3] = dyneval($vb_cycle_stat, 2,  '커다란 흉터')           & $scars_chart += $scars[3]+'<br>'
+$scars[2] = dyneval($vb_cycle_stat, 3,  '흉터')            & $scars_chart += $scars[2]+'<br>'
+$scars[1] = dyneval($vb_cycle_stat, 4,  '작은 흉터')      & $scars_chart += $scars[1]+'<br>'
+$scars[0] = dyneval($vb_cycle_stat, 5,  '흉터 없음')        & $scars_chart += $scars[0]+'</center>'
+
+! JO9 MOD START J9M2455 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$bruises_chart = '<br><center>타박상 -<br><br>'
+! JO9 MOD END J9M2455
+$bruises[5] = dyneval($vb_cycle_stat, 0,  '끔찍한 구타 흔적')  & $bruises_chart += $bruises[5]+'<br>'
+$bruises[4] = dyneval($vb_cycle_stat, 1,  '심한 구타 흔적')   & $bruises_chart += $bruises[4]+'<br>'
+$bruises[3] = dyneval($vb_cycle_stat, 2,  '구타 흔적')    & $bruises_chart += $bruises[3]+'<br>'
+$bruises[2] = dyneval($vb_cycle_stat, 3,  '여러개의 멍자국')               & $bruises_chart += $bruises[2]+'<br>'
+$bruises[1] = dyneval($vb_cycle_stat, 4,  '멍자국')                & $bruises_chart += $bruises[1]+'<br>'
+$bruises[0] = dyneval($vb_cycle_stat, 5,  '흔적 없음')            & $bruises_chart += $bruises[0]+'</center>'
+
+! JO9 MOD START J9M2454 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$starvation_chart = '<br><center>굶주린 정도 -<br><br>'
+! JO9 MOD END J9M2454
+$starvation[5] = dyneval($vb_cycle_stat, 0,  '기아')     & $starvation_chart += $starvation[5]+'<br>'
+$starvation[4] = dyneval($vb_cycle_stat, 1,  '영양실조')   & $starvation_chart += $starvation[4]+'<br>'
+$starvation[3] = dyneval($vb_cycle_stat, 2,  '고통스러운 허기')     & $starvation_chart += $starvation[3]+'<br>'
+$starvation[2] = dyneval($vb_cycle_stat, 3,  '갈증과 허기')   & $starvation_chart += $starvation[2]+'<br>'
+$starvation[1] = dyneval($vb_cycle_stat, 4,  '속쓰림')     & $starvation_chart += $starvation[1]+'<br>'
+$starvation[0] = dyneval($vb_cycle_stat, 5,  '부족함 없음')         & $starvation_chart += $starvation[0]+'</center>'
+
+!SANITY
+!Moved to $slave_traits, $stock_traits, and $assistant_traits - crushboss ($assistant_traits merged into $slave_traits - ImperatorAugustus)
+
+$wounds_chart = '<center>부상<br>'
+$wounds[5] = dyneval($vb_cycle_rank, 0,  '치명상')         & $wounds_chart += $wounds[5]+'<br>'
+$wounds[4] = dyneval($vb_cycle_rank, 1,  '중상')           & $wounds_chart += $wounds[4]+'<br>'
+$wounds[3] = dyneval($vb_cycle_rank, 2,  '중간 부상')      & $wounds_chart += $wounds[3]+'<br>'
+$wounds[2] = dyneval($vb_cycle_rank, 3,  '경상')           & $wounds_chart += $wounds[2]+'<br>'
+$wounds[1] = dyneval($vb_cycle_rank, 4,  '가벼운 상처')    & $wounds_chart += $wounds[1]+'<br>'
+$wounds[0] = dyneval($vb_cycle_rank, 10, '무사')    & $wounds_chart += $wounds[0]+'</center>'
+
+master_wounds_rate_cap[0] = 10
+master_wounds_rate_cap[1] = 20
+master_wounds_rate_cap[2] = 40
+master_wounds_rate_cap[3] = 80
+master_wounds_rate_cap[4] = 160
+
+
+
+!story mode (normal start and optional for custom start) modifiers - ImperatorAugustus
+if hero_choice < 13:
+    if (custom_game = 0 and demo_game = 0) or slaver_background_matters = 1:
+        ! raising stewardship skill above C- requires 2x as much experience for all except Butler (8)
+        if hero_choice ! 8: master_butler_rate_cap_mult = 2
+        if hero_choice > 3 and hero_choice < 11:
+            ! raising strength above B+ requires 3x as much experience for slavers with non-aligned backgrounds
+            master_str_rate_cap_mult = 3
+            ! raising combat skill above D- requires 3x as much experience for slavers with non-aligned backgrounds
+            master_fighter_rate_cap_mult = 3
+        elseif hero_choice ! 1:
+            ! raising artdirector skill above C- requires 3x as much experience for Robespierre (2), Blade (3), Fenris (11) and Saruman (12)
+            master_artdirector_rate_cap_mult = 3
+        end
+        ! raising medic skill above A+ requires 2x as much experience for all except Doc (7) and Fenris (11)
+        if hero_choice ! 7 and hero_choice ! 11: master_medic_rate_cap_mult = 2
+        ! raising mage skill above F- requires 4x as much experience for all except Johny (10), Fenris (11) and Saruman (12)
+        if hero_choice < 10: master_mage_rate_cap_mult = 4
+    end
+end
+
+
+$master_cha[0] = dyneval($vb_cycle_skill, 0, '패배자')
+$master_cha[1] = dyneval($vb_cycle_skill, 1, '겁쟁이')
+$master_cha[2] = dyneval($vb_cycle_skill, 2, '평범함')
+$master_cha[3] = dyneval($vb_cycle_skill, 3, '의욕적')
+$master_cha[4] = dyneval($vb_cycle_skill, 4, '주도적')
+$master_cha[5] = dyneval($vb_cycle_skill, 5, '타고난 리더')
+
+master_cha_rate_cap[0] = 10
+master_cha_rate_cap[1] = 30
+master_cha_rate_cap[2] = 60
+master_cha_rate_cap[3] = 120
+master_cha_rate_cap[4] = 240
+
+$master_style[0] = dyneval($vb_cycle_skill, 0, '역겨움')
+$master_style[1] = dyneval($vb_cycle_skill, 1, '불쾌함')
+$master_style[2] = dyneval($vb_cycle_skill, 2, '평범함')
+$master_style[3] = dyneval($vb_cycle_skill, 3, '인상적')
+$master_style[4] = dyneval($vb_cycle_skill, 4, '매력적')
+$master_style[5] = dyneval($vb_cycle_skill, 5, '치명적')
+
+$master_libido[0] = dyneval($vb_cycle_skill, 0, '무기력함')
+$master_libido[1] = dyneval($vb_cycle_skill, 1, '부족함')
+$master_libido[2] = dyneval($vb_cycle_skill, 2, '건강함')
+$master_libido[3] = dyneval($vb_cycle_skill, 3, '열렬함')
+$master_libido[4] = dyneval($vb_cycle_skill, 4, '왕성함')
+$master_libido[5] = dyneval($vb_cycle_skill, 5, '호색한')
+
+master_libido_rate_cap[0] = 45
+master_libido_rate_cap[1] = 90
+master_libido_rate_cap[2] = 180
+master_libido_rate_cap[3] = 360
+master_libido_rate_cap[4] = 720
+
+$brand[0] = dyneval($vb_cycle_skill, 0, '알려지지 않음')
+$brand[1] = dyneval($vb_cycle_skill, 1, '희미하게 알려짐')
+$brand[2] = dyneval($vb_cycle_skill, 2, '입소문이 남')
+$brand[3] = dyneval($vb_cycle_skill, 3, '잘 알려짐')
+$brand[4] = dyneval($vb_cycle_skill, 4, '유명함')
+$brand[5] = dyneval($vb_cycle_skill, 5, '로마의 전설')
+
+brand_rate_cap[0] = 5
+brand_rate_cap[1] = 15
+brand_rate_cap[2] = 30
+brand_rate_cap[3] = 60
+brand_rate_cap[4] = 120
+
+$guild_brand[0] = dyneval($vb_cycle_skill, 0, '조합 신입')
+$guild_brand[1] = dyneval($vb_cycle_skill, 1, '조합 말단')
+$guild_brand[2] = dyneval($vb_cycle_skill, 2, '조합 일원')
+$guild_brand[3] = dyneval($vb_cycle_skill, 3, '조합 인사')
+$guild_brand[4] = dyneval($vb_cycle_skill, 4, '조합 중역')
+$guild_brand[5] = dyneval($vb_cycle_skill, 5, '조합 이사')
+
+guild_reputation_rate_cap[0] = 5
+guild_reputation_rate_cap[1] = 15
+guild_reputation_rate_cap[2] = 30
+guild_reputation_rate_cap[3] = 60
+guild_reputation_rate_cap[4] = 120
+
+$master_wealth[0] = dyneval($vb_cycle_skill, 0, '빈곤한 삶')
+$master_wealth[1] = dyneval($vb_cycle_skill, 1, '가난한 삶')
+$master_wealth[2] = dyneval($vb_cycle_skill, 2, '평균적인 삶')
+$master_wealth[3] = dyneval($vb_cycle_skill, 3, '여유로운 삶')
+$master_wealth[4] = dyneval($vb_cycle_skill, 4, '편안한 삶')
+$master_wealth[5] = dyneval($vb_cycle_skill, 5, '호화로운 삶')
+$master_wealth[6] = dyneval($vb_cycle_skill, 6, '<b>사치스러운 삶</b>')
+
+! JO9 MOD START J9M2453 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$hygiene_chart = '<br><center>청결도 -<br><br>'
+! JO9 MOD END J9M2453
+$personal_hygiene[5] = dyneval($vb_cycle_skill, 0, '역겨움')     & $hygiene_chart += $personal_hygiene[5]+'<br>'
+$personal_hygiene[4] = dyneval($vb_cycle_skill, 1, '더러움')      & $hygiene_chart += $personal_hygiene[4]+'<br>'
+$personal_hygiene[3] = dyneval($vb_cycle_skill, 2, '지저분')    & $hygiene_chart += $personal_hygiene[3]+'<br>'
+$personal_hygiene[2] = dyneval($vb_cycle_skill, 3, '불결함')  & $hygiene_chart += $personal_hygiene[2]+'<br>'
+$personal_hygiene[1] = dyneval($vb_cycle_skill, 4, '깨끗함')      & $hygiene_chart += $personal_hygiene[1]+'<br>'
+$personal_hygiene[0] = dyneval($vb_cycle_skill, 5, '상쾌함')   & $hygiene_chart += $personal_hygiene[0]+'</center>'
+
+master_hygiene_rate_cap[0] = 10
+master_hygiene_rate_cap[1] = 20
+master_hygiene_rate_cap[2] = 40
+master_hygiene_rate_cap[3] = 60
+master_hygiene_rate_cap[4] = 80
+
+master_str_rate_cap_mult = 1
+master_fighter_rate_cap_mult = 1
+master_artdirector_rate_cap_mult = 1
+master_mage_rate_cap_mult = 1
+master_medic_rate_cap_mult = 1
+master_butler_rate_cap_mult = 1
+
+if hero_choice < 100:
+
+	$master_str[0] = dyneval($vb_cycle_skill, 0, '무력함')
+	$master_str[1] = dyneval($vb_cycle_skill, 1, '약골')
+	$master_str[2] = dyneval($vb_cycle_skill, 2, '일반인')
+	$master_str[3] = dyneval($vb_cycle_skill, 3, '건장함')
+	$master_str[4] = dyneval($vb_cycle_skill, 4, '강력함')
+	$master_str[5] = dyneval($vb_cycle_skill, 5, '초인적')
+	
+	master_str_rate_cap[0] = 10
+	master_str_rate_cap[1] = 30
+	master_str_rate_cap[2] = 60
+	master_str_rate_cap[3] = 120 * master_str_rate_cap_mult
+	master_str_rate_cap[4] = 240 * master_str_rate_cap_mult
+
+
+
+! JO9 MOD START RNL067 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_tutor[0] = dyneval($vb_cycle_skill, 0, '횡설수설 F')
+	$master_tutor[1] = dyneval($vb_cycle_skill, 1, '가정교사 D')
+	$master_tutor[2] = dyneval($vb_cycle_skill, 2, '멘토 C')
+	$master_tutor[3] = dyneval($vb_cycle_skill, 3, '교육자 B')
+	$master_tutor[4] = dyneval($vb_cycle_skill, 4, '교사 A')
+	$master_tutor[5] = dyneval($vb_cycle_skill, 5, '강사 S')
+! JO9 MOD END RNL067
+	
+	master_tutor_rate_cap[0] = 15
+	master_tutor_rate_cap[1] = 75
+	master_tutor_rate_cap[2] = 150
+	master_tutor_rate_cap[3] = 300
+	master_tutor_rate_cap[4] = 600
+	
+! JO9 MOD START RNL066 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_butler[0] = dyneval($vb_cycle_skill, 0, '순진한 거주자 F')
+	$master_butler[1] = dyneval($vb_cycle_skill, 1, '잡역부 D')
+	$master_butler[2] = dyneval($vb_cycle_skill, 2, '집안일꾼 C')
+	$master_butler[3] = dyneval($vb_cycle_skill, 3, '살림꾼 B')
+	$master_butler[4] = dyneval($vb_cycle_skill, 4, '살림의 대가 A')
+	$master_butler[5] = dyneval($vb_cycle_skill, 5, '집사 S')
+! JO9 MOD END RNL066
+	$master_butler[6] = dyneval($vb_cycle_skill, 6, '<b>수석 집사 S++</b>')
+	
+	master_butler_rate_cap[0] = 15
+	master_butler_rate_cap[1] = 30
+	master_butler_rate_cap[2] = 60 * master_butler_rate_cap_mult
+	master_butler_rate_cap[3] = 120 * master_butler_rate_cap_mult
+	master_butler_rate_cap[4] = 240 * master_butler_rate_cap_mult
+	
+! JO9 MOD START RNL065 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_artdirector[0] = dyneval($vb_cycle_skill, 0, '안목 없음 F')
+	$master_artdirector[1] = dyneval($vb_cycle_skill, 1, '교양 없음 D')
+	$master_artdirector[2] = dyneval($vb_cycle_skill, 2, '딜레탕트 C')
+	$master_artdirector[3] = dyneval($vb_cycle_skill, 3, '예술가 B')
+	$master_artdirector[4] = dyneval($vb_cycle_skill, 4, '신동 A')
+	$master_artdirector[5] = dyneval($vb_cycle_skill, 5, '비르투오소 S')
+! JO9 MOD END RNL065
+	$master_artdirector[6] = dyneval($vb_cycle_skill, 6, '<b>마에스트로 S++</b>')
+	
+	master_artdirector_rate_cap[0] = 15
+	master_artdirector_rate_cap[1] = 30
+	master_artdirector_rate_cap[2] = 60 * master_artdirector_rate_cap_mult
+	master_artdirector_rate_cap[3] = 120 * master_artdirector_rate_cap_mult
+	master_artdirector_rate_cap[4] = 240 * master_artdirector_rate_cap_mult
+	
+! JO9 MOD START RNL064 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_medic[0] = dyneval($vb_cycle_skill, 0, '동종요법사 F')
+	$master_medic[1] = dyneval($vb_cycle_skill, 1, '돌팔이 D')
+	$master_medic[2] = dyneval($vb_cycle_skill, 2, '응급 구조사 C')
+	$master_medic[3] = dyneval($vb_cycle_skill, 3, '간호원 B')
+	$master_medic[4] = dyneval($vb_cycle_skill, 4, '의료인 A')
+	$master_medic[5] = dyneval($vb_cycle_skill, 5, '의사 S')
+! JO9 MOD END RNL064
+	$master_medic[6] = dyneval($vb_cycle_skill, 6, '<b>명의 S++</b>')
+	
+	master_medic_rate_cap[0] = 15
+	master_medic_rate_cap[1] = 30
+	master_medic_rate_cap[2] = 60
+	master_medic_rate_cap[3] = 120
+	master_medic_rate_cap[4] = 240 * master_medic_rate_cap_mult
+	
+! JO9 MOD START RNL063 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_fighter[0] = dyneval($vb_cycle_skill, 0, '비전투원 F')
+	$master_fighter[1] = dyneval($vb_cycle_skill, 1, '싸움꾼 D')
+	$master_fighter[2] = dyneval($vb_cycle_skill, 2, '투사 C')
+	$master_fighter[3] = dyneval($vb_cycle_skill, 3, '전사 B')
+	$master_fighter[4] = dyneval($vb_cycle_skill, 4, '기사 A')
+	$master_fighter[5] = dyneval($vb_cycle_skill, 5, '용사 S')
+! JO9 MOD END RNL063
+	$master_fighter[6] = dyneval($vb_cycle_skill, 6, '<b>영웅 S++</b>')
+	
+	master_fighter_rate_cap[0] = 15
+	master_fighter_rate_cap[1] = 30 * master_fighter_rate_cap_mult
+	master_fighter_rate_cap[2] = 60 * master_fighter_rate_cap_mult
+	master_fighter_rate_cap[3] = 120 * master_fighter_rate_cap_mult
+	master_fighter_rate_cap[4] = 240 * master_fighter_rate_cap_mult
+	
+! JO9 MOD START RNL062 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_mage[0] = dyneval($vb_cycle_skill, 0, '일반인 F')
+	$master_mage[1] = dyneval($vb_cycle_skill, 1, '견습생 D')
+	$master_mage[2] = dyneval($vb_cycle_skill, 2, '주술사 C')
+	$master_mage[3] = dyneval($vb_cycle_skill, 3, '마술사 B')
+	$master_mage[4] = dyneval($vb_cycle_skill, 4, '마법사 A')
+	$master_mage[5] = dyneval($vb_cycle_skill, 5, '마도사 S')
+! JO9 MOD END RNL062
+	$master_mage[6] = dyneval($vb_cycle_skill, 6, '<b>대마도사 S++</b>')
+	
+	master_mage_rate_cap[0] = 15 * master_mage_rate_cap_mult
+	master_mage_rate_cap[1] = 75 * master_mage_rate_cap_mult
+	master_mage_rate_cap[2] = 150 * master_mage_rate_cap_mult
+	master_mage_rate_cap[3] = 300 * master_mage_rate_cap_mult
+	master_mage_rate_cap[4] = 600 * master_mage_rate_cap_mult
+	
+	$master_domination[0] = dyneval($vb_cycle_skill, 0, '피지배자')
+	$master_domination[1] = dyneval($vb_cycle_skill, 1, '하층민')
+	$master_domination[2] = dyneval($vb_cycle_skill, 2, '자유민')
+	$master_domination[3] = dyneval($vb_cycle_skill, 3, '시민')
+	$master_domination[4] = dyneval($vb_cycle_skill, 4, '귀족')
+	$master_domination[5] = dyneval($vb_cycle_skill, 5, '지배자')
+	
+	master_domination_rate_cap[0] = 45
+	master_domination_rate_cap[1] = 90
+	master_domination_rate_cap[2] = 180
+	master_domination_rate_cap[3] = 360
+	master_domination_rate_cap[4] = 720
+	
+! JO9 MOD START RNL061 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_flagelation[0] = dyneval($vb_cycle_skill, 0, '서툰 채찍질 F')
+	$master_flagelation[1] = dyneval($vb_cycle_skill, 1, '초보적 채찍질 D')
+	$master_flagelation[2] = dyneval($vb_cycle_skill, 2, '익숙한 채찍질 C')
+	$master_flagelation[3] = dyneval($vb_cycle_skill, 3, '날렵한 채찍질 B')
+	$master_flagelation[4] = dyneval($vb_cycle_skill, 4, '무거운 채찍질 A')
+	$master_flagelation[5] = dyneval($vb_cycle_skill, 5, '고통의 채찍질 S')
+! JO9 MOD END RNL061
+	
+	master_flagelation_rate_cap[0] = 1
+	master_flagelation_rate_cap[1] = 20
+	master_flagelation_rate_cap[2] = 40
+	master_flagelation_rate_cap[3] = 80
+	master_flagelation_rate_cap[4] = 160
+	
+! JO9 MOD START RNL060 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_torture[0] = dyneval($vb_cycle_skill, 0, '서툰 고문가 F')
+	$master_torture[1] = dyneval($vb_cycle_skill, 1, '징벌자 D')
+	$master_torture[2] = dyneval($vb_cycle_skill, 2, '고문기술자 C')
+	$master_torture[3] = dyneval($vb_cycle_skill, 3, '처형인 B')
+	$master_torture[4] = dyneval($vb_cycle_skill, 4, '심문관 A')
+	$master_torture[5] = dyneval($vb_cycle_skill, 5, '집행관 S')
+! JO9 MOD END RNL060
+	
+	master_torture_rate_cap[0] = 1
+	master_torture_rate_cap[1] = 20
+	master_torture_rate_cap[2] = 40
+	master_torture_rate_cap[3] = 80
+	master_torture_rate_cap[4] = 160
+	
+! JO9 MOD START RNL059 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_bondage[0] = dyneval($vb_cycle_skill, 0, '서툰 결박술 F')
+	$master_bondage[1] = dyneval($vb_cycle_skill, 1, '속박사 D')
+	$master_bondage[2] = dyneval($vb_cycle_skill, 2, '포박사 C')
+	$master_bondage[3] = dyneval($vb_cycle_skill, 3, '결박사 B')
+	$master_bondage[4] = dyneval($vb_cycle_skill, 4, '긴박사 A')
+	$master_bondage[5] = dyneval($vb_cycle_skill, 5, '밧줄 예술가 S')
+! JO9 MOD END RNL059
+	
+	master_bondage_rate_cap[0] = 1
+	master_bondage_rate_cap[1] = 20
+	master_bondage_rate_cap[2] = 40
+	master_bondage_rate_cap[3] = 80
+	master_bondage_rate_cap[4] = 160
+else
+	$master_str[0] = dyneval($vb_cycle_skill, 0, '무력함')
+	$master_str[1] = dyneval($vb_cycle_skill, 1, '약골')
+	$master_str[2] = dyneval($vb_cycle_skill, 2, '일반인')
+	$master_str[3] = dyneval($vb_cycle_skill, 3, '건장함')
+	$master_str[4] = dyneval($vb_cycle_skill, 4, '강력함')
+	$master_str[5] = dyneval($vb_cycle_skill, 5, '초인적')
+
+	master_str_rate_cap[0] = 10
+	master_str_rate_cap[1] = 30
+	master_str_rate_cap[2] = 60
+	master_str_rate_cap[3] = 120 * master_str_rate_cap_mult
+	master_str_rate_cap[4] = 240 * master_str_rate_cap_mult
+
+
+! JO9 MOD START RNL058 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_tutor[0] = dyneval($vb_cycle_skill, 0, '교사 아님 F')
+	$master_tutor[1] = dyneval($vb_cycle_skill, 1, '가정교사 D')
+	$master_tutor[2] = dyneval($vb_cycle_skill, 2, '멘토 C')
+	$master_tutor[3] = dyneval($vb_cycle_skill, 3, '교사 B')
+	$master_tutor[4] = dyneval($vb_cycle_skill, 4, '강사 A')
+	$master_tutor[5] = dyneval($vb_cycle_skill, 5, '대가 교사 S')
+! JO9 MOD END RNL058
+	
+	master_tutor_rate_cap[0] = 15
+	master_tutor_rate_cap[1] = 75
+	master_tutor_rate_cap[2] = 150
+	master_tutor_rate_cap[3] = 300
+	master_tutor_rate_cap[4] = 600
+	
+! JO9 MOD START RNL057 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_butler[0] = dyneval($vb_cycle_skill, 0, '메이드 아님 F')
+	$master_butler[1] = dyneval($vb_cycle_skill, 1, '시중하녀 D')
+	$master_butler[2] = dyneval($vb_cycle_skill, 2, '가정부 C')
+	$master_butler[3] = dyneval($vb_cycle_skill, 3, '메이드 B')
+	$master_butler[4] = dyneval($vb_cycle_skill, 4, '여집사 A')
+	$master_butler[5] = dyneval($vb_cycle_skill, 5, '수석 여집사 S')
+! JO9 MOD END RNL057
+	$master_butler[6] = dyneval($vb_cycle_skill, 6, '가사 여신 S++')
+	
+	master_butler_rate_cap[0] = 15
+	master_butler_rate_cap[1] = 30
+	master_butler_rate_cap[2] = 60 * master_butler_rate_cap_mult
+	master_butler_rate_cap[3] = 120 * master_butler_rate_cap_mult
+	master_butler_rate_cap[4] = 240 * master_butler_rate_cap_mult
+
+	
+! JO9 MOD START RNL056 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_artdirector[0] = dyneval($vb_cycle_skill, 0, '저속함 F')
+	$master_artdirector[1] = dyneval($vb_cycle_skill, 1, '안목 없음 D')
+	$master_artdirector[2] = dyneval($vb_cycle_skill, 2, '교양 없음 C')
+	$master_artdirector[3] = dyneval($vb_cycle_skill, 3, '교양 있음 B')
+	$master_artdirector[4] = dyneval($vb_cycle_skill, 4, '예술가 A')
+	$master_artdirector[5] = dyneval($vb_cycle_skill, 5, '무대의 별 S')
+! JO9 MOD END RNL056
+	$master_artdirector[6] = dyneval($vb_cycle_skill, 6, '전설적인 연기자 S++')
+	
+	master_artdirector_rate_cap[0] = 15
+	master_artdirector_rate_cap[1] = 30
+	master_artdirector_rate_cap[2] = 60 * master_artdirector_rate_cap_mult
+	master_artdirector_rate_cap[3] = 120 * master_artdirector_rate_cap_mult
+	master_artdirector_rate_cap[4] = 240 * master_artdirector_rate_cap_mult
+
+	
+! JO9 MOD START RNL055 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_medic[0] = dyneval($vb_cycle_skill, 0, '의료인 아님 F')
+	$master_medic[1] = dyneval($vb_cycle_skill, 1, '간호사 D')
+	$master_medic[2] = dyneval($vb_cycle_skill, 2, '수간호사 C')
+	$master_medic[3] = dyneval($vb_cycle_skill, 3, '의무병 B')
+	$master_medic[4] = dyneval($vb_cycle_skill, 4, '의사 A')
+	$master_medic[5] = dyneval($vb_cycle_skill, 5, '외과의 S')
+! JO9 MOD END RNL055
+	$master_medic[6] = dyneval($vb_cycle_skill, 6, '신경외과의 S++')
+	
+	
+	master_medic_rate_cap[0] = 15
+	master_medic_rate_cap[1] = 30
+	master_medic_rate_cap[2] = 60
+	master_medic_rate_cap[3] = 120
+	master_medic_rate_cap[4] = 240 * master_medic_rate_cap_mult
+	
+	
+! JO9 MOD START RNL054 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_fighter[0] = dyneval($vb_cycle_skill, 0, '전사 아님 F')
+	$master_fighter[1] = dyneval($vb_cycle_skill, 1, '총알받이 D')
+	$master_fighter[2] = dyneval($vb_cycle_skill, 2, '약한 전사 C')
+	$master_fighter[3] = dyneval($vb_cycle_skill, 3, '전사 B')
+	$master_fighter[4] = dyneval($vb_cycle_skill, 4, '전사 A')
+	$master_fighter[5] = dyneval($vb_cycle_skill, 5, '전사의 대가 S')
+! JO9 MOD END RNL054
+	$master_fighter[6] = dyneval($vb_cycle_skill, 6, '발키리 S++')
+	
+	
+	master_fighter_rate_cap[0] = 15
+	master_fighter_rate_cap[1] = 30 * master_fighter_rate_cap_mult
+	master_fighter_rate_cap[2] = 60 * master_fighter_rate_cap_mult
+	master_fighter_rate_cap[3] = 120 * master_fighter_rate_cap_mult
+	master_fighter_rate_cap[4] = 240 * master_fighter_rate_cap_mult
+
+	
+! JO9 MOD START RNL053 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_mage[0] = dyneval($vb_cycle_skill, 0, '환술사 F')
+	$master_mage[1] = dyneval($vb_cycle_skill, 1, '마녀 D')
+	$master_mage[2] = dyneval($vb_cycle_skill, 2, '마녀 C')
+	$master_mage[3] = dyneval($vb_cycle_skill, 3, '소서리스 B')
+	$master_mage[4] = dyneval($vb_cycle_skill, 4, '매지스터 A')
+	$master_mage[5] = dyneval($vb_cycle_skill, 5, '아크메이지 S')
+! JO9 MOD END RNL053
+	$master_mage[6] = dyneval($vb_cycle_skill, 6, '반여신 S++')
+	
+	master_mage_rate_cap[0] = 15 * master_mage_rate_cap_mult
+	master_mage_rate_cap[1] = 75 * master_mage_rate_cap_mult
+	master_mage_rate_cap[2] = 150 * master_mage_rate_cap_mult
+	master_mage_rate_cap[3] = 300 * master_mage_rate_cap_mult
+	master_mage_rate_cap[4] = 600 * master_mage_rate_cap_mult
+
+	
+	$master_domination[0] = dyneval($vb_cycle_skill, 0, '복종적')
+	$master_domination[1] = dyneval($vb_cycle_skill, 1, '순응적')
+	$master_domination[2] = dyneval($vb_cycle_skill, 2, '수동적')
+	$master_domination[3] = dyneval($vb_cycle_skill, 3, '권위적')
+	$master_domination[4] = dyneval($vb_cycle_skill, 4, '지배적')
+	$master_domination[5] = dyneval($vb_cycle_skill, 5, '전제적')
+	
+	master_domination_rate_cap[0] = 45
+	master_domination_rate_cap[1] = 90
+	master_domination_rate_cap[2] = 180
+	master_domination_rate_cap[3] = 360
+	master_domination_rate_cap[4] = 720
+	
+! JO9 MOD START RNL052 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_flagelation[0] = dyneval($vb_cycle_skill, 0, '채찍질 불가 F')
+	$master_flagelation[1] = dyneval($vb_cycle_skill, 1, '기본 채찍질 D')
+	$master_flagelation[2] = dyneval($vb_cycle_skill, 2, '채찍질 가능 C')
+	$master_flagelation[3] = dyneval($vb_cycle_skill, 3, '채찍질 잘함 B')
+	$master_flagelation[4] = dyneval($vb_cycle_skill, 4, '채찍질 전문가 A')
+	$master_flagelation[5] = dyneval($vb_cycle_skill, 5, '채찍의 달인 S')
+! JO9 MOD END RNL052
+	
+	master_flagelation_rate_cap[0] = 1
+	master_flagelation_rate_cap[1] = 20
+	master_flagelation_rate_cap[2] = 40
+	master_flagelation_rate_cap[3] = 80
+	master_flagelation_rate_cap[4] = 160
+	
+! JO9 MOD START RNL051 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_torture[0] = dyneval($vb_cycle_skill, 0, '고문가 아님 F')
+	$master_torture[1] = dyneval($vb_cycle_skill, 1, '침자 D')
+	$master_torture[2] = dyneval($vb_cycle_skill, 2, '고문가 C')
+	$master_torture[3] = dyneval($vb_cycle_skill, 3, '숙련된 고문가 B')
+	$master_torture[4] = dyneval($vb_cycle_skill, 4, '심문관 A')
+	$master_torture[5] = dyneval($vb_cycle_skill, 5, '가학자 S')
+! JO9 MOD END RNL051
+	
+	master_torture_rate_cap[0] = 1
+	master_torture_rate_cap[1] = 20
+	master_torture_rate_cap[2] = 40
+	master_torture_rate_cap[3] = 80
+	master_torture_rate_cap[4] = 160
+	
+! JO9 MOD START RNL050 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$master_bondage[0] = dyneval($vb_cycle_skill, 0, '결박 경험 없음 F')
+	$master_bondage[1] = dyneval($vb_cycle_skill, 1, '결박 초보 D')
+	$master_bondage[2] = dyneval($vb_cycle_skill, 2, '결박 요령 C')
+	$master_bondage[3] = dyneval($vb_cycle_skill, 3, '능숙하게 묶음 B')
+	$master_bondage[4] = dyneval($vb_cycle_skill, 4, '훌륭하게 묶음 A')
+	$master_bondage[5] = dyneval($vb_cycle_skill, 5, '밧줄의 달인 S')
+! JO9 MOD END RNL050
+	
+	master_bondage_rate_cap[0] = 1
+	master_bondage_rate_cap[1] = 20
+	master_bondage_rate_cap[2] = 40
+	master_bondage_rate_cap[3] = 80
+	master_bondage_rate_cap[4] = 160
+	
+	$master_libido[0] = dyneval($vb_cycle_skill, 0, '섹스 혐오')
+	$master_libido[1] = dyneval($vb_cycle_skill, 1, '내키지 않음')
+	$master_libido[2] = dyneval($vb_cycle_skill, 2, '응할 만함')
+	$master_libido[3] = dyneval($vb_cycle_skill, 3, '섹스 좋아함')
+	$master_libido[4] = dyneval($vb_cycle_skill, 4, '섹스 사랑함')
+	$master_libido[5] = dyneval($vb_cycle_skill, 5, '색욕의 여왕')
+	
+	master_libido_rate_cap[0] = 45
+	master_libido_rate_cap[1] = 90
+	master_libido_rate_cap[2] = 180
+	master_libido_rate_cap[3] = 360
+	master_libido_rate_cap[4] = 720
+end
+
+! JO9 MOD START RNL049 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$master_petting[0] = dyneval($vb_cycle_skill, 0, '서툰 손놀림 F')
+$master_petting[1] = dyneval($vb_cycle_skill, 1, '어설픈 손놀림 D')
+$master_petting[2] = dyneval($vb_cycle_skill, 2, '익숙한 손놀림 C')
+$master_petting[3] = dyneval($vb_cycle_skill, 3, '유혹적인 손놀림 B')
+$master_petting[4] = dyneval($vb_cycle_skill, 4, '매혹적인 손놀림 A')
+$master_petting[5] = dyneval($vb_cycle_skill, 5, '손놀림의 달인 S')
+! JO9 MOD END RNL049
+
+master_petting_rate_cap[0] = 1
+master_petting_rate_cap[1] = 30
+master_petting_rate_cap[2] = 60
+master_petting_rate_cap[3] = 120
+master_petting_rate_cap[4] = 240
+
+! JO9 MOD START RNL048 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$master_oral[0] = dyneval($vb_cycle_skill, 0, '서툰 혀놀림 F')
+$master_oral[1] = dyneval($vb_cycle_skill, 1, '어설픈 혀놀림 D')
+$master_oral[2] = dyneval($vb_cycle_skill, 2, '익숙한 혀놀림 C')
+$master_oral[3] = dyneval($vb_cycle_skill, 3, '유혹적인 혀놀림 B')
+$master_oral[4] = dyneval($vb_cycle_skill, 4, '매혹적인 혀놀림 A')
+$master_oral[5] = dyneval($vb_cycle_skill, 5, '혀놀림의 달인 S')
+! JO9 MOD END RNL048
+
+master_oral_rate_cap[0] = 1
+master_oral_rate_cap[1] = 30
+master_oral_rate_cap[2] = 60
+master_oral_rate_cap[3] = 120
+master_oral_rate_cap[4] = 240
+
+! JO9 MOD START RNL047 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$master_penetration[0] = dyneval($vb_cycle_skill, 0, '숫총각 F')
+$master_penetration[1] = dyneval($vb_cycle_skill, 1, '경험 있음 D')
+$master_penetration[2] = dyneval($vb_cycle_skill, 2, '능숙함 C')
+$master_penetration[3] = dyneval($vb_cycle_skill, 3, '난봉꾼 B')
+$master_penetration[4] = dyneval($vb_cycle_skill, 4, '색마 A')
+$master_penetration[5] = dyneval($vb_cycle_skill, 5, '밤의 제왕 S')
+! JO9 MOD END RNL047
+
+master_penetration_rate_cap[0] = 1
+master_penetration_rate_cap[1] = 30
+master_penetration_rate_cap[2] = 60
+master_penetration_rate_cap[3] = 120
+master_penetration_rate_cap[4] = 240
+
+! JO9 MOD START RNL046 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$master_fetish[0] = dyneval($vb_cycle_skill, 0, '일반인 F')
+$master_fetish[1] = dyneval($vb_cycle_skill, 1, '흥미 있음 D')
+$master_fetish[2] = dyneval($vb_cycle_skill, 2, '익숙함 C')
+$master_fetish[3] = dyneval($vb_cycle_skill, 3, '도착적 B')
+$master_fetish[4] = dyneval($vb_cycle_skill, 4, '변태 A')
+$master_fetish[5] = dyneval($vb_cycle_skill, 5, '최악의 변태 S')
+! JO9 MOD END RNL046
+
+master_fetish_rate_cap[0] = 15
+master_fetish_rate_cap[1] = 30
+master_fetish_rate_cap[2] = 60
+master_fetish_rate_cap[3] = 120
+master_fetish_rate_cap[4] = 240
+
+$house_mess_chart = '<center>집 상태<br>'
+$house_mess[5] = dyneval($vb_cycle_skill, 0, '누추함')      & $house_mess_chart += $house_mess[5]+'<br>'
+$house_mess[4] = dyneval($vb_cycle_skill, 1, '지저분함')    & $house_mess_chart += $house_mess[4]+'<br>'
+$house_mess[3] = dyneval($vb_cycle_skill, 2, '어질러짐')    & $house_mess_chart += $house_mess[3]+'<br>'
+$house_mess[2] = dyneval($vb_cycle_skill, 3, '단정함')      & $house_mess_chart += $house_mess[2]+'<br>'
+$house_mess[1] = dyneval($vb_cycle_skill, 4, '깔끔함')      & $house_mess_chart += $house_mess[1]+'<br>'
+$house_mess[0] = dyneval($vb_cycle_skill, 5, '완벽함') & $house_mess_chart += $house_mess[0]+'</center>'
+
+house_mess_rate_cap[0] = 10
+house_mess_rate_cap[1] = 20
+house_mess_rate_cap[2] = 40
+house_mess_rate_cap[3] = 60
+house_mess_rate_cap[4] = 80
+
+$vaginal_modification[0] = '자연적인 음부'
+$vaginal_modification[1] = '개선된 질 조임'
+$vaginal_modification[2] = '애액분비 추가'
+$vaginal_modification[3] = '넓적한 대음순'
+$vaginal_modification[4] = '산란 능력'
+
+$slave_brand[0] = '상표 없음'
+$slave_brand[1] = '인장 상표'
+$slave_brand[2] = '문신 상표'
+$slave_brand[3] = '마법 상표'
+$slave_brand[4] = '조합 상표'
+$slave_brand[5] = $_font_col_rep[1] + 'Чужое клеймо' + $_font_closer
+
+!for formulas
+! JO9 MOD START TBV_BEAUTY_FORMULA_LABEL | 2026-10-17_trait_value
+dynamic $vb_full_cycle, '$красота', 6, '생김새'
+$красота[6] = dyneval($vb_cycle_skill, 5, '생김새 S++')
+! JO9 MOD END TBV_BEAUTY_FORMULA_LABEL
+dynamic $vb_full_cycle, '$природная_красота', 6, '자연미'
+$пластика[0] = dyneval($vb_cycle,      11, '성형수술')
+$пластика[1] = dyneval($vb_cycle_rank, 10, '성형수술')
+
+$шрамы[0] = dyneval($vb_cycle,      11, '흉터 없음')
+$шрамы[1] = dyneval($vb_cycle_rank, 4,  '흉터')
+$шрамы[2] = dyneval($vb_cycle_rank, 3,  '흉터')
+$шрамы[3] = dyneval($vb_cycle_rank, 2,  '흉터')
+$шрамы[4] = dyneval($vb_cycle_rank, 1,  '흉터')
+$шрамы[5] = dyneval($vb_cycle_rank, 0,  '흉터')
+
+$синяки[0] = dyneval($vb_cycle,      11, '멍 없음')
+$синяки[1] = dyneval($vb_cycle_rank, 4,  '멍')
+$синяки[2] = dyneval($vb_cycle_rank, 3,  '멍')
+$синяки[3] = dyneval($vb_cycle_rank, 2,  '멍')
+$синяки[4] = dyneval($vb_cycle_rank, 1,  '멍')
+$синяки[5] = dyneval($vb_cycle_rank, 0,  '멍')
+
+$charm_physique[0] = dyneval($vb_cycle_skill, 0,  '체형')
+$charm_physique[1] = dyneval($vb_cycle_skill, 5,  '체형')
+$charm_physique[2] = dyneval($vb_cycle,       11, '체형')
+$charm_physique[3] = dyneval($vb_cycle_skill, 0,  '체형')
+$charm_physique[4] = dyneval($vb_cycle_skill, 0,  '체형')
+$charm_physique[5] = dyneval($vb_cycle_skill, 0,  '체형')
+
+$beauty_physique[0] = dyneval($vb_cycle_skill, 0,  '체격')
+$beauty_physique[1] = dyneval($vb_cycle,      11,  '체격')
+$beauty_physique[2] = dyneval($vb_cycle,      11,  '체격')
+$beauty_physique[3] = dyneval($vb_cycle,      11,  '체격')
+$beauty_physique[4] = dyneval($vb_cycle_skill, 0,  '체격')
+$beauty_physique[5] = dyneval($vb_cycle_skill, 0,  '체격')
+
+dynamic $vb_full_cycle, '$экзотика', 6, '이국성'
+dynamic $vb_full_cycle, '$природная_экзотика', 6, '타고난 이국성'
+dynamic $vb_full_cycle, '$пирсинг', 6, '피어싱'
+$пирсинг[0] = dyneval($vb_cycle, 11, '피어싱 없음')
+dynamic $vb_full_cycle, '$wear_ex', 6, '의상'
+dynamic $vb_full_cycle, '$wear_st', 6, '의상'
+
+dynamic $vb_full_cycle, '$стиль', 6, '세련됨'
+$грация[0] = dyneval($vb_cycle,      11,  '타고난 우아함')
+$грация[1] = dyneval($vb_cycle_rank, 7,   '타고난 우아함')
+$грация[2] = dyneval($vb_cycle_rank, 0,   '볼품없음')
+
+$гигиена[0] = dyneval($vb_cycle_skill, 5, '위생')
+$гигиена[1] = dyneval($vb_cycle_skill, 4, '위생')
+$гигиена[2] = dyneval($vb_cycle_skill, 3, '위생')
+$гигиена[3] = dyneval($vb_cycle_skill, 2, '위생')
+$гигиена[4] = dyneval($vb_cycle_skill, 1, '위생')
+$гигиена[5] = dyneval($vb_cycle_skill, 0, '위생')
+
+!perfume, manicure, epilation
+$мейкап[0] = dyneval($vb_cycle_skill, 0, '향기, 손톱과 털')
+$мейкап[1] = dyneval($vb_cycle_skill, 1, '향기, 손톱과 털')
+$мейкап[2] = dyneval($vb_cycle_skill, 3, '향기, 손톱과 털')
+$мейкап[3] = dyneval($vb_cycle_skill, 5, '향기, 손톱과 털')
+
+dynamic $vb_full_cycle, '$charm_aura', 6, '아우라'
+
+$charm_aura[0]  = dyneval($vb_cycle_rank, 0,  '아우라')
+$charm_aura[1]  = dyneval($vb_cycle_rank, 1,  '아우라')
+$charm_aura[2]  = dyneval($vb_cycle_rank, 2,  '아우라')
+$charm_aura[3]  = dyneval($vb_cycle_rank, 3,  '아우라')
+$charm_aura[4]  = dyneval($vb_cycle_rank, 4,  '아우라')
+$charm_aura[5]  = dyneval($vb_cycle,      11, '아우라')
+$charm_aura[6]  = dyneval($vb_cycle_rank, 6,  '아우라')
+$charm_aura[7]  = dyneval($vb_cycle_rank, 7,  '아우라')
+$charm_aura[8]  = dyneval($vb_cycle_rank, 8,  '아우라')
+$charm_aura[9]  = dyneval($vb_cycle_rank, 9,  '아우라')
+$charm_aura[10] = dyneval($vb_cycle_rank, 10, '아우라')
+
+$charm_moral[0] = dyneval($vb_cycle,      11, '반항적')
+$charm_moral[1] = dyneval($vb_cycle_rank,  6, '불안함')
+$charm_moral[2] = dyneval($vb_cycle_rank,  7, '순종적')
+$charm_moral[3] = dyneval($vb_cycle_rank,  8, '충성')
+$charm_moral[4] = dyneval($vb_cycle_rank,  9, '헌신')
+$charm_moral[5] = dyneval($vb_cycle_rank, 10, '열성')
+
+$charm_angst[0] = dyneval($vb_cycle,      11, '괜찮음')
+$charm_angst[1] = dyneval($vb_cycle_rank,  4, '불안함')
+$charm_angst[2] = dyneval($vb_cycle_rank,  3, '낙담함')
+$charm_angst[3] = dyneval($vb_cycle_rank,  2, '슬픔')
+$charm_angst[4] = dyneval($vb_cycle_rank,  1, '절망적')
+$charm_angst[5] = dyneval($vb_cycle_rank,  0, '희망없음')
+
+$charm_spoil[0] = dyneval($vb_cycle,      11, '응석 없음')
+$charm_spoil[1] = dyneval($vb_cycle_rank,  4, '고집부림')
+$charm_spoil[2] = dyneval($vb_cycle_rank,  3, '제멋대로')
+$charm_spoil[3] = dyneval($vb_cycle_rank,  2, '불만스러움')
+$charm_spoil[4] = dyneval($vb_cycle_rank,  1, '버릇없음')
+$charm_spoil[5] = dyneval($vb_cycle_rank,  0, '응석쟁이')
+
+!end of section for formulas
+
+dynamic $vb_full_cycle, '$_lesson', 6, '훈련'
+
+! JO9 MOD START RNL045 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$gym_lesson[0] = dyneval($vb_cycle_skill, 0, '죽어감 F')
+$gym_lesson[1] = dyneval($vb_cycle_skill, 1, '쇠약함 D')
+$gym_lesson[2] = dyneval($vb_cycle_skill, 2, '평범함 C')
+$gym_lesson[3] = dyneval($vb_cycle_skill, 3, '건강함 B')
+$gym_lesson[4] = dyneval($vb_cycle_skill, 4, '강인함 A')
+$gym_lesson[5] = dyneval($vb_cycle_skill, 5, '근육질 S')
+! JO9 MOD END RNL045
+
+! JO9 MOD START RNL044 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_kiss[0] = dyneval($vb_cycle_skill, 0, '키스 F')
+$slave_sub_kiss[1] = dyneval($vb_cycle_skill, 1, '키스 D')
+$slave_sub_kiss[2] = dyneval($vb_cycle_skill, 2, '키스 C')
+$slave_sub_kiss[3] = dyneval($vb_cycle_skill, 3, '키스 B')
+$slave_sub_kiss[4] = dyneval($vb_cycle_skill, 4, '키스 A')
+$slave_sub_kiss[5] = dyneval($vb_cycle_skill, 5, '키스 S')
+! JO9 MOD END RNL044
+
+! JO9 MOD START RNL043 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_tongue[0] = dyneval($vb_cycle_skill, 0, '핥기 F')
+$slave_sub_tongue[1] = dyneval($vb_cycle_skill, 1, '핥기 D')
+$slave_sub_tongue[2] = dyneval($vb_cycle_skill, 2, '핥기 C')
+$slave_sub_tongue[3] = dyneval($vb_cycle_skill, 3, '핥기 B')
+$slave_sub_tongue[4] = dyneval($vb_cycle_skill, 4, '핥기 A')
+$slave_sub_tongue[5] = dyneval($vb_cycle_skill, 5, '핥기 S')
+! JO9 MOD END RNL043
+
+! JO9 MOD START RNL042 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_bj[0] = dyneval($vb_cycle_skill, 0, '펠라 F')
+$slave_sub_bj[1] = dyneval($vb_cycle_skill, 1, '펠라 D')
+$slave_sub_bj[2] = dyneval($vb_cycle_skill, 2, '펠라 C')
+$slave_sub_bj[3] = dyneval($vb_cycle_skill, 3, '펠라 B')
+$slave_sub_bj[4] = dyneval($vb_cycle_skill, 4, '펠라 A')
+$slave_sub_bj[5] = dyneval($vb_cycle_skill, 5, '펠라 S')
+! JO9 MOD END RNL042
+
+! JO9 MOD START RNL041 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_dt[0] = dyneval($vb_cycle_skill, 0, '딥스로트 F')
+$slave_sub_dt[1] = dyneval($vb_cycle_skill, 1, '딥스로트 D')
+$slave_sub_dt[2] = dyneval($vb_cycle_skill, 2, '딥스로트 C')
+$slave_sub_dt[3] = dyneval($vb_cycle_skill, 3, '딥스로트 B')
+$slave_sub_dt[4] = dyneval($vb_cycle_skill, 4, '딥스로트 A')
+$slave_sub_dt[5] = dyneval($vb_cycle_skill, 5, '딥스로트 S')
+! JO9 MOD END RNL041
+
+! JO9 MOD START RNL040 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_asslik[0] = dyneval($vb_cycle_skill, 0, '림잡 F')
+$slave_sub_asslik[1] = dyneval($vb_cycle_skill, 1, '림잡 D')
+$slave_sub_asslik[2] = dyneval($vb_cycle_skill, 2, '림잡 C')
+$slave_sub_asslik[3] = dyneval($vb_cycle_skill, 3, '림잡 B')
+$slave_sub_asslik[4] = dyneval($vb_cycle_skill, 4, '림잡 A')
+$slave_sub_asslik[5] = dyneval($vb_cycle_skill, 5, '림잡 S')
+! JO9 MOD END RNL040
+
+
+! JO9 MOD START RNL039 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_hj[0] = dyneval($vb_cycle_skill, 0, '핸드잡 F')
+$slave_sub_hj[1] = dyneval($vb_cycle_skill, 1, '핸드잡 D')
+$slave_sub_hj[2] = dyneval($vb_cycle_skill, 2, '핸드잡 C')
+$slave_sub_hj[3] = dyneval($vb_cycle_skill, 3, '핸드잡 B')
+$slave_sub_hj[4] = dyneval($vb_cycle_skill, 4, '핸드잡 A')
+$slave_sub_hj[5] = dyneval($vb_cycle_skill, 5, '핸드잡 S')
+! JO9 MOD END RNL039
+
+! JO9 MOD START RNL038 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_fj[0] = dyneval($vb_cycle_skill, 0, '풋잡 F')
+$slave_sub_fj[1] = dyneval($vb_cycle_skill, 1, '풋잡 D')
+$slave_sub_fj[2] = dyneval($vb_cycle_skill, 2, '풋잡 C')
+$slave_sub_fj[3] = dyneval($vb_cycle_skill, 3, '풋잡 B')
+$slave_sub_fj[4] = dyneval($vb_cycle_skill, 4, '풋잡 A')
+$slave_sub_fj[5] = dyneval($vb_cycle_skill, 5, '풋잡 S')
+! JO9 MOD END RNL038
+
+! JO9 MOD START RNL037 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_hug[0] = dyneval($vb_cycle_skill, 0, '문지르기 F')
+$slave_sub_hug[1] = dyneval($vb_cycle_skill, 1, '문지르기 D')
+$slave_sub_hug[2] = dyneval($vb_cycle_skill, 2, '문지르기 C')
+$slave_sub_hug[3] = dyneval($vb_cycle_skill, 3, '문지르기 B')
+$slave_sub_hug[4] = dyneval($vb_cycle_skill, 4, '문지르기 A')
+$slave_sub_hug[5] = dyneval($vb_cycle_skill, 5, '문지르기 S')
+! JO9 MOD END RNL037
+
+! JO9 MOD START RNL036 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_paizuri[0] = dyneval($vb_cycle_skill, 0, '파이즈리 F')
+$slave_sub_paizuri[1] = dyneval($vb_cycle_skill, 1, '파이즈리 D')
+$slave_sub_paizuri[2] = dyneval($vb_cycle_skill, 2, '파이즈리 C')
+$slave_sub_paizuri[3] = dyneval($vb_cycle_skill, 3, '파이즈리 B')
+$slave_sub_paizuri[4] = dyneval($vb_cycle_skill, 4, '파이즈리 A')
+$slave_sub_paizuri[5] = dyneval($vb_cycle_skill, 5, '파이즈리 S')
+! JO9 MOD END RNL036
+
+
+! JO9 MOD START RNL035 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_vaginal[0] = dyneval($vb_cycle_skill, 0, '질 섹스 F')
+$slave_sub_vaginal[1] = dyneval($vb_cycle_skill, 1, '질 섹스 D')
+$slave_sub_vaginal[2] = dyneval($vb_cycle_skill, 2, '질 섹스 C')
+$slave_sub_vaginal[3] = dyneval($vb_cycle_skill, 3, '질 섹스 B')
+$slave_sub_vaginal[4] = dyneval($vb_cycle_skill, 4, '질 섹스 A')
+$slave_sub_vaginal[5] = dyneval($vb_cycle_skill, 5, '질 섹스 S')
+! JO9 MOD END RNL035
+
+! JO9 MOD START RNL034 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_anal[0] = dyneval($vb_cycle_skill, 0, '애널 섹스 F')
+$slave_sub_anal[1] = dyneval($vb_cycle_skill, 1, '애널 섹스 D')
+$slave_sub_anal[2] = dyneval($vb_cycle_skill, 2, '애널 섹스 C')
+$slave_sub_anal[3] = dyneval($vb_cycle_skill, 3, '애널 섹스 B')
+$slave_sub_anal[4] = dyneval($vb_cycle_skill, 4, '애널 섹스 A')
+$slave_sub_anal[5] = dyneval($vb_cycle_skill, 5, '애널 섹스 S')
+! JO9 MOD END RNL034
+
+! JO9 MOD START RNL033 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_fisting[0] = dyneval($vb_cycle_skill, 0, '피스팅 F')
+$slave_sub_fisting[1] = dyneval($vb_cycle_skill, 1, '피스팅 D')
+$slave_sub_fisting[2] = dyneval($vb_cycle_skill, 2, '피스팅 C')
+$slave_sub_fisting[3] = dyneval($vb_cycle_skill, 3, '피스팅 B')
+$slave_sub_fisting[4] = dyneval($vb_cycle_skill, 4, '피스팅 A')
+$slave_sub_fisting[5] = dyneval($vb_cycle_skill, 5, '피스팅 S')
+! JO9 MOD END RNL033
+
+! JO9 MOD START RNL032 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_anal_stretch[0] = dyneval($vb_cycle_skill, 0, '애널 피스팅 F')
+$slave_anal_stretch[1] = dyneval($vb_cycle_skill, 1, '애널 피스팅 D')
+$slave_anal_stretch[2] = dyneval($vb_cycle_skill, 2, '애널 피스팅 C')
+$slave_anal_stretch[3] = dyneval($vb_cycle_skill, 3, '애널 피스팅 B')
+$slave_anal_stretch[4] = dyneval($vb_cycle_skill, 4, '애널 피스팅 A')
+$slave_anal_stretch[5] = dyneval($vb_cycle_skill, 5, '애널 피스팅 S')
+! JO9 MOD END RNL032
+
+
+! JO9 MOD START RNL031 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_seduce[0] = dyneval($vb_cycle_skill, 0, '유혹 F')
+$slave_sub_seduce[1] = dyneval($vb_cycle_skill, 1, '유혹 D')
+$slave_sub_seduce[2] = dyneval($vb_cycle_skill, 2, '유혹 C')
+$slave_sub_seduce[3] = dyneval($vb_cycle_skill, 3, '유혹 B')
+$slave_sub_seduce[4] = dyneval($vb_cycle_skill, 4, '유혹 A')
+$slave_sub_seduce[5] = dyneval($vb_cycle_skill, 5, '유혹 S')
+! JO9 MOD END RNL031
+
+! JO9 MOD START RNL030 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_masturbation[0] = dyneval($vb_cycle_skill, 0, '자위 F')
+$slave_sub_masturbation[1] = dyneval($vb_cycle_skill, 1, '자위 D')
+$slave_sub_masturbation[2] = dyneval($vb_cycle_skill, 2, '자위 C')
+$slave_sub_masturbation[3] = dyneval($vb_cycle_skill, 3, '자위 B')
+$slave_sub_masturbation[4] = dyneval($vb_cycle_skill, 4, '자위 A')
+$slave_sub_masturbation[5] = dyneval($vb_cycle_skill, 5, '자위 S')
+! JO9 MOD END RNL030
+
+! JO9 MOD START RNL029 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_dildo[0] = dyneval($vb_cycle_skill, 0, '딜도 F')
+$slave_sub_dildo[1] = dyneval($vb_cycle_skill, 1, '딜도 D')
+$slave_sub_dildo[2] = dyneval($vb_cycle_skill, 2, '딜도 C')
+$slave_sub_dildo[3] = dyneval($vb_cycle_skill, 3, '딜도 B')
+$slave_sub_dildo[4] = dyneval($vb_cycle_skill, 4, '딜도 A')
+$slave_sub_dildo[5] = dyneval($vb_cycle_skill, 5, '딜도 S')
+! JO9 MOD END RNL029
+
+! JO9 MOD START RNL028 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_exhibit[0] = dyneval($vb_cycle_skill, 0, '노출증 F')
+$slave_sub_exhibit[1] = dyneval($vb_cycle_skill, 1, '노출증 D')
+$slave_sub_exhibit[2] = dyneval($vb_cycle_skill, 2, '노출증 C')
+$slave_sub_exhibit[3] = dyneval($vb_cycle_skill, 3, '노출증 B')
+$slave_sub_exhibit[4] = dyneval($vb_cycle_skill, 4, '노출증 A')
+$slave_sub_exhibit[5] = dyneval($vb_cycle_skill, 5, '노출증 S')
+! JO9 MOD END RNL028
+
+! JO9 MOD START RNL027 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_humiliation[0] = dyneval($vb_cycle_skill, 0, '굴욕 F')
+$slave_sub_humiliation[1] = dyneval($vb_cycle_skill, 1, '굴욕 D')
+$slave_sub_humiliation[2] = dyneval($vb_cycle_skill, 2, '굴욕 C')
+$slave_sub_humiliation[3] = dyneval($vb_cycle_skill, 3, '굴욕 B')
+$slave_sub_humiliation[4] = dyneval($vb_cycle_skill, 4, '굴욕 A')
+$slave_sub_humiliation[5] = dyneval($vb_cycle_skill, 5, '굴욕 S')
+! JO9 MOD END RNL027
+
+
+! JO9 MOD START RNL026 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_enema[0] = dyneval($vb_cycle_skill, 0, '관장 F')
+$slave_sub_enema[1] = dyneval($vb_cycle_skill, 1, '관장 D')
+$slave_sub_enema[2] = dyneval($vb_cycle_skill, 2, '관장 C')
+$slave_sub_enema[3] = dyneval($vb_cycle_skill, 3, '관장 B')
+$slave_sub_enema[4] = dyneval($vb_cycle_skill, 4, '관장 A')
+$slave_sub_enema[5] = dyneval($vb_cycle_skill, 5, '관장 S')
+! JO9 MOD END RNL026
+
+! JO9 MOD START RNL025 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_mazo[0] = dyneval($vb_cycle_skill, 0, '마조히즘 F')
+$slave_sub_mazo[1] = dyneval($vb_cycle_skill, 1, '마조히즘 D')
+$slave_sub_mazo[2] = dyneval($vb_cycle_skill, 2, '마조히즘 C')
+$slave_sub_mazo[3] = dyneval($vb_cycle_skill, 3, '마조히즘 B')
+$slave_sub_mazo[4] = dyneval($vb_cycle_skill, 4, '마조히즘 A')
+$slave_sub_mazo[5] = dyneval($vb_cycle_skill, 5, '마조히즘 S')
+! JO9 MOD END RNL025
+
+! JO9 MOD START RNL024 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_selfpain[0] = dyneval($vb_cycle_skill, 0, '자학 F')
+$slave_sub_selfpain[1] = dyneval($vb_cycle_skill, 1, '자학 D')
+$slave_sub_selfpain[2] = dyneval($vb_cycle_skill, 2, '자학 C')
+$slave_sub_selfpain[3] = dyneval($vb_cycle_skill, 3, '자학 B')
+$slave_sub_selfpain[4] = dyneval($vb_cycle_skill, 4, '자학 A')
+$slave_sub_selfpain[5] = dyneval($vb_cycle_skill, 5, '자학 S')
+! JO9 MOD END RNL024
+
+! JO9 MOD START RNL023 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_piss[0] = dyneval($vb_cycle_skill, 0, '골든 샤워 F')
+$slave_sub_piss[1] = dyneval($vb_cycle_skill, 1, '골든 샤워 D')
+$slave_sub_piss[2] = dyneval($vb_cycle_skill, 2, '골든 샤워 C')
+$slave_sub_piss[3] = dyneval($vb_cycle_skill, 3, '골든 샤워 B')
+$slave_sub_piss[4] = dyneval($vb_cycle_skill, 4, '골든 샤워 A')
+$slave_sub_piss[5] = dyneval($vb_cycle_skill, 5, '골든 샤워 S')
+! JO9 MOD END RNL023
+
+! JO9 MOD START RNL022 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_kopro[0] = dyneval($vb_cycle_skill, 0, '스카톨로지 F')
+$slave_sub_kopro[1] = dyneval($vb_cycle_skill, 1, '스카톨로지 D')
+$slave_sub_kopro[2] = dyneval($vb_cycle_skill, 2, '스카톨로지 C')
+$slave_sub_kopro[3] = dyneval($vb_cycle_skill, 3, '스카톨로지 B')
+$slave_sub_kopro[4] = dyneval($vb_cycle_skill, 4, '스카톨로지 A')
+$slave_sub_kopro[5] = dyneval($vb_cycle_skill, 5, '스카톨로지 S')
+! JO9 MOD END RNL022
+
+
+! JO9 MOD START RNL021 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_threesome[0] = dyneval($vb_cycle_skill, 0, '쓰리섬 F')
+$slave_sub_threesome[1] = dyneval($vb_cycle_skill, 1, '쓰리섬 D')
+$slave_sub_threesome[2] = dyneval($vb_cycle_skill, 2, '쓰리섬 C')
+$slave_sub_threesome[3] = dyneval($vb_cycle_skill, 3, '쓰리섬 B')
+$slave_sub_threesome[4] = dyneval($vb_cycle_skill, 4, '쓰리섬 A')
+$slave_sub_threesome[5] = dyneval($vb_cycle_skill, 5, '쓰리섬 S')
+! JO9 MOD END RNL021
+
+! JO9 MOD START RNL020 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_dp[0] = dyneval($vb_cycle_skill, 0, '양구멍 삽입 F')
+$slave_sub_dp[1] = dyneval($vb_cycle_skill, 1, '양구멍 삽입 D')
+$slave_sub_dp[2] = dyneval($vb_cycle_skill, 2, '양구멍 삽입 C')
+$slave_sub_dp[3] = dyneval($vb_cycle_skill, 3, '양구멍 삽입 B')
+$slave_sub_dp[4] = dyneval($vb_cycle_skill, 4, '양구멍 삽입 A')
+$slave_sub_dp[5] = dyneval($vb_cycle_skill, 5, '양구멍 삽입 S')
+! JO9 MOD END RNL020
+
+! JO9 MOD START RNL019 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_tp[0] = dyneval($vb_cycle_skill, 0, '세구멍 삽입 F')
+$slave_sub_tp[1] = dyneval($vb_cycle_skill, 1, '세구멍 삽입 D')
+$slave_sub_tp[2] = dyneval($vb_cycle_skill, 2, '세구멍 삽입 C')
+$slave_sub_tp[3] = dyneval($vb_cycle_skill, 3, '세구멍 삽입 B')
+$slave_sub_tp[4] = dyneval($vb_cycle_skill, 4, '세구멍 삽입 A')
+$slave_sub_tp[5] = dyneval($vb_cycle_skill, 5, '세구멍 삽입 S')
+! JO9 MOD END RNL019
+
+! JO9 MOD START RNL018 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_gangbang[0] = dyneval($vb_cycle_skill, 0, '난교 F')
+$slave_sub_gangbang[1] = dyneval($vb_cycle_skill, 1, '난교 D')
+$slave_sub_gangbang[2] = dyneval($vb_cycle_skill, 2, '난교 C')
+$slave_sub_gangbang[3] = dyneval($vb_cycle_skill, 3, '난교 B')
+$slave_sub_gangbang[4] = dyneval($vb_cycle_skill, 4, '난교 A')
+$slave_sub_gangbang[5] = dyneval($vb_cycle_skill, 5, '난교 S')
+! JO9 MOD END RNL018
+
+! JO9 MOD START RNL017 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_bukkake[0] = dyneval($vb_cycle_skill, 0, '부카케 F')
+$slave_sub_bukkake[1] = dyneval($vb_cycle_skill, 1, '부카케 D')
+$slave_sub_bukkake[2] = dyneval($vb_cycle_skill, 2, '부카케 C')
+$slave_sub_bukkake[3] = dyneval($vb_cycle_skill, 3, '부카케 B')
+$slave_sub_bukkake[4] = dyneval($vb_cycle_skill, 4, '부카케 A')
+$slave_sub_bukkake[5] = dyneval($vb_cycle_skill, 5, '부카케 S')
+! JO9 MOD END RNL017
+
+
+! JO9 MOD START RNL016 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_zoosex[0] = dyneval($vb_cycle_skill, 0, '개 교미 F')
+$slave_sub_zoosex[1] = dyneval($vb_cycle_skill, 1, '개 교미 D')
+$slave_sub_zoosex[2] = dyneval($vb_cycle_skill, 2, '개 교미 C')
+$slave_sub_zoosex[3] = dyneval($vb_cycle_skill, 3, '개 교미 B')
+$slave_sub_zoosex[4] = dyneval($vb_cycle_skill, 4, '개 교미 A')
+$slave_sub_zoosex[5] = dyneval($vb_cycle_skill, 5, '개 교미 S')
+! JO9 MOD END RNL016
+
+! JO9 MOD START RNL015 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_svinesex[0] = dyneval($vb_cycle_skill, 0, '돼지 교미 F')
+$slave_svinesex[1] = dyneval($vb_cycle_skill, 1, '돼지 교미 D')
+$slave_svinesex[2] = dyneval($vb_cycle_skill, 2, '돼지 교미 C')
+$slave_svinesex[3] = dyneval($vb_cycle_skill, 3, '돼지 교미 B')
+$slave_svinesex[4] = dyneval($vb_cycle_skill, 4, '돼지 교미 A')
+$slave_svinesex[5] = dyneval($vb_cycle_skill, 5, '돼지 교미 S')
+! JO9 MOD END RNL015
+
+! JO9 MOD START RNL014 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_horsesex[0] = dyneval($vb_cycle_skill, 0, '말 교미 F')
+$slave_horsesex[1] = dyneval($vb_cycle_skill, 1, '말 교미 D')
+$slave_horsesex[2] = dyneval($vb_cycle_skill, 2, '말 교미 C')
+$slave_horsesex[3] = dyneval($vb_cycle_skill, 3, '말 교미 B')
+$slave_horsesex[4] = dyneval($vb_cycle_skill, 4, '말 교미 A')
+$slave_horsesex[5] = dyneval($vb_cycle_skill, 5, '말 교미 S')
+! JO9 MOD END RNL014
+
+! JO9 MOD START RNL013 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_tentacle[0] = dyneval($vb_cycle_skill, 0, '안개 괴물 착정 F')
+$slave_tentacle[1] = dyneval($vb_cycle_skill, 1, '안개 괴물 착정 D')
+$slave_tentacle[2] = dyneval($vb_cycle_skill, 2, '안개 괴물 착정 C')
+$slave_tentacle[3] = dyneval($vb_cycle_skill, 3, '안개 괴물 착정 B')
+$slave_tentacle[4] = dyneval($vb_cycle_skill, 4, '안개 괴물 착정 A')
+$slave_tentacle[5] = dyneval($vb_cycle_skill, 5, '안개 괴물 착정 S')
+! JO9 MOD END RNL013
+
+! JO9 MOD START RNL012 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_arachnidSpider[0] = dyneval($vb_cycle_skill, 0, '거미 교미 F')
+$slave_arachnidSpider[1] = dyneval($vb_cycle_skill, 1, '거미 교미 D')
+$slave_arachnidSpider[2] = dyneval($vb_cycle_skill, 2, '거미 교미 C')
+$slave_arachnidSpider[3] = dyneval($vb_cycle_skill, 3, '거미 교미 B')
+$slave_arachnidSpider[4] = dyneval($vb_cycle_skill, 4, '거미 교미 A')
+$slave_arachnidSpider[5] = dyneval($vb_cycle_skill, 5, '거미 교미 S')
+! JO9 MOD END RNL012
+
+! JO9 MOD START RNL011 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_polypusvermin[0] = dyneval($vb_cycle_skill, 0, '바다 촉수 교미 F')
+$slave_polypusvermin[1] = dyneval($vb_cycle_skill, 1, '바다 촉수 교미 D')
+$slave_polypusvermin[2] = dyneval($vb_cycle_skill, 2, '바다 촉수 교미 C')
+$slave_polypusvermin[3] = dyneval($vb_cycle_skill, 3, '바다 촉수 교미 B')
+$slave_polypusvermin[4] = dyneval($vb_cycle_skill, 4, '바다 촉수 교미 A')
+$slave_polypusvermin[5] = dyneval($vb_cycle_skill, 5, '바다 촉수 교미 S')
+! JO9 MOD END RNL011
+
+! JO9 MOD START RNL010 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_polypusvermin_full[0] = dyneval($vb_cycle_skill, 0, '바다 촉수 교미 F')
+$slave_polypusvermin_full[1] = dyneval($vb_cycle_skill, 1, '바다 촉수 교미 D')
+$slave_polypusvermin_full[2] = dyneval($vb_cycle_skill, 2, '바다 촉수 교미 C')
+$slave_polypusvermin_full[3] = dyneval($vb_cycle_skill, 3, '바다 촉수 교미 B')
+$slave_polypusvermin_full[4] = dyneval($vb_cycle_skill, 4, '바다 촉수 교미 A')
+$slave_polypusvermin_full[5] = dyneval($vb_cycle_skill, 5, '바다 촉수 교미 S')
+! JO9 MOD END RNL010
+
+! JO9 MOD START RNL009 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_lesbiansex1[0] = dyneval($vb_cycle_skill, 0, '레즈 F')
+$slave_sub_lesbiansex1[1] = dyneval($vb_cycle_skill, 1, '레즈 D')
+$slave_sub_lesbiansex1[2] = dyneval($vb_cycle_skill, 2, '레즈 C')
+$slave_sub_lesbiansex1[3] = dyneval($vb_cycle_skill, 3, '레즈 B')
+$slave_sub_lesbiansex1[4] = dyneval($vb_cycle_skill, 4, '레즈 A')
+$slave_sub_lesbiansex1[5] = dyneval($vb_cycle_skill, 5, '레즈 S')
+! JO9 MOD END RNL009
+
+! JO9 MOD START RNL008 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_lesbiansex2[0] = dyneval($vb_cycle_skill, 0, '커닐링구스 F')
+$slave_sub_lesbiansex2[1] = dyneval($vb_cycle_skill, 1, '커닐링구스 D')
+$slave_sub_lesbiansex2[2] = dyneval($vb_cycle_skill, 2, '커닐링구스 C')
+$slave_sub_lesbiansex2[3] = dyneval($vb_cycle_skill, 3, '커닐링구스 B')
+$slave_sub_lesbiansex2[4] = dyneval($vb_cycle_skill, 4, '커닐링구스 A')
+$slave_sub_lesbiansex2[5] = dyneval($vb_cycle_skill, 5, '커닐링구스 S')
+! JO9 MOD END RNL008
+!IF leshasmlesha_cheats = 1:
+!$slave_sub_lesbiansex2[0] = dyneval($vb_cycle_skill, 0, 'Cunnilingus F-')
+!$slave_sub_lesbiansex2[1] = dyneval($vb_cycle_skill, 1, 'Cunnilingus D-')
+!$slave_sub_lesbiansex2[2] = dyneval($vb_cycle_skill, 2, 'Cunnilingus C-')
+!$slave_sub_lesbiansex2[3] = dyneval($vb_cycle_skill, 3, 'Cunnilingus B+')
+!$slave_sub_lesbiansex2[4] = dyneval($vb_cycle_skill, 4, 'Cunnilingus A+')
+!$slave_sub_lesbiansex2[5] = dyneval($vb_cycle_skill, 5, 'Cunnilingus S+')
+
+! JO9 MOD START RNL007 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_lesbiansex3[0] = dyneval($vb_cycle_skill, 0, '적극적 레즈 F')
+$slave_sub_lesbiansex3[1] = dyneval($vb_cycle_skill, 1, '적극적 레즈 D')
+$slave_sub_lesbiansex3[2] = dyneval($vb_cycle_skill, 2, '적극적 레즈 C')
+$slave_sub_lesbiansex3[3] = dyneval($vb_cycle_skill, 3, '적극적 레즈 B')
+$slave_sub_lesbiansex3[4] = dyneval($vb_cycle_skill, 4, '적극적 레즈 A')
+$slave_sub_lesbiansex3[5] = dyneval($vb_cycle_skill, 5, '적극적 레즈 S')
+! JO9 MOD END RNL007
+!IF leshasmlesha_cheats = 1:
+
+! JO9 MOD START RNL006 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$slave_sub_lesbiansex4[0] = dyneval($vb_cycle_skill, 0, '집단 레즈 F')
+$slave_sub_lesbiansex4[1] = dyneval($vb_cycle_skill, 1, '집단 레즈 D')
+$slave_sub_lesbiansex4[2] = dyneval($vb_cycle_skill, 2, '집단 레즈 C')
+$slave_sub_lesbiansex4[3] = dyneval($vb_cycle_skill, 3, '집단 레즈 B')
+$slave_sub_lesbiansex4[4] = dyneval($vb_cycle_skill, 4, '집단 레즈 A')
+$slave_sub_lesbiansex4[5] = dyneval($vb_cycle_skill, 5, '집단 레즈 S')
+! JO9 MOD END RNL006
+$fff[0] = ''
+$fff[1] = ''
+$fff[2] = ''
+$fff[3] = ''
+$fff[4] = ''
+$fff[5] = '' 
+
+!костыль для состояния волос, волософикс ~the_vm
+!неделя слишком дохуя, надо дорабатывать
+!для предпоследнего состояния: имеется в виду что от помятой прически останутся лишь простые расчесанные волосы, а далее растрепанные - рабыни слишком заняты, чтобы себя расчесывать. Вообще. Также к состоянию (1) отсылается парик, если прически нет, а парик есть. Вроде подходит.
+$hair_style[0] = dyneval($vb_cycle_skill, 0, '헝클어진 머리')
+$hair_style[1] = dyneval($vb_cycle_skill, 5, '빗은 머리')
+$hair_style[2] = dyneval($vb_cycle_skill, 5, '정돈된 머리')
+$hair_style[3] = dyneval($vb_cycle_skill, 5, '정돈된 머리')
+$hair_style[4] = dyneval($vb_cycle_skill, 5, '정돈된 머리')
+$hair_style[5] = dyneval($vb_cycle_skill, 5, '깔끔한 머리')
+$hair_style[6] = dyneval($vb_cycle_skill, 5, '깔끔한 머리')
+$hair_style[7] = dyneval($vb_cycle_skill, 5, '세련된 머리')
+
+$slave_makeup[0] = dyneval($vb_cycle_rank, 0, '화장 없음')
+$slave_makeup[1] = dyneval($vb_cycle_rank, 5, '세련된 화장')
+$slave_makeup[2] = dyneval($vb_cycle_rank, 7, '천연 미모')
+$slave_makeup[3] = dyneval($vb_cycle_rank, 7, '문신 화장')
+
+$ear_piercing[0] = '귀 뚫지 않음'
+$ear_piercing[1] = '귀 뚫음'
+
+$nipple_piercing[0] = '자연 유두'
+$nipple_piercing[1] = '유두 피어싱'
+
+$slave_tattoo[0] = dyneval($vb_cycle,      11, '문신 없음')
+$slave_tattoo[1] = dyneval($vb_cycle_rank, 6,  '작은 문신')
+$slave_tattoo[2] = dyneval($vb_cycle_rank, 7,  '문신 윤곽')
+$slave_tattoo[3] = dyneval($vb_cycle_rank, 8,  '색채 문신')
+$slave_tattoo[4] = dyneval($vb_cycle_rank, 9,  '문양진 몸')
+$slave_tattoo[5] = dyneval($vb_cycle_rank, 10, '전신 문신')
+
+$boobs_modification[0] = '자연적인 가슴'
+$boobs_modification[1] = '가슴 확대'
+$boobs_modification[2] = '젖 보지'
+$boobs_modification[3] = '유두 보지'
+
+$slave_age_name[0] = '젊음'
+$slave_age_name[1] = '아동'
+$slave_age_name[2] = '성숙'
+
+$assistant_age_name[0] = '젊음'
+$assistant_age_name[1] = '아동'
+$assistant_age_name[2] = '성숙'
+
+$virginity[0] = '처녀'
+$virginity[1] = '가짜 처녀'
+$virginity[2] = '뻑뻑한 보지'
+! JO9 MOD START J9M2452 | 2026-10-15_z_meiki_voluntary_outcome | changed block; context may be included
+$virginity[3] = '잘 젖는 보지'
+$virginity[4] = '최고의 보지'
+! JO9 MOD END J9M2452
+
+$clit_piercing[0] = '자연적인 음핵'
+$clit_piercing[1] = '음핵 뚫음'
+
+$slave_anal_description[0] = '꽉 다문 항문'
+$slave_anal_description[1] = '뻑뻑한 항문'
+$slave_anal_description[2] = '쫄깃한 항문'
+$slave_anal_description[3] = '유연한 항문'
+$slave_anal_description[4] = '늘어난 항문'
+$slave_anal_description[5] = '벌어진 항문'
+
+$slave_lactation[0] = '착유 불가'
+$slave_lactation[1] = dyneval($vb_cycle_skill, 1,  '미량 분비')
+$slave_lactation[2] = dyneval($vb_cycle_skill, 2,  '소량 분비')
+$slave_lactation[3] = dyneval($vb_cycle_skill, 3,  '중량 분비')
+$slave_lactation[4] = dyneval($vb_cycle_skill, 4,  '대량 분비')
+$slave_lactation[5] = dyneval($vb_cycle_skill, 5,  '초대량 분비')
+
+!$stars[10] = dyneval($vb_cycle, 0, '*****')
+!$stars[9] = dyneval($vb_cycle, 12, '*') + dyneval($vb_cycle, 0, '****')
+!$stars[8] = dyneval($vb_cycle, 12, '**') + dyneval($vb_cycle, 0, '***')
+!$stars[7] = dyneval($vb_cycle, 12, '***') + dyneval($vb_cycle, 0, '**')
+!$stars[6] = dyneval($vb_cycle, 12, '****') + dyneval($vb_cycle, 0, '*')
+!$stars[0] = '-'
+!$stars[1] = dyneval($vb_cycle, 10, '*') + dyneval($vb_cycle, 12, '****')
+!$stars[2] = dyneval($vb_cycle, 10, '**') + dyneval($vb_cycle, 12, '***')
+!$stars[3] = dyneval($vb_cycle, 10, '***') + dyneval($vb_cycle, 12, '**')
+!$stars[4] = dyneval($vb_cycle, 10, '****') + dyneval($vb_cycle, 12, '*')
+!$stars[5] = dyneval($vb_cycle, 10, '*****')
+
+$behavior_evaluation[10] = dyneval($vb_cycle_stat, 0,  '죄 [5]')
+$behavior_evaluation[9] = dyneval($vb_cycle_stat,  1,  '죄 [4]')
+$behavior_evaluation[8] = dyneval($vb_cycle_stat,  2,  '죄 [3]')
+$behavior_evaluation[7] = dyneval($vb_cycle_stat,  3,  '죄 [2]')
+$behavior_evaluation[6] = dyneval($vb_cycle_stat,  4,  '죄 [1]')
+$behavior_evaluation[0] = dyneval($vb_cycle,      11,  '공헌 -')
+$behavior_evaluation[1] = dyneval($vb_cycle_stat,  6,  '공 [1]')
+$behavior_evaluation[2] = dyneval($vb_cycle_stat,  7,  '공 [2]')
+$behavior_evaluation[3] = dyneval($vb_cycle_stat,  8,  '공 [3]')
+$behavior_evaluation[4] = dyneval($vb_cycle_stat,  9,  '공 [4]')
+$behavior_evaluation[5] = dyneval($vb_cycle_stat,  10, '공 [5]')
+
+$female_virginity[3] = $_font_col_rep[2] + 'Рожавшая' + $_font_closer
+$female_virginity[2] = $_font_col_rep[3] + 'Упругое влагалище' + $_font_closer
+$female_virginity[1] = $_font_col_rep[4] + 'Восстановленная плева' + $_font_closer
+$female_virginity[0] = $_font_col_rep[5] + 'Девственница' + $_font_closer
+$female_vaginal_modification[0] = 'Модификаций влагалища нет'
+$female_vaginal_modification[1] = 'Шариковые импланты влагалища'
+$female_vaginal_modification[2] = 'Лубрикационные железы+'
+$female_vaginal_modification[3] = 'Влагалищный язычок'
+$female_vaginal_modification[4] = 'Яйцерождение'
+if female_vaginal_modification = 4: female['egg_time'] = 1
+if female_virginity > 4 : female_virginity = 4
+if female_virginity < 0 : female_virginity = 0
+if female_vaginal_modification > 4: female_vaginal_modification = 4
+if female_vaginal_modification < 0: female_vaginal_modification = 0
+
+$female_boobs_modification[0] = '가슴 개조 없음'
+$female_boobs_modification[1] = '가슴 크기 개조'
+$female_boobs_modification[2] = '보지 가슴'
+$female_boobs_modification[3] = '입 유두'
+
+$female_age_name[0] = '젊은'
+$female_age_name[1] = '아동'
+$female_age_name[2] = '성숙한'
+
+$female_boobs[0] = ' 봉긋한 젖'
+$female_boobs[1] = ' 탄력적인 젖'
+$female_boobs[2] = ' 터질듯한 젖'
+$female_boobs[3] = ' 말랑말랑한 젖통'
+$female_boobs[4] = ' 물렁물렁한 젖통'
+$female_boobs[5] = ' 푹신한 젖통'
+
+$female_anal_description[0] = $_font_col_rep[0] + 'Зажатый анус' + $_font_closer
+$female_anal_description[1] = $_font_col_rep[1] + 'Тугой анус' + $_font_closer
+$female_anal_description[2] = $_font_col_rep[2] + 'Плотный анус' + $_font_closer
+$female_anal_description[3] = $_font_col_rep[3] + 'Разработанный анус' + $_font_closer
+$female_anal_description[4] = $_font_col_rep[4] + 'Эластичный анус' + $_font_closer
+$female_anal_description[5] = $_font_col_rep[5] + 'Пластичный анус' + $_font_closer
+$female_anal_description[6] = $_font_col_rep[6] + 'Гиганская дырень' + $_font_closer
+------------ #variative ------------

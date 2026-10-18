@@ -1,0 +1,143 @@
+# $guild_auction
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1538 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$guild_auction': gs 'snk_room_bridge', 'guard', '$guild_auction'
+! JO9 MOD END J9M1538
+!Auction of branded slaves
+!TODO: pre-seed random rolls at decade start
+gs '$slave_price', 'slave'
+auction_count = 10
+killvar '$auction_flow'
+u = 2
+
+!Determination of the bidders
+killvar '$auction_participant'
+killvar 'participant_interest'
+killvar 'random_demand'
+killvar 'cap_summ'
+n = arrsize('$auction_buyer')
+i = 0
+e = 0
+:auction_participation_loop
+	i += 1
+	if npc_participation_chance[$auction_buyer[i]] > 0:
+		e += 1
+		$auction_participant[e] = $auction_buyer[i]
+		!To make the NPCs not quite so static… maybe they are hard up this decade, or have been saving up
+		!This is an auction after all, anything goes.  Watch a few seasons of Storage Wars - Frobozz
+		a = ((day * e - i) mod 9) &! deterministic pseudo-random numbers instead of rand(0,8)
+		if a > 0 and a < 10: random_demand[e] = demand_rating[$auction_participant[e]] + (a - 4)
+		!0 is just no interest today, 10 is sky is the limit… dig into savings to get something great.
+		if random_demand[e] < 0 or a = 0: random_demand[e] = 0
+		if random_demand[e] > 8 or a = 8: random_demand[e] = 8
+	end
+if i < n-1: jump 'auction_participation_loop'
+
+n = arrsize ('$auction_participant')
+n -= 1
+i = 0
+:interest_loop
+	i += 1
+	if slave_specialisation[$interesting_specialisation[$auction_participant[i]]] >= 3:
+		a = ((day * n + i) mod 18) &! deterministic pseudo-random numbers instead of rand(0,17)
+		a += demand_rating[$auction_participant[i]]
+		participant_interest[$auction_participant[i]] = charm + slave['prestige'] - a
+		!If the product meets or exceeds the participants standards, much higher chance theyll want it and the only issue is that of money.
+		if demand_rating[$auction_participant[i]] <= min(rating, 2 * slave_specialisation[$interesting_specialisation[$auction_participant[i]]]):
+			rises = participant_interest[$auction_participant[i]]
+			!Lets make this scale like the routine below.  Levels above expectation should scale accordingly. - Frobozz
+			r = min(rating, 2 * slave_specialisation[$interesting_specialisation[$auction_participant[i]]]) - demand_rating[$auction_participant[i]]
+			rises += r
+			!Now, some high-rollers wont feel like spending a lot today, and likewise some smaller players may have a nest egg saved up for a good product.
+			b = auction_increment[random_demand[i]] * rises
+			cap_summ[$auction_participant[i]] = discount_price[rating] + b/2
+		end
+		!If the product is below the participants standards, the participant probably wont want it, but there is a possibility.
+		if demand_rating[$auction_participant[i]] > min(rating, 2 * slave_specialisation[$interesting_specialisation[$auction_participant[i]]]) and participant_interest[$auction_participant[i]] > 0:
+			rises = participant_interest[$auction_participant[i]]
+			r = demand_rating[$auction_participant[i]] - rating
+			if r = 1: rises += 8
+			if r = 2: rises += 4
+			if r = 3: rises += 2
+			if r > 3: rises += 1
+			b = auction_increment[rating] * rises
+			cap_summ[$auction_participant[i]] = auction_price[rating] + b/2
+		end
+	end
+if i < n: jump 'interest_loop'
+
+bank_size = max(15, auction_increment[rating]) &! minimum value of a slave is 15 sparks (same as what Farid pays for F- rating) - ImperatorAugustus
+$auction_flow[1] = '  중개인이 시작가로 <<bank_size>> 스파크를 제시한다. 아무도 더 높은 값을 부르지 않으면 <<$slave_name>>는 그 가격에 그에게 넘어간다.'
+$auc_winner = 'Middleman'
+y = 0
+i = 0
+a = 0
+u = 1
+x = 1
+:torg_loop
+	i += 1
+	if bank_size < cap_summ[$auction_participant[i]] and i ! y:
+		bet_multipler = 1 + ((day * u + i) mod 2) &! deterministic pseudo-random numbers instead of rand(1,3)
+		bet_size = auction_increment[rating] * bet_multipler
+		if demand_rating[$auction_participant[i]] > rating:
+			bet_size += auction_random[rating]
+		else
+			bet_size += auction_random[demand_rating[$auction_participant[i]]]
+		end
+		bet_size -= ((day * rating + u * x) mod i) * 5
+		if bet_size > 0:
+			bank_size += bet_size
+			$auction_flow[u] = '  <<$npc_name[$auction_participant[i]]>>가 <<bet_size>>를 더 부르며 가격을 <<bank_size>>까지 올린다.'
+			$auc_winner = $npc_name[$auction_participant[i]]
+			y = i
+			x = 1
+			u += 1
+			i = 0
+			jump 'torg_loop'
+		end
+	end
+	if i < n: jump 'torg_loop'
+
+! JO9 MOD START J9M1537 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+	$auction_hammer[1] = '[경매사]<br>&nbsp;<<bank_size>> 스파크, 하나!'
+	$auction_hammer[2] = '[경매사]<br>&nbsp;<<bank_size>> 스파크, 둘! 어쩌면 이게 마지막 가격일지도 모르겠군요?'
+	$auction_hammer[3] = '[경매사]<br>&nbsp;<<bank_size>> 스파크, 셋! 낙찰!!! 최종 가격: <<bank_size>>. 구매자: <<$auc_winner>>.'
+! JO9 MOD END J9M1537
+	$auction_flow[u] = $auction_hammer[x]
+	i = 0
+	u += 1
+
+if x < 3:
+	x += 1
+	jump 'torg_loop'
+end
+! JO9 MOD START J9M1536 | 2026-10-16_meiki_market_auction_dialogue | changed block; context may be included
+! JO9 MOD START TBV_AUCTION_BASE | 2026-10-17_trait_value
+bank_size = func('jo9_traits_value', 'base_price', 'slave', bank_size)
+if slave['jo9_versatile'] = 1: $auction_flow[u - 1] = '[경매사]<br>&nbsp;<<bank_size>> 스파크, 셋! 낙찰! 최종 가격: <<bank_size>>. 구매자: <<$auc_winner>>.'
+! JO9_MEIKI_AUCTION_V1
+! JO9 MOD END TBV_AUCTION_BASE
+! JO9 MOD START TBV_AUCTION_PREMIUM | 2026-10-17_trait_value
+if func('jo9_traits_value', 'premium', 'slave') = 1:
+ jo9_trait_value_auction_base = bank_size
+ bank_size = func('jo9_traits_value', 'auction', 'slave', bank_size)
+! JO9 MOD END TBV_AUCTION_PREMIUM
+ $auc_winner = '가면 쓴 수집가'
+! JO9 MOD START TBV_AUCTION_NATIVE57 | 2026-10-17_trait_value
+ $auction_flow[u - 1] = '[가면 쓴 수집가]<br>&nbsp;잠깐. 희귀한 명기를 이대로 보낼 수는 없지. 방금 나온 <<jo9_trait_value_auction_base>> 스파크의 두 배, <<bank_size>> 스파크를 내겠소!'
+! JO9 MOD END TBV_AUCTION_NATIVE57
+ $auction_flow[u] = '[경매사]<br>&nbsp;두 배라니! <<bank_size>> 스파크 나왔습니다! 더 부르실 분 없습니까? 하나, 둘, 셋! 낙찰! <<$auc_winner>>께 <<bank_size>> 스파크에 낙찰되었습니다!'
+end
+! JO9 MOD START TBV_AUCTION_TEXT | 2026-10-17_trait_value
+if slave['jo9_peerless'] = 1:
+ $auction_flow[u - 1] = '[가면 쓴 수집가]<br>&nbsp;절세의 미모에 <<bank_size>> 스파크를 내겠소!'
+ $auction_flow[u] = '[경매사]<br>&nbsp;<<bank_size>> 스파크! 하나, 둘, 셋! <<$auc_winner>>께 낙찰되었습니다!'
+end
+killvar 'jo9_trait_value_auction_base'
+! JO9_MEIKI_AUCTION_END
+! JO9 MOD END TBV_AUCTION_TEXT
+! JO9 MOD END J9M1536
+sparks_get = bank_size
+interaction_city = 931
+gt 'interaction_city'
+------------ $guild_auction ------------

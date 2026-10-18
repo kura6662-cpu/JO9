@@ -1,0 +1,19 @@
+# сменить_оружие_основное
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2905 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'сменить_оружие_основное': gs 'snk_room_bridge', 'guard', 'сменить_оружие_основное'
+! JO9 MOD END J9M2905
+!creating menu - primary weapon change
+$боевое_меню = ''
+if $за_спиной!'':$боевое_меню += "어깨 홀스터:<a href = 'EXEC: dynamic $взять_оружие_за_спиной'><<$item_name[$за_спиной]>></a><br>"
+if $слева!'':$боевое_меню += "왼손:<a href = 'EXEC: dynamic $взять_оружие_слева'><<$item_name[$слева]>></a><br>"
+if $справа!'':$боевое_меню += "오른손:<a href = 'EXEC: dynamic $взять_оружие_справа'><<$item_name[$справа]>></a><br>"
+if $предплечье!'' and combatant = 0:$боевое_меню += "소매 홀스터:<a href = 'EXEC: dynamic $взять_оружие_предплечье'><<$item_name[$предплечье]>></a><br>"
+if $в_сапоге!'' and combatant = 0:$боевое_меню += "장화 홀스터:<a href = 'EXEC: dynamic $взять_оружие_в_сапоге'><<$item_name[$в_сапоге]>></a><br>"
+$боевое_меню += "<br>"
+$боевое_меню += "<a href='EXEC: dynamic $вернуться_в_корень'>뒤로</a><br>"
+
+gt 'боевой_интерфейс'
+
+
+------------ сменить_оружие_основное ------------

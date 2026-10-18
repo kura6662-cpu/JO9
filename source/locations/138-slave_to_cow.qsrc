@@ -1,0 +1,23 @@
+# slave_to_cow
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2885 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'slave_to_cow': gs 'snk_room_bridge', 'guard', 'slave_to_cow'
+! JO9 MOD END J9M2885
+!move slave to cow (to be called with 'gs')
+!can be called directly from cow lessons, which is why cow_lesson_in_progress = 0 resets are needed here - ImperatorAugustus
+
+if slave_state = CONST_INT['slave_exist'] and slave['cowSK_affinity'] < 1 and slave['domini_dictum'] = 0:
+	if (slave['obedience'] + slave['fear'] < 0) or _ 
+	(slave['neg_barn'] > 0 and slave['obedience'] + slave['fear'] < 4) or _ 
+	(slave['neg_barn_plus'] > 0 and slave['obedience'] + slave['fear'] < 6):
+		cow_lesson_in_progress = 0
+		interaction = menu_deny_barn 
+		gt 'interaction'
+	end
+end
+
+dynamic $swap_slave_instances, 'slave', 'cow'
+
+if interaction = menu_cow_impregnate or interaction = menu_C_milking: gt 'interaction'
+
+------------ slave_to_cow ------------

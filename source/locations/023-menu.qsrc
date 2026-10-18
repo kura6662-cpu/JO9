@@ -1,0 +1,338 @@
+# $menu
+! Readable view; authoritative fields are in ../locations.json.
+if snk_room_target > 0 and $curloc = '$menu': gs 'snk_room_bridge', 'guard', '$menu'
+! JO9_CITY_SCENE_MENU_LAYOUT_20261009
+if $args[0] = 'layout_style':
+	$result = '<style id="jo9_menu_layout_style">#jo9_scene_menu>.menu,#main_screen.jo9_menu_city>.menu{background:transparent!important;}#jo9_scene_menu,#main_screen.jo9_menu_city{position:absolute!important;left:36px!important;width:724px!important;margin:0!important;padding:0!important;text-align:left!important;}#jo9_scene_menu{top:64px!important;height:524px!important;}#main_screen.jo9_menu_city{top:96px!important;height:684px!important;}#jo9_scene_menu>.menu_column_0,#jo9_scene_menu>.menu_column_1,#main_screen.jo9_menu_city>.menu_column_0,#main_screen.jo9_menu_city>.menu_column_1{position:absolute!important;top:0!important;float:none!important;width:330px!important;margin:0!important;padding:0!important;}#jo9_scene_menu>.menu_column_0,#main_screen.jo9_menu_city>.menu_column_0{left:0!important;}#jo9_scene_menu>.menu_column_1,#main_screen.jo9_menu_city>.menu_column_1{left:384px!important;}#jo9_scene_menu #under,#jo9_scene_menu #under_gray{text-align:center!important;}#jo9_scene_menu>.menu>ul,#main_screen.jo9_menu_city>.menu>ul{margin:0!important;padding:0!important;}#jo9_scene_menu>div[style*="pointer-events:none"],#main_screen.jo9_menu_city>div[style*="pointer-events:none"]{display:none!important;}</style>'
+	exit
+end
+
+! Creates a link to something
+! arg1 = ID
+! arg2 = EXEC
+! arg3 = GT
+if $args[0] = 'get_link':
+	$menu_exec = '<a href = ''EXEC: ' + $args[2] + '='
+	$menu_goto_form = ' & gt "' + $args[3] + '"''>'
+	$result = $menu_exec + args[1] + $menu_goto_form
+end
+
+! Creates a tooltip with top offset 43 pixels
+if $args[0] = 'tooltip_menu':
+	$top = 43 + (args[2] * 62)
+	$result = '<div class="' + $args[1] +'" style="top: ' + $top + '"><div class="icon tooltip-right" tooltip-data="' + $args[3] +'"><img height=12 width=12 src = "content/pic/ui overhaul/tooltip.png"></div></div>'
+end
+
+! Writes a complete menu item / list item, exec command and goto location
+! arguments: 1 = menu_item_index, 2 = location id, 3 = EXEC, 4 = GT, 5 = menu item text, 6 = tooltip text
+if $args[0] = 'goto':
+	menu_item_counter += 1
+	$text_display += $args[1] + func('$menu', 'get_link',  args[2],  $args[3], $args[4]) + $args[5] + '</a></li>'
+	$text_display += func('$menu', 'tooltip_menu',  'tooltip', menu_item_counter, $args[6])
+
+	dynamic $save_link, menu_item_counter, $args[3] + '=' + args[2] + ' & gt ''' + $args[4] + ''''
+end
+if $args[0] = 'gotobarn':
+	menu_item_counter += 1
+	$text_display += $args[1] + func('$menu', 'get_link',  args[2],  $args[3], $args[4]) + $args[5] + '</a></li>'
+
+	dynamic $save_link, menu_item_counter, $args[3] + '=' + args[2] + ' & gt ''' + $args[4] + ''''
+end
+if $args[0] = 'goto_2':
+	menu_item_counter += 1
+	$text_display += $args[1] + func('$menu', 'get_link',  args[2],  $args[3], $args[4]) + $args[5] + '</a></li>'
+
+	dynamic $save_link, menu_item_counter, $args[3] + '=' + args[2] + ' & gt ''' + $args[4] + ''''
+end
+if $args[0] = 'goto_city':
+	menu_item_counter += 1
+	$text_display += $args[1] + func('$menu', 'get_link',  args[2],  $args[3], $args[4]) + $args[5] + '</a></li>'
+
+	dynamic $save_link, menu_item_counter, $args[3] + '=' + args[2] + ' & gt ''' + $args[4] + ''''
+end
+if $args[0] = 'goto_sex_options':
+	menu_item_counter += 1
+	$sex_menu += $args[1] + func('$menu', 'get_link',  args[2],  $args[3], $args[4]) + $args[5] + '</a></li>'
+
+	dynamic $save_link, menu_item_counter, $args[3] + '=' + args[2] + ' & gt ''' + $args[4] + ''''
+end
+
+! Writes a complete menu item / list item, only exec command
+! arguments: 1 = menu_item_index, 2 = EXEC, 3 = menu item text, 4 = tooltip text
+if $args[0] = 'exec':
+	menu_item_counter += 1
+	$text_display += $args[1] +'<a href ="EXEC:' + $args[2] + '">' + $args[3] + '</a></li>'
+	$text_display += func('$menu', 'tooltip_menu', 'tooltip', menu_item_counter, $args[4])
+
+	dynamic $save_link, menu_item_counter, $args[2]
+end
+
+if $args[0] = 'exec_options':
+	menu_item_counter += 1
+	$text_display += $args[1] + '<a href =''EXEC:' + $args[2] + '''>' + $args[3] + '</a></li>'
+
+	dynamic $save_link, menu_item_counter, $args[2]
+end
+
+if $args[0] = 'exec_sex_options':
+	menu_item_counter += 1
+	$sex_menu += $args[1] + '<a href =''EXEC:' + $args[2] + '''>' + $args[3] + '</a></li>'
+
+	dynamic $save_link, menu_item_counter, $args[2]
+end
+
+if $args[0] = 'join_battle':
+	$text_display += $args[1]
+	$text_display += {<a href = 'EXEC: gt "начать_бой"'>}
+	$text_display += $args[2] + '</a></li>'
+end
+IF $ARGS[0] = 'join_battle1' :
+  $text_display += $args[1]
+  $text_display +={<a href ='EXEC: & gt "начать_бой"'>}
+  $text_display +=$args[2] + '</a></li>'
+  sparks -=50000
+END
+
+
+
+if $args[0] = 'empty_item':
+	for i = 1 to args[1] step 1: menu_item_counter += 1 & $text_display += '<li id="no_bg"> </li>'
+end
+
+if $args[0] = 'spacer':
+	$text_display += '<div style="pointer-events:none;margin-bottom: ' + (args[1] *  63)  + 'px;"></div>'
+end
+
+if $args[0] = 'sex_empty_item':
+	for i = 1 to args[1] step 1: menu_item_counter += 1 & $sex_menu += '<li id="no_bg"> </li>'
+end
+
+if $args[0] = 'menu_form':
+	func('$menu', 'goto',  $args[1], args[2], 'menu_form', 'menu_form', $args[3], $args[4])
+end
+
+if $args[0] = 'barn_form':
+	func('$menu', 'goto',  $args[1], args[2], 'barn_interface', 'barn_interface', $args[3], $args[4])
+end
+
+if $args[0] = 'menu_form_2':
+	func('$menu', 'goto_2',  $args[1], args[2], 'menu_form', 'menu_form', $args[3])
+end
+
+if $args[0] = 'interaction_city':
+	func('$menu', 'goto_city',  $args[1], args[2], 'interaction_city', 'interaction_city', $args[3])
+end
+
+if $args[0] = 'interaction':
+	func('$menu', 'goto_city',  $args[1], args[2], 'interaction', 'interaction', $args[3])
+end
+
+if $args[0] = 'sex_interaction':
+	func('$menu', 'goto_sex_options',  $args[1], args[2], 'sex_interaction', 'sex_interaction', $args[3])
+end
+
+if $args[0] = 'city_form':
+	func('$menu', 'goto_city',  $args[1], args[2], 'city_form', 'city_menu_form', $args[3])
+end
+
+if $args[0] = 'location_gray':
+	func('$menu', 'goto_city', $args[1], args[2], empty, empty, $args[3])
+end
+
+if $args[0] = 'location_gray_tooltip':
+	func('$menu', 'goto_city', $args[1], args[2], empty, empty, $args[3])
+	$text_display += func('$menu', 'tooltip_menu',  'tooltip', menu_item_counter, $args[4])
+end
+
+if $args[0] = 'menu_form_gray':
+	func('$menu', 'goto', $args[1], args[2], empty, empty, $args[3], $args[4])
+end
+
+if $args[0] = 'sex_location_gray':
+	func('$menu', 'goto_sex_options', $args[1], args[2], empty, empty, $args[3])
+end
+
+if $args[0] = '===BEGIN===':
+	$text_display += '<div class="menu menu_' + $args[1] + '"><ul>'
+	menu_item_counter = -1
+	dynamic $save_link, -1
+end
+
+if $args[0] = '===END===':
+	$text_display += '</ul></div>'
+	menu_item_counter = -1
+end
+
+if $args[0] = '===SEX_BEGIN===':
+	$sex_menu += '<div class="menu menu_' + $args[1] + '"><ul>'
+	menu_item_counter = -1
+end
+
+if $args[0] = '===SEX_END===':
+	$sex_menu += '</ul></div>'
+	menu_item_counter = -1
+end
+
+if $args[0] = '===BEGIN_H_MENU===':
+	$text_display += '<div class="menu_' + $args[1] + '"><ul>'
+	menu_item_counter = -1
+end
+
+IF $ARGS[0] = 'hlink':
+  if master_vampire >= 1:
+    a = RAND(1,20)
+    if master_str < 4 and master_str >=2:
+      if a = 14:
+        $result = '<a href = "EXEC: interaction = menu_vampire_byte_slave & gt ''interaction''"><font color= "red">Пить кровь</font></a>'
+        jump 'vampire_override'
+      end
+    elseif master_str < 2:
+      if a > 4:
+        $result = '<a href = "EXEC: interaction = menu_vampire_byte_slave & gt ''interaction''"><font color= "red">Пить кровь</font></a>'
+        jump 'vampire_override'
+      end
+    end
+  end
+  ! $ARGS[1] - название скилла (cook, service etc.)
+  ! $ARGS[2] - субъект (slave, assistant, both)
+  ! $ARGS[3] - название урока текстом
+  ! $ARGS[4] - название урока в базе данных, если отличается от названия скилла
+  ! ARGS[5] - равен 1 если функция вызвана из экрана статов рабыни
+  ! ARGS[6] - номер варианта
+  if $ARGS[4] = '': $ARGS[4] = $ARGS[1]
+  $text_prev = $args[2] + '["' + $args[1] + '"]'
+  dynamic 'text_skill = <<$text_prev>>'
+  if ARGS[5] ! 1: 
+    dynamic '$text_lesson = $<<$args[4]>>_lesson[<<text_skill>>]'
+  else
+    dynamic '$text_lesson = $<<$args[2]>>_<<$args[4]>>[<<text_skill>>]'
+  end
+  $result = '<a href = "EXEC: variant = <<args[6]>> & gs ''interaction_short'' & gt ''lesson.' + $ARGS[1] + '''">' + $text_lesson + '</a>'
+  IF leshasmlesha_cheats = 1 and mm_check = 0:
+    $left_text_teach += "<a> </a>"
+    IF text_skill < 5:
+       $result += '<a href = ''EXEC: ' + $text_prev + ' += 1 & gt curloc''>+</a>'
+    END
+    IF text_skill > 0:
+       $result += '<a href = ''EXEC: ' + $text_prev + ' -= 1 & gt curloc''>-</a>'
+    END
+  END
+  : vampire_override
+  if mm_check = 0: $result += '<br>'
+END
+IF $ARGS[0] = 'hlink_grey' or $ARGS[0] = 'hlink_gray':
+  ! $ARGS[1] - сообщение msg
+  ! $ARGS[2] - Название скилла
+  $result = '<a href = "EXEC: msg <<$args[1]>> & gt curloc"><font color="#000000"><<$args[2]>></font></a><br>'
+END
+IF $ARGS[0] = 'hlink_sex':
+  if master_vampire >= 1:
+    a = RAND(1,20)
+    if master_str < 4 and master_str >=2:
+      if a = 14:
+        $result = '<a href = "EXEC: interaction = menu_vampire_byte_slave & gt ''interaction''"><font color= "red">Пить кровь</font></a>'
+        jump 'vampire_override'
+      end
+    elseif master_str < 2:
+      if a > 4:
+        $result = '<a href = "EXEC: interaction = menu_vampire_byte_slave & gt ''interaction''"><font color= "red">Пить кровь</font></a>'
+        jump 'vampire_override'
+      end
+    end
+  end
+  ! $ARGS[1] - название скилла (cook, service etc.)
+  ! $ARGS[2] - субъект (slave, assistant, both)
+  ! $ARGS[3] - название урока текстом
+  ! $ARGS[4] - название урока в базе данных, если отличается от названия скилла
+  ! $ARGS[5] - текст тултипа
+  ! ARGS[6] - нижний тултип = 1
+  if $ARGS[4] = '': $ARGS[4] = $ARGS[1]
+  $text_ttip = ''
+  if $ARGS[5] ! '': 
+    if ARGS[6] = 0: 
+      $text_ttip = '<a class="victoriana wide tooltip-top" tooltip-data="' + $args[5] + '" '
+    else
+      $text_ttip = '<a class="victoriana wide tooltip-bottom" tooltip-data="' + $args[5] + '" '
+    end
+  end
+  $text_prev = $args[2] + '["' + $args[1] + '"]'
+  dynamic 'text_skill = <<$text_prev>>'
+  dynamic '$text_lesson = $<<$args[2]>>_<<$args[4]>>[<<text_skill>>]'
+  $result = $text_ttip + '<a href = "EXEC: gs ''interaction_short'' & gt ''lesson_sex.' + $ARGS[1] + '''">' + $text_lesson + '</a>'
+  IF leshasmlesha_cheats = 1 and mm_check = 0:
+    $left_text_teach += "<a> </a>"
+    IF text_skill < 5:
+       $result += '<a href = ''EXEC: ' + $text_prev + ' += 1 & gt curloc''>+</a>'
+    END
+    IF text_skill > 0:
+       $result += '<a href = ''EXEC: ' + $text_prev + ' -= 1 & gt curloc''>-</a>'
+    END
+  END
+  : vampire_override  
+  if mm_check = 0: $result += '<br>'
+END
+IF $ARGS[0] = 'goto_hlink':
+  ! $ARGS[1] - ссылка на иконку  
+  ! $ARGS[2] - название скилла (cook, service etc.)
+  ! $ARGS[3] - субъект (slave, assistant, both)
+  ! $ARGS[4] - название урока текстом
+  ! $ARGS[5] - название урока в базе данных, если отличается от названия скилла
+  ! $ARGS[6] - текст тултипа  
+  ! ARGS[7] - номер варианта урока
+  menu_item_counter += 1
+  $text_display += $args[1] + FUNC('$menu', 'hlink', $args[2], $args[3], $args[4], $args[5], 0, args[7]) + '</a></li>'
+  $text_display += FUNC('$menu', 'tooltip_menu',  'tooltip', menu_item_counter, $args[6])
+END
+IF $ARGS[0] = 'goto_hlink_sex':
+  ! $ARGS[1] - ссылка на иконку  
+  ! $ARGS[2] - название скилла (cook, service etc.)
+  ! $ARGS[3] - субъект (slave, assistant, both)
+  ! $ARGS[4] - название урока текстом
+  ! $ARGS[5] - название урока в базе данных, если отличается от названия скилла
+  ! $ARGS[6] - текст тултипа  
+  menu_item_counter += 1
+  $text_display += $args[1] + FUNC('$menu', 'hlink_sex', $args[2], $args[3], $args[4], $args[5]) + '</a></li>'
+  $text_display += FUNC('$menu', 'tooltip_menu',  'tooltip', menu_item_counter, $args[6])
+END
+IF $ARGS[0] = 'hlink_action':
+  ! $ARGS[1] - название действия
+  ! $ARGS[2] - субъект (slave, assistant, both)
+  ! $ARGS[3] - название действия текстом
+  ! $ARGS[4] - текст тултипа
+  if $ARGS[4] ! '': $text_ttip = '<a class="victoriana wide tooltip-top" tooltip-data="' + $args[4] + '" '
+  $result = $text_ttip + '<a href = "EXEC: gs ''interaction_short'' & gt ''' + $ARGS[1] + ''', ''' + $ARGS[2] + '''">' + $ARGS[3] + '</a>'
+!  if mm_check = 0: $result += '<br>'
+END
+IF $ARGS[0] = 'goto_hlink_action':
+  ! $ARGS[1] - ссылка на иконку  
+  ! $ARGS[2] - название действия
+  ! $ARGS[3] - субъект (slave, assistant, both)
+  ! $ARGS[4] - название действия текстом
+  ! $ARGS[5] - текст тултипа  
+  menu_item_counter += 1
+  $text_display += $args[1] + FUNC('$menu', 'hlink_action', $args[2], $args[3], $args[4]) + '</a></li>'
+  $text_display += FUNC('$menu', 'tooltip_menu',  'tooltip', menu_item_counter, $args[5])
+END
+IF $ARGS[0] = 'hlink_asex':
+  ! $ARGS[1] - название действия
+  ! $ARGS[2] - субъект (slave, assistant, both)
+  ! $ARGS[3] - название действия текстом
+  ! $ARGS[4] - текст тултипа
+  if $ARGS[4] ! '': $text_ttip = '<a class="victoriana wide tooltip-top" tooltip-data="' + $args[4] + '" '
+  $result = $text_ttip + '<a href = "EXEC: gs ''interaction_short'' & gt ''' + $ARGS[1] + ''', ''' + $ARGS[2] + '''">' + $ARGS[3] + '</a>'
+!  if mm_check = 0: $result += '<br>'
+END
+IF $ARGS[0] = 'goto_hlink_asex':
+  ! $ARGS[1] - ссылка на иконку  
+  ! $ARGS[2] - название действия
+  ! $ARGS[3] - субъект (slave, assistant, both)
+  ! $ARGS[4] - название действия текстом
+  ! $ARGS[5] - текст тултипа  
+  menu_item_counter += 1
+  $text_display += $args[1] + FUNC('$menu', 'hlink_action', $args[2], $args[3], $args[4]) + '</a></li>'
+  $text_display += FUNC('$menu', 'tooltip_menu',  'tooltip', menu_item_counter, $args[5])
+END
+
+
+
+------------ $menu ------------

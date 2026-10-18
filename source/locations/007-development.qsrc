@@ -1,0 +1,16 @@
+# development
+! Readable view; authoritative fields are in ../locations.json.
+if snk_room_target > 0 and $curloc = 'development': gs 'snk_room_bridge', 'guard', 'development'
+! JO9 MOD START J9M3015 | 2026-10-14_hide_outer_frame_on_startup | changed block; context may be included
+*p '<style id="jo9_startup_no_outer_frame">body:before,body:after{display:none!important;}</style>'
+! JO9 MOD END J9M3015
+!Development
+
+*p '<div id = "title_scroll"><img src = "content\pic\scroll_large.png"></div>'
+*p '<div id = "title_scroll_text">잭 오 나인 테일 게임 및 개발 정보:<br>'
+*nl '현재 게임 플레이 논의(질문, 버그 신고, 기능 요청 등)는 https://f95zone.to/threads/jack-o-nine-tails-v2-2-3-old-huntsman-community-development.390 에서 확인할 수 있습니다.<br>'
+*nl '게임 내에서 재현 가능한 버그를 발견하시면 제보해 주세요. 앞으로 더 안정적인 버전을 내는 데 도움이 됩니다. 즐겁게 플레이하세요!</div>'
+
+*p '<div id = "close_scroll"><a href = "EXEC: gt ''main_menu''"><img src = "content\pic\buttons\close_button.png"></a></div>'
+
+------------ development ------------

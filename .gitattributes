@@ -1,0 +1,2 @@
+# Preserve the verified source and QSP byte-for-byte, including CRLF and BOM.
+* -text

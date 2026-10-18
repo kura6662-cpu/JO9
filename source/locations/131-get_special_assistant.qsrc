@@ -1,0 +1,25 @@
+# get_special_assistant
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2878 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'get_special_assistant': gs 'snk_room_bridge', 'guard', 'get_special_assistant'
+! JO9 MOD END J9M2878
+!special assistant activation
+
+isabella_met = 1
+special_stock = 2571 &! Isabella
+gs 'generate_stock'
+dynamic $swap_slave_instances, 'stock', 'assistant'
+assistant['beauty_enhanced'] = 1
+
+assistant['brand'] = 2 &! tattoo brand
+assistant['neg_slave'] = 0
+
+
+$assistant['cloth'] = 'leather_corset'
+assistant['newness'] = 1
+
+!Testing Code - crushboss
+if cheat_i = 1: gs 'assistant_testing'
+!End of Testing Code
+
+------------ get_special_assistant ------------

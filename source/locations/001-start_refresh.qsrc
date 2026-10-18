@@ -1,0 +1,89 @@
+# start_refresh
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2807 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'start_refresh': gs 'snk_room_bridge', 'guard', 'start_refresh'
+! JO9 MOD END J9M2807
+!Start Refresh - fixes several bugs when the game reload the main Start menu
+!Created by crushboss
+!Overhauled by ImperatorAugustus
+
+killall &! THIS DELETES EVERY VARIABLE IN THE GAME (the engine has been updated to reload json files afterwards)
+warning_pass = 1 &! only display warning the first time main menu is displayed
+
+usehtml = 1
+debug = 0
+sound_on = 1
+music_volume = 100
+sound_volume = 100
+
+SHOWOBJS 0
+SHOWACTS 0
+SHOWINPUT 0
+SHOWSTAT 0
+
+INTEGRATED_ACTIONS = 1
+HIDE_SCROLL_ARROWS = 1
+DISABLESCROLL = 1
+
+$FNAME = 'Sandoll 미생'
+
+!$counter = '$counter' &! realtime update handler
+$onobjsel = '$objsel' &! object selector handler
+$ongload = '$ongload' &! after load game handler
+
+IF hero_choice = 114 or hero_choice = 119 or hero_choice = 120 or hero_choice = 12 or hero_choice = 17 or hero_choice = 18:
+	master_vampire = 1
+ELSE
+	master_vampire = 0
+END
+
+
+!Game Option Variables
+nsfw = 0
+no_loli = 0
+no_milf = 0
+no_mindbreak = 0
+no_guro = 0
+no_futa = 1
+!Initialize Cheat Variables - crushboss
+cheat_show = 0
+cheat_inf_en = 0
+cheat_easy_as = 0
+cheat_easy_race = 0
+cheat_fight_dif = 1
+skill_adv_mul = 1
+cheat_a = 0
+cheat_b = 0
+cheat_c = 0
+cheat_d = 0
+cheat_e = 0
+cheat_f = 0
+cheat_g = 0
+cheat_h = 0
+cheat_i = 0
+cheat_j = 0
+cheat_k = 0
+cheat_l = 0
+cheat_all_basic = 0
+cheat_all_low = 0
+cheat_all = 0
+cheat_all_max = 0
+extended_rental_cheat = 0
+difficulty_setting = 0
+slave["rewarded_today"] = 0
+assistant["rewarded_today"] = 0
+assistant['nude'] = 0
+!Initialize Variables - crushboss
+gs '$end_day_variable_reset'
+gs '$combat_variable_reset'
+
+ui_style = 2
+
+decadecount = 1
+ride_count = 1
+auction_count = 10
+gladi_count = 4
+cooked_food = -1
+gladiatrix_contest_count = 1
+
+------------ start_refresh ------------

@@ -1,0 +1,69 @@
+# plastics
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1386 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'plastics': gs 'snk_room_bridge', 'guard', 'plastics'
+! JO9 MOD END J9M1386
+gs '_layout'
+copyarr '$special_image', '$fullimage'
+
+if txt = 0:
+	dynamic $replace($plastics_get_image_range, "dyn"+"slave", $plastics_target)
+	txt = txt_count
+	dynamic $plastics_hair_color_range, -1
+	max_txt = txt - 1
+	txt = min_txt
+	dynamic $plastics_hair_color_range, 1
+	min_txt = txt
+end
+
+
+! JO9 MOD START J9M1385 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$text[txt] = '[의사]<br>&nbsp;신중히 선택 하십시오. 외모를 한 번 바꾸면 또 바꾸긴 힘듭니다.<br>그렇게 되면 심각한 후유 장해를 불러올테니까요.'
+! JO9 MOD END J9M1385
+
+! JO9 MOD START J9M1384 | 2026-10-08_persistent_image_cycle, 2026-10-15_z_inline_text_prefix | changed block; context may be included
+*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\<<$bg[$place]>>.png"></div>')
+! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($text[txt], '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $text[txt] = $mid($text[txt], len($jo9_leading_empty) + 1, len($text[txt]))
+! JO9 MOD END J9M1384
+*p '<div id = "text"><<$text[txt]>></div>'
+
+$info_bar = ''
+*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<$place_name[$place]>></div>'
+*nl '<<$place_location[$place]>><br>'
+*nl '참고 정보:</center></div>'
+*p '<div id = "side_panel_text"><span class="jo9-reference-body"><<$place_info[$place]>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style><br></div>'
+
+*p '<div id = "interaction_stat_bar"><<$info_bar>></div>'
+if $special_image[txt] ! '':
+	$naked_image_path = dyneval('$result = $indpack_naked[<<txt>>]')
+
+	if $naked_image_path <> '':
+		$special_image_out = $naked_image_path
+	else
+		$special_image_out = $special_image[txt]
+	end
+! JO9 MOD START J9M1383 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "bg_right"><img src="content\pic\<<$special_image_out>>.png"></div>')
+! JO9 MOD END J9M1383
+end
+
+if txt > min_txt:
+	addobj '<img src = "content\pic\buttons\back_button.png">'
+else
+	addobj '<img src = "content\pic\buttons\noback_button.png">'
+end
+if txt <= max_txt:
+	addobj '<img src = "content\pic\buttons\forward_button.png">'
+	$text[] = '   ' &! make the forward button return to this location
+end
+
+$text_display = ''
+dynamic $hospital_options[32]
+! JO9 MOD START J9M1382 | 2026-10-09_city_scene_menu_alignment | changed block; context may be included
+*p func('$menu', 'layout_style')
+*p '<div id="jo9_scene_menu" class="jo9_menu_scene"><<$text_display>></div>'
+! JO9 MOD END J9M1382
+
+------------ plastics ------------

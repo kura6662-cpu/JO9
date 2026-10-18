@@ -1,0 +1,128 @@
+# generate_clone
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2856 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'generate_clone': gs 'snk_room_bridge', 'guard', 'generate_clone'
+! JO9 MOD END J9M2856
+!Create a slave clone
+gs 'generate_stock'
+
+!attributes
+stock['base_beauty'] = 4
+stock_rate['beauty'] = 80
+stock['base_exotic'] = 0
+stock_rate['exotic'] = 0
+
+stock['stamina'] = 4
+stock['sensitivity'] = 3
+stock['temper'] = 3
+stock['ego'] = 3
+stock['pride'] = 4
+stock['intellect'] = 3
+
+stock['custom'] = 5
+stock['moral'] = 1
+stock['instinct'] = 1
+stock['rational'] = 5
+
+stock['expression'] = 3
+stock['pet'] = 3
+stock['dressage'] = 3
+stock['cowSK'] = 3
+stock['nurse'] = 3
+stock['service'] = 3
+stock['cook'] = 3
+stock['gladiatrix'] = 3
+stock['alchemy'] = 3
+stock['enchanter'] = 3
+stock['art'] = 3
+stock['music'] = 3
+stock['calisthenics'] = 3
+stock['secretary'] = 3
+
+stock['sub_hj'] = 3
+stock['sub_fj'] = 3
+stock['sub_hug'] = 3
+stock['sub_paizuri'] = 3
+stock['sub_kiss'] = 3
+stock['sub_tongue'] = 3
+stock['sub_bj'] = 3
+stock['sub_dt'] = 3
+stock['sub_asslik'] = 3
+stock['sub_vaginal'] = 3
+stock['sub_anal'] = 3
+stock['sub_fisting'] = 3
+stock['anal_stretch']= 3
+stock['sub_seduce'] = 3
+stock['sub_masturbation'] = 3
+stock['sub_dildo'] = 3
+stock['sub_exhibit'] = 3
+stock['sub_humiliation'] = 3
+stock['sub_enema'] = 3
+stock['sub_mazo'] = 3
+stock['sub_selfpain'] = 3
+stock['sub_piss'] = 3
+stock['sub_kopro'] = 3
+stock['sub_threesome'] = 3
+stock['sub_dp'] = 3
+stock['sub_tp'] = 3
+stock['sub_gangbang'] = 3
+stock['sub_bukkake'] = 3
+stock['sub_zoosex'] = 3
+stock['sub_bestiality'] = 3
+stock['sub_horse'] = 3
+stock['sub_tentacles'] = 3
+stock['sub_arachnidspider'] = 3
+stock['sub_polypusvermin'] = 3
+
+stock['fat'] = 1
+stock['metabolism'] = 3
+
+!traits
+stock['virginity'] = 0
+
+!BACKGROUND
+$stock_world_description = '제가 창조된 세계에 대해서는 거의 아무것도 모릅니다, 주인님. 고도로 발달한 기술이 있다는 것만은 압니다. 하지만 저는 거의 아무것도 보지 못했고, 기억나는 것은 그보다도 적습니다.'
+$stock_family_description = '저는 액체가 가득 찬 통 안에서 떠다니고 있었습니다. 때때로 흰 가운을 입은 사람들이 주변을 오갔습니다. 제 얼굴에는 호흡 마스크가 씌워져 있었고, 먹이 공급관이 제 목 안으로 곧장 들어와 있었습니다. 그리고 제 몸에는 전선들이 연결되어 있었습니다.'
+$stock_occupation_description = '제가 주로 기억하는 것은 신경 인터페이스를 통해 데이터와 이데오운동 기술을 내려받는 과정입니다. 설명하기 어렵습니다. 그 뒤 저는 통 밖으로 꺼내져 진정제를 맞고 상자 안에 넣어졌습니다. 그리고 나서 이곳에 오게 되었습니다.'
+$stock_name = '개체 №<<rand(101,998)>>'
+stock["world_index"] = 1
+stock["nation_index"] = 9
+stock["family_index"] = 5
+stock["work_index"] = 5
+!No starting ailments - crushboss
+stock_rate['bruises'] = 0
+stock_rate['wounds'] = 0
+stock_rate['scars'] = 0
+stock_rate['arousal'] = 0
+stock['fear'] = 0
+stock['angst'] = 0
+stock['spoil'] = 0
+stock['ill'] = 0
+stock['pregnant'] = 0
+stock['parasite'] = 0
+stock['issues'] = 0
+
+!psy status determination
+$stock_psy_basic = 'soft'
+
+stock['neg_slave'] = 0
+stock['calories'] = 3
+
+!EQUIPMENT
+$stock['wpn'] = 'безоружный'
+$stock['armor'] = 'без_брони'
+$stock['scnd'] = ''
+
+$stock['back_wpn'] = ''
+$stock['left_wpn'] = ''
+$stock['right_wpn'] = ''
+$stock['arm_wpn'] = ''
+$stock['leg_wpn'] = ''
+
+$stock['cloth'] = 'голая'
+
+stock['newness'] = 1
+
+stock['energy'] = stock['stamina']
+
+------------ generate_clone ------------

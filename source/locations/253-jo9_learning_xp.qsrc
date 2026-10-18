@@ -1,0 +1,16 @@
+# jo9_learning_xp
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START COG_XP_HELPER | 2026-10-16_innate_learning_traits
+! args[0]: 이번에 새로 얻는 경험치, args[1]: 특성 값, $args[2]: 성장 항목.
+! 누적 경험치·등급·자아를 직접 바꾸지 않고 보정된 증가량만 반환한다.
+result = args[0]
+if args[0] > 0 and $args[2] ! 'stamina' and $args[2] ! 'slave_rate["stamina"]' and $args[2] ! 'assistant_rate["stamina"]':
+ if args[1] = 1:
+  result = args[0] * 2
+ elseif args[1] = -1:
+  result = args[0] / 2
+  if result < 1: result = 1
+ end
+end
+! JO9 MOD END COG_XP_HELPER
+------------ jo9_learning_xp ------------

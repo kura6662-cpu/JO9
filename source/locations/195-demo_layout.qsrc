@@ -1,0 +1,32 @@
+# demo_layout
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2922 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'demo_layout': gs 'snk_room_bridge', 'guard', 'demo_layout'
+! JO9 MOD END J9M2922
+INTEGRATED_ACTIONS = 0
+$backimage = 'content/pic/ui/old/bg_old.png'
+
+SHOWOBJS 1
+SHOWSTAT 0
+SHOWACTS 0
+
+!$onnewloc = ''
+
+LCOLOR = rgb(0,0,255)
+FCOLOR = rgb(0,0,0)
+
+$MAINDESC_BACKIMAGE = ''
+! removed non-existent path 'content/.png' -ImperatorAugustus
+MAINDESC_X = 1
+MAINDESC_Y = 1
+MAINDESC_W = 1280
+MAINDESC_H = 800
+
+$OBJECTS_BACKIMAGE = ''
+! removed non-existent path 'content/c.png' -ImperatorAugustus
+OBJECTS_X = 780	
+OBJECTS_Y = 660	
+OBJECTS_W = 50	
+OBJECTS_H = 100
+
+------------ demo_layout ------------

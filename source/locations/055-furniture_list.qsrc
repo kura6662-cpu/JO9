@@ -1,0 +1,95 @@
+# $furniture_list
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2835 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$furniture_list': gs 'snk_room_bridge', 'guard', '$furniture_list'
+! JO9 MOD END J9M2835
+!Create a list of furniture in the house
+$furniture_list = ''
+house_items = 0
+
+if art_material > 0:
+	$furniture_list += '미술 재료 x<<art_material>><br>'
+	house_items += art_material
+end
+
+if percussion > 0:
+	$furniture_list += '타악기 x<<percussion>><br>'
+	house_items += percussion
+end
+
+if woodwind > 0:
+	$furniture_list += '목관악기 x<<woodwind>><br>'
+	house_items += woodwind
+end
+
+if violin > 0:
+	$furniture_list += '현악기 x<<violin>><br>'
+	house_items += violin
+end
+
+if piano > 0:
+	$furniture_list += '피아노 x<<piano>><br>'
+	house_items += piano
+end
+
+$furniture_list += '<br>'
+
+if vibrator = 1:
+	$furniture_list += '바이브 x1<br>'
+	house_items += 0
+end
+
+if inventory['vaginal_balls'] = 1:
+	$furniture_list += 'V-볼 x1<br>'
+	house_items += 0
+end
+
+if inventory['anal_plug'] = 1:
+	$furniture_list += '애널 페어 x1<br>'
+	house_items += 0
+end
+
+if inventory['secure_gag'] = 1:
+	$furniture_list += '튼튼한 재갈 x1<br>'
+	house_items += 0
+end
+
+if inventory['chastity_belt'] = 1:
+	$furniture_list += '정조대 x1<br>'
+	house_items += 0
+end
+
+if inventory['deprivation_suit'] = 1:
+	$furniture_list += '감각 박탈 수트 x1<br>'
+	house_items += 2
+end
+
+if inventory['pissuar_stable'] = 1:
+	$furniture_list += '요강 랙 x1<br>'
+	house_items += 5
+end
+
+if inventory['toilet_stable'] = 1:
+	$furniture_list += '변기 시트 x1<br>'
+	house_items += 10
+end
+
+if inventory['dummy'] > 0:
+	a = 6*inventory['dummy']
+	$furniture_list += '더미 [<<a>>]<br>'
+	house_items += a
+end
+
+if inventory['heads'] > 0:
+	b = 2*inventory['heads']
+	$furniture_list += '머리 [<<b>>]<br>'
+	house_items += b
+end
+!Strec - jon_UIadds addition (begin)
+if inventory['stethoscope'] = 1:
+	$furniture_list += '청진기 x1<br>'
+	house_items += 1
+end
+!Strec - jon_UIadds addition (end)
+
+------------ $furniture_list ------------

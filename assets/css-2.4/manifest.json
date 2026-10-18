@@ -1,0 +1,97 @@
+{
+  "name": "JO9 2.4 CSS",
+  "definedOn": "2026-10-15",
+  "reference": "G:/somi/JO9O/game/css",
+  "baseline": "assets/css-2.4",
+  "policy": "Original CSS roles remain in CSS. Non-original wording and state/output changes may be temporary CSS during iteration; migrate to QSP and remove temporary rules before commit/push.",
+  "original": {
+    "base": "7ec25fa3d09e4fc9f672cb7bb37a46a2b21e56097f7582a078771e8e1ca4aa06",
+    "mainScreen": "7a6c742a6ab3d73826bb3c7829a12b3ecd43c008b8f37d292b8bb80fa1027612"
+  },
+  "files": {
+    "base.css": "63354b2234d7a3f0ca6bc67806e82e77b6566bca0b787da3cbdf4c17f0f634a4",
+    "mainScreen.css": "7a6c742a6ab3d73826bb3c7829a12b3ecd43c008b8f37d292b8bb80fa1027612"
+  },
+  "backup": "G:/somi/IMGMG/backups/css24-baseline-20261015-1792060417324",
+  "targets": {
+    "full": {
+      "qsp": "G:/somi/Jack O Nine Tails v2.4 Kor_Full/game/jack.qsp",
+      "before": "b31bd9e745e86bfded473f93f2c06eb70856a71e24de4fd585c7cf6e4b073aea",
+      "after": "fee14dc7ed34b0e3ff74b84c5e378f4b303b4fba2b0051ee9cee81b619a54223",
+      "css": "G:/somi/Jack O Nine Tails v2.4 Kor_Full/game/css/base.css",
+      "cssBefore": "22cf0fb078729a1cdaf82d4b7fddc3d532b0361a85d4eebc23029d977e15f482",
+      "cssAfter": "f1267af4b3a7c47783e31f296b129f4693cfd31ad5512ad605973521f05b14a2"
+    },
+    "work": {
+      "qsp": "G:/somi/Jack O Nine Tails v2.4_work/game/jack.qsp",
+      "before": "af6170660b4c77bfec9bdc02b00a205e0f5fd376e8f42f32c209fda75491621d",
+      "after": "a15cd51134d00106cf69ee0e980f4578abba44bb068d45cbe396f760ed04d4f1",
+      "css": "G:/somi/Jack O Nine Tails v2.4_work/game/css/base.css",
+      "cssBefore": "22cf0fb078729a1cdaf82d4b7fddc3d532b0361a85d4eebc23029d977e15f482",
+      "cssAfter": "f1267af4b3a7c47783e31f296b129f4693cfd31ad5512ad605973521f05b14a2"
+    }
+  },
+  "nativeGameTest": "Pending user verification",
+  "layoutTest": {
+    "engine": "Headless Edge; isolated HTML fixtures, not native QSP execution",
+    "results": [
+      "main_screen: PASS",
+      "city_screen: PASS",
+      "slave_private_room1: PASS",
+      "slave_private_room2: PASS",
+      "slave_private_room3: PASS",
+      "slave_private_room4: PASS",
+      "snk_room_menu_screen: PASS"
+    ]
+  },
+  "updates": [
+    {
+      "id": "2026-10-17_editor_alignment",
+      "scope": "Play folder and tracked CSS source only; distribution unchanged",
+      "playQsp": "9772e2fafc029ad183ca5ed7544c870257c645f849f7cabd4b0b9f1e1a5804bf",
+      "baseCssBefore": "f1267af4b3a7c47783e31f296b129f4693cfd31ad5512ad605973521f05b14a2",
+      "baseCssAfter": "d3aa110920a1f19114958038478a8b634c7ba3975adcc68b46c87afd374557a2",
+      "report": "docs/EDITOR_ALIGNMENT_20261017.md"
+    },
+    {
+      "id": "2026-10-17_zzz_cheat_master_layout",
+      "scope": "Play folder and tracked CSS source only; distribution unchanged",
+      "playQsp": "16a954528f33a0f544d048c715632f7ef65e069aa17c673b749479850379fdb8",
+      "baseCssBefore": "d3aa110920a1f19114958038478a8b634c7ba3975adcc68b46c87afd374557a2",
+      "baseCssAfter": "0e9c0f0db1049251b5d7581130244884b95ae17c04d16fe607affd3a21e176ba",
+      "report": "docs/CHEAT_MASTER_LAYOUT_20261017.md"
+    },
+    {
+      "id": "2026-10-17_zzzz_monster_status_icon",
+      "scope": "Play folder and tracked source only; distribution unchanged",
+      "playQsp": "271bb3d4877126523a8c79e07fad249b0e942af65f7314481fe5c2b19253743f",
+      "baseCssBefore": "0e9c0f0db1049251b5d7581130244884b95ae17c04d16fe607affd3a21e176ba",
+      "baseCssAfter": "4f173550f912c766f758cb498aa4ca0939bd476046f5d21eea576e564a440508",
+      "assets": [
+        {
+          "path": "assets/content/pic/ui/monster_status/craving.png",
+          "sha256": "2d3435004f49dde01d0ad3232cb5b2426f083006e12e254ca90b26010882fc96"
+        },
+        {
+          "path": "assets/content/pic/ui/monster_status/satisfied.png",
+          "sha256": "534979d487e932b8eb16618f7f62720399618ea94d5b1c8a4ffb2e8fade45a8c"
+        }
+      ],
+      "report": "docs/MONSTER_STATUS_ICON_20261017.md"
+    },
+    {
+      "id": "2026-10-17_monster_status_column_align",
+      "scope": "Play CSS and tracked CSS source only; QSP and distribution unchanged",
+      "baseCssBefore": "4f173550f912c766f758cb498aa4ca0939bd476046f5d21eea576e564a440508",
+      "baseCssAfter": "63354b2234d7a3f0ca6bc67806e82e77b6566bca0b787da3cbdf4c17f0f634a4",
+      "report": "docs/MONSTER_STATUS_ICON_ALIGNMENT_20261017.md"
+    }
+  ],
+  "wrapup20261017": {
+    "report": "docs/WRAPUP_20261017.md",
+    "qsp": "16efdf5b65348401431a967decf3f92be861cd3e47bc0671ee8769437e5ca8d7",
+    "css": "63354b2234d7a3f0ca6bc67806e82e77b6566bca0b787da3cbdf4c17f0f634a4",
+    "playAndDistributionMatch": true,
+    "startupFix": "docs/TRAITS_STARTUP_REGRESSION_FIX_20261017.md"
+  }
+}

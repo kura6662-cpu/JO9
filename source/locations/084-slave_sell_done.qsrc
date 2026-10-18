@@ -1,0 +1,43 @@
+# slave_sell_done
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2865 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'slave_sell_done': gs 'snk_room_bridge', 'guard', 'slave_sell_done'
+! JO9 MOD END J9M2865
+!ЗАВЕРШЕНИЕ СДЕЛКИ ПО ПРОДАЖЕ КЛЕЙМЛЕНОЙ РАБЫНИ ЧАСТНОМУ ЛИЦУ
+!unused location
+npc_money[$npc_id] -= sell_price
+sparks += sell_price
+
+if price >= npc_worth[$npc_id] and npc_bennies[$npc_id] > 0:
+	npc_bennies[$npc_id] -= 1
+! JO9 MOD START TBV_OLD_REWARD_slave_sell_done_10 | 2026-10-17_trait_value
+	npc_relations[$npc_id] += func('jo9_traits_value', 'reward', 'slave', 1)
+! JO9 MOD END TBV_OLD_REWARD_slave_sell_done_10
+! JO9 MOD START TBV_OLD_REWARD_slave_sell_done_11 | 2026-10-17_trait_value
+	if slave['brand'] ! 4 and slave['brand'] ! 0: brand_rate += func('jo9_traits_value', 'reward', 'slave', 1)
+! JO9 MOD END TBV_OLD_REWARD_slave_sell_done_11
+! JO9 MOD START TBV_OLD_REWARD_slave_sell_done_12 | 2026-10-17_trait_value
+	if personal_relations[$npc_id] > 3: brand_rate += func('jo9_traits_value', 'reward', 'slave', 1)
+! JO9 MOD END TBV_OLD_REWARD_slave_sell_done_12
+end
+
+if price > sell_price and npc_bennies[$npc_id] > 0:
+! JO9 MOD START TBV_OLD_REWARD_slave_sell_done_16 | 2026-10-17_trait_value
+	personal_relations[$npc_id] += func('jo9_traits_value', 'reward', 'slave', 2)
+! JO9 MOD END TBV_OLD_REWARD_slave_sell_done_16
+end
+
+if price < sell_price and npc_bennies[$npc_id] > 0:
+	npc_bennies[$npc_id] -= 1
+	personal_relations[$npc_id] -= 2
+	if slave['brand'] ! 4: brand_rate -= 1
+end
+
+if slave['ill'] > 0: sold_ill_slave = 1 &! trigger follow-up event
+if slave['parasite'] > 0: sold_parasite_slave = 1 &! trigger follow-up event
+dynamic $sold_clothing
+dynamic $clear_slave_instance, 'slave'
+
+gt '<<$return_lock>>'
+
+------------ slave_sell_done ------------

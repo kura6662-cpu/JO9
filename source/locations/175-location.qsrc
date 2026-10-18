@@ -1,0 +1,24 @@
+# передышка
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2901 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'передышка': gs 'snk_room_bridge', 'guard', 'передышка'
+! JO9 MOD END J9M2901
+!GOTO HERE IF PLAYER CHOOSES "DEFEND" OPTION
+
+!Player gets rid of all the harmful conditions (changed from complete removal to reduction proportional to combat skill - ImperatorAugustus)
+слабость = max(0, слабость - master_fighter)
+скованность = max(0, скованность - master_fighter)
+боль = max(0, боль - master_fighter)
+шаткость = max(0, шаткость - master_fighter)
+ошеломление = max(0, ошеломление - master_fighter)
+рассеянность = max(0, рассеянность - master_fighter)
+
+!Player restores some stamina
+выносливость_игрока += сила_передышки
+if выносливость_игрока > макс_выносливость_игрока: выносливость_игрока = макс_выносливость_игрока
+
+$действия_игрока = '당신은 방어 태세를 취한다 [해로운 상태 감소] [지구력 +<<сила_передышки>>]'
+
+gt 'ход_противников'
+
+------------ передышка ------------

@@ -1,0 +1,292 @@
+# sjm_UI_UIadds
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2690 | 2026-10-15_zz_meiki_state, 2026-10-10_pregnancy_stage_display | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'sjm_UI_UIadds': gs 'snk_room_bridge', 'guard', 'sjm_UI_UIadds'
+gs 'jo9_meiki_state', 'slave', 0
+gs 'jo9_meiki_state', 'assistant', 0
+gs 'jo9_meiki_state', 'room1', 0
+gs 'jo9_meiki_state', 'room2', 0
+gs 'jo9_meiki_state', 'room3', 0
+gs 'jo9_meiki_state', 'room4', 0
+! JO9_PREG_STAGE_20261010: display only; args days, revealed, fertility, modification, parasite
+if $args[0] = 'preg_label' or $args[0] = 'preg_feature':
+	$result = ''
+	if args[1] <= 0 or args[3] = 1 or args[3] = -2 or args[4] = 4 or args[5] > 0: exit
+	if args[2] <= 0 and args[1] < 120: exit
+	$result = '임신 확인'
+	if args[1] >= 120: $result = '임신 중기'
+	if args[1] >= 196: $result = '임신 후기'
+	if args[1] >= 273: $result = '만삭'
+	if $args[0] = 'preg_feature': $result = '<span title="임신 진행 상태입니다. 정확한 출산 예정일을 뜻하지 않습니다."><b><<$result>></b></span><br>'
+	exit
+end
+
+! JO9 MOD END J9M2690
+killvar '$kilrel'
+killvar '$kilrela'
+sa_rel = 0
+
+
+if inventory['stethoscope'] < 1: inventory['stethoscope'] = 0
+
+!-------------------------------------------- Slave Management - Start ------------------------------------------------------
+if is_home = 1 and slave_state > CONST_INT['no_slave']:
+	$tmp_s = '<a style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="소지품창" href="EXEC: slave_stat_screen = 2 & gt ''slave_stat''"><img src="content\pic\ui\jon-UIadds\equipment.png" style="width:28px;height:30px"></a>'
+	if slave['virginity'] = 1:
+		$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="복원된 처녀막"><img src="content\pic\ui\jon-UIadds\Vir_restored.png"></div>'
+	elseif slave['virginity'] = 3:
+! JO9 MOD START J9M2689 | 2026-10-15_zzzzz_cherry_frame_size | changed block; context may be included
+		$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="경험 많음"><img style="width:28px;height:30px" src="content\pic\ui\jon-UIadds\Vir_black.png"></div>'
+! JO9 MOD END J9M2689
+	elseif slave['virginity'] = 4:
+! JO9 MOD START J9M2688 | 2026-10-15_zzzzz_cherry_frame_size | changed block; context may be included
+		$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="명기"><img style="width:28px;height:30px" src="content\pic\ui\jon-UIadds\Vir_golden.png"></div>'
+! JO9 MOD END J9M2688
+	elseif slave['virginity'] < 2:
+		$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="경험 없음"><img src="content\pic\ui\jon-UIadds\Vir_처.png"></div>'
+	else
+		$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="경험 있음"><img src="content\pic\ui\jon-UIadds\Vir_비.png"></div>'
+	end
+	if slave['fertility'] < 0:
+		if slave['fertility_revealed'] > 0 and (slave['fertility'] = -1 or slave['fertility'] = -3):
+			$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="임신 불가"><img src="content\pic\ui\jon-UIadds\Fer_불임.png"></div>'
+		elseif slave['fertility'] = -2:
+			$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="임신 불가"><img src="content\pic\ui\jon-UIadds\Fer_아동.png"></div>'
+		elseif slave['fertility'] = -1 and slave['fertility_revealed'] < 1:
+! JO9 MOD START J9M2687 | 2026-10-16_meiki_tentacle_success_safe_icon, 2026-10-16_safe_day_icon_reapply_work | changed block; context may be included
+			$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="안전일"><img src="content\pic\ui\Fer_PregS.png"></div>'
+! JO9 MOD END J9M2687
+		elseif slave['fertility'] = -3:
+			$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="착유용 젖소"><img src="content\pic\ui\jon-UIadds\Fer_젖소.png"></div>'
+		else
+			$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="임신률 저하"><img src="content\pic\ui\jon-UIadds\Fer_평시.png"></div>'
+		end
+	elseif slave['fertility'] = 1:
+		if slave['fertility_revealed'] > 0:
+			$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="산란기"><img src="content\pic\ui\jon-UIadds\Fer_산란.png"></div>'
+		else
+			$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="가임기"><img src="content\pic\ui\jon-UIadds\Fer_가임.png"></div>'
+		end
+	else
+		$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="가임기"><img src="content\pic\ui\jon-UIadds\Fer_가임.png"></div>'
+	end	
+	if slave['arousal'] = 0:
+		$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content\pic\ui\jon-UIadds\Arouse0.png"></div>'
+	elseif slave['arousal'] = 1:
+		$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content\pic\ui\jon-UIadds\Arouse1.png"></div>'
+	elseif slave['arousal'] = 2:
+		$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content\pic\ui\jon-UIadds\Arouse2.png"></div>'
+	elseif slave['arousal'] = 3:
+		$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content\pic\ui\jon-UIadds\Arouse3.png"></div>'
+	elseif slave['arousal'] = 4:
+		$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content\pic\ui\jon-UIadds\Arouse4.png"></div>'
+	elseif slave['arousal'] = 5:
+		$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content\pic\ui\jon-UIadds\Arouse5.png"></div>'
+	end
+	if slave['lactation'] > 0:
+		$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="모유 분비함" href = "EXEC: gs ''#var_base'' & msg $slave_milk_quantity"><img src="content\pic\ui\jon-UIadds\milk_drop.png" style="width:28px;height:29px"></div>'
+	else
+		$tmp_s += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="모유 안나옴"><img src="content\pic\ui\jon-UIadds\milk_drop_no.png" style="width:28px;height:29px"></div>'
+	end
+	$tmpbrand_s = '<div id = "slinfo_brand">'
+	if slave['brand'] = 4:
+		$tmpbrand_s += '<a class="tooltip-left-small-button" tooltip-data="조합상표"><font color="#F08080">의뢰</font></a></div>'
+	elseif slave['brand'] = 3:
+		$tmpbrand_s += '<a class="tooltip-left-small-button" tooltip-data="<<$master_name>> 마법상표"><font color="#006400">마법</font></a></div>'
+	elseif slave['brand'] = 2:
+		$tmpbrand_s += '<a class="tooltip-left-small-button" tooltip-data="<<$master_name>> 문신상표"><font color="#00008B">문신</font></a></div>'
+	elseif slave['brand'] = 1:
+		$tmpbrand_s += '<a class="tooltip-left-small-button" tooltip-data="<<$master_name>> 인장상표"><font color="#FF0000">인장</font></a></div>'
+	else
+		$tmpbrand_s += '<a class="tooltip-left-small-button" tooltip-data="상표 없음"><font color="white">없음</font></a></div>'
+	end
+	*p '<<$tmpbrand_s>>'
+	*p '<div id="slinfo_block"><<$tmp_s>></div>'
+	
+	!----------------------- Cautious: the goal is just to inform the player of a risk, not more here
+	if inventory['stethoscope'] ! 0:
+		if slave['parasite'] > 0:
+			if master_medic > 3 or assistant['nurse'] > 3:
+					*p '<div id = "slinfo_pregnant" class="tooltip-left-small-button" tooltip-data="<<$slave_name>>: 임신함"><a href = "EXEC: interaction_city = 331 & gt ''interaction_city''"><img src="content\pic\buttons\z_pregnant.png" height="32px"></a></div>'
+			end
+! JO9 MOD START J9M2686 | 2026-10-10_pregnancy_stage_display | changed block; context may be included
+		end
+	end
+	$jo9_preg_label = func('sjm_UI_UIadds', 'preg_label', slave['pregnant'], slave['pregnant_revealed'], slave['fertility'], slave['vaginal_modification'], slave['parasite'])
+	if $jo9_preg_label ! '':
+		*p '<div id="slinfo_pregnant" class="tooltip-left-small-button" tooltip-data="<<$slave_name>>: <<$jo9_preg_label>>"><a href="EXEC: interaction_city = 331 & gt ''interaction_city''"><img src="content\pic\buttons\z_pregnant.png" alt="<<$jo9_preg_label>>"></a></div>'
+	end
+	if inventory['stethoscope'] ! 0:
+! JO9 MOD END J9M2686
+		if slave['ill'] ! 0:
+			if master_medic > 2 or assistant['nurse'] > 2:
+				*p '<div id = "slinfo_ill" class="tooltip-left-small-button" tooltip-data="<<$slave_name>>: 질병"><a href = "EXEC: interaction_city = 331 & gt ''interaction_city''"><img src="content\pic\buttons\z_ill.png"></a></div>'
+			end
+		end
+	end
+	if slave['wounds'] > 0:
+		*p '<div id = "slinfo_wounds" class="tooltip-left-small-button" tooltip-data="<<$slave_name>>: 상처"><a href = "EXEC: interaction_city = 331 & gt ''interaction_city''"><img src="content\pic\buttons\z_wounds.png"></a></div>'
+	end
+end
+! also show rating outside
+if slave_state > CONST_INT['no_slave']:
+	gs '$slave_price', 'slave' &! update $rating and rating to represent slave so we can put the correct rank on the button (and when clicked, we will do it again to populate $rating_help for the assistant)
+	*p '<div id="slinfo_rank" class="tooltip-left-small-button" tooltip-data="등급은 어떻게 올릴까?"><a href="EXEC: gs ''$slave_price'', ''slave'' & msg $rating_help"><<$rating[rating]>></a></div>'
+end
+!-------------------------------------------- Slave Management - End ------------------------------------------------------
+
+!-------------------------------------------- Assistant Management - Start ------------------------------------------------------
+if is_home = 1 and assistant_state > CONST_INT['no_slave']:
+	$tmp_a = '<a class="tooltip-left-small-button" tooltip-data="소지품" href="EXEC: assistant_stat_screen = 2 & gt ''assistant_stat''"><img src="content\pic\ui\jon-UIadds\equipment.png" style="width:28px;height:30px"></a>'
+	if assistant['virginity'] = 1:
+		$tmp_a += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="복원된 처녀막"><img src="content\pic\ui\jon-UIadds\Vir_restored.png"></div>'
+	elseif assistant['virginity'] = 3:
+! JO9 MOD START J9M2685 | 2026-10-15_zzzzz_cherry_frame_size | changed block; context may be included
+		$tmp_a += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="경험 많음"><img style="width:28px;height:30px" src="content\pic\ui\jon-UIadds\Vir_black.png"></div>'
+! JO9 MOD END J9M2685
+	elseif assistant['virginity'] = 4:
+! JO9 MOD START J9M2684 | 2026-10-15_zzzzz_cherry_frame_size | changed block; context may be included
+		$tmp_a += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="명기"><img style="width:28px;height:30px" src="content\pic\ui\jon-UIadds\Vir_golden.png"></div>'
+! JO9 MOD END J9M2684
+	elseif assistant['virginity'] < 2:
+		$tmp_a += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="경험 없음"><img src="content\pic\ui\jon-UIadds\Vir_처.png"></a></div>'
+	else
+		$tmp_a += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="경험 있음"><img src="content\pic\ui\jon-UIadds\Vir_비.png"></a></div>'
+	end
+		if assistant['fertility'] < 0:
+		if assistant['fertility_revealed'] > 0 and (assistant['fertility'] = -1 or assistant['fertility'] = -3):
+			$tmp_a += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="임신 불가"><img src="content\pic\ui\jon-UIadds\Fer_불임.png"></div>'
+		elseif assistant['fertility'] = -2:
+			$tmp_a += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="임신 불가"><img src="content\pic\ui\jon-UIadds\Fer_아동.png"></div>'
+		elseif assistant['fertility'] = -1 and assistant['fertility_revealed'] < 1:
+! JO9 MOD START J9M2683 | 2026-10-16_meiki_tentacle_success_safe_icon, 2026-10-16_safe_day_icon_reapply_work | changed block; context may be included
+			$tmp_a += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="안전일"><img src="content\pic\ui\Fer_PregS.png"></div>'
+! JO9 MOD END J9M2683
+		elseif assistant['fertility'] = -3:
+			$tmp_a += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="착유용 젖소"><img src="content\pic\ui\jon-UIadds\Fer_젖소.png"></div>'
+		else
+			$tmp_a += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="임신률 저하"><img src="content\pic\ui\jon-UIadds\Fer_평시.png"></div>'
+		end
+	elseif assistant['fertility'] = 1:
+		if assistant['fertility_revealed'] > 0:
+			$tmp_a += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="산란기"><img src="content\pic\ui\jon-UIadds\Fer_산란.png"></div>'
+		else
+			$tmp_a += '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="가임기"><img src="content\pic\ui\jon-UIadds\Fer_가임.png"></div>'
+		end
+	else
+		$tmp_a += '<div style="display:inline-block;position:relative;"><a class="tooltip-left-small-button" tooltip-data="가임기"><img src="content\pic\ui\jon-UIadds\Fer_가임.png"></div>'
+	end
+
+	if assistant['arousal'] = 0:
+		$tmp_a += '<div style="display:inline-block;position:relative;"><a class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content\pic\ui\jon-UIadds\Arouse0.png"></a></div>'
+	elseif assistant['arousal'] = 1:	
+		$tmp_a += '<div style="display:inline-block;position:relative;"><a class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content\pic\ui\jon-UIadds\Arouse1.png"></a></div>'
+	elseif assistant['arousal'] = 2:
+		$tmp_a += '<div style="display:inline-block;position:relative;"><a class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content\pic\ui\jon-UIadds\Arouse2.png"></a></div>'
+	elseif assistant['arousal'] = 3:
+		$tmp_a += '<div style="display:inline-block;position:relative;"><a class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content\pic\ui\jon-UIadds\Arouse3.png"></a></div>'
+	elseif assistant['arousal'] = 4:
+		$tmp_a += '<div style="display:inline-block;position:relative;"><a class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content\pic\ui\jon-UIadds\Arouse4.png"></a></div>'
+	elseif assistant['arousal'] = 5:
+		$tmp_a += '<div style="display:inline-block;position:relative;"><a class="tooltip-left-small-button" tooltip-data="흥분 등급"><img src="content\pic\ui\jon-UIadds\Arouse5.png"></a></div>'
+	end
+	if assistant['lactation'] > 0:
+		$tmp_a += '<a class="tooltip-left-small-button" tooltip-data="모유 분비함" href = "EXEC: gs ''#var_base'' & msg $assistant_milk_quantity"><img src="content\pic\ui\jon-UIadds\milk_drop.png" style="width:27px;height:29px"></a>'
+	else
+		$tmp_a += '<a class="tooltip-left-small-button" tooltip-data="모유 안나옴"><img src="content\pic\ui\jon-UIadds\milk_drop_no.png" style="width:28px;height:30px"></a>'
+	end
+	$tmpbrand_a = '<div id = "slinfo_brand_assistnat">'
+	if assistant['brand'] = 4:
+		$tmpbrand_a += '<a class="tooltip-left-small-button" tooltip-data="조합상표"><font color="#F08080">의뢰</font></a></div>'
+	elseif assistant['brand'] = 3:
+		$tmpbrand_a +=  '<a class="tooltip-left-small-button" tooltip-data="<<$master_name>> 마법상표"><font color="#006400">마법</font></a></div>'
+	elseif assistant['brand'] = 2:
+		$tmpbrand_a +=  '<a class="tooltip-left-small-button" tooltip-data="<<$master_name>> 문신상표"><font color="#00008B">문신</font></a></div>'
+	elseif assistant['brand'] = 1:
+		$tmpbrand_a +=  '<a class="tooltip-left-small-button" tooltip-data="<<$master_name>> 인장상표"><font color="#FF0000">인장</font></a></div>'
+	else
+		$tmpbrand_a += '<a class="tooltip-left-small-button" tooltip-data="상표 없음"><font color="white">없음</font></a></div>'
+	end
+	*p '<<$tmpbrand_a>>'
+	*p '<div id = "asinfo_block"><<$tmp_a>></div>'
+	!----------------------- Cautious: the goal is just to inform the player of a risk, not more here
+	if inventory['stethoscope'] ! 0:
+		if assistant['parasite'] > 0:
+			if master_medic > 3 or assistant['nurse'] > 3:
+				*p '<div id = "asinfo_pregnant" class="tooltip-left-small-button" tooltip-data="<<$assistant_name>>: 임신"><a href = "EXEC: interaction_city = 331 & gt ''interaction_city''"><img src="content\pic\buttons\z_pregnant.png" height="32px"></a></div>'
+			end
+! JO9 MOD START J9M2682 | 2026-10-10_pregnancy_stage_display | changed block; context may be included
+		end
+	end
+	$jo9_preg_label = func('sjm_UI_UIadds', 'preg_label', assistant['pregnant'], assistant['pregnant_revealed'], assistant['fertility'], assistant['vaginal_modification'], assistant['parasite'])
+	if $jo9_preg_label ! '':
+		*p '<div id="asinfo_pregnant" class="tooltip-left-small-button" tooltip-data="<<$assistant_name>>: <<$jo9_preg_label>>"><a href="EXEC: interaction_city = 331 & gt ''interaction_city''"><img src="content\pic\buttons\z_pregnant.png" alt="<<$jo9_preg_label>>"></a></div>'
+	end
+	if inventory['stethoscope'] ! 0:
+! JO9 MOD END J9M2682
+		if assistant['ill'] ! 0:
+			if master_medic > 2 or assistant['nurse'] > 2:
+				*p '<div id = "asinfo_ill" class="tooltip-left-small-button" tooltip-data="<<$assistant_name>>: 질병"><a href = "EXEC: interaction_city = 331 & gt ''interaction_city''"><img src="content\pic\buttons\z_ill.png"></a></div>'
+			end
+		end
+	end
+	if assistant['wounds'] > 0:
+		*p '<div id = "asinfo_wounds" class="tooltip-left-small-button" tooltip-data="<<$assistant_name>>: 상처"><a href = "EXEC: interaction_city = 331 & gt ''interaction_city''"><img src="content\pic\buttons\z_wounds.png"></a></div>'
+	end
+end
+! also show rating outside
+if assistant_state > CONST_INT['no_slave']:
+	gs '$slave_price', 'assistant' &! update $rating and rating to represent assistant so we can put the correct rank on the button (and when clicked, we will do it again to populate $rating_help for the assistant)
+	*p '<div id = "asinfo_rank" class="tooltip-left-small-button" tooltip-data="등급은 어떻게 올릴까?"><a href="EXEC: gs ''$slave_price'', ''assistant'' & msg $rating_help"><<$rating[rating]>></a></div>'
+end
+!-------------------------------------------- Assistant Management - End ------------------------------------------------------
+
+
+!-------------------------------------------- Master Management - Start ------------------------------------------------------
+if master_wounds ! 0:
+	*p '<div id = "master_info_wounds" class="tooltip-left-small-button" tooltip-data="<<$master_name>>: 상처"><a href = "EXEC: interaction_city = 331 & gt ''interaction_city''"><img src="content\pic\buttons\z_wounds.png"></a></div>'
+end
+if master_ill ! 0:
+	if master_medic > 2 or assistant['nurse'] > 2:
+		*p '<div id = "master_info_wounds" class="tooltip-left-small-button" tooltip-data="<<$master_name>>: 질병"><a href = "EXEC: interaction_city = 331 & gt ''interaction_city''"><img src="content\pic\buttons\z_ill.png"></a></div>'
+	end
+end
+!-------------------------------------------- Master Management - end ------------------------------------------------------
+
+
+! Showing quarters buttons
+if $quick_move_action = "show":
+	$tmp = '<div id = "qm_block">'
+!	$tmp += '<div class = "qm_title">Travel</div>'
+	$tmp += '<font style="font-family:Sandoll 미생;font-size: 16px;"><center>이동</center></font>'
+
+		$tmp += '<center><a class="tooltip-left-small-button" tooltip-data="백색 도시로 이동"   href = "EXEC: $quick_move_action = ''go'' & city_form = 1 & gt ''sjm_UI_UIadds''"><img src="content\pic\ui\jon-UIadds\qm_whitehall.png"></a></center>'
+		$tmp += '<center><a class="tooltip-left-small-button" tooltip-data="네크로폴리스로 이동"   href = "EXEC: $quick_move_action = ''go'' & city_form = 5 & gt ''sjm_UI_UIadds''"><img src="content\pic\ui\jon-UIadds\qm_necropolis.png"></a></center>'
+		$tmp += '<center><a class="tooltip-left-small-button" tooltip-data="황소 구역으로 이동"     href = "EXEC: $quick_move_action = ''go'' & city_form = 2 & gt ''sjm_UI_UIadds''"><img src="content\pic\ui\jon-UIadds\qm_thebull.png"></a></center>'
+		$tmp += '<center><a class="tooltip-left-small-button" tooltip-data="뱀자리 구역으로 이동"   href = "EXEC: $quick_move_action = ''go'' & city_form = 3 & gt ''sjm_UI_UIadds''"><img src="content\pic\ui\jon-UIadds\qm_serpentine.png"></a></center>'
+		$tmp += '<center><a class="tooltip-left-small-button" tooltip-data="추방자 구역으로 이동" href = "EXEC: $quick_move_action = ''go'' & city_form = 4 & gt ''sjm_UI_UIadds''"><img src="content\pic\ui\jon-UIadds\qm_outcast.png"></a></center>'
+!		$tmp += '<div id = "qm_eastkvartal" class="tooltip-left segoe_print" tooltip-data="Travel to Eastern Quarter"><a href = "EXEC: $quick_move_action = ''go'' & city_form = 121 & gt ''sjm_UI_UIadds''"><img src="content\pic\ui\jon-UIadds\qm_eastkvartal.png"></a></div>'
+!		$tmp += '<div id = "qm_RedLight" class="tooltip-left segoe_print" tooltip-data="Travel to Red Light"><a href = "EXEC: $quick_move_action = ''go'' & city_form = 117 & gt ''sjm_UI_UIadds''"><img src="content\pic\ui\jon-UIadds\qm_redlight.png"></a></div>'
+!		$tmp += '<div id = "qm_centralkvartal" class="tooltip-left segoe_print" tooltip-data="Travel to Central Quarter"><a href = "EXEC: $quick_move_action = ''go'' & city_form = 118 & gt ''sjm_UI_UIadds''"><img src="content\pic\ui\jon-UIadds\qm_centralkvartal.png"></a></div>'	
+		$tmp += '<center><a class="tooltip-left-small-button" tooltip-data="동부 구역으로 이동" href = "EXEC: $quick_move_action = ''go'' & city_form = 121 & gt ''sjm_UI_UIadds''"><img src="content\pic\ui\jon-UIadds\qm_eastkvartal.png"></a></center>'
+		$tmp += '<center><a class="tooltip-left-small-button" tooltip-data="홍등가로 이동" href = "EXEC: $quick_move_action = ''go'' & city_form = 117 & gt ''sjm_UI_UIadds''"><img src="content\pic\ui\jon-UIadds\qm_redlight.png"></a></center>'
+		$tmp += '<center><a class="tooltip-left-small-button" tooltip-data="중앙 구역으로 이동" href = "EXEC: $quick_move_action = ''go'' & city_form = 118 & gt ''sjm_UI_UIadds''"><img src="content\pic\ui\jon-UIadds\qm_centralkvartal.png"></a></center>'	
+				$tmp += '<center><a class="tooltip-left-small-button" tooltip-data="도시 관문으로 이동"    href = "EXEC: $quick_move_action = ''go'' & city_form = 61 & gt ''sjm_UI_UIadds''"><img src="content\pic\ui\jon-UIadds\qm_thegate.png"></a></center>'
+!if the below line is enabled, update qm_block definition in css to increase height from 180px to 205px
+!		$tmp += '<br><center><a class="tooltip-left-small-button" tooltip-data="Travel to the Slums"    href = "EXEC: $quick_move_action = ''go'' & city_form = 6 & gt ''sjm_UI_UIadds''"><img src="content\pic\ui\jon-UIadds\qm_theslums.png"></a></center>'
+
+	$tmp += '</div>'
+	*p '<<$tmp>>'
+end
+
+! Action of quarters buttons
+if $quick_move_action = "go":
+	dynamic $transport_energy_drop
+	if is_home = 1 and sound_on = 1:
+		play 'content/snd/door.wav'
+	end
+	!gs '$newloc'
+	gt 'city_menu_form'
+end
+
+------------ sjm_UI_UIadds ------------

@@ -1,0 +1,18 @@
+# сменить_оружие
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2904 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'сменить_оружие': gs 'snk_room_bridge', 'guard', 'сменить_оружие'
+! JO9 MOD END J9M2904
+!CHANGING WEAPONS
+
+!creating menu
+$боевое_меню = ''
+$боевое_меню += "<a href='EXEC: gt ""сменить_оружие_основное""'>주 무기 변경</a><br>"
+$боевое_меню += "<a href='EXEC: gt ""сменить_оружие_вторичное""'>보조 무기 변경</a><br>"
+$боевое_меню += "<a href='EXEC: dynamic $убрать_основное'>주 무기 해제</a><br>"
+$боевое_меню += "<a href='EXEC: dynamic $убрать_вторичное'>보조 무기 해제</a><br>"
+$боевое_меню += "<br>"
+$боевое_меню += "<a href='EXEC: dynamic $вернуться_в_корень'>뒤로</a><br>"
+
+gt 'боевой_интерфейс'
+------------ сменить_оружие ------------

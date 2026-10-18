@@ -1,0 +1,126 @@
+# jo9_traits_combat
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START TRAITS_COMBAT | 2026-10-17_traits_batch
+! setup: actor slot, final unmodified battle maxima; damage: live condition; finish: personal real win.
+! education_xp: role, already cognition-adjusted gain, canonical subject or old target expression.
+if $args[0] = 'reset':
+ killvar 'jo9_trait_combat'
+ killvar '$jo9_trait_combat_actor'
+end
+
+if $args[0] = 'setup':
+ ! Each battle setup recalculates its own base values before entering here.
+ gs 'jo9_traits_combat', 'reset'
+ $jo9_trait_combat_actor = $args[1]
+ if $args[1] = '': gs 'jo9_traits_combat', 'clean' & exit
+ jo9_trait_combat_constitution = 0
+ jo9_trait_combat_class = 0
+ jo9_trait_combat_courage = 0
+ dynamic 'jo9_trait_combat_constitution = <<$args[1]>>["jo9_constitution"] & jo9_trait_combat_class = <<$args[1]>>["jo9_combat_trait"] & jo9_trait_combat_courage = <<$args[1]>>["courage"] & jo9_trait_combat["id"] = <<$args[1]>>["id"]'
+ jo9_trait_combat_hp_num = 1
+ jo9_trait_combat_hp_den = 1
+ jo9_trait_combat_sta_num = 1
+ jo9_trait_combat_sta_den = 1
+ jo9_trait_combat_mor_num = 1
+ jo9_trait_combat_mor_den = 1
+ if jo9_trait_combat_constitution = 1:
+  jo9_trait_combat_hp_num *= 3 & jo9_trait_combat_hp_den *= 2
+  jo9_trait_combat_sta_num *= 3 & jo9_trait_combat_sta_den *= 2
+ elseif jo9_trait_combat_constitution = -1:
+  jo9_trait_combat_hp_den *= 2 & jo9_trait_combat_sta_den *= 2
+ end
+ if jo9_trait_combat_class = 1 or jo9_trait_combat_class = 3:
+  jo9_trait_combat_sta_num *= 3 & jo9_trait_combat_sta_den *= 2
+  jo9_trait_combat_mor_num *= 3 & jo9_trait_combat_mor_den *= 2
+ end
+ if jo9_trait_combat_class = 3: jo9_trait_combat_hp_num *= 3 & jo9_trait_combat_hp_den *= 2
+ if jo9_trait_combat_courage = 1:
+  jo9_trait_combat_mor_num *= 3 & jo9_trait_combat_mor_den *= 2
+ elseif jo9_trait_combat_courage = -1:
+  jo9_trait_combat_mor_den *= 2
+ end
+ ! Combine independent fractions before integer division: healthy + veteran = 9/4 once.
+ макс_здоровье_игрока = max(1, args[2] * jo9_trait_combat_hp_num / jo9_trait_combat_hp_den)
+ макс_выносливость_игрока = args[3] * jo9_trait_combat_sta_num / jo9_trait_combat_sta_den
+ норм_дух_игрока = args[4] * jo9_trait_combat_mor_num / jo9_trait_combat_mor_den
+ if jo9_trait_combat_hp_num ! jo9_trait_combat_hp_den: здоровье_игрока = макс_здоровье_игрока
+ if jo9_trait_combat_sta_num ! jo9_trait_combat_sta_den: выносливость_игрока = макс_выносливость_игрока
+ if jo9_trait_combat_mor_num ! jo9_trait_combat_mor_den: дух_игрока = норм_дух_игрока
+ gs 'jo9_traits_combat', 'clean'
+end
+
+if $args[0] = 'damage':
+ if $jo9_trait_combat_actor = '': gs 'jo9_traits_combat', 'clean' & exit
+ jo9_trait_combat_class = 0
+ dynamic 'jo9_trait_combat_class = <<$jo9_trait_combat_actor>>["jo9_combat_trait"]'
+ if atk = 0 and jo9_trait_combat_class = 1 and здоровье_игрока * 100 <= макс_здоровье_игрока * 30: нанесенный_вред[atk] *= 2
+ ! Defense has no separate scalar in this engine: x2 defense halves incoming damage before its original minimum floor.
+ if def = 0 and jo9_trait_combat_class = 2 and выносливость_игрока * 2 >= макс_выносливость_игрока and дух_игрока * 2 >= норм_дух_игрока: нанесенный_вред[atk] /= 2
+ gs 'jo9_traits_combat', 'clean'
+end
+
+if $args[0] = 'finish':
+ if $итог_боя ! 'победа' or colosseum_fight > 0 or jo9_trait_combat['won'] = 1: gs 'jo9_traits_combat', 'clean' & exit
+ ! Relay continuation replaces actor with master (empty role) during fresh setup: defeated companion receives no win.
+ $jo9_trait_combat_winner = $jo9_trait_combat_actor
+ ! Mid-battle legacy saves have no helper state; infer the existing battle actor without rerolling anybody.
+ if $jo9_trait_combat_winner = '':
+  if $fight_return = 'Start' or $fight_return = 'Start1':
+   $jo9_trait_combat_winner = 'slave'
+  elseif combatant = 1:
+   $jo9_trait_combat_winner = 'slave'
+  elseif combatant = 2:
+   $jo9_trait_combat_winner = 'assistant'
+  end
+ end
+ if $jo9_trait_combat_winner = '': gs 'jo9_traits_combat', 'clean' & exit
+ ! A switched fog companion did not win even when the protagonist later wins.
+ if jo9_fog['active'] = 1 and jo9_fog['switched'] = 1: gs 'jo9_traits_combat', 'clean' & exit
+ jo9_trait_combat_id = 0
+ dynamic 'jo9_trait_combat_id = <<$jo9_trait_combat_winner>>["id"]'
+ if jo9_trait_combat['id'] ! 0 and jo9_trait_combat_id ! jo9_trait_combat['id']: gs 'jo9_traits_combat', 'clean' & exit
+ jo9_trait_combat['won'] = 1
+ gs 'jo9_traits_combat', 'win', $jo9_trait_combat_winner
+ gs 'jo9_traits_combat', 'clean'
+end
+
+if $args[0] = 'win':
+ if $args[1] = '': gs 'jo9_traits_combat', 'clean' & exit
+ ! This counter is cumulative, unlike winning_series (arena streak).
+ dynamic '<<$args[1]>>["jo9_real_wins"] += 1'
+ dynamic 'if <<$args[1]>>["jo9_real_wins"] >= 10 and <<$args[1]>>["jo9_combat_trait"] = 0: <<$args[1]>>["jo9_combat_trait"] = rand(1,3)'
+ gs 'jo9_traits_combat', 'clean'
+end
+
+if $args[0] = 'education_xp':
+ result = args[2]
+ if result <= 0: gs 'jo9_traits_combat', 'clean' & exit
+ $jo9_trait_combat_subject = $args[3]
+ ! Old competition paths pass e.g. slave_rate["stamina"] rather than the canonical name.
+ if instr($jo9_trait_combat_subject, 'stamina') > 0: $jo9_trait_combat_subject = 'stamina'
+ if instr($jo9_trait_combat_subject, 'calisthenics') > 0: $jo9_trait_combat_subject = 'calisthenics'
+ if instr($jo9_trait_combat_subject, 'gladiatrix') > 0: $jo9_trait_combat_subject = 'gladiatrix'
+ if instr($jo9_trait_combat_subject, 'dressage') > 0: $jo9_trait_combat_subject = 'dressage'
+ if $jo9_trait_combat_subject ! 'stamina' and $jo9_trait_combat_subject ! 'calisthenics' and $jo9_trait_combat_subject ! 'gladiatrix' and $jo9_trait_combat_subject ! 'dressage': gs 'jo9_traits_combat', 'clean' & exit
+ jo9_trait_combat_constitution = 0
+ dynamic 'jo9_trait_combat_constitution = <<$args[1]>>["jo9_constitution"]'
+ if jo9_trait_combat_constitution = 1: result = result * 3 / 2
+ if jo9_trait_combat_constitution = -1: result = max(1, result / 2)
+ gs 'jo9_traits_combat', 'clean'
+end
+if $args[0] = 'clean':
+ killvar 'jo9_trait_combat_constitution'
+ killvar 'jo9_trait_combat_class'
+ killvar 'jo9_trait_combat_courage'
+ killvar 'jo9_trait_combat_hp_num'
+ killvar 'jo9_trait_combat_hp_den'
+ killvar 'jo9_trait_combat_sta_num'
+ killvar 'jo9_trait_combat_sta_den'
+ killvar 'jo9_trait_combat_mor_num'
+ killvar 'jo9_trait_combat_mor_den'
+ killvar '$jo9_trait_combat_winner'
+ killvar 'jo9_trait_combat_id'
+ killvar '$jo9_trait_combat_subject'
+end
+! JO9 MOD END TRAITS_COMBAT
+------------ jo9_traits_combat ------------

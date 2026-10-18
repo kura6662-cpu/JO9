@@ -1,0 +1,261 @@
+# shop_general
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1366 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'shop_general': gs 'snk_room_bridge', 'guard', 'shop_general'
+! JO9 MOD END J9M1366
+!Common interface for selecting options in different places
+gs '_layout'
+
+if colosseum_fight > 0:
+	gt 'colosseum_fight'
+end
+
+if skip_to > 0:
+	sp_txt = skip_to
+	skip_to = 0
+end
+npc = 0
+$text_display = ''
+dynamic $display_options[sp_txt]
+
+if not_safe = 1:
+	not_safe = 0
+! JO9 MOD START J9M1365 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\empty.png"></div>')
+! JO9 MOD END J9M1365
+else
+! JO9 MOD START J9M1364 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\<<$bg[$place]>>.png"></div>')
+! JO9 MOD END J9M1364
+end
+
+! JO9 hunting result: separate the foreground from the menu, including saved options.
+if nsfw = 0 and (interaction_city = 61120 or interaction_city = 61121) and sp_txt = 1:
+	local $jo9_hunting_foreground = func('display_fullimage', 'stock', 'center_Isabella')
+	if $jo9_hunting_foreground ! '':
+		$text_display = replace($text_display, $jo9_hunting_foreground, '')
+		*p '<div id = "bg">' + $jo9_hunting_foreground + '</div>'
+	end
+end
+
+! JO9 MOD START J9M1363 | 2026-10-14_menu_foreground_canvas_alignment | changed block; context may be included
+! JO9_MENU_FOREGROUND_CANVAS_20261014
+! Foreground belongs to the 795x595 background, not the offset options menu.
+local jo9_menu_foreground_start = instr($text_display, '<div id="center_Isabella">')
+if jo9_menu_foreground_start > 0:
+ local $jo9_menu_foreground_tail = mid($text_display, jo9_menu_foreground_start, len($text_display))
+ local jo9_menu_foreground_end = instr($jo9_menu_foreground_tail, '</div>')
+ if jo9_menu_foreground_end > 0:
+  local $jo9_menu_foreground = mid($jo9_menu_foreground_tail, 1, jo9_menu_foreground_end + 5)
+  $text_display = replace($text_display, $jo9_menu_foreground, '')
+  *p '<div id="bg">' + $jo9_menu_foreground + '</div>'
+ end
+end
+*p '<style id="jo9_menu_foreground_fit">#bg>#center_Isabella{left:0;top:0;width:795px;height:595px;overflow:hidden;pointer-events:none;}#bg>#center_Isabella>img{position:absolute;left:50%;top:auto;bottom:0;max-width:795px;max-height:595px;width:auto;height:auto;display:block;transform:translateX(-50%);-webkit-transform:translateX(-50%);}</style>'
+
+! JO9 MOD END J9M1363
+! JO9 MOD START PLACE_STAGE_LIVE_GASTRONOM | 2026-10-18_world_description_stages
+! JO9 MOD START PLACE_STAGE_LIVE_BEGIN | 2026-10-18_world_description_stages
+local $jo9_place_live_info = ''
+if $place = 'gastronom':
+! JO9 MOD END PLACE_STAGE_LIVE_BEGIN
+	! сразу выводится сумма запасов дома, минус алкоголь(не занимает места?), by Lyazar
+	! возможно и не нужно, т.к. впилил подсчет в каждый пункт магаза, но пусть будет
+	dynamic $get_fridge_space
+	$jo9_place_live_info = '현재 재고 [<<fridge_items>>/<<estate_size[$estate]>>]:' + _
+	'<br><br>신선한 달걀 x<<fridge["eggs"]>>' + _
+	'<br>신선한 우유 x<<fridge["milk"]>>' + _
+	'<br>농축된 크림 x<<fridge["cream"]>>' + _
+	'<br>숙성 치즈/버터 x<<fridge["cheese"]>>' + _
+	'<br><br>신선한 야채류 х<<fridge["vegetables"]>>' + _
+	'<br>시리얼/곡물류 х<<fridge["grain"]>>' + _
+	'<br>허브류/향신료 x<<fridge["spice"]>>' + _
+	'<br>도수높은 주류 x<<fridge["alcohol"]>>' + _
+	'<br><br>고기/간 고기 x<<fridge["mince"]>>' + _
+	'<br>안심 살코기 x<<fridge["meat"]>>' + _
+	'<br>처녀 고깃살 x<<fridge["virgin_meat"]>>'
+end
+! JO9 MOD END PLACE_STAGE_LIVE_GASTRONOM
+
+!счетчик мяса будет отображаться когда спускаешься к мяснику
+! JO9 MOD START PLACE_STAGE_LIVE_MEAT | 2026-10-18_world_description_stages
+if $place = 'meat':
+	dynamic $get_fridge_space
+	$jo9_place_live_info = '현재 재고 [<<fridge_items>>/<<estate_size[$estate]>>]:' + _
+	'<br>다진 고기 x<<fridge["mince"]>>' + _
+	'<br>안심육 x<<fridge["meat"]>>' + _
+	'<br>처녀육 x<<fridge["virgin_meat"]>>'
+end
+! JO9 MOD END PLACE_STAGE_LIVE_MEAT
+
+! Brewing a potion in the laboratory
+if $place = 'lab':
+	if assistant['alchemist_rule'] = 1 and assistant_state = CONST_INT['slave_exist']:
+		brewing_skill = min(assistant['alchemy'], assistant['enchanter'])
+	else
+		brewing_skill = min(slave['alchemy'], slave['enchanter'])
+	end
+	$place_info[$place] = '숙련도 (연금술 & 마녀술): <<$skill_grade[brewing_skill]>><br><br>' + _
+	'<u>현재 재고</u>:<br>' + _
+	'도수높은 주류 х<<fridge["alcohol"]>><br>' + _
+	'안개 괴물 점액질 *<<lab_store["slime"]>><br>' + _
+	'삼나무 진액 *<<lab_store["koffe"]>><br>' + _
+	'낙원의 독말풀 *<<lab_store["kanabis"]>><br>' + _
+	'요정의 가루 *<<lab_store["meth"]>><br>' + _
+	'망각의 정수 *<<lab_store["opium"]>><br><br>' + _
+	'바커스의 술 *<<вакхический_нектар>><br>' + _
+	'자양 강장제 *<<тонизируюзщий_эликсир>><br>' + _
+	'기적의 향유 *<<целительный_бальзам>><br>' + _
+	'최음제 *<<афродизиак>><br>' + _
+	'배란 유발제 *<<мощный_афодизиак>><br>' + _
+	'순애의 미약 *<<приворотное_зелье>><br>' + _
+	'저승의 강물 *<<вода_леты>><br>' + _
+	'각인의 물약 *<<brainwashing_potion>><br>'
+end
+
+! JO9 MOD START PLACE_STAGE_PANEL_SOURCE | 2026-10-18_world_description_stages
+local $jo9_place_panel_info = $place_info[$place]
+if $jo9_place_live_info ! '': $jo9_place_panel_info = $jo9_place_live_info
+if interaction_city = 61120 or interaction_city = 61121:
+	$info_bar = $stock_attrib_list
+! JO9 MOD END PLACE_STAGE_PANEL_SOURCE
+	*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<$place_name[$place]>></div><<$place_location[$place]>><br></center></div>'
+	*p '<div id = "interaction_stat_bar"><<$info_bar>></div>'
+elseif npc = 0:
+	$info_bar = ''
+	*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<$place_name[$place]>></div><<$place_location[$place]>><br>'
+	*nl '참고 정보:</center></div>'
+! JO9 MOD START PLACE_STAGE_PANEL_RENDER | 2026-10-18_world_description_stages
+	*p '<div id = "side_panel_text"><<$info_bar>><span class="jo9-reference-body"><<$jo9_place_panel_info>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style></div>'
+! JO9 MOD END PLACE_STAGE_PANEL_RENDER
+else
+	$info_bar = ''
+! JO9 MOD START J9M1362 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	if nsfw = 0 and $npc_image[$npc_id] ! '': *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\characters\<<$npc_image[$npc_id]>>.png"></div>')
+! JO9 MOD END J9M1362
+	*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<$npc_name[$npc_id]>></div><<$npc_status[$npc_id]>><br>'
+	*nl '참고 정보:</center></div>'
+	*p '<div id = "side_panel_text"><<$npc_attitude[npc_attitude[$npc_id]]>>'
+	*nl '<span class="jo9-reference-body"><<$npc_info[$npc_id]>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style></div>'
+end
+
+! JO9_CRYO_PAGED_GRID_20261015
+! Rebuild only this view, including old saves with cached display_options.
+if $place = 'stasis_bank_2':
+ local jo9_cryo_page_size = 15
+ ! Current gameplay supports 18 cells; pagination itself has no 18-cell limit.
+ local jo9_cryo_total = min(18, max(3, 3 + cells_unlocked * 3))
+ local jo9_cryo_pages = (jo9_cryo_total + jo9_cryo_page_size - 1) / jo9_cryo_page_size
+ if jo9_cryo_page < 1: jo9_cryo_page = 1
+ if jo9_cryo_page > jo9_cryo_pages: jo9_cryo_page = jo9_cryo_pages
+ local jo9_cryo_first = (jo9_cryo_page - 1) * jo9_cryo_page_size + 1
+ local jo9_cryo_last = min(jo9_cryo_total, jo9_cryo_first + jo9_cryo_page_size - 1)
+ local jo9_cryo_i, jo9_cryo_pos, jo9_cryo_col, jo9_cryo_row, jo9_cryo_x, jo9_cryo_y, jo9_cryo_state, jo9_cryo_action
+! JO9 MOD START J9M1361 | 2026-10-15_z_cryo_cell_names | changed block; context may be included
+ local $jo9_cryo_portrait, $jo9_cryo_caption, $jo9_cryo_link, $jo9_cryo_icon, $jo9_cryo_name, $jo9_cryo_heading
+! JO9 MOD END J9M1361
+ dynamic $save_link, -1
+ menu_item_counter = -1
+ $text_display = '<div id="jo9_cryo_grid" class="menu jo9_cryo_menu">'
+! JO9 MOD START J9M1360 | 2026-10-15_z_cryo_cell_names | changed block; context may be included
+ $text_display += '<style>#jo9_cryo_grid{position:relative;width:724px;height:450px;margin:0;padding:0;float:none;background:transparent;font-family:경기천년제목 Medium;}#jo9_cryo_grid .jo9_cryo_card{position:absolute;width:230px;height:62px;box-sizing:border-box;border:2px solid #9b743d;background:rgba(5,8,10,0.84);box-shadow:inset 0 0 0 1px #3e2d19;}#jo9_cryo_grid .jo9_cryo_face{position:absolute;left:4px;top:3px;width:48px;height:52px;}#jo9_cryo_grid .jo9_cryo_face img{display:block;width:48px;height:52px;object-fit:cover;}#jo9_cryo_grid .jo9_cryo_label{position:absolute;left:60px;top:6px;right:4px;height:48px;line-height:23px;font-size:18px;color:#ffb45a;text-decoration:none;box-sizing:border-box;}#jo9_cryo_grid .jo9_cryo_heading{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}#jo9_cryo_grid .jo9_cryo_label small{display:block;font-size:15px;}#jo9_cryo_grid .jo9_cryo_disabled{color:#999;}#jo9_cryo_grid .jo9_cryo_footer{position:absolute;top:385px;left:0;width:724px;height:50px;line-height:42px;white-space:nowrap;}#jo9_cryo_grid .jo9_cryo_footer a,#jo9_cryo_grid .jo9_cryo_footer span{display:inline-block;margin-right:10px;padding:0 8px;font-size:18px;color:#ffb45a;text-decoration:none;background:rgba(5,8,10,0.84);border:1px solid #9b743d;}#jo9_cryo_grid a:hover{color:#ffea90;}#jo9_cryo_grid .jo9_cryo_footer .jo9_cryo_disabled{color:#999;}</style>'
+! JO9 MOD END J9M1360
+ for jo9_cryo_i = jo9_cryo_first to jo9_cryo_last:
+  jo9_cryo_pos = jo9_cryo_i - jo9_cryo_first
+  jo9_cryo_col = jo9_cryo_pos / 5
+  jo9_cryo_row = jo9_cryo_pos - jo9_cryo_col * 5
+  jo9_cryo_x = jo9_cryo_col * 246
+  jo9_cryo_y = jo9_cryo_row * 70
+  dynamic 'jo9_cryo_state = iced_<<jo9_cryo_i>>_state'
+  jo9_cryo_action = 332011 + jo9_cryo_i
+  $jo9_cryo_portrait = ''
+  $jo9_cryo_link = ''
+! JO9 MOD START J9M1359 | 2026-10-15_z_cryo_cell_names | changed block; context may be included
+  $jo9_cryo_name = ''
+  $jo9_cryo_heading = '셀 №<<jo9_cryo_i>>'
+  if jo9_cryo_state ! CONST_INT['no_slave']:
+   dynamic '$jo9_cryo_name = $iced_<<jo9_cryo_i>>_name'
+   if $jo9_cryo_name ! '':
+    $jo9_cryo_name = replace(replace(replace($jo9_cryo_name, '&', '&amp;'), '<', '&lt;'), '>', '&gt;')
+    $jo9_cryo_heading += ' · ' + $jo9_cryo_name
+   end
+! JO9 MOD END J9M1359
+   dynamic '$jo9_cryo_portrait = $iced_<<jo9_cryo_i>>["ava_gray"]'
+   if $jo9_cryo_portrait = '': dynamic '$jo9_cryo_portrait = $iced_<<jo9_cryo_i>>["ava"]'
+   if $jo9_cryo_portrait = '':
+    $jo9_cryo_portrait = 'content/pic/blank_ava.png'
+   else
+    $jo9_cryo_portrait += '.png'
+   end
+   $jo9_cryo_icon = '<a class="jo9_cryo_face" title="보관 정보" href="EXEC: cryo_cell_selected = <<jo9_cryo_i>> & $return_lock = $curloc & gt ''stasis_cell''"><img src="<<$jo9_cryo_portrait>>"></a>'
+   $jo9_cryo_caption = '꺼낸다'
+   $jo9_cryo_link = 'interaction_city = <<jo9_cryo_action>> & gt ''interaction_city'''
+  else
+   $jo9_cryo_icon = '<span class="jo9_cryo_face"><img src="content/pic/ui overhaul/cell rent.png"></span>'
+   if slave_state ! CONST_INT['no_slave']:
+    $jo9_cryo_caption = '임대 (하루 1$)'
+    $jo9_cryo_link = 'interaction_city = <<jo9_cryo_action>> & gt ''interaction_city'''
+   else
+    $jo9_cryo_caption = '비어 있음'
+   end
+  end
+  $text_display += '<div class="jo9_cryo_card" style="left:<<jo9_cryo_x>>px;top:<<jo9_cryo_y>>px;">' + $jo9_cryo_icon
+  if $jo9_cryo_link ! '':
+   menu_item_counter += 1
+   dynamic $save_link, menu_item_counter, $jo9_cryo_link
+! JO9 MOD START J9M1358 | 2026-10-15_z_cryo_cell_names | changed block; context may be included
+   $text_display += '<a class="jo9_cryo_label" href="EXEC: <<$jo9_cryo_link>>"><span class="jo9_cryo_heading"><<$jo9_cryo_heading>></span><small><<$jo9_cryo_caption>></small></a>'
+! JO9 MOD END J9M1358
+  else
+! JO9 MOD START J9M1357 | 2026-10-15_z_cryo_cell_names | changed block; context may be included
+   $text_display += '<span class="jo9_cryo_label jo9_cryo_disabled"><span class="jo9_cryo_heading"><<$jo9_cryo_heading>></span><small><<$jo9_cryo_caption>></small></span>'
+! JO9 MOD END J9M1357
+  end
+  $text_display += '</div>'
+ end
+ $text_display += '<div class="jo9_cryo_footer">'
+ if jo9_cryo_page > 1: $text_display += '<a href="EXEC: jo9_cryo_page -= 1 & gt $curloc">이전</a>'
+ $text_display += '<span><<jo9_cryo_page>> / <<jo9_cryo_pages>></span>'
+ if jo9_cryo_page < jo9_cryo_pages: $text_display += '<a href="EXEC: jo9_cryo_page += 1 & gt $curloc">다음</a>'
+ if cells_unlocked < 5:
+  if sparks >= 300:
+   $text_display += '<a href="EXEC: interaction_city = 33202 & gt ''interaction_city''">셀 3개 추가 (300$)</a>'
+  else
+   $text_display += '<span class="jo9_cryo_disabled">셀 3개 추가 (300$)</span>'
+  end
+ end
+ $text_display += '<a href="EXEC: sp_txt = 1 & gt $curloc">뒤로</a></div></div>'
+end
+
+! JO9 MOD START J9M1356 | 2026-10-15_z_inline_text_prefix | changed block; context may be included
+! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($sp_text[sp_txt], '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $sp_text[sp_txt] = $mid($sp_text[sp_txt], len($jo9_leading_empty) + 1, len($sp_text[sp_txt]))
+! JO9 MOD END J9M1356
+! JO9 MOD START PLACE_STAGE_EMPTY_NARRATION | 2026-10-18_world_description_stages
+local $jo9_shop_narrative = $sp_text[sp_txt]
+if ($place = 'gastronom' or $place = 'meat' or $place = 'slaughter') and $trim($jo9_shop_narrative) = '':
+ $jo9_shop_narrative = $place_info[$place]
+end
+*p '<div id = "text"><<$jo9_shop_narrative>></div>'
+! JO9 MOD END PLACE_STAGE_EMPTY_NARRATION
+! JO9 MOD START J9M1355 | 2026-10-09_city_scene_menu_alignment | changed block; context may be included
+*p func('$menu', 'layout_style')
+*p '<div id="jo9_scene_menu" class="jo9_menu_scene"><<$text_display>></div>'
+! JO9 MOD END J9M1355
+*p '<div id = "sparks_display"><<sparks>>$</div>'
+
+
+if $place = 'milk_cooperative':
+	*p '<div id = "milk_sign_board"><img src="content\pic\favpng_stock-photography-wood-royalty-free-chain_SSSSSSIBAL.png"></div>'
+	*p '<div id = "milk_sign_writing"><<milk_price>></div>'
+end
+if $place = 'milk_cooperative' and milk_can = 1:
+	*p '<div id = "barn_milk_can"><img src="content/pic/milk_can.png" style="width:85px;height:132px;"></div>'
+	*p '<div id = "barn_milk_can_stock"><<milk_stock>></div>'
+end
+
+if sound_on = 1 and $play_sound[txt] ! '': play 'content\snd\<<$play_sound[txt]>>.wav', sound_volume
+if $play_sound[txt] ! '': $play_sound[txt] = ''
+
+------------ shop_general ------------

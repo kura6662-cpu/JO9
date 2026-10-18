@@ -1,0 +1,20 @@
+# slave_auction_next
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2861 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'slave_auction_next': gs 'snk_room_bridge', 'guard', 'slave_auction_next'
+! JO9 MOD END J9M2861
+!Skip auction lot
+
+if stock_sold >= stock_limit:
+	auction_phase = 5
+	haggling_stage = 0
+else
+	auction_phase = 0
+	haggling_stage = 0
+	gs 'generate_stock'
+	gt 'slave_auction_pass'
+end
+
+gt 'slave_auction_buy'
+
+------------ slave_auction_next ------------

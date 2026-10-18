@@ -1,0 +1,55 @@
+# stock_to_slave_testing
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2823 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'stock_to_slave_testing': gs 'snk_room_bridge', 'guard', 'stock_to_slave_testing'
+! JO9 MOD END J9M2823
+!Stock to Slave Testing Cheat for cheat_h and cheat_j
+!Created by crushboss
+
+!Slave Equipped Armor, Weapons, and Cloth
+$slave['wpn'] = 'катана'
+$slave['scnd'] = ''
+$slave['armor'] = 'плейт'
+$slave['right_wpn'] = 'катана'
+$slave['left_wpn'] = 'кинжал'
+if slave_type ! 2572: $slave['back_wpn'] = 'фламберг'
+$slave['cloth'] = 'sun_dress'
+
+!Slave Misc Attributes
+if slave['age'] ! CONST_INT['loli_age']: slave['fertility'] = -1
+slave['fertility_revealed'] = 1
+!if slave['arena_level'] < 4: slave['arena_level'] = 4
+!if race_win_ratio < 4: race_win_ratio = 4
+!slave['pos_slave_winner'] = slave['sensitivity']
+!if slave['has_ride_win'] < 1: slave['has_ride_win'] = 1
+slave_rate['fame'] += 15
+if cheat_j = 1: slave_rate['fame'] += 25
+slave['energy'] = 5
+slave['metabolism'] = 5
+slave['arousal'] = 5
+!slave_rate['arousal'] = 200
+!if slave['brand'] ! 4: slave['brand'] = 3
+
+!Slave Conditions
+!slave['ill'] = 0
+slave['fertility'] = 0
+!slave['pregnant'] = 0
+!slave['parasite'] = 0
+!slave['wounds'] = 0
+!slave['bruises'] = 0
+!slave['scars'] = 0
+!slave['issues'] = 0
+!slave['fear'] = 0
+!slave['angst'] = 0
+!slave['spoil'] = 0
+!slave['moral'] = 5
+!slave['virginity'] = 2
+slave['pet'] = 5
+slave['dressage'] = 5
+
+a = rand(1,10)
+if a < 6 and slave['age'] ! CONST_INT['loli_age']: slave['gladiatrix_affinity'] = 1
+if a > 5 and slave['age'] = CONST_INT['loli_age']: slave['dressage_affinity'] = 1
+a = 0
+
+------------ stock_to_slave_testing ------------

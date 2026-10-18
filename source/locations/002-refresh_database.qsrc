@@ -1,0 +1,64 @@
+# refresh_database
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2808 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'refresh_database': gs 'snk_room_bridge', 'guard', 'refresh_database'
+! JO9 MOD END J9M2808
+!Refresh Database - created by crushboss
+!This helps the game be more compatible with old save games - not a perfect solution but it helps
+
+killvar 'code_defined' &! do-once reset
+killvar 'first_visit' &! do-once reset
+
+! > 100: gs '#var_base_woman'
+!if hero_choice < 100: gs '#var_base' 
+
+!$counter = '$counter' &! realtime update handler
+$onobjsel = '$objsel' &! object selector handler
+$ongload = '$ongload' &! after load game handler
+
+!static locations that are not refreshed anywhere else
+gs '#static_base' &! no load order dependencies
+gs '#static_txt' &! must load after #static_base
+!if hero_choice < 101: gs '#var_base'
+gs '#dynamic' &! no load order dependencies
+gs '#food_base' &! must load after #static_base
+gs '#variative' &! must load after #static_base
+gs '#help_msg' &! must load after #static_base and #variative
+gs '#item_base' &! no load order dependencies
+gs '#masters_base' &! no load order dependencies
+gs '#moodlet_base' &! load order no dependencies
+gs '#simple_npc' &! before #npc_base until conflicts are resolved (TODO)
+gs '#npc_base' &! no load order dependencies
+gs '#options' &! no load order dependencies
+gs '#place_base' &! no load order dependencies
+
+!locations that are refreshed elsewhere
+gs '#estate_base' &! refreshed by Adverto Servili special event
+gs '#var_base' &! must load after #static_base, refreshed by main_screen, city_screen, choice_screen, next_day, contains conditional text and subexpressions
+!if hero_choice > 100: gs '#var_base_woman'
+
+gs '#txt_man' &! must load after #static_base and #var_base, refreshed when slave instances are swapped or cleared, contains conditional text and subexpressions
+gs '#txt_2_man' &! must load after #static_base and #var_base, refreshed when slave instances are swapped or cleared, contains conditional text and subexpressions
+gs '#chariots_base' &! refreshed by $ride_start before each race
+gs '#quest_base' &! refreshed by master_stat when viewing master objectives tab
+gs '#event_base'
+
+!fight engine
+gs '#тексты_движка'
+gs '#противники'
+gs '#суперудары'
+gs '#боевые_предметы'
+
+!if hero_choice < 100: gs '#var_base'
+!if hero_choice > 100: gs '#var_base_woman'
+
+
+!sex engine
+!if hero_choice < 100: 
+gs '#sex_texts' 
+!if hero_choice < 100: 
+gs '#sex_options'
+!if hero_choice > 100: gs '#sex_texts_woman'
+!if hero_choice > 100: gs '#sex_options_woman'
+
+------------ refresh_database ------------

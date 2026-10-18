@@ -1,0 +1,23 @@
+# exit
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1252 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'exit': gs 'snk_room_bridge', 'guard', 'exit'
+! JO9 MOD END J9M1252
+
+clr
+*clr
+! JO9 MOD START J9M1251 | 2026-10-14_hide_outer_frame_on_startup | changed block; context may be included
+*p '<style id="jo9_startup_no_outer_frame">body:before,body:after{display:none!important;}</style>'
+! JO9 MOD END J9M1251
+
+gs '_layout'
+
+! JO9 MOD START J9M1250 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content/pic/bg/game_over.png"></div>')
+! JO9 MOD END J9M1250
+
+*p '<div id="jo9_gameover_message" style="position:absolute;left:225px;top:240px;width:830px;max-height:180px;overflow:auto;box-sizing:border-box;padding:14px 22px;background:transparent;color:#f0dfbc;font-family:경기천년제목 Medium;font-size:22px;line-height:150%;text-align:center;text-shadow:1px 1px 2px #000;"><<$args[0]>></div>'
+
+*p '<div id="jo9_gameover_menu" style="position:absolute;left:110px;top:505px;width:460px;box-sizing:border-box;padding:12px 18px;background:transparent;border:1px solid transparent;color:#28190e;font-family:경기천년제목 Medium;font-size:20px;line-height:150%;text-align:center;text-shadow:0 1px 1px #e8c78e;">저장 불러오기: 상단 메뉴 이용<br><a style="display:inline-block;margin-top:8px;padding:6px 20px;background:transparent;border:1px solid transparent;color:#ffe0a0;text-shadow:1px 1px 2px #000;text-decoration:none;font-size:22px;" href="EXEC: gt ''main_menu''">메인 메뉴로 돌아가기</a></div>'
+
+------------ exit ------------

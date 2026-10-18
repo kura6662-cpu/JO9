@@ -1,0 +1,231 @@
+# боевой_интерфейс
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1440 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'боевой_интерфейс': gs 'snk_room_bridge', 'guard', 'боевой_интерфейс'
+! JO9 MOD END J9M1440
+!Displays information about the battle and player options
+!Most of the time you are on this location when fighting
+!Overhauled by crushboss
+
+if текущий < 1: текущий = количество_врагов
+if текущий > количество_врагов: текущий = 1
+
+!switch to a live enemy if current one is dead
+if враг[текущий] ! 1: dynamic $next_enemy_click, 'nogt'
+
+!debug - enable for easy wins - lokplart
+!здоровье_врага[текущий] = 0
+!здоровье_игрока = 1000
+!выносливость_игрока = 1000
+!дух_игрока = 1000
+
+!enemy statuses
+$плохие_эффекты_проивника = ''
+$хорошие_эффекты_противника = ''
+
+gs '#dynamic'
+dynamic $слабость_противника
+dynamic $скованность_противника
+dynamic $боль_противника
+dynamic $шаткость_противника
+dynamic $ошеломление_противника
+dynamic $рассеянность_противника
+
+dynamic $бешенство_противника
+dynamic $разгон_противника
+dynamic $меткость_противника
+dynamic $адреналин_противника
+dynamic $верткость_противника
+dynamic $внимание_противника
+
+$эффекты_противника = $хорошие_эффекты_противника + $плохие_эффекты_проивника
+
+!player statuses
+$плохие_эффекты_игрока = ''
+$хорошие_эффекты_игрока = ''
+gs '#dynamic'
+dynamic $слабость_игрока
+dynamic $скованность_игрока
+dynamic $боль_игрока
+dynamic $шаткость_игрока
+dynamic $ошеломление_игрока
+dynamic $рассеянность_игрока
+
+dynamic $бешенство_игрока
+dynamic $разгон_игрока
+dynamic $меткость_игрока
+dynamic $адреналин_игрока
+dynamic $верткость_игрока
+dynamic $внимание_игрока
+
+$эффекты_игрока = $хорошие_эффекты_игрока + $плохие_эффекты_игрока
+
+!Information about the latest actions of the player and enemies
+$информация_о_бое = ''
+if $боевая_обстановка ! '': $информация_о_бое += '<<$боевая_обстановка>><br><br>'
+$информация_о_бое += '<<$действия_игрока>><br><br>'
+$информация_о_бое += '<<$действия_врага[1]>>'
+$информация_о_бое += '<<$действия_врага[2]>>'
+$информация_о_бое += '<<$действия_врага[3]>>'
+$информация_о_бое += '<<$действия_врага[4]>>'
+$информация_о_бое += '<<$действия_врага[5]>>'
+
+if количество_врагов > 1:
+	! clear final attack detail for each defeated enemy after showing it once (for multi-opponent battles)
+	! see конец_раунда.qsrc where we append defeat text to last combat round text to show the final action)
+	for i = 1 to 5:
+		a = instr($действия_врага[i], '<br>')
+		if a > 0 and a < len($действия_врага[i]) - 3: $действия_врага[i] = $mid($действия_врага[i], a + 4)
+	end
+end
+
+if $place = 'edge_patrol':
+! JO9 MOD START J9M1439 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "fight_bg"><img src = "content/pic/bg/<<$bg["edge_patrol"]>>.png"></div>')
+! JO9 MOD END J9M1439
+elseif ui_style = 2:
+! JO9 MOD START J9M1438 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "fight_bg"><img src = "content\pic\ui\grimdark\bg\fight.png"></div>')
+! JO9 MOD END J9M1438
+else
+! JO9 MOD START J9M1437 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "fight_bg"><img src = "content\pic\bg\fight.png"></div>')
+! JO9 MOD END J9M1437
+end
+
+*p '<div id = "fight_txt"><<$информация_о_бое>></div>'
+
+if arena_mode = 0:
+	!Handle Master and Sparring practice menu options - crushboss
+	if ui_style = 2 and combatant = 0:
+! JO9 MOD START J9M1436 | 2026-10-10_restore_ui_format_after_dialogue_normalization | changed block; context may be included
+		*p '<div id = "fight_options_ui2"><a href = "EXEC: dynamic $в_боевое_меню">일반 공격</a>
+			<a href="EXEC: gt ''суперудары''">특수 기술</a>
+			<a href = "EXEC: gt ''инвентарь''">물약 사용</a>
+			<a href = "EXEC: gt ''сменить_оружие''">무기 변경</a>
+			<a href="EXEC: gt ''передышка''">방어</a>
+		</div>'
+! JO9 MOD END J9M1436
+	elseif ui_style ! 2 and combatant = 0:
+! JO9 MOD START J9M1435 | 2026-10-10_restore_ui_format_after_dialogue_normalization | changed block; context may be included
+		*p '<div id = "fight_options"><a href = "EXEC: dynamic $в_боевое_меню">일반 공격</a>
+			<a href="EXEC: gt ''суперудары''">특수 기술</a>
+			<a href = "EXEC: gt ''инвентарь''">물약 사용</a>
+			<a href = "EXEC: gt ''сменить_оружие''">무기 변경</a>
+			<a href="EXEC: gt ''передышка''">방어</a>
+		</div>'
+! JO9 MOD END J9M1435
+	elseif ui_style = 2 and (combatant = 1 or combatant = 2):
+! JO9 MOD START J9M1434 | 2026-10-10_restore_ui_format_after_dialogue_normalization | changed block; context may be included
+		*p '<div id = "fight_options_ui2"><a href = "EXEC: dynamic $в_боевое_меню">일반 공격</a>
+			<a href = "EXEC: gt ''инвентарь''">물약 사용</a>
+			<a href = "EXEC: gt ''сменить_оружие''">무기 변경</a>
+			<a href="EXEC: gt ''передышка''">방어</a>
+		</div>'
+! JO9 MOD END J9M1434
+	elseif ui_style ! 2 and (combatant = 1 or combatant = 2):
+! JO9 MOD START J9M1433 | 2026-10-10_restore_ui_format_after_dialogue_normalization | changed block; context may be included
+		*p '<div id = "fight_options"><a href = "EXEC: dynamic $в_боевое_меню">일반 공격</a>
+			<a href = "EXEC: gt ''инвентарь''">물약 사용</a>
+			<a href = "EXEC: gt ''сменить_оружие''">무기 변경</a>
+			<a href="EXEC: gt ''передышка''">방어</a>
+		</div>'
+! JO9 MOD END J9M1433
+	end
+end
+
+if arena_mode = 1 and combatant = 1:
+	!Enables or disables Extra Special Graphic and Option - Gladiatrix Contest for Slave - crushboss
+	if ui_style = 2 and суперудар_сделан[22] = 0 and $g_type = "retiarius":
+		*p "<div id = 'fight_options_ui2'><a href = 'EXEC: dynamic $суперудар_22'><img src = '<<$extra_special_active>>'></a></div>"
+	elseif ui_style ! 2 and суперудар_сделан[22] = 0 and $g_type = "retiarius":
+		*p "<div id = 'fight_options'><a href = 'EXEC: dynamic $суперудар_22'><img src = '<<$extra_special_active>>'></a></div>"
+	elseif ui_style = 2 and суперудар_сделан[23] = 0 and $g_type = "flagrius":
+		*p "<div id = 'fight_options_ui2'><a href = 'EXEC: dynamic $суперудар_23'><img src = '<<$extra_special_active>>'></a></div>"
+	elseif ui_style ! 2 and суперудар_сделан[23] = 0 and $g_type = "flagrius":
+		*p "<div id = 'fight_options'><a href = 'EXEC: dynamic $суперудар_23'><img src = '<<$extra_special_active>>'></a></div>"
+	elseif ui_style = 2 and суперудар_сделан[24] = 0 and $g_type = "dimacherus":
+		*p "<div id = 'fight_options_ui2'><a href = 'EXEC: dynamic $суперудар_24'><img src = '<<$extra_special_active>>'></a></div>"
+	elseif ui_style ! 2 and суперудар_сделан[24] = 0 and $g_type = "dimacherus":
+		*p "<div id = 'fight_options'><a href = 'EXEC: dynamic $суперудар_24'><img src = '<<$extra_special_active>>'></a></div>"
+	elseif ui_style = 2 and суперудар_сделан[25] = 0 and $g_type = "hoplomachus":
+		*p "<div id = 'fight_options_ui2'><a href = 'EXEC: dynamic $суперудар_25'><img src = '<<$extra_special_active>>'></a></div>"
+	elseif ui_style ! 2 and суперудар_сделан[25] = 0 and $g_type = "hoplomachus":
+		*p "<div id = 'fight_options'><a href = 'EXEC: dynamic $суперудар_25'><img src = '<<$extra_special_active>>'></a></div>"
+	elseif ui_style = 2 and суперудар_сделан[14] = 0 and $g_type = "kimerian":
+		*p "<div id = 'fight_options_ui2'><a href = 'EXEC: dynamic $суперудар_14'><img src = '<<$extra_special_active>>'></a></div>"
+	elseif ui_style ! 2 and суперудар_сделан[14] = 0 and $g_type = "kimerian":
+		*p "<div id = 'fight_options'><a href = 'EXEC: dynamic $суперудар_14'><img src = '<<$extra_special_active>>'></a></div>"
+	elseif ui_style = 2 and суперудар_сделан[22] = 1:
+		*p "<div id = 'fight_options_ui2'><img src = '<<$extra_special_used>>'></a></div>"
+	elseif ui_style ! 2 and суперудар_сделан[22] = 1:
+		*p "<div id = 'fight_options'><img src = '<<$extra_special_used>>'></a></div>"
+	elseif ui_style = 2 and суперудар_сделан[23] = 1:
+		*p "<div id = 'fight_options_ui2'><img src = '<<$extra_special_used>>'></a></div>"
+	elseif ui_style ! 2 and суперудар_сделан[23] = 1:
+		*p "<div id = 'fight_options'><img src = '<<$extra_special_used>>'></a></div>"
+	elseif ui_style = 2 and суперудар_сделан[24] = 1:
+		*p "<div id = 'fight_options_ui2'><img src = '<<$extra_special_used>>'></a></div>"
+	elseif ui_style ! 2 and суперудар_сделан[24] = 1:
+		*p "<div id = 'fight_options'><img src = '<<$extra_special_used>>'></a></div>"
+	elseif ui_style = 2 and суперудар_сделан[25] = 1:
+		*p "<div id = 'fight_options_ui2'><img src = '<<$extra_special_used>>'></a></div>"
+	elseif ui_style ! 2 and суперудар_сделан[25] = 1:
+		*p "<div id = 'fight_options'><img src = '<<$extra_special_used>>'></a></div>"
+	elseif ui_style = 2 and суперудар_сделан[14] = 1:
+		*p "<div id = 'fight_options_ui2'><img src = '<<$extra_special_used>>'></a></div>"
+	elseif ui_style ! 2 and суперудар_сделан[14] = 1:
+		*p "<div id = 'fight_options'><img src = '<<$extra_special_used>>'></a></div>"
+	end
+end
+
+*p '<div id = "fight_subtions"><<$боевое_меню>></div>'
+
+
+*p '<div id = "ally_combat_ui">'
+	*p '<div id = "combat_ui_pic"><img src = "<<$combatant_ava>>"></div>'
+	*p '<div id = "combat_ui_name"><<$combatant_name>></div>'
+	*p '<div id = "combat_ui_def"><<$защита_описание[$защита[0]]>></div>'
+	*p '<div id = "next_def"><a href="EXEC: dynamic $сменить_защиту"><img src = "content/pic/buttons/loop.png"></a></div>'
+	*p '<div id = "combat_ui_health"><img src = "content/pic/hart_red.png"></div>'
+	*p '<div id = "combat_ui_health"><a style = "color: black;" href="EXEC: msg $живучесть_справка"><<здоровье_игрока>></a></div>' &!Fixed code to display a tooltip when you click on the heart
+	*p '<div id = "combat_ui_stamina"><img src = "content/pic/hart_green.png"></div>'
+	*p '<div id = "combat_ui_stamina"><a style = "color: black;" href="EXEC: msg $выносливость_справка"><<выносливость_игрока>></a></div>'
+	*p '<div id = "combat_ui_will"><img src = "content/pic/hart_purple.png"></div>'
+	*p '<div id = "combat_ui_will"><a style = "color: black;" href="EXEC: msg $боевой_дух_справка"><<дух_игрока>></a></div>'
+	*p '<div id = "combat_ui_conditions"><a href="EXEC: msg $хиты_справка">상태</a><br><<$эффекты_игрока>><br></div>'
+*p '</div>'
+
+*p '<div id = "enemy_combat_ui">'
+	*p '<div id = "combat_ui_pic"><img src = "<<$аватара_моба[$враг[текущий]]>>"></div>'
+	*p '<div id = "combat_ui_name"><<$имя_врага[текущий]>></div>'
+	*p '<div id = "combat_ui_def"><<$защита_врага_описание[$защита[текущий]]>></div>'
+	if количество_врагов - поверженные_враги > 1: *p '<div id = "next_enemy"><a href="EXEC: dynamic $next_enemy_click"><img src = "content/pic/buttons/next.png"></a></div>'
+	if количество_врагов - поверженные_враги > 1: *p '<div id = "prev_enemy"><a href="EXEC: dynamic $prev_enemy_click"><img src = "content/pic/buttons/prev.png"></a></div>'
+	*p '<div id = "combat_ui_health"><img src = "content/pic/hart_red.png"></div>'
+	*p '<div id = "combat_ui_health"><a style = "color: black;" href="EXEC: msg $живучесть_справка"><<здоровье_врага[текущий]>></a></div>'
+	*p '<div id = "combat_ui_stamina"><img src = "content/pic/hart_green.png"></div>'
+	*p '<div id = "combat_ui_stamina"><a style = "color: black;" href="EXEC: msg $выносливость_справка"><<выносливость_врага[текущий]>></a></div>'
+	*p '<div id = "combat_ui_will"><img src = "content/pic/hart_purple.png"></div>'
+	*p '<div id = "combat_ui_will"><a style = "color: black;" href="EXEC: msg $боевой_дух_справка"><<дух_врага[текущий]>></a></div>'
+	*p '<div id = "combat_ui_conditions"><a href="EXEC: msg $хиты_справка">상태</a><br><<$эффекты_противника>><br></div>'
+*p '</div>'
+
+
+dynamic $play_music &! $toplay varies depending on the opponent so it is set elsewhere - ImperatorAugustus
+
+if ui_style = 2:
+ 	if sound_on = 1:
+  		*p '<div id="sound_icon"><a href = "EXEC: sound_on = 0 & close all & gt curloc"><img src="content\pic\ui\grimdark\buttons\sound_on.png"></a></div>'
+  	else
+  		*p '<div id="sound_icon"><a href = "EXEC: sound_on = 1 & gt curloc"><img src="content\pic\ui\grimdark\buttons\sound_off.png"></a></div>'
+ 	end
+else
+ 	if sound_on = 1:
+  		*p '<div id="sound_icon"><a href = "EXEC: sound_on = 0 & close all & gt curloc"><img src="content\pic\buttons\sound_on.png"></a></div>'
+	else
+  		*p '<div id="sound_icon"><a href = "EXEC: sound_on = 1 & gt curloc"><img src="content\pic\buttons\sound_off.png"></a></div>'
+ 	end
+end
+
+------------ боевой_интерфейс ------------

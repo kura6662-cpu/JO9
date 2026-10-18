@@ -1,0 +1,88 @@
+# interior_restore
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2870 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'interior_restore': gs 'snk_room_bridge', 'guard', 'interior_restore'
+! JO9 MOD END J9M2870
+!Interior Restore - created by crushboss
+!Restores the players saved interiors after a full database reload
+
+ui_style = previous_ui_style
+nsfw = previous_nsfw
+
+$study = $previous_study
+$bed = $previous_bed
+if bath > 0: $bath = $previous_bath
+if dungeon > 0: $dungeon = $previous_dungeon
+if kitchen > 0: $kitchen = $previous_kitchen
+if lab > 0: $lab = $previous_lab
+if boudoir > 0: $boudoir = $previous_boudoir
+if barn > 0: $barn = $previous_barn
+
+
+!Estate Interiors
+
+$bg['study'] = $interior_study[$study]
+$bg['home_lux'] = $interior_study_large[$study]
+$place_name['study'] = $estate_study_name[$estate]
+$place_location['study'] = $estate_study_location[$estate]
+$place_info['study'] = $interior_study_info[$study]
+
+$bg['bedroom'] = $interior_bed[$bed]
+$bg['bedroom_lux'] = $interior_bed_large[$bed]
+$place_name['bedroom'] = $estate_bed_name[$estate]
+$place_location['bedroom'] = $estate_bed_location[$estate]
+$place_info['bedroom'] = $interior_bed_info[$bed]
+
+if bath > 0:
+	$bg['bathroom'] = $interior_bath[$bath]
+	$bg['bathroom_lux'] = $interior_bath_large[$bath]
+	$place_name['bathroom'] = $estate_bath_name[$estate]
+	$place_location['bathroom'] = $estate_bath_location[$estate]
+	$place_info['bathroom'] = $interior_bath_info[$bath]
+end
+if dungeon > 0:
+	$bg['dungeon'] = $interior_dungeon[$dungeon]
+	$bg['dungeon_lux'] = $interior_dungeon_large[$dungeon]
+	$place_name['dungeon'] = $estate_dungeon_name[$estate]
+	$place_location['dungeon'] = $estate_dungeon_location[$estate]
+	$place_info['dungeon'] = $interior_dungeon_info[$dungeon]
+end
+if kitchen > 0:
+	$bg['kitchen'] = $interior_kitchen[$kitchen]
+	$bg['kitchen_lux'] = $interior_kitchen_large[$kitchen]
+	$place_name['kitchen'] = $estate_kitchen_name[$estate]
+	$place_location['kitchen'] = $estate_kitchen_location[$estate]
+	$place_info['kitchen'] = $interior_kitchen_info[$kitchen]
+end
+if lab > 0:
+	$bg['lab'] = $interior_lab[$lab]
+	$bg['lab_lux'] = $interior_lab_large[$lab]
+	$place_name['lab'] = $estate_lab_name[$estate]
+	$place_location['lab'] = $estate_lab_location[$estate]
+	$place_info['lab'] = $interior_lab_info[$lab]
+end
+if boudoir > 0:
+	$bg['boudoir'] = $interior_boudoir[$boudoir]
+	$bg['boudoir_lux'] = $interior_boudoir_large[$boudoir]
+	$place_name['boudoir'] = $estate_boudoir_name[$estate]
+	$place_location['boudoir'] = $estate_boudoir_location[$estate]
+	$place_info['boudoir'] = $interior_boudoir_info[$boudoir]
+end
+if barn > 0:
+	$bg['barn'] = $interior_barn
+	$bg['barn_lux'] = $interior_barn_large
+	$place_name['barn'] = $estate_barn_name[$estate]
+	$place_location['barn'] = $estate_barn_location[$estate]
+	$place_info['barn'] = $interior_barn_info[$barn]
+end
+
+killvar 'previous_ui_style'
+killvar '$previous_study'
+killvar '$previous_bed'
+killvar '$previous_bath'
+killvar '$previous_dungeon'
+killvar '$previous_kitchen'
+killvar '$previous_lab'
+killvar '$previous_boudoir'
+
+------------ interior_restore ------------

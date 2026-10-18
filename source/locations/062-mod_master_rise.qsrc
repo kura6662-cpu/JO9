@@ -1,0 +1,14 @@
+# $mod_master_rise
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2841 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$mod_master_rise': gs 'snk_room_bridge', 'guard', '$mod_master_rise'
+! JO9 MOD END J9M2841
+!Decrease magnitude of negative moodlets of master by specified number (args[0])
+i = arrsize('$master_bad_mood')
+:loop
+	i -= 1
+	$curmod = $master_bad_mood[i]
+	master_moodlet[$curmod] = max(0, master_moodlet[$curmod] - args[0])
+if i > 0: jump 'loop'
+
+------------ $mod_master_rise ------------

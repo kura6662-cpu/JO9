@@ -1,0 +1,117 @@
+# $ride_start
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1540 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$ride_start': gs 'snk_room_bridge', 'guard', '$ride_start'
+! JO9 MOD END J9M1540
+!Preparation for chariot race
+!Overhauled by crushboss
+
+$place = 'chariot_race' &! used in menu_form to intercept ESC key-press during race
+
+pony_gear_bonus = 0
+
+!Dressage, meekness, and courage affinity revealed - crushboss
+if slave['dressage_affinity_revealed'] = 0: slave['dressage_affinity_revealed'] = 1
+if slave['meekness_revealed'] = 0: slave['meekness_revealed'] = 1
+if slave['courage_revealed'] = 0: slave['courage_revealed'] = 1
+
+gs '#chariots_base'
+chariot['weight'] = (heavy_frame + heavy_boards + heavy_chassis + heavy_wheels + heavy_rider_armor) + 5
+chariot['pony_health'] = (slave['stamina'] + slave['dressage_affinity'])
+chariot['maneuverability'] = slave['instinct'] + slave['dressage'] + 2*slave['dressage_affinity']
+if slave['meekness'] < 0: chariot['maneuverability'] -= 1
+if slave['meekness'] > 0: chariot['maneuverability'] += 1
+if slave['courage'] < 0: chariot['maneuverability'] -= 1
+if slave['courage'] > 0: chariot['maneuverability'] += 1
+if slave['pride'] > 2: chariot['maneuverability'] -= 1
+if slave['temper'] < 4: chariot['maneuverability'] -= 1
+if slave['temper'] = 5: chariot['maneuverability'] += 1 &! added bonus for S+ temperament -ImperatorAugustus
+if slave['energy'] < 3: chariot['maneuverability'] -= 1
+
+!Added modifiers based on age - crushboss (reduced from 2 to 1 - ImperatorAugustus)
+if slave['age'] = CONST_INT['loli_age']: chariot['maneuverability'] += 1
+if slave['age'] = CONST_INT['milf_age']: chariot['maneuverability'] -= 1
+
+!Added penalty for overweight slaves (-2 for chubby, -4 for corpulent) - ImperatorAugustus
+if slave['fat'] > 3: chariot['maneuverability'] -= 2*(slave['fat'] - 3)
+
+!Added bonuses for normal and easy game difficulty (+2 on easy, +1 on normal) - ImperatorAugustus
+if game_difficulty < 2:
+	chariot['maneuverability'] += 1 + game_difficulty
+	chariot['pony_health'] += 1 + game_difficulty
+	chariot['weight'] -= 1 + game_difficulty
+end
+
+!Added modifiers based on pony gear equipped - crushboss
+if $slave['headband'] = 'pony_plume': pony_gear_bonus += 1
+if $slave['cloth'] = 'anal_tail': pony_gear_bonus += 1
+if $slave['boots'] = 'hoofed_boots': pony_gear_bonus += 1
+if $slave['gloves'] = 'ponygirl_harness': pony_gear_bonus += 1
+
+!Added message so players will get used to equipping pony gear - otherwise they will mostly lose and get frustrated - crushboss
+! JO9 MOD START J9M1539 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+msg '<center>경마 장비 점수 : <<pony_gear_bonus>><br>점수 2미만은 불이익이 있습니다.<br><br>착용 가능 장비-<br>깃달린 굴레<br>삽입 말꼬리<br>말발굽 신발<br>경마녀 마구</center>'
+! JO9 MOD END J9M1539
+
+!Penalty applied if the slave isn’t wearing pony gear - crushboss
+if pony_gear_bonus < 3:
+	chariot['maneuverability'] -= 2
+	chariot['weight'] += 2
+elseif pony_gear_bonus = 4:
+	chariot['maneuverability'] += 1 &! added bonus for wearing the full set - ImperatorAugustus
+end
+
+!Added bonus for dressage affinity - natural pony girls are less affected by chariot weight - crushboss
+if slave['dressage_affinity'] > 0: chariot['weight'] -= 2
+
+chariot['speed'] = 0
+chariot['max_speed'] = (slave['temper'] + chariot['pony_health']*3) - chariot['weight']
+if slave['age'] ! CONST_INT['loli_age']: chariot['max_speed'] = chariot['max_speed']*2
+if slave['age'] = CONST_INT['loli_age']: chariot['max_speed'] = ((chariot['max_speed']*3)/2)
+chariot['acceleration'] = chariot['max_speed']/4
+if chariot['acceleration'] < 1: chariot['acceleration'] = 1
+chariot['inertia'] = max(1, (chariot['speed'] * chariot['weight'])/25)
+chariot['maneuverability_effective'] = max(0, chariot['maneuverability'] - chariot['inertia'])
+
+slave['calories'] -= 6
+slave_rate['hygiene'] += 50
+master_hygiene_rate += 30
+
+frame = iif(heavy_frame = 1, 2, 1)
+boards = iif(heavy_boards = 1, 2, 1)
+chassis = iif(heavy_chassis = 1, 2, 1)
+wheels = iif(heavy_wheels = 1, 2, 1)
+
+$current_ride = $trace_forward_description['ride_start']
+
+killvar 'speed_points'
+trace_segment = 1
+
+!$BACKIMAGE = 'content/pic/bg_fight.png'
+!new super image by XxX_dark-youba-pojeeratyel'-tvoyei-pees'ki-the_vm-\|-_-_-^__^-_-_-|/MLG_PRO_YOLO#2014_RUS99N4giB4T0R_XxX
+!self-explanatory
+if ui_style = 1:$backimage = 'content/pic/ui/old/bg_fight_old.png'
+if ui_style = 2:$backimage = 'content/pic/ui/grimdark/bg_ride.png'
+if ui_style = 0:$backimage = 'content/pic/ui/classic/bg_ride.png'
+
+MSG_X = 350
+
+$future_ride = $trace_forward_description[$trace[2]]
+
+!DEFINE RIVALS
+killvar 'rider_participates'
+killvar 'speed_points'
+
+rider_participates['master'] = 1
+$rider_ava['master'] = $master_ava_color
+$rider_name['master'] = $master_name
+
+! randomly select 5 other participants
+e = 0
+i = 0
+:loop1
+	for b = 2 to 7 step 1: i += 1 & if e < 5 and ((48271 * (day + i)) mod 65537) <= 32768 and rider_participates[$rider[b]] = 0: e += 1 & rider_participates[$rider[b]] = 1
+if e < 5: jump 'loop1'
+
+gt 'ride_interface'
+------------ $ride_start ------------

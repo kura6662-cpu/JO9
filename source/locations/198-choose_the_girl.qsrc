@@ -1,0 +1,116 @@
+# choose_the_girl
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1470 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'choose_the_girl': gs 'snk_room_bridge', 'guard', 'choose_the_girl'
+! JO9 MOD END J9M1470
+!slave selection screen for the training mode
+exam_in_progress = 1
+ui_style = 1
+killobj
+addobj '<img src = "content\pic\buttons\demo_forward_button.png">'
+
+! JO9 MOD START J9M1469 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\interiors\classic_dungeon.png"></div>')
+! JO9 MOD END J9M1469
+*p '<div id = "bg"><center>노예를 선택하라</center></div>'
+
+if special_stock = 0: special_stock = 2575 &! default selection
+
+if special_stock = 2575:
+! JO9 MOD START J9M1468 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\demo\choose_slave.png"></div>')
+! JO9 MOD END J9M1468
+	$text[1] = '남편의 빚 때문에 은행에 의해 노예로 팔린 전직 가정주부다. 기업 관리자들의 «접대 전문가»로 일했기 때문에 어느 정도 필요한 경험은 갖고 있다. 하지만 특별 훈련을 받은 것은 아니다.<br>' + _
+ 	'<font color="#009900">난이도: 최소</font>'
+! JO9 MOD START J9M1467 | 2026-10-15_z_inline_text_prefix | changed block; context may be included
+	! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($text[txt], '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $text[txt] = $mid($text[txt], len($jo9_leading_empty) + 1, len($text[txt]))
+! JO9 MOD END J9M1467
+*p '<div id = "text"><<$text[txt]>></div>'
+end
+
+if special_stock = 2574:
+! JO9 MOD START J9M1466 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\demo\choose_amazon.png"></div>')
+! JO9 MOD END J9M1466
+	$text[1] = '야만적인 우주 부족 출신의 레즈비언 아마존이다. 재능은 훌륭하지만, 이 소녀가 엄청난 신체 능력과 전투 기술을 지녔고 남자를 경멸한다는 점을 잊지 마라.<br>' + _
+ 	'<font color="#6B0084">난이도: 보통</font>'
+! JO9 MOD START J9M1465 | 2026-10-15_z_inline_text_prefix | changed block; context may be included
+	! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($text[txt], '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $text[txt] = $mid($text[txt], len($jo9_leading_empty) + 1, len($text[txt]))
+! JO9 MOD END J9M1465
+*p '<div id = "text"><<$text[txt]>></div>'
+end
+
+if special_stock = 2573:
+! JO9 MOD START J9M1464 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\demo\choose_princess.png"></div>')
+! JO9 MOD END J9M1464
+	$text[1] = '고도로 마법적인 세계에 속한 작은 왕국의 공주다. 허약한 몸, 취약함, 그리고 금지에 가까운 반항심의 조합 때문에 훈련은 특히 어려울 것이다. 하지만 그녀의 아름다움은 그만한 가치가 있다.<br>' + _
+ 	'<font color="#cd0000">난이도: 높음</font>'
+! JO9 MOD START J9M1463 | 2026-10-15_z_inline_text_prefix | changed block; context may be included
+	! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($text[txt], '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $text[txt] = $mid($text[txt], len($jo9_leading_empty) + 1, len($text[txt]))
+! JO9 MOD END J9M1463
+*p '<div id = "text"><<$text[txt]>></div>'
+end
+!gs '$newloc'
+gs 'generate_stock'
+gs 'stock_to_slave_nogt'
+slave['brand'] = 4
+dynamic $replace($update_slave_features_list, 'dyn'+'slave', 'slave')
+$slave["cloth"] = "голая"
+
+slave_inventory['maid_dress'] = 1
+slave_inventory['apron'] = 1
+slave_inventory['common_apron'] = 1
+slave_inventory['nurse_dress'] = 1
+slave_inventory['sailor_foku'] = 1
+slave_inventory['leotard'] = 1
+slave_inventory['chainmail_bikini'] = 1
+slave_inventory['enchanter_robe'] = 1
+slave_inventory['sun_dress'] = 1
+slave_inventory['leather_corset'] = 1
+slave_inventory['fluffy_stepins'] = 1
+slave_inventory['high_boots'] = 1
+slave_inventory['sneakers'] = 1
+slave_inventory['tabi'] = 1
+slave_inventory['glasses'] = 1
+slave_inventory['nekomimi'] = 1
+slave_inventory['anal_tail'] = 1
+slave_inventory['pony_plume'] = 1
+slave_inventory['ponygirl_harness'] = 1
+slave_inventory['hoofed_boots'] = 1
+slave_inventory['leather_gloves'] = 1
+slave_inventory['fluffy_gloves'] = 1
+slave_inventory['rubber_gloves'] = 1
+slave_inventory['plain_headband'] = 1
+slave_inventory['golden_collar'] = 1
+slave_inventory['leather_collar'] = 1
+slave_inventory['spiked_collar'] = 1
+
+!slave['energy'] = slave["stamina"]
+
+*p '<div id="choose_left"><a href = "EXEC: special_stock = 2573 & gt $curloc"><img src = "content\pic\demo\click_field.png"></a></div>'
+*p '<div id="choose_center"><a href = "EXEC: special_stock = 2574 & gt $curloc"><img src = "content\pic\demo\click_field.png"></a></div>'
+*p '<div id="choose_right"><a href = "EXEC: special_stock = 2575 & gt $curloc"><img src = "content\pic\demo\click_field.png"></a></div>'
+
+*p '<div id = "interaction_stat_bar">'
+*nl '<u>능력치</u>'
+*nl '<<$beauty[seed_beauty[slave_type]]>>'
+*nl '<<$stamina[seed_stamina[slave_type]]>>'
+*nl '<<$sensitivity[seed_sensitivity[slave_type]]>>'
+*nl '<<$temper[seed_temper[slave_type]]>>'
+*nl '<<$intellect[seed_intellect[slave_type]]>>'
+*nl '<<$ego[seed_ego[slave_type]]>>'
+*nl '<<$pride[seed_pride[slave_type]]>>'
+*nl '<<$exotic[seed_exotic[slave_type]]>>'
+*nl '<<$fat[seed_fat[slave_type]]>>'
+*nl '<<$style[seed_style[slave_type]]>><br>'
+*nl '<u>특성</u>'
+*nl '<<$slave_features_list>></div>'
+
+------------ choose_the_girl ------------

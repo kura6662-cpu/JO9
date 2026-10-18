@@ -1,0 +1,143 @@
+# auspex_list
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2849 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'auspex_list': gs 'snk_room_bridge', 'guard', 'auspex_list'
+! JO9 MOD END J9M2849
+if wizard_mode = 1: auspex = 1
+
+$auspex_list = ''
+
+if auspex = 0:
+	$info_text = '<br><center><<IIF(assistant_aura = 1, "조수", "노예")>>의 아우라는 희미하고 흐릿한 그림자 형태로 보인다.<br>당신은 아우스펙스를 사용해야만 아우라의 색, 강도, 흐름을 파악할 수 있다.</center> '
+	if sparks > 1: $info_text += '<br><center><a href = "EXEC: $info_text = '''' & $return_lock = iif(assistant_aura = 1, ''assistant_stat'', ''slave_stat'') & dynamic $home_sounds & is_home = 1 & interaction = 61 & gt ''interaction''"> 아우스펙스 사용 2$ </a></center>'
+elseif assistant_aura = 0:
+	*p '<div id ="center_text_compact_blue_title"><font style="font-family:카페24 빛나는별"; size = "12">아우라의 통찰</font></div>'
+	if $master_head_gear = 'raven_crown':
+		$tooltip_text = iif(slave['obedience'] < 0, -1 * slave['obedience'], slave['obedience'])
+		$auspex_list += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$tooltip_text>>">'
+	end
+	if slave["obedience"] >= 0:
+		if slave["obedience"] < 10:
+			$auspex_list += $aura_obedience[slave["obedience"]]
+		else
+			$auspex_list += $aura_obedience[10]
+		end
+	else
+		if slave["obedience"] = -1: $auspex_list += $aura_obedience[11]
+		if slave["obedience"] = -2: $auspex_list += $aura_obedience[12]
+		if slave["obedience"] = -3: $auspex_list += $aura_obedience[13]
+		if slave["obedience"] = -4: $auspex_list += $aura_obedience[14]
+		if slave["obedience"] = -5: $auspex_list += $aura_obedience[15]
+		if slave["obedience"] = -6: $auspex_list += $aura_obedience[16]
+		if slave["obedience"] = -7: $auspex_list += $aura_obedience[17]
+		if slave["obedience"] = -8: $auspex_list += $aura_obedience[18]
+		if slave["obedience"] = -9: $auspex_list += $aura_obedience[19]
+		if slave["obedience"] < -9: $auspex_list += $aura_obedience[20]
+	end
+	if $master_head_gear = 'raven_crown':
+		$auspex_list += ' </div>'
+	end
+
+	if master_supermacy = 0: $auspex_list += '<br><br><<$aura_supermacy[3]>><br><br>'
+	if master_supermacy > 0 and master_supermacy < 4: $auspex_list += ' <<$aura_supermacy[4]>><br><br>'
+	if master_supermacy > 3: $auspex_list += '<br><br><<$aura_supermacy[5]>><br><br>'
+	if master_supermacy > -4 and master_supermacy < 0: $auspex_list += ' <<$aura_supermacy[2]>><br><br>'
+	if master_supermacy < -3: $auspex_list += '<br><br><<$aura_supermacy[1]>><br><br>'
+
+	$auspex_list += '<<$aura_lust[slave["arousal"]]>><br><br>' &! unlike other aura stats, arousal rate is "continuous" and does not reset when arousal level changes
+	if $master_head_gear = 'raven_crown':
+		$tooltip_text = iif($master_head_gear = 'raven_crown', func('$addon', 'no_label_stat_rate_tooltip_text', 'fear', slave['fear']), '')
+		$auspex_list += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$tooltip_text>>"><<$aura_fear[slave["fear"]]>></div><br><br>'
+		$tooltip_text = iif($master_head_gear = 'raven_crown', func('$addon', 'no_label_stat_rate_tooltip_text', 'angst', slave['angst']), '')
+		$auspex_list += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$tooltip_text>>"><<$aura_angst[slave["angst"]]>></div><br><br>'
+		$tooltip_text = iif($master_head_gear = 'raven_crown', func('$addon', 'no_label_stat_rate_tooltip_text', 'spoil', slave['spoil']), '')
+		$auspex_list += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$tooltip_text>>"><<$aura_spoil[slave["spoil"]]>></div><br><br>'
+		$tooltip_text = iif($master_head_gear = 'raven_crown', func('$addon', 'no_label_stat_rate_tooltip_text', 'rational', slave['rational']), '')
+		$auspex_list += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$tooltip_text>>"><<$aura_rational[slave["rational"]]>></div><br><br>'
+		$tooltip_text = iif($master_head_gear = 'raven_crown', func('$addon', 'no_label_stat_rate_tooltip_text', 'instinct', slave['instinct']), '')
+		$auspex_list += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$tooltip_text>>"><<$aura_instinct[slave["instinct"]]>></div><br><br>'
+		$tooltip_text = iif($master_head_gear = 'raven_crown', func('$addon', 'no_label_stat_rate_tooltip_text', 'custom', slave['custom']), '')
+		$auspex_list += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$tooltip_text>>"><<$aura_custom[slave["custom"]]>></div><br><br>'
+		$tooltip_text = iif($master_head_gear = 'raven_crown', func('$addon', 'no_label_stat_rate_tooltip_text', 'moral', slave['moral']), '')
+		$auspex_list += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$tooltip_text>>"><<$aura_moral[slave["moral"]]>></div>'
+	else
+		$auspex_list += '<<$aura_fear[slave["fear"]]>><br><br>'
+		$auspex_list += '<<$aura_angst[slave["angst"]]>><br><br>'
+		$auspex_list += '<<$aura_spoil[slave["spoil"]]>><br><br>'
+		$auspex_list += '<<$aura_rational[slave["rational"]]>><br><br>'
+		$auspex_list += '<<$aura_instinct[slave["instinct"]]>><br><br>'
+		$auspex_list += '<<$aura_custom[slave["custom"]]>><br><br>'
+		$auspex_list += '<<$aura_moral[slave["moral"]]>>'
+	end
+
+	$info_text = '<br><center>아우스펙스가 노예의 <b>아우라</b>를 색상별로 상단 창에 표시해줍니다.<br><br>아우라가 어떤 힘과 방향성을 가졌는지, 어떤 상태인지 상세히 들여다볼 수 있습니다.</center>'
+	$auspex_list += ''
+else
+	if assistant_aura = 1:
+		*p '<div id ="center_text_compact_blue_title"><font style="font-family:카페24 빛나는별"; size = "12">아우라의 통찰</font></div>'
+	end
+	if $master_head_gear = 'raven_crown':
+		$tooltip_text = iif(assistant['obedience'] < 0, -1 * assistant['obedience'], assistant['obedience'])
+		$auspex_list += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$tooltip_text>>">'
+	end
+	if assistant["obedience"] >= 0:
+		if assistant["obedience"] < 10:
+			$auspex_list += $aura_obedience[assistant["obedience"]]
+		else
+			$auspex_list += $aura_obedience[10]
+		end
+	else
+		if assistant["obedience"] = -1: $auspex_list += $aura_obedience[11]
+		if assistant["obedience"] = -2: $auspex_list += $aura_obedience[12]
+		if assistant["obedience"] = -3: $auspex_list += $aura_obedience[13]
+		if assistant["obedience"] = -4: $auspex_list += $aura_obedience[14]
+		if assistant["obedience"] = -5: $auspex_list += $aura_obedience[15]
+		if assistant["obedience"] = -6: $auspex_list += $aura_obedience[16]
+		if assistant["obedience"] = -7: $auspex_list += $aura_obedience[17]
+		if assistant["obedience"] = -8: $auspex_list += $aura_obedience[18]
+		if assistant["obedience"] = -9: $auspex_list += $aura_obedience[19]
+		if assistant["obedience"] < -9: $auspex_list += $aura_obedience[20]
+	end
+	if $master_head_gear = 'raven_crown':
+		$auspex_list += '</div>'
+	end
+
+	$auspex_list += '<br><br>'
+
+	!if master_supermacy = 0: $auspex_list += ' <<$aura_supermacy[3]>><br><br>'
+	!if master_supermacy > 0 and master_supermacy < 4: $auspex_list += ' <<$aura_supermacy[4]>><br><br>'
+	!if master_supermacy > 3: $auspex_list += ' <<$aura_supermacy[5]>><br><br>'
+	!if master_supermacy > -4 and master_supermacy < 0: $auspex_list += ' <<$aura_supermacy[2]>><br><br>'
+	!if master_supermacy < -3: $auspex_list += ' <<$aura_supermacy[1]>><br><br>'
+
+	$auspex_list += '<<$aura_lust[assistant["arousal"]]>><br><br>' &! unlike other aura stats, arousal rate is "continuous" and does not reset when arousal level changes
+	if $master_head_gear = 'raven_crown':
+		$tooltip_text = iif($master_head_gear = 'raven_crown', func('$addon', 'assistant_no_label_stat_rate_tooltip_text', 'fear', assistant['fear']), '')
+		$auspex_list += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$tooltip_text>>"><<$aura_fear[assistant["fear"]]>></div><br><br>'
+		$tooltip_text = iif($master_head_gear = 'raven_crown', func('$addon', 'assistant_no_label_stat_rate_tooltip_text', 'angst', assistant['angst']), '')
+		$auspex_list += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$tooltip_text>>"><<$aura_angst[assistant["angst"]]>></div><br><br>'
+		$tooltip_text = iif($master_head_gear = 'raven_crown', func('$addon', 'assistant_no_label_stat_rate_tooltip_text', 'rational', assistant['rational']), '')
+		$tooltip_text = iif($master_head_gear = 'raven_crown', func('$addon', 'assistant_no_label_stat_rate_tooltip_text', 'spoil', assistant['spoil']), '')
+		$auspex_list += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$tooltip_text>>"><<$aura_spoil[assistant["spoil"]]>></div><br><br>'
+		$auspex_list += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$tooltip_text>>"><<$aura_rational[assistant["rational"]]>></div><br><br>'
+		$tooltip_text = iif($master_head_gear = 'raven_crown', func('$addon', 'assistant_no_label_stat_rate_tooltip_text', 'instinct', assistant['instinct']), '')
+		$auspex_list += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$tooltip_text>>"><<$aura_instinct[assistant["instinct"]]>></div><br><br>'
+		$tooltip_text = iif($master_head_gear = 'raven_crown', func('$addon', 'assistant_no_label_stat_rate_tooltip_text', 'custom', assistant['custom']), '')
+		$auspex_list += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$tooltip_text>>"><<$aura_custom[assistant["custom"]]>></div><br><br>'
+		$tooltip_text = iif($master_head_gear = 'raven_crown', func('$addon', 'assistant_no_label_stat_rate_tooltip_text', 'moral', assistant['moral']), '')
+		$auspex_list += '<div style="display:inline-block;position:relative;" class="tooltip-bottom" tooltip-data="<<$tooltip_text>>"><<$aura_moral[assistant["moral"]]>></div>'
+	else
+		$auspex_list += '<<$aura_fear[assistant["fear"]]>><br><br>'
+		$auspex_list += '<<$aura_angst[assistant["angst"]]>><br><br>'
+		$auspex_list += '<<$aura_spoil[assistant["spoil"]]>><br><br>'
+		$auspex_list += '<<$aura_rational[assistant["rational"]]>><br><br>'
+		$auspex_list += '<<$aura_instinct[assistant["instinct"]]>><br><br>'
+		$auspex_list += '<<$aura_custom[assistant["custom"]]>><br><br>'
+		$auspex_list += '<<$aura_moral[assistant["moral"]]>>'
+	end
+
+	$info_text = '<br><center>아우스펙스가 조수의 <b>아우라</b>를 색상별로 상단 창에 표시해줍니다.<br><br>아우라가 어떤 힘과 방향성을 가졌는지, 어떤 상태인지 상세히 들여다볼 수 있습니다.</center>'
+	$auspex_list += ''
+end
+
+------------ auspex_list ------------

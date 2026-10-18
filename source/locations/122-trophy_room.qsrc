@@ -1,0 +1,43 @@
+# trophy_room
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2874 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'trophy_room': gs 'snk_room_bridge', 'guard', 'trophy_room'
+! JO9 MOD END J9M2874
+!Draws the Trophies on the screen - crushboss
+!Checks are > 0 instead of = 1 because Fog trophies are set to 2 as a do-once for awarding fighting xp from A+ to S+ - ImperatorAugustus
+*p '<div id = "trophy_title"><center>트로피 룸</center></div>'
+
+!Row 1
+if trophy_ogre > 0: *p '<div id = "trophy_room_ogre"><img src="content\pic\mob\Ogre_ava.png"><br><center>오우거</center></div>'
+if trophy_warg > 0: *p '<div id = "trophy_room_warg"><img src="content\pic\mob\warg_ava.png"><br><center>와르그</center></div>'
+if trophy_werewolf > 0: *p '<div id = "trophy_room_werewolf"><img src="content\pic\mob\werewolf_ava.png"><br><center>웨어울프</center></div>'
+if trophy_hugefiend > 0: *p '<div id = "trophy_room_hugefiend"><img src="content\pic\mob\spawn_ava.png"><br><center>거대 핀드</center></div>'
+if trophy_blackmedic > 0: *p '<div id = "trophy_room_blackmedic"><img src="content\pic\mob\medic_ava.png"><br><center>흑의 메딕</center></div>'
+if trophy_maturefiend > 0: *p '<div id = "trophy_room_maturefiend"><img src="content\pic\mob\spawn_ava.png"><br><center>성숙한 괴물</center></div>'
+
+!Row 2
+if trophy_vampire > 0: *p '<div id = "trophy_room_vampire"><img src="content\pic\mob\vampire_ava.png"><br><center>뱀파이어</center></div>'
+if trophy_lich > 0: *p '<div id = "trophy_room_lich"><img src="content\pic\mob\lich_ava.png"><br><center>리치</center></div>'
+if trophy_beastmen > 0: *p '<div id = "trophy_room_beastmen"><img src="content\pic\mob\goathead_ava.png"><br><center>비스트맨</center></div>'
+if trophy_paladin > 0: *p '<div id = "trophy_room_paladin"><img src="content\pic\mob\paladin_ava.png"><br><center>팔라딘</center></div>'
+if trophy_orc > 0: *p '<div id = "trophy_room_orc"><img src="content\pic\mob\orc_ava.png"><br><center>오크</center></div>'
+if trophy_youngfiend > 0: *p '<div id = "trophy_room_youngfiend"><img src="content\pic\mob\spawn_ava.png"><br><center>어린 괴물</center></div>'
+
+!Row 3
+if trophy_scum > 0: *p '<div id = "trophy_room_scum"><img src="content\pic\mob\canibal_ava.png"><br><center>쓰레기들</center></div>'
+if trophy_goblins > 0: *p '<div id = "trophy_room_goblin"><img src="content\pic\mob\goblin_ava.png"><br><center>고블린들</center></div>'
+if trophy_corvus > 0: *p '<div id = "trophy_room_corvus"><img src="content\pic\mob\gladiator_champion_corvus_ava.png"><br><center>코르부스 챔피언</center></div>'
+if trophy_camira > 0: *p '<div id = "trophy_room_camira"><img src="content\pic\mob\gladiator_champion_kamira_ava.png"><br><center>카미라 챔피언</center></div>'
+if trophy_serpis > 0: *p '<div id = "trophy_room_serpis"><img src="content\pic\mob\gladiator_champion_sepris_ava.png"><br><center>세르피스 챔피언</center></div>'
+if trophy_taurus > 0: *p '<div id = "trophy_room_taurus"><img src="content\pic\mob\gladiator_champion_taurus_ava.png"><br><center>타우루스 챔피언</center></div>'
+
+!Row 4
+if trophy_vatican > 0: *p '<div id = "trophy_room_vatican"><img src="content\pic\mob\gladiator_champion_vatican_ava.png"><br><center>바티칸 챔피언</center></div>'
+if trophy_absolute > 0: *p '<div id = "trophy_room_absolute"><img src="content\pic\mob\gladiator_champion_absolute_ava.png"><br><center>앱솔루트 챔피언</center></div>'
+if trophy_slaves_x > 0: *p '<div id = "trophy_room_slaves"><img src="content\pic\mob\gladiator_prisoners_ava.png"><br><center>아레나 노예들</center></div>'
+if trophy_arenafiend > 0: *p '<div id = "trophy_room_arenafiend"><img src="content\pic\mob\spawn_ava.png"><br><center>투기장 괴물</center></div>'
+if trophy_racechampion > 0: *p '<div id = "trophy_room_racechampion"><img src="content\pic\mob\chariot_race_champion.png"><br><center>레이스 챔피언</center></div>'
+if trophy_racegrandchampion > 0: *p '<div id = "trophy_room_racegrandchampion"><img src="content\pic\mob\chariot_race_grand_champion.png"><br><center>그랜드 챔피언</center></div>'
+
+
+------------ trophy_room ------------

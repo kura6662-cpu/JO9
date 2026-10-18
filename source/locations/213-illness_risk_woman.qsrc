@@ -1,0 +1,38 @@
+# $illness_risk_woman
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2935 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$illness_risk_woman': gs 'snk_room_bridge', 'guard', '$illness_risk_woman'
+! JO9 MOD END J9M2935
+!Рассчёт риска заразиться при контактном сексе для мастера-женщины
+!Для приямого секса женщины и непрямого - мужчины
+ 
+ IF hero_choice > 100 and (assistant_state ! CONST_INT['slave_exist'] or assistant_rules['lesson_assist'] ! 1): 
+    IF slave['ill'] > 0:
+        a = RAND (1,6)
+        if a > master_str and master_ill = 0 and obereg_on = 0: master_ill = 1
+    END
+    IF master_ill > 0:
+        a = RAND (1,6)
+        if a > slave['stamina'] and slave['ill'] = 0: slave['ill'] = 1
+    END
+ ELSEIF hero_choice > 100 and assistant_state = CONST_INT['slave_exist'] and assistant_rules['lesson_assist'] = 1:
+    IF slave['ill'] > 0:
+        a = RAND (1,6)
+        if a > assistant['stamina'] and assistant['ill'] = 0: assistant['ill'] = 1
+    END
+    IF assistant['ill'] > 0:
+        a = RAND (1,6)
+        if a > slave['stamina'] and slave['ill'] = 0: slave['ill'] = 1
+    END
+ ELSEIF guild_mercs_rule = 0:
+    b = RAND (1,4)
+    IF b = 1:
+        a = RAND (1,6)
+        if a > slave['stamina'] and slave['ill'] = 0: slave['ill'] = 1
+    END
+ END
+
+
+
+
+------------ $illness_risk_woman ------------

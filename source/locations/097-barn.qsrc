@@ -1,0 +1,265 @@
+# barn
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1319 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'barn': gs 'snk_room_bridge', 'guard', 'barn'
+! JO9 MOD END J9M1319
+$place = "barn"
+gs '_layout'
+gs '$newloc'
+gs '$slave_traits'
+killvar 'menu_form'
+killvar '$info_bar'
+
+dynamic $cow_pass_out
+dynamic $master_pass_out &! master should be last
+
+cow_mood_plus = IIF(cow['mood'] < 0, 5 - cow['mood'], cow['mood'])
+
+if $cow_info_text = '':
+	if cow_state = CONST_INT['slave_exist']: dynamic $replace("$cow_info_text = '<<$psy_status[$cow_psy_status]>>'", 'dyn'+'slave', 'cow') &! evaluate delayed sub-expressions with substitution
+	if cow_state = CONST_INT['slave_faint']: $cow_info_text = '<br> <<$cow_name>>의 낮은 신음이 터지며 몸이 고꾸라졌다. 상태가 좋지 않은 모양이다, 쉬게하고 검진을 받아보게 하는게 좋을 것이다.'
+	if cow_state = CONST_INT['slave_dead']: $cow_info_text = '<br> <<$cow_name>>(이)가 .. 죽었다. 생기없는 사체가 바닥에서 뒹굴고 있다.'
+	if cow_state = CONST_INT['no_slave']: $cow_info_text = '<br> 당신은 외양간에 둔 소가 하나도 없다.'
+end
+
+! JO9 MOD START J9M1318 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\<<$bg[$place]>>.png"></div>')
+! JO9 MOD END J9M1318
+if cow_state = CONST_INT['slave_exist'] and nsfw = 0: *p '<div style="position:absolute;top:3px;left:150px;"><img src="content\pic\<<$cow["fullimage"]>>.png"></div>'
+!*p '<div id = "text"><<$text>></div>'
+
+
+$text_display = ''
+
+func('$menu', 'spacer', 1)
+func('$menu', '===BEGIN===', 'column_0')
+if farmhand_state = CONST_INT['no_slave']:
+	if slave_state > CONST_INT['no_slave']:
+		func('$menu', 'goto', $menu_item_farmhand, 6001, 'interaction', 'interaction', '노예 ⇒ 지기', '<<$slave_name>>(을)를 외양간 지기로 만든다')
+	else
+		func('$menu', 'exec', $menu_item_farmhand_gray, empty, '노예 ⇒ 지기 불가', '노예가 없다')
+	end
+else
+	if slave_state = CONST_INT['no_slave']:
+		func('$menu', 'goto', $menu_item_retfarmhand, 6002, 'interaction', 'interaction', '지기 ⇒ 노예', '<<$farmhand_name>>(을)를 복귀시킨다')
+	else
+		func('$menu', 'exec', $menu_item_retfarmhand_gray, empty, '지기 ⇒ 노예 불가', '데려올 자리가 없다')
+	end
+end
+if cow_state = CONST_INT['no_slave']:
+	if slave_state > CONST_INT['no_slave']: 
+		if slave["lactation"] ! 0:
+			func('$menu', 'exec_options', $menu_item_Cow, 'interaction = 0 & gs "slave_to_cow" & cow["half_action"] += 1 & gt $curloc', '노예 ⇒ 외양간 젖소', '젖소로 만들기')
+		else
+			func('$menu', 'exec', $menu_item_Cow_gray, empty, '노예 ⇒ 젖소 불가', '노예 ⇒ 젖소 불가', '과정을 거쳐야만 소로 만들수가 있다')
+		end
+	else
+		func('$menu', 'exec', $menu_item_Cow_gray, empty, '노예 ⇒ 젖소 불가', '노예가 없다')
+	end
+else
+	if slave_state = CONST_INT['no_slave']:
+		func('$menu', 'exec_options', $menu_item_retCow, 'interaction = 0 & gs "slave_to_cow" & gt $curloc', '젖소 ⇒ 노예', '<<$cow_name>>(을)를 복귀시킨다')
+	else
+		func('$menu', 'exec', $menu_item_retCow_gray, empty, '젖소 ⇒ 노예 불가', '젖소 ⇒ 노예 불가', '데려올 자리가 없다')
+	end
+end
+if slave_state > CONST_INT['no_slave'] and pig_state > CONST_INT['no_slave']:
+	func('$menu', 'goto', $menu_item_Pig, 6007, 'interaction', 'interaction', '노예 ⇔ 돼지', '<<$slave_name>>와 <<$pig_name>>(을)를 교체시킨다')
+elseif slave_state > CONST_INT['no_slave']:
+	func('$menu', 'goto', $menu_item_Pig, 6007, 'interaction', 'interaction', '노예 ⇒ 돼지', '<<$slave_name>>(을)를 돼지로 만든다')
+elseif pig_state > CONST_INT['no_slave']:
+	func('$menu', 'goto', $menu_item_RetPig, 6008, 'interaction', 'interaction', '돼지 ⇒ 노예', '<<$pig_name>>(을)를 노예로 복귀')
+else
+	func('$menu', 'exec', $menu_item_Pig_gray, empty, '노예 ⇒ 돼지 불가', '노예가 없다')
+end
+
+end
+if harpy_state = CONST_INT['no_slave']:
+	if slave_state > CONST_INT['no_slave']:
+		func('$menu', 'goto', $menu_item_Harpy, 6005, 'interaction', 'interaction', '노예 ⇒ 닭', '<<$slave_name>>(을)를 닭으로 만든다')
+	else
+		func('$menu', 'exec', $menu_item_Harpy_gray, empty, '노예 ⇒ 닭 불가', '노예가 없다')
+	end
+else
+	if slave_state = CONST_INT['no_slave']:
+		func('$menu', 'goto', $menu_item_RetHarpy, 6006, 'interaction', 'interaction', '닭 복귀', '<<$harpy_name>>(을)를 복귀시킨다')
+	else
+		func('$menu', 'exec', $menu_item_RetHarpy_gray, empty, '닭 ⇒ 노예 불가', '데려올 자리가 없다')
+	end
+end
+
+if cow_state > CONST_INT['no_slave']:
+	if cow_state = CONST_INT['slave_exist'] and farmhand_state = CONST_INT['slave_exist'] and cow['milk_summ'] > 10:
+		func('$menu', 'interaction', $menu_item_farmhand_milking, menu_farmhand_milking, '지기 : 착유 지시')
+	elseif cow_state = CONST_INT['slave_faint']:
+		func('$menu', 'exec', $menu_item_farmhand_milking_gray, empty, '지기 : 착유 지시 불가', '소의 의식이 없다.')
+	elseif farmhand_state ! CONST_INT['slave_exist']:
+		func('$menu', 'exec', $menu_item_farmhand_milking_gray, empty, '지기 : 착유 지시 불가', '외양간지기가 필요하다.')
+	elseif cow_state = CONST_INT['slave_exist'] and farmhand_state = CONST_INT['slave_exist'] :
+		func('$menu', 'exec', $menu_item_farmhand_milking_gray, empty, '지기 : 착유 지시 불가', '착유할 정도의 우유가 없다.')
+	end
+	func('$menu', 'exec_options', $menu_item_milk_menu, 'dynamic $transport_energy_drop, "kamira_house" & interaction_city = menu_milk_cooperative & gt "interaction_city"', '이동 : 제휴 낙농장')
+	if cow_state ! CONST_INT['slave_faint'] and sparks > 29:
+		func('$menu', 'interaction_city', $menu_item_cow_insemination, menu_cow_insemination_group, '의뢰 : 수태액 단체 주입')
+	elseif cow_state = CONST_INT['slave_faint']:
+		func('$menu', 'exec', $menu_item_cow_insemination_gray, empty, '의뢰 : 수태액 단체 주입 불가', '소의 의식이 없다')
+	else
+		func('$menu', 'exec', $menu_item_cow_insemination_gray, empty, '의뢰 : 수태액 단체 주입 불가', '스파크가 부족하다')
+	end
+	if cow_state ! CONST_INT['slave_faint'] and sparks > 59:
+		func('$menu', 'interaction_city', $menu_item_cow_insemination_full, menu_cow_insemination_minotaur, '의뢰 : 미노타우르스 정액 주입', '누르면 선택지와 설명이 나올것이다')
+	elseif cow_state = CONST_INT['slave_faint']:
+		func('$menu', 'exec', $menu_item_cow_insemination_full_gray, empty, '의뢰 : 미노타우르스 정액 주입 불가', '소의 의식이 없다')
+	else
+		func('$menu', 'exec', $menu_item_cow_insemination_full_gray, empty, '의뢰 : 미노타우르스 정액 주입 불가', '스파크가 부족하다')
+	end
+end
+func('$menu', '===END===')
+
+! JO9 MOD START J9M1317 | 2026-10-09_city_scene_menu_alignment | changed block; context may be included
+*p func('$menu', 'layout_style')
+*p '<div id="jo9_scene_menu" class="jo9_menu_scene"><<$text_display>></div>'
+! JO9 MOD END J9M1317
+
+if cow_state > CONST_INT['no_slave']:
+	gs '$addon', 'info_box'
+	*p '<div id="barn_stat_bar">'
+		*nl '호 칭 : &nbsp;<<$cow_name>><br>연 령 대 : &nbsp;<<$slave_age_name[cow["age"]]>><br><a style="font-size:20px"><<$rating[rating]>></a>  소 속성정보<br>'
+		$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'beauty', cow['beauty'], 1)
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 외모 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $красота_справка & dynamic $msg, $красота_справка_2"><<$beauty[cow["beauty"]]>></a>'
+		$tooltip_text = func('$addon', 'cow_stat_tooltip_text', 'stamina')
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 체력 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $здоровье_справка & dynamic $msg, $здоровье_справка_2"><<$stamina[cow["stamina"]]>></a>'
+		$tooltip_text = func('$addon', 'cow_stat_tooltip_text', 'sensitivity')
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 감수성 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $чувствительность_справка & dynamic $msg, $чувствительность_справка_2"><<$sensitivity[cow["sensitivity"]]>></a>'
+		$tooltip_text = func('$addon', 'cow_stat_tooltip_text', 'temper')
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 성격 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $темперамент_справка & dynamic $msg, $темперамент_справка_2"><<$temper[cow["temper"]]>></a>'
+		$tooltip_text = func('$addon', 'cow_stat_tooltip_text', 'intellect')
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 지성 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $ум_справка & dynamic $msg, $ум_справка_2"><<$intellect[cow["intellect"]]>></a>'
+		$tooltip_text = func('$addon', 'cow_stat_tooltip_text', 'ego')
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 자아 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $характер_справка & dynamic $msg, $характер_справка_2"><<$ego[cow["ego"]]>></a>'
+		$tooltip_text = func('$addon', 'cow_stat_tooltip_text', 'pride', -1)
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 태도 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $гордыня_справка & dynamic $msg, $гордыня_справка_2"><<$pride[cow["pride"]]>></a>'
+		!$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'exotic', cow['exotic'], 1)
+		!*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 독특함		</font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $экзотичность_справка & dynamic $msg, $экзотичность_справка_2"><<$exotic[cow["exotic"]]>></a>'
+		$tooltip_text = func('$addon', 'cow_physique_tooltip_text', 'fat', cow['fat'])
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 체형 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $жыр_справка & dynamic $msg, $жыр_справка_2"><<$fat[cow["fat"]]>></a>'
+		!$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'style', cow['style'], 1)
+		!*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 세련됨	</font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $стиль_справка & dynamic $msg, $стиль_справка_2"><<$style[cow["style"]]>></a>'
+		$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'fame', cow['fame'], 1)
+		*nl '<div style="line-height:5%"></div><font style="font-size:12px;"> 인지도 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $слава_справка & dynamic $msg, $слава_справка_2"><<$girl_fame[cow["fame"]]>></a>'
+		*nl '<div style="line-height:25%"></div><br>소의 특성<div style="line-height:25%"><br></div><<$cow_features_list>>'
+	*p '</div>'
+
+
+	if cow_ration = 1:
+		*p '<div id="chekbox_1s" style="left:1230px;top:140px;"><a class="tooltip-left-small-button" tooltip-data="일반 소먹이" href = "EXEC: cow_ration = -1 & $cow_info_text = $cow_ration[1] & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'  
+	else
+		*p '<div id="chekbox_1s"><a class="tooltip-left-small-button" tooltip-data="일반 소먹이" href = "EXEC: cow_ration = 1 & $cow_info_text = $cow_ration[2] & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'  
+	end
+	if cow_ration = 0:
+		*p '<div id="chekbox_2s" style="left:1230px;top:166px;"><a class="tooltip-left-small-button" tooltip-data="고열량 식단" href = "EXEC: cow_ration = -1 & $cow_info_text = $cow_ration[1] & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'  
+	else
+		*p '<div id="chekbox_2s"><a class="tooltip-left-small-button" tooltip-data="고열량 식단" href = "EXEC: cow_ration = 0 & $cow_info_text = $cow_ration[3] & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'  
+	end  
+	if cow_ration ! 2 and kitchen = 0:
+		*p '<div id="chekbox_3s"><a href = "EXEC: msg $no_spawn_semen & gt $curloc"><img src="content\pic\buttons\unactive_button.png"></a></div>'
+	elseif cow_ration = 2:
+		*p '<div id="chekbox_3s" style="left:1230px;top:191px;"><a class="tooltip-left-small-button" tooltip-data="촉수 산란액" href = "EXEC: cow_ration = -1 & $cow_info_text = $cow_ration[1] & gt $curloc"><img src="content\pic\buttons\sel_button.png"></a></div>'  
+	else
+		*p '<div id="chekbox_3s"><a class="tooltip-left-small-button" tooltip-data="촉수 산란액" href = "EXEC: cow_ration = 2 & $cow_info_text = $cow_ration[4] & gt $curloc"><img src="content\pic\buttons\unsel_button.png"></a></div>'  
+	end
+
+	!cow lactation info - Pianocat ㅇㅇ ㅇㅋㅇㅋ
+	*p '<div id="stat_lactation">'
+		*p '<img src = "<<$master_ava_color>>"><div style="line-height:25%"><br></div><<$master_energy_stars>>'
+		$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'mood', master_mood, 1)
+		*nl '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $mood_chart"><<$mood[master_mood_plus]>></a>'
+		$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'master_excitement', master_excitement, 1)
+		*nl '<div style="line-height:25%"><br></div><a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $excitement_chart"><<dyneval($vb_cycle_stat, IIF(max(master_moodlet["neg_boner"], master_moodlet["neg_blazing"]) = 0, 5 + master_excitement, 0), $excitement[master_excitement_plus])>></a>'
+		$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'hygiene', master_hygiene, -1)
+		*p '<div style="line-height:25%"><br></div><a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $hygiene_chart"><<$personal_hygiene[master_hygiene]>></a>'
+		*p '<div style="line-height:25%"><br></div>'
+	*p '</div><div id="stat_lactation_2">'
+		$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'cowSK', cow['cowSK'], 1)
+		*p '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>"><<$slave_cowSK[cow["cowSK"]]>></div><div style="line-height:25%"><br></div>'
+		*p '<<$slave_lactation[cow["lactation"]]>><<$impregnation_rate[cow["impregnation"]]>>'
+		*nl '<<$cow_boobs>>'
+	*p '</div>'
+
+	if cow_locked = 1:
+		*p '<div id="chekbox_4s" style="left:1230px"><a class="tooltip-left-small-button" tooltip-data="소를 사슬에서 풀어준다" href = "EXEC: cow_locked = 0 & $cow_info_text = $cow_unlocked & gt $curloc"><img src="content\pic\padlock.png" style="width:22px;height:22px;"></a></div>'
+		*p '<div id="barn_padlock"><img src="content\pic\padlock.png"></div>'
+	else
+		*p '<div id="chekbox_4s" style="left:1230px"><a class="tooltip-left-small-button" tooltip-data="소를 사슬로 묶어두기" href = "EXEC: cow_locked = 1 & $cow_info_text = $cow_locked & gt $curloc"><img src="content\pic\padlock.png" style="width:22px;height:22px;"></a></div>'  
+	end
+
+	if master_excitement >= 0:
+		*p '<div id ="impregnate_button"><a class="tooltip-bottom" tooltip-data="수유량 증가를 위해 교배한다" href = "EXEC: interaction = 1487 & gt ''interaction''"><img src="content\pic\buttons\impregnate.png"></a></div>'
+	end
+	*p '<div id = "impregnate_button_milk">'
+		*p '<a class="tooltip-left-small-button" tooltip-data="착유 가능한 우유량" href = "EXEC: gs ''#var_base'' & msg $cow_milk_quantity"><img src="content\pic\buttons\milk_drop_large.png" style="width:20px;height:22px;"></a></div>'
+		if cow_state = CONST_INT['slave_faint']:
+			*p '<div id = "impregnate_button_tits">'
+			*p '<a class="tooltip-left-small-button" tooltip-data="당신의 소는 의식이 없다" href = "empty"><img src="content\pic\ui overhaul\milking_gray.png" style="width:20px;height:22px;"></a></div>'
+		elseif cow['milk_summ'] < 10:
+			*p '<div id = "impregnate_button_tits">'
+			*p '<a class="tooltip-left-small-button" tooltip-data="착유할 정도의 우유가 없다 " href = "empty"><img src="content\pic\ui overhaul\milking_gray.png" style="width:20px;height:22px;"></a></div>'
+		else
+			*p '<div id = "impregnate_button_tits">'
+			*p '<a class="tooltip-left-small-button" tooltip-data="직접 젖 짜내기" href = "EXEC: interaction = menu_C_milking & gt ''interaction''"><img src="content\pic\ui overhaul\milking.png" style="width:20px;height:22px;"></a></div>'
+		end
+	*p '</div>'
+end
+
+if cow_state = CONST_INT['slave_exist']:
+	*p '<div id = "barn_ava"><img src = "<<$cow[''ava_clear'']>>.png"></div>'
+	*p '<div id = "barn_short_stat"><<$cow_energy_stars>><div style="line-height:25%"><br></div>'
+		$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'mood', cow['mood'], 1)
+		*p '<a class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $mood_chart"><<$mood[cow_mood_plus]>></a>'
+		$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'hygiene', cow['hygiene'], -1)
+		*p '　<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>"><<$personal_hygiene[cow["hygiene"]]>></div>'
+		*nl '<img src="content\pic\kalkulyator.png" width="15px" height="15px"> <<IIF(cow["calories"] > 0, "+", "")>><<cow["calories"]*100>> cal'
+		*nl '소유 기간 : <<cow["age_count"]>> 일'
+	*p '</div>'
+elseif cow_state = CONST_INT['slave_faint']:
+	*p '<div id = "barn_ava"><img src = "<<$cow[''ava_gray'']>>.png"></div>'
+	*p '<div id = "barn_short_stat">의식 없음<br>'
+		$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'hygiene', cow['hygiene'], -1)
+		*nl '<div style="display:inline-block;position:relative;" class="tooltip-left-small-button" tooltip-data="<<$tooltip_text>>"><<$personal_hygiene[cow["hygiene"]]>></div>'
+	*p '</div>'
+	$cow_info_text = '<<$cow_name>>의 의식이 없다'
+	
+end
+
+if cow_state ! CONST_INT['no_slave']: *p '<div id = "barn_stat_bar"><<$info_bar>></div>'
+
+! JO9 MOD START J9M1316 | 2026-10-15_z_inline_text_prefix | changed block; context may be included
+! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($cow_info_text, '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $cow_info_text = $mid($cow_info_text, len($jo9_leading_empty) + 1, len($cow_info_text))
+! JO9 MOD END J9M1316
+*p '<div id="text"><<$cow_info_text>></div>'
+$cow_info_text = ''
+
+if cheat_no_starve = 0 and cow['starvation_warning'] = 1:
+	cow['starvation_warning'] = 2 &! will be reset in next_day when no longer starving
+	msg '<<$경고>>소가 굶주려 있다, 식사량이 부족한 모양이다.<br><br>당장 집으로 데려와 먹여두는 방법도 있다.'
+end
+
+if cow_state > CONST_INT['no_slave'] and cow["hygiene"] > 0: *p '<div id="fast_wash_cow"><a class="tooltip-left-small-button" tooltip-data="소를 직접 씻긴다" href = "EXEC: interaction = menu_bath_C & gt ''interaction''"><img src="content\pic\buttons\fast_wash.png" style="width:19px;height:19px;"></a></div>'
+if cow_state > CONST_INT['no_slave'] and cow["hygiene"] > 0 and assistant_state = CONST_INT['slave_exist']: *p '<div id="fast_wash_cow_assistant"><a class="tooltip-left-small-button" tooltip-data="조수에게 소를 씻기게 한다" href = "EXEC: interaction = menu_bath_C_A & gt ''interaction''"><img src="content\pic\buttons\fast_wash_assistant.png" style="width:19px;height:19px;"></a></div>'
+
+if milk_can = 1:
+	*p '<div id = "prison_milk_can"><img src="content/pic/milk_can.png" style="width:85px;height:132px;"></div>'
+	*p '<div id = "prison_milk_can_stock"><center><<milk_stock>></center></div>'
+end
+
+if cow['ill'] ! 0:
+	if master_medic > 2 or assistant['nurse'] > 2:
+		*p '<div id = "slinfo_ill_2" class="tooltip-left-small-button" tooltip-data="<<$cow_name>>: 질병"><img src="content\pic\buttons\z_ill.png"></a></div>'
+	end
+end
+
+*p '<div id = "side_panel_location_2"><font style="font-family:경기천년제목 Medium">외양간</font><br><font size="2">~ Jack-O-Nine-Tails 2.4.0.0 & Kor Ver ~</font></div>'
+*p '<div id = "logo2"><a class="tooltip-left-up" tooltip-data="집으로 돌아간다" href = "EXEC: menu_form = 0 & gt ''menu_form''"><img src="content\pic\buttons\leave_quarter.png" style="width:75px;height:75px"></a></div>'
+------------ barn ------------

@@ -1,0 +1,106 @@
+# start_game
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2811 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'start_game': gs 'snk_room_bridge', 'guard', 'start_game'
+! JO9 MOD END J9M2811
+!additional options after starting the game
+!if $master_name = 'Старый Охотник': $master_name = 'Грязный Читер'
+
+gs '#item_base'
+gs '#options'
+wizard_mode = IIF($master_name = '올드 헌츠맨', 1, 0)
+IF $master_name = '올드 헌츠맨': $master_name = '더티 치터'
+$place = 'study'
+IF $estate = 'slum_house': $interior = 'slum_house'
+IF $estate = 'kamira_house': $interior = 'basic'
+IF $estate = 'serpis_house': $interior = 'econom'
+IF $estate = 'taurus_house': $interior = 'fort'
+IF $estate = 'korvus_house': $interior = 'gothic'
+IF $estate = 'white_house': $interior = 'elite'
+IF $estate = 'Centralkvartal_house': $interior = 'elite'
+IF $estate = 'Otchuzhdenie_house': $interior = 'basic'
+IF $estate = 'RedLight_house': $interior = 'gothic'
+IF $estate = 'fogs_house': $interior = 'slum_house'
+IF $estate = 'eastkvartal_house': $interior = 'basic'
+gs 'new_estate'
+
+!if hero_choice > 100: gs '#var_base_woman'
+gs '#var_base'
+
+day = 1
+decade = 0
+decadecount = 1
+ride_count = 1
+auction_count = 10
+gladi_count = 4
+
+active[$quest[0]] = 1
+
+!declare variables
+contractor_demand['refuse_age'] = 99
+contractor_demand['max_temper'] = 99
+train_slave_count['madame_jofre'] = 0
+
+trainer_slave_training_count['mistress_angelika'] = -1
+trainer_slave_training_count['goji'] = -1
+trainer_slave_training_count['avgia'] = -1
+trainer_slave_training_count['marivana'] = -1
+trainer_slave_training_count['jeevs'] = -1
+trainer_slave_training_count['master_s'] = -1
+trainer_slave_training_count['morrigan'] = -1
+trainer_slave_training_count['ippolita'] = -1
+trainer_slave_training_count['von_valtz'] = -1
+trainer_slave_training_count['geralt'] = -1
+trainer_slave_training_count['yodson'] = -1
+trainer_slave_training_count['applejack'] = -1
+trainer_slave_training_count['giess'] = -1
+trainer_slave_training_count['ling'] = -1
+trainer_slave_training_count['minosia'] = -1
+trainer_slave_training_count['rabban'] = -1
+trainer_slave_training_count['sheepherd'] = -1
+
+if hero_choice = 9 and no_loli ! 1 and game_difficulty ! 0:
+	is_perv = 3 &! impotence challenge for Uncle Tom if lolis are enabled and not Easy game difficulty
+	master_libido = 0
+	master_libido_rate = 2
+	master_excitement = -4
+	master_excitement_rate = -140
+end
+is_kid = 0
+is_master_virgin = 0
+if hero_choice = 10:
+	is_kid = 1
+	is_master_virgin = 1
+	master_libido = 5
+	master_libido_rate = 180
+	master_excitement = 5
+	master_excitement_rate = 180
+end
+hero_select = hero_choice
+is_gangbang = 1
+
+
+!Creating a route to the next race
+$trace[1] = 'ride_start'
+i = 1
+:loop
+	i += 1
+	a = rand(1,12)
+	$trace[i] = $trace_type[a]
+	if i < 11: jump 'loop'
+
+$trace[12] = 'ride_finish'
+
+ui_style = 2
+
+gs '#npc_base'
+gs '_layout'
+
+txt = 0
+gs '$newloc'
+gs 'npc_progress'
+
+is_home = 1
+gt 'menu_form'
+
+------------ start_game ------------

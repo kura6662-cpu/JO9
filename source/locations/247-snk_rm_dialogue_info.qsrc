@@ -1,0 +1,32 @@
+# snk_rm_dialogue_info
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START WORLD_TEXT_RM_14 | 2026-10-18_world_text_rework_228
+! RM dialogue-only supplements; no money, quest progress, skills or acquisition changes.
+if $args[0] = 'fame':
+	$russiankvartal_fame[0] = dyneval($vb_cycle_skill, 0, '러시아 구역의 귀족들은 아직 내 이름조차 모른다. 밑바닥 고객들에게 D+급 노리개부터 팔아 발판을 뚫어야 한다.<!-- #nwtx -->')
+	$russiankvartal_fame[1] = dyneval($vb_cycle_skill, 1, '러시아 구역의 호색한들 사이에 슬슬 입소문이 돌기 시작했다. C+급 노예를 바쳐 보야르들의 눈길을 끌 차례다.<!-- #nwtx -->')
+	$russiankvartal_fame[2] = dyneval($vb_cycle_skill, 2, '러시아 구역에 단골 줄이 잡혔다. 까다로운 B+급 주문을 완수해 상류층 사교계의 문턱을 넘자.<!-- #nwtx -->')
+	$russiankvartal_fame[3] = dyneval($vb_cycle_skill, 3, '요새 중심부 ‘데티네츠’의 성문이 열렸다. 왕자의 측근 알료샤의 은밀한 주문을 처리해 궁정에 줄을 대자.<!-- #nwtx -->')
+	$russiankvartal_fame[4] = dyneval($vb_cycle_skill, 4, '드미트리 왕자의 하렘에 직접 상품을 바칠 기회가 열렸다. 왕자의 호사스러운 취향을 완벽히 충족시켜야 한다.<!-- #nwtx -->')
+	$russiankvartal_fame[5] = dyneval($vb_cycle_skill, 5, '드미트리 왕자의 전폭적인 신임을 얻었다! 이제 러시아 구역의 권력과 황금이 내 손아귀에 들어왔다.<!-- #nwtx -->')
+	$futaland_fame[0] = dyneval($vb_cycle_skill, 0, '후타랜드의 거친 여인들은 아직 나를 거들떠보지도 않는다. D+급 암컷 노예부터 팔아 이름을 알리자.<!-- #nwtx -->')
+	$futaland_fame[1] = dyneval($vb_cycle_skill, 1, '후타랜드의 고객들이 내 조련 솜씨를 눈여겨보기 시작했다. C+급 노예로 그녀들의 왕성한 욕정을 채워 주자.<!-- #nwtx -->')
+	$futaland_fame[2] = dyneval($vb_cycle_skill, 2, '후타랜드에 확실한 거래처가 생겼다. B+급 노예를 원하는 실세들의 까다로운 주문을 공략할 때다.<!-- #nwtx -->')
+	$futaland_fame[3] = dyneval($vb_cycle_skill, 3, '‘스페이드 여왕의 탑’ 출입 허가가 떨어졌다! 탑 안의 고문관들이 요구하는 극한의 성노예를 조련해 바치자.<!-- #nwtx -->')
+	$futaland_fame[4] = dyneval($vb_cycle_skill, 4, '후타랜드의 정점, 여왕 님파도라를 알현할 자격을 얻었다! 그녀의 도착적인 주문을 완수해 정점을 찍자.<!-- #nwtx -->')
+	$futaland_fame[5] = dyneval($vb_cycle_skill, 5, '여왕 님파도라의 절대적인 인정을 받았다! 후타랜드 전역에서 나를 모르는 자가 없다.<!-- #nwtx -->')
+end
+if $args[0] = 'goblins':
+	txt_count += 1
+! JO9 MOD START RNL137 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$text[txt_count] = '[고블린]<br>&nbsp;크하핫, 우리 주문은 간단해! 탱탱한 젊은 년이나 농익은 년으로 가져오되, 길드 낙인이 찍힌 싸구려 창녀는 사절이다! 미모와 체력은 A 이상, 기질은 B 이상이어야 우리가 밤새 굴려도 안 부서지지. 머리는 B에서 A 사이가 딱 좋아. 너무 약아빠진 년은 목줄 채우기 성가시거든!<!-- #nwtx -->'
+! JO9 MOD END RNL137
+	txt_count += 1
+! JO9 MOD START RNL136 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+	$text[txt_count] = '[고블린]<br>&nbsp;말주변·곡예·가무·암캐 조교·역할극은 전부 A 이상, 감수성은 B 이상으로 빡세게 길들여 와! 조건에 딱 맞는 계집을 직접 끌고 오면 스파크는 두둑이 챙겨 주지, 크히히!<!-- #nwtx -->'
+! JO9 MOD END RNL136
+end
+! JO9 MOD END WORLD_TEXT_RM_14
+------------ snk_rm_dialogue_info ------------

@@ -1,0 +1,18 @@
+# warning
+! Readable view; authoritative fields are in ../locations.json.
+if snk_room_target > 0 and $curloc = 'warning': gs 'snk_room_bridge', 'guard', 'warning'
+! JO9 MOD START J9M3012 | 2026-10-14_hide_outer_frame_on_startup | changed block; context may be included
+*p '<style id="jo9_startup_no_outer_frame">body:before,body:after{display:none!important;}</style>'
+! JO9 MOD END J9M3012
+$backimage = 'content/pic/achtung.png'
+
+LCOLOR = rgb(100,100,255)
+MAINDESC_X = 200
+MAINDESC_Y = 670
+MAINDESC_W = 900
+MAINDESC_H = 95
+
+*p '<Br><br><center><a href=1><button>   </button></a></center>'
+
+act '1 agree': warning_pass = 1 & gt 'main_menu'
+------------ warning ------------

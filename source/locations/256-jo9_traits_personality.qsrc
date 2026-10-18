@@ -1,0 +1,181 @@
+# jo9_traits_personality
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9TP_MODULE | 2026-10-17_traits_personality
+! mode, actor role, subject, amount/fixed-rule flag. Role substitution applies to actor arrays only.
+if $args[0] = 'activity' or $args[0] = 'praise': gs 'jo9_traits_personality', 'gradecheck', $args[1]
+result = dyneval($replace({
+$jo9_trait_personality_mode = $args[0]
+$jo9_trait_personality_subject = $args[1]
+jo9_trait_personality_amount = args[2]
+result = jo9_trait_personality_amount
+if $jo9_trait_personality_mode = 'gradecheck':
+ if jo9actor['jo9_ambition'] = 1:
+  killvar '$jo9_trait_personality_fields'
+  $jo9_trait_personality_levels = ''
+  jo9_trait_personality_i = 0
+  $jo9_trait_personality_fields[] = 'service'
+  $jo9_trait_personality_fields[] = 'cook'
+  $jo9_trait_personality_fields[] = 'secretary'
+  $jo9_trait_personality_fields[] = 'expression'
+  $jo9_trait_personality_fields[] = 'nurse'
+  $jo9_trait_personality_fields[] = 'alchemy'
+  $jo9_trait_personality_fields[] = 'enchanter'
+  $jo9_trait_personality_fields[] = 'stamina'
+  $jo9_trait_personality_fields[] = 'gladiatrix'
+  $jo9_trait_personality_fields[] = 'calisthenics'
+  $jo9_trait_personality_fields[] = 'music'
+  $jo9_trait_personality_fields[] = 'art'
+  $jo9_trait_personality_fields[] = 'pet'
+  $jo9_trait_personality_fields[] = 'dressage'
+  $jo9_trait_personality_fields[] = 'cowSK'
+  $jo9_trait_personality_fields[] = 'sub_hug'
+  $jo9_trait_personality_fields[] = 'sub_hj'
+  $jo9_trait_personality_fields[] = 'sub_fj'
+  $jo9_trait_personality_fields[] = 'sub_paizuri'
+  $jo9_trait_personality_fields[] = 'sub_kiss'
+  $jo9_trait_personality_fields[] = 'sub_tongue'
+  $jo9_trait_personality_fields[] = 'sub_bj'
+  $jo9_trait_personality_fields[] = 'sub_dt'
+  $jo9_trait_personality_fields[] = 'sub_asslik'
+  $jo9_trait_personality_fields[] = 'sub_vaginal'
+  $jo9_trait_personality_fields[] = 'sub_fisting'
+  $jo9_trait_personality_fields[] = 'sub_anal'
+  $jo9_trait_personality_fields[] = 'anal_stretch'
+  $jo9_trait_personality_fields[] = 'sub_threesome'
+  $jo9_trait_personality_fields[] = 'sub_dp'
+  $jo9_trait_personality_fields[] = 'sub_tp'
+  $jo9_trait_personality_fields[] = 'sub_gangbang'
+  $jo9_trait_personality_fields[] = 'sub_bukkake'
+  $jo9_trait_personality_fields[] = 'sub_zoosex'
+  $jo9_trait_personality_fields[] = 'sub_bestiality'
+  $jo9_trait_personality_fields[] = 'sub_horse'
+  $jo9_trait_personality_fields[] = 'sub_tentacles'
+  $jo9_trait_personality_fields[] = 'sub_arachnidspider'
+  $jo9_trait_personality_fields[] = 'sub_polypusvermin'
+  $jo9_trait_personality_fields[] = 'sub_enema'
+  $jo9_trait_personality_fields[] = 'sub_mazo'
+  $jo9_trait_personality_fields[] = 'sub_selfpain'
+  $jo9_trait_personality_fields[] = 'sub_piss'
+  $jo9_trait_personality_fields[] = 'sub_kopro'
+  $jo9_trait_personality_fields[] = 'sub_seduce'
+  $jo9_trait_personality_fields[] = 'sub_masturbation'
+  $jo9_trait_personality_fields[] = 'sub_dildo'
+  $jo9_trait_personality_fields[] = 'sub_exhibit'
+  $jo9_trait_personality_fields[] = 'sub_humiliation'
+  $jo9_trait_personality_fields[] = 'sub_nipplefuck'
+  $jo9_trait_personality_fields[] = 'sub_lesbiansex1'
+  $jo9_trait_personality_fields[] = 'sub_lesbiansex2'
+  $jo9_trait_personality_fields[] = 'sub_lesbiansex3'
+  $jo9_trait_personality_fields[] = 'sub_lesbiansex4'
+  $jo9_trait_personality_fields[] = 'petting'
+  $jo9_trait_personality_fields[] = 'oral'
+  $jo9_trait_personality_fields[] = 'penetration'
+  $jo9_trait_personality_fields[] = 'orgy'
+  $jo9_trait_personality_fields[] = 'roleplay'
+  $jo9_trait_personality_fields[] = 'fetishism'
+  $jo9_trait_personality_fields[] = 'xenophily'
+  $jo9_trait_personality_fields[] = 'nipplefuck'
+  $jo9_trait_personality_fields[] = 'lesbiansex'
+  :jo9_trait_personality_grade_loop
+  $jo9_trait_personality_levels += $str(max(0, min(9, jo9actor[$jo9_trait_personality_fields[jo9_trait_personality_i]])))
+  jo9_trait_personality_i += 1
+  if jo9_trait_personality_i < arrsize('$jo9_trait_personality_fields'): jump 'jo9_trait_personality_grade_loop'
+  if len($jo9actor['jo9_ambition_levels']) = len($jo9_trait_personality_levels):
+   jo9_trait_personality_i = 1
+   :jo9_trait_personality_compare_loop
+   if val($mid($jo9_trait_personality_levels, jo9_trait_personality_i, 1)) > val($mid($jo9actor['jo9_ambition_levels'], jo9_trait_personality_i, 1)): jo9actor['jo9_ambition_grade_day'] = day + 1
+   jo9_trait_personality_i += 1
+   if jo9_trait_personality_i <= len($jo9_trait_personality_levels): jump 'jo9_trait_personality_compare_loop'
+  end
+  $jo9actor['jo9_ambition_levels'] = $jo9_trait_personality_levels
+ end
+elseif $jo9_trait_personality_mode = 'praise':
+ if jo9actor['jo9_ambition'] = 1 and jo9actor['jo9_ambition_grade_day'] = day + 1 and jo9actor['jo9_ambition_used_day'] ! day + 1:
+  jo9actor_rate['mood'] += 5
+  jo9actor['jo9_ambition_used_day'] = day + 1
+  jo9actor['jo9_ambition_known'] = 1
+ end
+elseif $jo9_trait_personality_mode = 'activity':
+ if jo9actor['jo9_focus_active'] ! 0: jo9actor['jo9_focus_active'] = 0
+ if jo9actor['jo9_work_ethic'] = 1 or jo9actor['jo9_work_ethic'] = -1:
+  if jo9actor['jo9_activity_day'] ! day + 1:
+   jo9actor['jo9_activity_day'] = day + 1
+   jo9actor['jo9_activity_count'] = 0
+  end
+  jo9actor['jo9_activity_count'] += 1
+  if jo9actor['jo9_activity_count'] > 1:
+   jo9actor_rate['mood'] += 2 * jo9actor['jo9_work_ethic']
+   jo9actor['jo9_work_ethic_known'] = 1
+  end
+ end
+ if jo9_trait_personality_amount = 0 and (jo9actor['jo9_focus'] = 1 or jo9actor['jo9_focus'] = -1):
+  if $jo9_trait_personality_subject = '' or $mid($jo9_trait_personality_subject, len($jo9_trait_personality_subject), 1) = ':': $jo9_trait_personality_subject += 'interaction:' + $str(interaction)
+  $jo9_trait_personality_subject = $replace($replace($jo9_trait_personality_subject, 'slave_rate[', ''), 'slave[', '')
+  $jo9_trait_personality_subject = $replace($replace($jo9_trait_personality_subject, 'assistant_rate[', ''), 'assistant[', '')
+  $jo9_trait_personality_subject = $replace($replace($jo9_trait_personality_subject, 'dynslave_rate[', ''), 'dynslave[', '')
+  $jo9_trait_personality_subject = $replace($replace($jo9_trait_personality_subject, 'cow_rate[', ''), 'cow[', '')
+  $jo9_trait_personality_subject = $replace($replace($jo9_trait_personality_subject, 'prisoner_rate[', ''), 'prisoner[', '')
+  $jo9_trait_personality_subject = $replace($replace($jo9_trait_personality_subject, 'room1_rate[', ''), 'room1[', '')
+  $jo9_trait_personality_subject = $replace($replace($jo9_trait_personality_subject, 'room2_rate[', ''), 'room2[', '')
+  $jo9_trait_personality_subject = $replace($replace($jo9_trait_personality_subject, 'room3_rate[', ''), 'room3[', '')
+  $jo9_trait_personality_subject = $replace($replace($jo9_trait_personality_subject, 'room4_rate[', ''), 'room4[', '')
+  $jo9_trait_personality_subject = $replace($replace($jo9_trait_personality_subject, 'farmhand_rate[', ''), 'farmhand[', '')
+  $jo9_trait_personality_subject = $replace($replace($replace($jo9_trait_personality_subject, ']', ''), '"', ''), "'", '')
+  if $jo9actor['jo9_focus_subject'] = $jo9_trait_personality_subject:
+   jo9actor['jo9_focus_active'] = jo9actor['jo9_focus']
+   jo9actor['jo9_focus_known'] = 1
+   if jo9actor['jo9_focus'] = 1: jo9actor_rate['mood'] += 2
+  end
+  $jo9actor['jo9_focus_subject'] = $jo9_trait_personality_subject
+ end
+elseif $jo9_trait_personality_mode = 'xp':
+ if jo9_trait_personality_amount > 0 and (jo9actor['jo9_focus_active'] = 1 or jo9actor['jo9_focus_active'] = -1):
+  jo9actor['jo9_focus_xp_credit'] += jo9_trait_personality_amount * jo9actor['jo9_focus_active']
+  result += jo9actor['jo9_focus_xp_credit'] / 10
+  jo9actor['jo9_focus_xp_credit'] = jo9actor['jo9_focus_xp_credit'] mod 10
+ end
+elseif $jo9_trait_personality_mode = 'performance':
+ if jo9_trait_personality_amount > 0 and jo9actor['jo9_focus_active'] = -1: result = jo9_trait_personality_amount * 9 / 10
+elseif $jo9_trait_personality_mode = 'finish':
+ if jo9actor['jo9_focus_active'] ! 0: jo9actor['jo9_focus_active'] = 0
+elseif $jo9_trait_personality_mode = 'decay':
+ jo9_trait_personality_i = 0
+ jo9_trait_personality_step = 1
+ if arrsize('$slave_bad_mood') > 0:
+  :jo9_trait_personality_decay_loop
+  $jo9_trait_personality_key = $slave_bad_mood[jo9_trait_personality_i]
+  $jo9_trait_personality_credit = 'jo9_memory_' + $jo9_trait_personality_key
+  jo9_trait_personality_step = 1
+  if jo9actor[$jo9_trait_personality_key] > 0 and instr('|neg_pain|neg_abuse|neg_disgust|neg_no_praise|neg_shame|neg_prisoner|neg_job|neg_forced|neg_raped|neg_defloration|neg_artifact|neg_cheap_gift|neg_cheap_reward|neg_pony_died|neg_sa_catfight|neg_sa_love_lost2|neg_sa_demote|neg_sa_friend_prisoned|neg_sa_friend_punished|neg_sa_love_lost1|neg_another_sleep_together|', '|' + $jo9_trait_personality_key + '|') > 0:
+   if jo9actor['jo9_grudge'] = 1:
+    jo9actor[$jo9_trait_personality_credit] += 2
+    jo9_trait_personality_step = jo9actor[$jo9_trait_personality_credit] / 3
+    jo9actor[$jo9_trait_personality_credit] = jo9actor[$jo9_trait_personality_credit] mod 3
+    jo9actor['jo9_grudge_known'] = 1
+   elseif jo9actor['jo9_grudge'] = -1:
+    jo9actor[$jo9_trait_personality_credit] += 10
+    jo9_trait_personality_step = jo9actor[$jo9_trait_personality_credit] / 7
+    jo9actor[$jo9_trait_personality_credit] = jo9actor[$jo9_trait_personality_credit] mod 7
+    jo9actor['jo9_grudge_known'] = 1
+   else
+    if jo9actor[$jo9_trait_personality_credit] ! 0: jo9actor[$jo9_trait_personality_credit] = 0
+   end
+  end
+  jo9actor[$jo9_trait_personality_key] = max(0, jo9actor[$jo9_trait_personality_key] - jo9_trait_personality_step)
+  if jo9actor[$jo9_trait_personality_key] = 0 and jo9actor[$jo9_trait_personality_credit] ! 0: jo9actor[$jo9_trait_personality_credit] = 0
+  jo9_trait_personality_i += 1
+  if jo9_trait_personality_i < arrsize('$slave_bad_mood'): jump 'jo9_trait_personality_decay_loop'
+ end
+end
+}, 'jo9actor', $args[1]), $args[0], $args[2], args[3])
+killvar '$jo9_trait_personality_mode'
+killvar '$jo9_trait_personality_subject'
+killvar 'jo9_trait_personality_amount'
+killvar '$jo9_trait_personality_fields'
+killvar '$jo9_trait_personality_levels'
+killvar 'jo9_trait_personality_i'
+killvar 'jo9_trait_personality_step'
+killvar '$jo9_trait_personality_key'
+killvar '$jo9_trait_personality_credit'
+! JO9 MOD END J9TP_MODULE
+------------ jo9_traits_personality ------------

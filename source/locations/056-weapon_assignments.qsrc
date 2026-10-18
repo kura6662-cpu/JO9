@@ -1,0 +1,33 @@
+# $weapon_assignments
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2836 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$weapon_assignments': gs 'snk_room_bridge', 'guard', '$weapon_assignments'
+! JO9 MOD END J9M2836
+!Weapon Assignments - crushboss
+
+!TAKE OUT THE WEAPONS
+
+!Master/Slaver Weapons
+$за_спиной = $master_back_wpn
+$слева = $master_left_wpn
+$справа = $master_right_wpn
+$предплечье = $master_arm_wpn
+$в_сапоге = $master_leg_wpn
+
+if combatant = 1:
+	$за_спиной = $slave["back_wpn"]
+	$слева = $slave["left_wpn"]
+	$справа = $slave["right_wpn"]
+	$предплечье = $slave["arm_wpn"]
+	$в_сапоге = $slave["leg_wpn"]
+end
+
+if combatant = 2:
+	$за_спиной = $assistant["back_wpn"]
+	$слева = $assistant["left_wpn"]
+	$справа = $assistant["right_wpn"]
+	$предплечье = $assistant["arm_wpn"]
+	$в_сапоге = $assistant["leg_wpn"]
+end
+
+------------ $weapon_assignments ------------

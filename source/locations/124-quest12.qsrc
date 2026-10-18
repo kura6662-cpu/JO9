@@ -1,0 +1,76 @@
+# quest12
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2876 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'quest12': gs 'snk_room_bridge', 'guard', 'quest12'
+! JO9 MOD END J9M2876
+!Quest 12
+!Post Patrician Quest - Daily Quest Handling - created by crushboss
+quest12_day_counter += 1
+
+if quest12_day_counter > 240:
+	$quest12 = 'fail'
+	$quest12_failreason = '"미안하게 됐군 노예상, 스펙터 경께서 시간이 됐다 하셨어. 내 개인사가 아니야."'
+end
+
+!ImperatorAugustus: added more fail conditions and removed checks for active[$quest[12]] ! 2 (this location is only called when active[$quest[12]] = 1)
+
+if felicity = 1 and $quest12 ! 'fail':
+	! felicity = 1 is set when Felicity is retrieved from the smugglers
+	if (pig_type = 2572 or cow_type = 2572 or harpy_type = 2572):
+		$quest12 = 'fail'
+		$quest12_failreason = '"군주님 전언중에, 그 여자를 가축으로 두란 말은 없었어."'
+	elseif assistant_type = 2572 or farmhand_type = 2572:
+		$quest12 = 'fail'
+		$quest12_failreason = '"군주님 전언중에, 그 여자를 조수로 두란 말은 없었어."'
+	elseif prisoner_type = 2572:
+		$quest12 = 'fail'
+		$quest12_failreason = '"군주님 전언중에, 그 여자를 감옥에 두란 말은 없었어."'
+	elseif (iced_1_type = 2572 or iced_2_type = 2572 or iced_3_type = 2572 or iced_4_type = 2572 or iced_5_type = 2572 or iced_6_type = 2572):
+		$quest12 = 'fail'
+		$quest12_failreason = '"군주님 전언중에, 그 여자를 동면관에 넣으란 말은 없었어."'
+	elseif slave_type = 2572:
+		slave['metabolism'] = 3
+		if slave['masochism_xp'] > 20:
+			slave['masochism_xp'] = 20
+			slave['masochism'] = 0
+		end
+		if slave['diet_leftovers'] ! 0 or slave['diet_food_type'] ! 2 or slave_already_done_total['1515'] > 0 or slave_already_done_total['1551'] > 0 or slave_already_done_total['1552'] > 0 or slave_already_done_total['1553'] > 0 or slave_already_done_total['1554'] > 0 or slave_already_done_total['1555'] > 0:
+			! removed fiend_cum = 0 check - letting her starve has consequences of its own and running out of fiend cum should not be a fail condition - ImperatorAugustus
+			! added interaction 1515 (going to a restaurant) and 1551 through 1555 (reward with treats/sweets) - ImperatorAugustus
+			$quest12 = 'fail'
+			$quest12_failreason = '"오직 안개 괴물 산란액만 먹이기에 실패했군, 노예상."'
+		end
+		if slave['blowjob_rule'] ! 1 or slave['washes_master_rule'] ! 1:
+			$quest12 = 'fail'
+			$quest12_failreason = '"아침이나 씻을때 시중들게 하는걸 잊었군, 노예상."'
+		end
+		if pet_tentacle = 0:
+			$quest12 = 'fail'
+			$quest12_failreason = '"줄 산란액이 없었나 보군, 노예상."'
+		elseif slave['tentacle_rule'] ! 1 and tentacle_state = 1:
+			$quest12 = 'fail'
+			$quest12_failreason = '"안개 괴물을 다루게 하라 말 했을텐데, 노예상."'
+		end
+		if slave['v_balls_rule'] ! 1 and slave['virginity'] ! 0 and (slave['sub_vaginal'] > 1 or slave_auto_tentacle = 0 or slave['sub_tentacles'] > 0 or slave_already_done_total['1331'] > 0 or slave['sub_dp'] > 0 or slave['sub_tp'] > 0 or slave['sub_gangbang'] > 0 or slave_already_done_total['5414'] > 0 or slave_already_done_total['161'] > 0 or slave_already_done_total['171'] > 0 or slave_already_done_total['1341'] > 0 or slave_already_done_total['5418'] > 0 or slave['sub_threesome'] > 2 or slave['sub_zoosex'] > 0 or slave['sub_bestiality'] > 0 or slave['sub_horse'] > 0 or slave['sub_arachnidSpider'] > 2 or slave['sub_polypusvermin'] > 1 or slave_already_done_total['1486'] > 0 or slave_already_done_total['1487'] > 0):
+			$quest12 = 'fail'
+			$quest12_failreason = '"기억하나? 네 물건이 들어간 후에는, 구슬을 넣어두는 규칙을."'
+		end
+		if slave['nipple_piercing'] = 1 and $slave['nipplerings'] ! 'nipple_chain':
+			$quest12 = 'fail'
+			$quest12_failreason = '"깜빡이라도 한건가? 유두를 뚫고 사슬을 채워둬야 할텐데."'
+		end
+		if slave_state = CONST_INT['slave_faint']:
+			$quest12 = 'fail'
+			$quest12_failreason = '"군주님께서 자넬 신망하시어 일을 맡기셨을 터, 혼수 상태? 네놈은 죽어도 싸다."'
+		end
+		!Testing Code - crushboss
+		!slave['has_ride_win'] = 7
+		!End of Testing code - crushboss
+	elseif slave_state < CONST_INT['slave_exist']:
+		! no_slave or slave_dead - ImperatorAugustus
+		$quest12 = 'fail'
+		$quest12_failreason = '"군주님께서 자넬 신망하시어 일을 맡기셨을 터, 잃어버려? 네놈은 죽어도 싸다."'
+	end
+end
+
+------------ quest12 ------------

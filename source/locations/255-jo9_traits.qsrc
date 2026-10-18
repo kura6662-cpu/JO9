@@ -1,0 +1,185 @@
+# jo9_traits
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START TRAITS_REGISTRY | 2026-10-17_traits_batch
+! 새 특성의 생성·표시·설명·수동 편집을 모은 공통 입구입니다.
+! list는 문자열을 반환합니다. edit는 해당 특성만 켜거나 끄며, 같은 축의 반대 특성을 대체합니다.
+if $args[0] = 'describe':
+ if $args[1] = 'ambitious': msg '야심가: 기술 등급이 오른 날 처음 칭찬받으면 기분 누적값 +5. 응석은 추가하지 않습니다.'
+ if $args[1] = 'workaholic': msg '일벌레: 하루 첫 업무·교육은 보통과 같고, 두 번째부터 수행할 때마다 기분 누적값 +2.'
+ if $args[1] = 'content': msg '안분지족: 하루 첫 업무·교육은 보통과 같고, 두 번째부터 수행할 때마다 기분 누적값 -2.'
+ if $args[1] = 'persevering': msg '끈기: 같은 업무·교육을 연속 수행하면 두 번째부터 기분 +2, 양의 경험치 +10%. 고정 규칙 업무는 제외합니다.'
+ if $args[1] = 'distracted': msg '산만함: 같은 업무·교육을 연속 수행하면 두 번째부터 양의 경험치와 업무 성과 -10%. 고정 규칙 업무는 제외합니다.'
+ if $args[1] = 'petty': msg '옹졸함: 사건으로 생긴 부정적 기억이 약 1.5배 오래갑니다. 최초 기분 손실은 그대로입니다.'
+ if $args[1] = 'generous': msg '너그러움: 사건으로 생긴 부정적 기억이 약 0.7배 동안 유지됩니다. 최초 기분 손실은 그대로입니다.'
+ if $args[1] = 'healthy': msg '건강체질: 전투 최대 체력·스태미나 및 운동 관련 교육의 양의 경험치 ×1.5. 약골과 양립하지 않습니다.'
+ if $args[1] = 'frail': msg '약골: 전투 최대 체력·스태미나 및 운동 관련 교육의 양의 경험치 ×0.5. 건강체질과 양립하지 않습니다.'
+ if $args[1] = 'berserker': msg '광전사: 최대 스태미나·사기 ×1.5. 체력이 최종 최대치의 30% 이하이면 공격 피해 ×2. 세 전투 특성 중 하나만 가집니다.'
+ if $args[1] = 'paladin': msg '성기사: 현재 스태미나와 사기가 모두 최종 최대치의 50% 이상이면 받는 피해를 절반으로 줄입니다. 기존 최소 피해는 유지합니다.'
+ if $args[1] = 'veteran': msg '역전의 용사: 전투 최대 체력·스태미나·사기 ×1.5. 세 전투 특성 중 하나만 가집니다.'
+ if $args[1] = 'versatile': msg '다재다능: 표시되는 지식·기술과 성애기술·ST가 모두 A(4) 이상이면 영구 획득. 기본 가치 +25%. 편집기로 해제하면 자동 재획득을 보류합니다.'
+ if $args[1] = 'peerless': msg '경국지색: 기본 외모에 한 단계를 더하여 최대 S++(6). 기존 흉터·체형 불이익은 유지합니다. 특별 판매·경매·흥정 우대 및 기존 양의 호감도·명성 보상 +50%.'
+end
+if $args[0] = 'list':
+ $result = ''
+ dynamic $replace({
+  if dynslave['jo9_ambition'] = 1 and dynslave['jo9_ambition_known'] = 1: $result += '<a href="EXEC: gs ''jo9_traits'', ''describe'', ''ambitious''">야심가</a><br>'
+  if dynslave['jo9_work_ethic'] = 1 and dynslave['jo9_work_ethic_known'] = 1: $result += '<a href="EXEC: gs ''jo9_traits'', ''describe'', ''workaholic''">일벌레</a><br>'
+  if dynslave['jo9_work_ethic'] = -1 and dynslave['jo9_work_ethic_known'] = 1: $result += '<a href="EXEC: gs ''jo9_traits'', ''describe'', ''content''">안분지족</a><br>'
+  if dynslave['jo9_focus'] = 1 and dynslave['jo9_focus_known'] = 1: $result += '<a href="EXEC: gs ''jo9_traits'', ''describe'', ''persevering''">끈기</a><br>'
+  if dynslave['jo9_focus'] = -1 and dynslave['jo9_focus_known'] = 1: $result += '<a href="EXEC: gs ''jo9_traits'', ''describe'', ''distracted''">산만함</a><br>'
+  if dynslave['jo9_grudge'] = 1 and dynslave['jo9_grudge_known'] = 1: $result += '<a href="EXEC: gs ''jo9_traits'', ''describe'', ''petty''">옹졸함</a><br>'
+  if dynslave['jo9_grudge'] = -1 and dynslave['jo9_grudge_known'] = 1: $result += '<a href="EXEC: gs ''jo9_traits'', ''describe'', ''generous''">너그러움</a><br>'
+  if dynslave['jo9_constitution'] = 1: $result += '<a href="EXEC: gs ''jo9_traits'', ''describe'', ''healthy''">건강체질</a><br>'
+  if dynslave['jo9_constitution'] = -1: $result += '<a href="EXEC: gs ''jo9_traits'', ''describe'', ''frail''">약골</a><br>'
+  if dynslave['jo9_combat_trait'] = 1: $result += '<a href="EXEC: gs ''jo9_traits'', ''describe'', ''berserker''">광전사</a><br>'
+  if dynslave['jo9_combat_trait'] = 2: $result += '<a href="EXEC: gs ''jo9_traits'', ''describe'', ''paladin''">성기사</a><br>'
+  if dynslave['jo9_combat_trait'] = 3: $result += '<a href="EXEC: gs ''jo9_traits'', ''describe'', ''veteran''">역전의 용사</a><br>'
+  if dynslave['jo9_versatile'] = 1: $result += '<a href="EXEC: gs ''jo9_traits'', ''describe'', ''versatile''">다재다능</a><br>'
+  if dynslave['jo9_peerless'] = 1: $result += '<a href="EXEC: gs ''jo9_traits'', ''describe'', ''peerless''">경국지색</a><br>'
+ }, 'dynslave', $args[1])
+end
+if $args[0] = 'generate':
+ ! 호출자가 새 무작위 인물일 때만 이 모드를 호출합니다. 기존 인물은 재추첨하지 않습니다.
+ stock['jo9_ambition'] = 0
+ if rand(1,100) <= 10: stock['jo9_ambition'] = 1
+ stock['jo9_work_ethic'] = 0
+ jo9_trait_registry_roll = rand(1,100)
+ if jo9_trait_registry_roll <= 10: stock['jo9_work_ethic'] = 1
+ if jo9_trait_registry_roll > 10 and jo9_trait_registry_roll <= 20: stock['jo9_work_ethic'] = -1
+ stock['jo9_focus'] = 0
+ jo9_trait_registry_roll = rand(1,100)
+ if jo9_trait_registry_roll <= 10: stock['jo9_focus'] = 1
+ if jo9_trait_registry_roll > 10 and jo9_trait_registry_roll <= 20: stock['jo9_focus'] = -1
+ stock['jo9_grudge'] = 0
+ jo9_trait_registry_roll = rand(1,100)
+ if jo9_trait_registry_roll <= 10: stock['jo9_grudge'] = 1
+ if jo9_trait_registry_roll > 10 and jo9_trait_registry_roll <= 20: stock['jo9_grudge'] = -1
+ stock['jo9_constitution'] = 0
+ jo9_trait_registry_roll = rand(1,100)
+ if jo9_trait_registry_roll <= 3: stock['jo9_constitution'] = 1
+ if jo9_trait_registry_roll > 3 and jo9_trait_registry_roll <= 6: stock['jo9_constitution'] = -1
+ stock['jo9_peerless'] = 0
+ if stock['beauty'] >= 5:
+  if rand(1,100) = 1: stock['jo9_peerless'] = 1
+ end
+ stock['jo9_ambition_known'] = 0
+ stock['jo9_work_ethic_known'] = 0
+ stock['jo9_focus_known'] = 0
+ stock['jo9_grudge_known'] = 0
+ killvar 'jo9_trait_registry_roll'
+end
+if $args[0] = 'edit':
+ ! args: 역할, 수치 키, 선택값. 활성 특성을 다시 누르면 0으로 해제합니다.
+ dynamic $replace({
+  if dynslave[$args[0]] = args[1]:
+   dynslave[$args[0]] = 0
+  else
+   dynslave[$args[0]] = args[1]
+  end
+  if $args[0] = 'jo9_ambition':
+   dynslave['jo9_ambition_known'] = 1
+   $dynslave['jo9_ambition_levels'] = ''
+   dynslave['jo9_ambition_grade_day'] = 0
+   dynslave['jo9_ambition_used_day'] = 0
+  end
+  if $args[0] = 'jo9_work_ethic': dynslave['jo9_work_ethic_known'] = 1
+  if $args[0] = 'jo9_focus':
+   dynslave['jo9_focus_known'] = 1
+   $dynslave['jo9_focus_subject'] = ''
+   dynslave['jo9_focus_active'] = 0
+   dynslave['jo9_focus_xp_credit'] = 0
+  end
+  if $args[0] = 'jo9_grudge':
+   dynslave['jo9_grudge_known'] = 1
+   dynslave['jo9_memory_neg_pain'] = 0
+   dynslave['jo9_memory_neg_abuse'] = 0
+   dynslave['jo9_memory_neg_disgust'] = 0
+   dynslave['jo9_memory_neg_no_praise'] = 0
+   dynslave['jo9_memory_neg_shame'] = 0
+   dynslave['jo9_memory_neg_prisoner'] = 0
+   dynslave['jo9_memory_neg_job'] = 0
+   dynslave['jo9_memory_neg_forced'] = 0
+   dynslave['jo9_memory_neg_raped'] = 0
+   dynslave['jo9_memory_neg_defloration'] = 0
+   dynslave['jo9_memory_neg_artifact'] = 0
+   dynslave['jo9_memory_neg_cheap_gift'] = 0
+   dynslave['jo9_memory_neg_cheap_reward'] = 0
+   dynslave['jo9_memory_neg_pony_died'] = 0
+   dynslave['jo9_memory_neg_sa_catfight'] = 0
+   dynslave['jo9_memory_neg_sa_love_lost2'] = 0
+   dynslave['jo9_memory_neg_sa_demote'] = 0
+   dynslave['jo9_memory_neg_sa_friend_prisoned'] = 0
+   dynslave['jo9_memory_neg_sa_friend_punished'] = 0
+   dynslave['jo9_memory_neg_sa_love_lost1'] = 0
+   dynslave['jo9_memory_neg_another_sleep_together'] = 0
+  end
+  if $args[0] = 'jo9_versatile':
+   dynslave['jo9_versatile_manual_off'] = 0
+   if dynslave['jo9_versatile'] = 0: dynslave['jo9_versatile_manual_off'] = 1
+  end
+ }, 'dynslave', $args[1]), $args[2], args[3]
+ gs 'jo9_traits_personality', 'gradecheck', $args[1]
+ gs 'jo9_traits_value', 'refresh', $args[1]
+end
+if $args[0] = 'editor':
+ dynamic $replace({
+  $setting_display += '<div id="under_cheats"><a href="EXEC: gs ''jo9_traits'', ''edit'', ''dynslave'', ''jo9_ambition'', 1 & gt ''menu_form''">야심가: '
+  if dynslave['jo9_ambition'] = 1: $setting_display += '있음'
+  if dynslave['jo9_ambition'] ! 1: $setting_display += '없음'
+  $setting_display += '</a></div>'
+  $setting_display += '<div id="under_cheats"><a href="EXEC: gs ''jo9_traits'', ''edit'', ''dynslave'', ''jo9_work_ethic'', 1 & gt ''menu_form''">일벌레: '
+  if dynslave['jo9_work_ethic'] = 1: $setting_display += '있음'
+  if dynslave['jo9_work_ethic'] ! 1: $setting_display += '없음'
+  $setting_display += '</a></div>'
+  $setting_display += '<div id="under_cheats"><a href="EXEC: gs ''jo9_traits'', ''edit'', ''dynslave'', ''jo9_work_ethic'', -1 & gt ''menu_form''">안분지족: '
+  if dynslave['jo9_work_ethic'] = -1: $setting_display += '있음'
+  if dynslave['jo9_work_ethic'] ! -1: $setting_display += '없음'
+  $setting_display += '</a></div>'
+  $setting_display += '<div id="under_cheats"><a href="EXEC: gs ''jo9_traits'', ''edit'', ''dynslave'', ''jo9_focus'', 1 & gt ''menu_form''">끈기: '
+  if dynslave['jo9_focus'] = 1: $setting_display += '있음'
+  if dynslave['jo9_focus'] ! 1: $setting_display += '없음'
+  $setting_display += '</a></div>'
+  $setting_display += '<div id="under_cheats"><a href="EXEC: gs ''jo9_traits'', ''edit'', ''dynslave'', ''jo9_focus'', -1 & gt ''menu_form''">산만함: '
+  if dynslave['jo9_focus'] = -1: $setting_display += '있음'
+  if dynslave['jo9_focus'] ! -1: $setting_display += '없음'
+  $setting_display += '</a></div>'
+  $setting_display += '<div id="under_cheats"><a href="EXEC: gs ''jo9_traits'', ''edit'', ''dynslave'', ''jo9_grudge'', 1 & gt ''menu_form''">옹졸함: '
+  if dynslave['jo9_grudge'] = 1: $setting_display += '있음'
+  if dynslave['jo9_grudge'] ! 1: $setting_display += '없음'
+  $setting_display += '</a></div>'
+  $setting_display += '<div id="under_cheats"><a href="EXEC: gs ''jo9_traits'', ''edit'', ''dynslave'', ''jo9_grudge'', -1 & gt ''menu_form''">너그러움: '
+  if dynslave['jo9_grudge'] = -1: $setting_display += '있음'
+  if dynslave['jo9_grudge'] ! -1: $setting_display += '없음'
+  $setting_display += '</a></div>'
+  $setting_display_r += '<div id="under_cheats"><a href="EXEC: gs ''jo9_traits'', ''edit'', ''dynslave'', ''jo9_constitution'', 1 & gt ''menu_form''">건강체질: '
+  if dynslave['jo9_constitution'] = 1: $setting_display_r += '있음'
+  if dynslave['jo9_constitution'] ! 1: $setting_display_r += '없음'
+  $setting_display_r += '</a></div>'
+  $setting_display_r += '<div id="under_cheats"><a href="EXEC: gs ''jo9_traits'', ''edit'', ''dynslave'', ''jo9_constitution'', -1 & gt ''menu_form''">약골: '
+  if dynslave['jo9_constitution'] = -1: $setting_display_r += '있음'
+  if dynslave['jo9_constitution'] ! -1: $setting_display_r += '없음'
+  $setting_display_r += '</a></div>'
+  $setting_display_r += '<div id="under_cheats"><a href="EXEC: gs ''jo9_traits'', ''edit'', ''dynslave'', ''jo9_combat_trait'', 1 & gt ''menu_form''">광전사: '
+  if dynslave['jo9_combat_trait'] = 1: $setting_display_r += '있음'
+  if dynslave['jo9_combat_trait'] ! 1: $setting_display_r += '없음'
+  $setting_display_r += '</a></div>'
+  $setting_display_r += '<div id="under_cheats"><a href="EXEC: gs ''jo9_traits'', ''edit'', ''dynslave'', ''jo9_combat_trait'', 2 & gt ''menu_form''">성기사: '
+  if dynslave['jo9_combat_trait'] = 2: $setting_display_r += '있음'
+  if dynslave['jo9_combat_trait'] ! 2: $setting_display_r += '없음'
+  $setting_display_r += '</a></div>'
+  $setting_display_r += '<div id="under_cheats"><a href="EXEC: gs ''jo9_traits'', ''edit'', ''dynslave'', ''jo9_combat_trait'', 3 & gt ''menu_form''">역전의 용사: '
+  if dynslave['jo9_combat_trait'] = 3: $setting_display_r += '있음'
+  if dynslave['jo9_combat_trait'] ! 3: $setting_display_r += '없음'
+  $setting_display_r += '</a></div>'
+  $setting_display_r += '<div id="under_cheats"><a href="EXEC: gs ''jo9_traits'', ''edit'', ''dynslave'', ''jo9_versatile'', 1 & gt ''menu_form''">다재다능: '
+  if dynslave['jo9_versatile'] = 1: $setting_display_r += '있음'
+  if dynslave['jo9_versatile'] ! 1: $setting_display_r += '없음'
+  $setting_display_r += '</a></div>'
+  $setting_display_r += '<div id="under_cheats"><a href="EXEC: gs ''jo9_traits'', ''edit'', ''dynslave'', ''jo9_peerless'', 1 & gt ''menu_form''">경국지색: '
+  if dynslave['jo9_peerless'] = 1: $setting_display_r += '있음'
+  if dynslave['jo9_peerless'] ! 1: $setting_display_r += '없음'
+  $setting_display_r += '</a></div>'
+ }, 'dynslave', $args[1])
+end
+! JO9 MOD END TRAITS_REGISTRY
+------------ jo9_traits ------------

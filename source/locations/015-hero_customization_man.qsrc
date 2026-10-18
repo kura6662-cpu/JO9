@@ -1,0 +1,39 @@
+# hero_customization_man
+! Readable view; authoritative fields are in ../locations.json.
+if snk_room_target > 0 and $curloc = 'hero_customization_man': gs 'snk_room_bridge', 'guard', 'hero_customization_man'
+! JO9 MOD START J9M2697 | 2026-10-14_hide_outer_frame_on_startup | changed block; context may be included
+*p '<style id="jo9_startup_no_outer_frame">body:before,body:after{display:none!important;}</style>'
+! JO9 MOD END J9M2697
+get_initial_slave = 1
+
+*p '<div id = "big_title_scroll"><img src = "content\pic\big_scroll_large.png"></div>'
+*p '<div id = "center_text_column_4"> <center><b>마스터를 선택하세요</center></b></div>'
+
+*p '<div id = "ava_choice_1_1"><a href = "EXEC: gs ''init_story_mode'' & hero_choice = 1 & gt ''hero_description''"><img src = "content\pic\master\master_noble_sepia.png"></a></div>'
+*p '<div id = "ava_choice_1_2"><a href = "EXEC: gs ''init_story_mode'' & hero_choice = 5 & gt ''hero_description''"><img src = "content\pic\master\master_teacher_sepia.png"></a></div>'
+*p '<div id = "ava_choice_1_3"><a href = "EXEC: gs ''init_story_mode'' & hero_choice = 9 & gt ''hero_description''"><img src = "content\pic\master\master_granpa_sepia.png"></a></div>'
+
+*p '<div id = "ava_choice_2_1"><a href = "EXEC: gs ''init_story_mode'' & hero_choice = 2 & gt ''hero_description''"><img src = "content\pic\master\master_torturer_sepia.png"></a></div>'
+*p '<div id = "ava_choice_2_2"><a href = "EXEC: gs ''init_story_mode'' & hero_choice = 6 & gt ''hero_description''"><img src = "content\pic\master\master_impressario_sepia.png"></a></div>'
+*p '<div id = "ava_choice_2_3"><a href = "EXEC: gs ''init_story_mode'' & hero_choice = 10 & gt ''hero_description''"><img src = "content\pic\master\master_nerd_sepia.png"></a></div>'
+
+*p '<div id = "ava_choice_3_1"><a href = "EXEC: gs ''init_story_mode'' & hero_choice = 3 & gt ''hero_description''"><img src = "content\pic\master\master_fighter_sepia.png"></a></div>'
+*p '<div id = "ava_choice_3_2"><a href = "EXEC: gs ''init_story_mode'' & hero_choice = 7 & gt ''hero_description''"><img src = "content\pic\master\master_doctor_sepia.png"></a></div>'
+*p '<div id = "ava_choice_3_3"><a href = "EXEC: gs ''init_story_mode'' & hero_choice = 11 & gt ''hero_description''"><img src = "content\pic\master\master_werwolf_sepia.png"></a></div>'
+
+*p '<div id = "ava_choice_4_1"><a href = "EXEC: gs ''init_story_mode'' & hero_choice = 4 & gt ''hero_description''"><img src = "content\pic\master\master_pimp_sepia.png"></a></div>'
+*p '<div id = "ava_choice_4_2"><a href = "EXEC: gs ''init_story_mode'' & hero_choice = 8 & gt ''hero_description''"><img src = "content\pic\master\master_butler_sepia.png"></a></div>'
+*p '<div id = "ava_choice_4_3"><a href = "EXEC: gs ''init_story_mode'' & hero_choice = 12 & gt ''hero_description''"><img src = "content\pic\master\master_vampire_sepia.png"></a></div>'
+
+! JO9 MOD START J9M2696 | 2026-10-10_restore_kura_personal_patch | changed block; context may be included
+*p {<div id = "ava_choice_5_1"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 13 & gt "hero_description"'><img src = "content\pic\master\master_kura_sepia.png"></a></div>}
+! JO9 MOD END J9M2696
+*p {<div id = "ava_choice_5_2"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 14 & gt "hero_description"'><img src = "content\pic\master\master_orion_sepia.png"></a></div>}
+*p {<div id = "ava_choice_5_3"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 15 & gt "hero_description"'><img src = "content\pic\master\master_gabriel_sepia.png"></a></div>}
+*p {<div id = "ava_choice_6_1"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 16 & gt "hero_description"'><img src = "content\pic\master\master_henry_sepia.png"></a></div>}
+
+*p {<div id = "ava_choice_6_2"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 17 & gt "hero_description"'><img src = "content\pic\master\master_draven_sepia.png"></a></div>}
+*p {<div id = "ava_choice_6_3"><a href = 'EXEC: gs "init_story_mode" & hero_choice = 18 & gt "hero_description"'><img src = "content\pic\master\master_lestat_sepia.png"></a></div>}
+
+*p {<div id = "hero_choice_close_scroll"><a href = 'EXEC: gt "main_menu"'><img src = "content\pic\buttons\close_button.png"></a></div>}
+------------ hero_customization_man ------------

@@ -1,0 +1,48 @@
+# epic_win_marsjinn
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2635 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'epic_win_marsjinn': gs 'snk_room_bridge', 'guard', 'epic_win_marsjinn'
+! JO9 MOD END J9M2635
+!end screen of story mode
+day -= 1
+base_score += day/2
+score = base_score/day
+!Implemented a more robust score calculation system - crushboss
+if sparks > 25000: score += 1
+if sparks > 50000: score += 1
+if sparks > 75000: score += 1
+if sparks > 100000: score += 1
+if master_brand = 5: score += 1
+if master_str = 5 and master_domination = 5 and (master_fighter - boost_up['master_fighter']) = 5: score += 1
+if master_cha >= 4 and (master_butler - boost_up['master_butler']) = 5 and (master_artdirector - boost_up['master_artdirector']) = 5: score += 1
+if (master_medic - boost_up['master_medic']) = 5 and (master_mage - boost_up['master_mage']) = 5 and master_tutor = 5: score += 1
+if master_petting = 5 and master_penetration = 5 and master_oral = 5 and master_fetish = 5: score += 1
+if score < 0: score = 4
+if score > 10: score = 10
+
+$backimage = 'content/pic/title.png'
+MAINDESC_X = 1
+MAINDESC_Y = 1
+MAINDESC_W = 1280
+MAINDESC_H = 800
+
+$yes = {gt 'end_day_screen'} &! fixed return location - ImperatorAugustus
+$no = {gt 'Start'}
+
+$toplay = 'nostalgic' & dynamic $play_music
+
+*p '<div id = "title_scroll"><img src = "content\pic\scroll_large.png"></div>'
+*p '<div id = "title_scroll_text"><center><h2><font face="Sandoll 미생" size="20">축하한다!</font></h2>'
+! JO9 MOD START J9M2634 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+*nl '당신은 불멸의 로마를 탈출했다. 이제 어디로 갈 것인가?<br>'
+! JO9 MOD END J9M2634
+*nl '<font face="Sandoll 미생" size="10">경과 일수: <<day>></font><br>'
+*nl '<font face="Sandoll 미생" size="10">플레이 캐릭터: <<$master_base_name[hero_choice]>></font><br>'
+*nl '불멸의 로마로 돌아가겠는가?</center></div>'
+
+day += 1 &! bugfix - ImperatorAugustus
+
+*p '<div id = "approve_low"><a href = "EXEC: dynamic $yes"><img src="content\pic\buttons\approve.png"></a></div>'
+*p '<div id = "deny_low"><a href = "EXEC: dynamic $no"><img src="content\pic\buttons\deny.png"></a></div>'
+
+------------ epic_win_marsjinn ------------

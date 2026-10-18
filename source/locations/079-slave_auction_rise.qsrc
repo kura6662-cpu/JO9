@@ -1,0 +1,21 @@
+# slave_auction_rise
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2859 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'slave_auction_rise': gs 'snk_room_bridge', 'guard', 'slave_auction_rise'
+! JO9 MOD END J9M2859
+!Place your bets on auction
+
+auction_phase = 1
+if cur_stock_price > slave_base_price: cur_stock_price += 5
+rise_stock_price = cur_stock_price + 5
+rises += 1
+haggling_stage = 2
+
+a = rand(1,5)
+$text = '<<$auction_buy_player_bets[a]>>'
+
+killobj
+
+gt 'slave_auction_buy'
+
+------------ slave_auction_rise ------------

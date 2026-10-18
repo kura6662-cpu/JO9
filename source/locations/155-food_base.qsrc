@@ -1,0 +1,192 @@
+# #food_base
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2891 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '#food_base': gs 'snk_room_bridge', 'guard', '#food_base'
+! JO9 MOD END J9M2891
+! JO9_UI_V16_READABILITY
+!FOOD DATABASE
+
+! JO9 MOD START RNL101 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$food_quality[0] = dyneval($vb_cycle_rank, 0, '<b>F</b>')
+$food_quality[1] = dyneval($vb_cycle_rank, 1, '<b>D</b>')
+! JO9 MOD END RNL101
+$food_quality[2] = dyneval($vb_cycle_rank, 2, '<b>D+</b>')
+! JO9 MOD START RNL100 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$food_quality[3] = dyneval($vb_cycle_rank, 3, '<b>C</b>')
+! JO9 MOD END RNL100
+$food_quality[4] = dyneval($vb_cycle_rank, 4, '<b>C+</b>')
+! JO9 MOD START RNL099 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$food_quality[5] = dyneval($vb_cycle_rank, 5, '<b>B</b>')
+! JO9 MOD END RNL099
+$food_quality[6] = dyneval($vb_cycle_rank, 6, '<b>B+</b>')
+! JO9 MOD START RNL098 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$food_quality[7] = dyneval($vb_cycle_rank, 7, '<b>A</b>')
+! JO9 MOD END RNL098
+$food_quality[8] = dyneval($vb_cycle_rank, 8, '<b>A+</b>')
+! JO9 MOD START RNL097 | 2026-10-17_zz_rank_display_labels
+! RNL: 표시 등급 문자만 변경; 같은 대입문의 연결 줄은 원문을 유지한다.
+$food_quality[9] = dyneval($vb_cycle_rank, 9, '<b>S</b>')
+! JO9 MOD END RNL097
+$food_quality[10] = dyneval($vb_cycle_rank, 10, '<b>S+</b>')
+
+$cooked_food_label[0] = dyneval($vb_cycle_skill, 0, '통조림')
+$cooked_food_label[1] = dyneval($vb_cycle_skill, 1, '소박한 식사')
+$cooked_food_label[2] = dyneval($vb_cycle_skill, 2, '정식')
+$cooked_food_label[3] = dyneval($vb_cycle_skill, 3, '정식')
+$cooked_food_label[4] = dyneval($vb_cycle_skill, 4, '정식')
+$cooked_food_label[5] = dyneval($vb_cycle_skill, 5, '정식')
+
+!replacement for food copypaste, by Lyazar
+! $meal_id[] removed old code and use for food name, for food_choice working
+$fb_cycle = {
+	$_fb_meal_name = $args[0]
+	! add to end of $meal_id[] food name
+	$meal_id[] = $_fb_meal_name
+	$meal_name[$_fb_meal_name] = $args[1]
+	$meal_first_ingredient[$_fb_meal_name] = $args[2]
+	$meal_second_ingredient[$_fb_meal_name] = $args[3]
+	$meal_third_ingredient[$_fb_meal_name] = $args[4]
+	$meal_fourth_ingredient[$_fb_meal_name] = $args[5]
+
+	killvar '$_fb_meal_name'
+}
+
+! example:
+!$meal_name['консервы'] = 'Canned food served on a plate [<<$food_quality[0]>>]'
+!$meal_first_ingridient['консервы'] = 'none'
+!$meal_second_ingridient['консервы'] = 'none'
+!$meal_third_ingridient['консервы'] = 'none'
+!$meal_forth_ingridient['консервы'] = 'none'
+
+! replaces to:
+!dynamic $fb_cycle, 'консервы', 'Canned food served on a plate [<<$food_quality[0]>>]', 'none', 'none', 'none', 'none'
+
+!-----replacement for food copypaste, by Lyazar-----
+
+! Food level 0 (F-)
+dynamic $fb_cycle, 'консервы', '접시에 담긴 통조림 음식 [<<$food_quality[0]>>]', 'none', 'none', 'none', 'none'
+
+! Food level 1 (D-)
+dynamic $fb_cycle, 'шкварки', '바삭하고 짭짤한 비계튀김 [<<$food_quality[1]>>]', 'mince', 'none', 'none', 'none' &! 1$
+dynamic $fb_cycle, 'рис_отварной', '삶은 재스민 쌀밥 [<<$food_quality[1]>>]', 'grain', 'none', 'none', 'none' &! 2$
+dynamic $fb_cycle, 'каша_перловая', '든든한 보리 죽 [<<$food_quality[1]>>]', 'grain', 'none', 'none', 'none' &! 2$
+dynamic $fb_cycle, 'каша_гречневая', '맹한 메밀 죽 [<<$food_quality[1]>>]', 'grain', 'none', 'none', 'none' &! 2$
+dynamic $fb_cycle, 'вареная_вермишель', '소금 넣고 삶은 베르미첼리 [<<$food_quality[1]>>]', 'grain', 'none', 'none', 'none' &! 2$
+dynamic $fb_cycle, 'каша_овсяная', '묽은 오트밀 죽 "베리모르" [<<$food_quality[1]>>]', 'grain', 'none', 'none', 'none' &! 2$
+dynamic $fb_cycle, 'каша_манная', '유치원식 덩어리 세몰리나 죽 [<<$food_quality[1]>>]', 'grain', 'none', 'none', 'none' &! 2$
+dynamic $fb_cycle, 'тушеная_капуста', '큼직한 푹 익힌 양배추 한 접시 [<<$food_quality[1]>>]', 'vegetables', 'none', 'none', 'none' &! 2$
+dynamic $fb_cycle, 'овощной_салат', '식물성 기름을 곁들인 채소 샐러드 [<<$food_quality[1]>>]', 'vegetables', 'none', 'none', 'none' &! 2$
+dynamic $fb_cycle, 'репа_пареная', '소금 뿌린 찐 순무 슬라이스 [<<$food_quality[1]>>]', 'vegetables', 'none', 'none', 'none' &! 2$
+dynamic $fb_cycle, 'картоха', '껍질째 삶은 감자에 식물성 기름과 소금을 곁들인 것 [<<$food_quality[1]>>]', 'vegetables', 'none', 'none', 'none' &! 2$
+dynamic $fb_cycle, 'яичница_болтунья', '살짝 태운 스크램블 에그 [<<$food_quality[1]>>]', 'eggs', 'none', 'none', 'none' &! 6$ (-5$ if you get eggs from your egglayer)
+
+! average cost at this tier is 2.3$ if stocking all ingredients or 1.9$ if stocking mince but no eggs; minimum 1$ (home-grown eggs) - all of which are cheaper than a 3$ school lesson in cooking at F- or D- level
+! compare virgin hip pub (3$ for C- quality meal) which is on average 0.7$ to 1.1$ more expensive than home cooking
+! eating at the pub saves the energy cost of food preparation in exchange for energy cost of travel (free if you are living in Serpentine or have the Bull Ring)
+! not eating at home has an additional cost - there will be no leftovers for slaves with the leftovers rule
+
+! Food level 2 - Now is rating 4 on new system (C-)
+dynamic $fb_cycle, 'острый_рулет', '할라피뇨를 넣은 매콤한 미트로프 [<<$food_quality[4]>>]', 'mince', 'spice', 'none', 'none' &! 1 + 2 = 3$ (-0.4$ if you slaughter your own mince)
+dynamic $fb_cycle, 'котлеты_с_макарошками', '삶은 파스타를 곁들인 수제 커틀릿 [<<$food_quality[4]>>]', 'mince', 'grain', 'none', 'none' &! 1 + 2 = 3$ (-0.4$ if you slaughter your own mince)
+dynamic $fb_cycle, 'мясная_похлебка', '토마토와 콩을 넣은 걸쭉한 고기 포타주 [<<$food_quality[4]>>]', 'vegetables', 'mince', 'none', 'none' &! 2 + 1 = 3$ (-0.4$ if you slaughter your own mince)
+dynamic $fb_cycle, 'стейк', '핏기 어린 두툼한 스테이크 [<<$food_quality[4]>>]', 'meat', 'none', 'none', 'none' &! 4 = 4$ (-1$ if you slaughter your own tenderloin)
+dynamic $fb_cycle, 'спагетти', '토마토 소스를 곁들인 스파게티 [<<$food_quality[4]>>]', 'vegetables', 'grain', 'none', 'none' &! 2 + 2 = 4$
+dynamic $fb_cycle, 'суп_вермешелевый', '매콤한 육수의 베르미첼리 수프 [<<$food_quality[4]>>]', 'spice', 'grain', 'none', 'none' &! 2 + 2 = 4$
+dynamic $fb_cycle, 'луковый_суп', '향신 채소를 넣은 걸쭉한 양파 포타주 [<<$food_quality[4]>>]', 'vegetables', 'spice', 'none', 'none' &! 2 + 2 = 4$
+dynamic $fb_cycle, 'тефтельки', '치즈 다짐육으로 만든 찐 미트볼 [<<$food_quality[4]>>]', 'mince', 'cheese', 'none', 'none' &! 1 + 6 = 7$ (-0.4$ if you slaughter your own mince)
+dynamic $fb_cycle, 'глазунья_со_шкварками', '바삭하고 짭짤한 베이컨을 곁들인 스크램블 에그 [<<$food_quality[4]>>]', 'mince', 'eggs', 'none', 'none' &! 1 + 6 = 7$ (-0.4$ if you slaughter your own mince, -5$ if you get eggs from your egglayer)
+dynamic $fb_cycle, 'макароны_с_сыром', '강판 치즈를 얹은 파스타 [<<$food_quality[4]>>]', 'cheese', 'grain', 'none', 'none' &! 6 + 2 = 8$
+dynamic $fb_cycle, 'свекольник', '삶은 비트에 치즈를 갈아 넣은 샐러드 [<<$food_quality[4]>>]', 'vegetables', 'cheese', 'none', 'none' &! 2 + 6 = 8$
+dynamic $fb_cycle, 'пирог_с_яйцом', '쌀과 달걀을 넣은 풍성한 파이 [<<$food_quality[4]>>]', 'eggs', 'grain', 'none', 'none' &! 6 + 2 = 8$ (-5$ if you get eggs from your egglayer)
+dynamic $fb_cycle, 'молочная_каша', '우유로 끓인 달콤한 쌀죽 [<<$food_quality[4]>>]', 'milk', 'grain', 'none', 'none' &! 6 + 2 = 8$ (-2$ if you get milk from your cow)
+dynamic $fb_cycle, 'пюрешечка', '부드러운 우유 감자완두 퓌레 [<<$food_quality[4]>>]', 'milk', 'grain', 'none', 'none' &! 6 + 2 = 8$ (-2$ if you get milk from your cow)
+dynamic $fb_cycle, 'картошка_с_яйцом', '바삭하게 볶은 감자와 달걀 [<<$food_quality[4]>>]', 'vegetables', 'eggs', 'none', 'none' &! 2 + 6 = 8$ (-5$ if you get eggs from your egglayer)
+
+! average cost at this tier is 5.3$ if stocking all ingredients (4.7$ if produced at home), 4$ if stocking no meat/dairy/eggs, or 3.6$ if stocking meat but no dairy/eggs; minimum 1.6$ (home-grown eggs with mince)
+! compare virgin hip pub (3$ for C- quality meal) which is on average 0.6$ to 2.3$ cheaper than home cooking (strict vegetarian diet is 1$ more expensive), but costs more than a min-max diet (stock only home-grown eggs and mince)
+
+! Food level 3 - Now is rating 6 on new system (B+)
+dynamic $fb_cycle, 'болоньезе', '볼로냐식 미트소스를 얹은 스파게티 [<<$food_quality[6]>>]', 'vegetables', 'grain', 'mince', 'none' &! 2 + 2 + 1 = 5$ (-0.4$ if you slaughter your own mince)
+dynamic $fb_cycle, 'острая_отбивная', '매운 소스를 얹은 잘 구운 스테이크 [<<$food_quality[6]>>]', 'meat', 'spice', 'none', 'none' &! 4 + 1 = 5$ (-2$ if you slaughter your own tenderloin)
+dynamic $fb_cycle, 'тушеное_мясо', '채소를 넣고 냄비에 푹 끓인 스튜 [<<$food_quality[6]>>]', 'vegetables', 'meat', 'none', 'none' &! 2 + 4 = 6$ (-2$ if you slaughter your own tenderloin)
+dynamic $fb_cycle, 'отбивная_с_рисом', '볶음밥을 곁들인 육즙 스테이크 [<<$food_quality[6]>>]', 'meat', 'grain', 'none', 'none' &! 4 + 2 = 6$ (-2$ if you slaughter your own tenderloin)
+dynamic $fb_cycle, 'борщ', '양배추, 감자, 비트를 넣은 고기 수프 [<<$food_quality[6]>>]', 'vegetables', 'grain', 'spice', 'mince' &! 2 + 2 + 2 + 1 = 7$ (-0.4$ if you slaughter your own mince)
+dynamic $fb_cycle, 'фаршированные_яйца', '고기 샐러드를 채운 달걀 [<<$food_quality[6]>>]', 'vegetables', 'mince', 'eggs', 'none' &! 2 + 1 + 6 = 9$ (-0.4$ if you slaughter your own mince, -5$ if you get eggs from your egglayer)
+dynamic $fb_cycle, 'колбаски_с_пюре', '우유 감자 퓌레를 곁들인 구운 소시지 [<<$food_quality[6]>>]', 'vegetables', 'mince', 'milk', 'none' &! 2 + 1 + 6 = 9$ (-0.4$ if you slaughter your own mince, -2$ if you get milk from your cow)
+dynamic $fb_cycle, 'пирог_с_картошкой', '감자와 치즈를 넣은 파이 [<<$food_quality[6]>>]', 'vegetables', 'grain', 'cheese', 'none' &! 2 + 2 + 6 = 10$
+dynamic $fb_cycle, 'мясо_по_французски', '프랑스식 고기 [<<$food_quality[6]>>]', 'meat', 'cheese', 'none', 'none' &! 4 + 6 = 10$ (-2$ if you slaughter your own tenderloin)
+dynamic $fb_cycle, 'молочный_суп', '우유 버섯 크림수프 [<<$food_quality[6]>>]', 'milk', 'vegetables', 'spice', 'none' &! 6 + 2 + 2 = 10$ (-2$ if you get milk from your cow)
+dynamic $fb_cycle, 'глазунья_с_ветчиной', '햄을 곁들인 육즙 프라이드 에그 [<<$food_quality[6]>>]', 'meat', 'eggs', 'none', 'none' &! 4 + 6 = 10$ (-5$ if you get eggs from your egglayer)
+dynamic $fb_cycle, 'овсяный_пуддинг', '꿀과 계피를 넣은 오트 푸딩 [<<$food_quality[6]>>]', 'milk', 'grain', 'spice', 'none' &! 6 + 2 + 2 = 10$ (-2$ if you get milk from your cow)
+dynamic $fb_cycle, 'пирог_с_яйцами', '달걀, 쌀, 파를 넣은 파이 [<<$food_quality[6]>>]', 'vegetables', 'grain', 'eggs', 'none' &! 2 + 2 + 6 = 10$ (-5$ if you get eggs from your egglayer)
+dynamic $fb_cycle, 'пирог_с_мясом', '매콤한 고기 소를 넣은 풍성한 파이 [<<$food_quality[6]>>]', 'mince', 'grain', 'spice', 'eggs' &! 1 + 2 + 2 = 11$ (-0.4$ if you slaughter your own mince, -5$ if you get eggs from your egglayer)
+dynamic $fb_cycle, 'пирог_с_грибами', '버섯과 적양파를 넣은 파이 [<<$food_quality[6]>>]', 'vegetables', 'grain', 'spice', 'eggs' &! 2 + 2 + 2 + 6 &! 12$ (-5$ if you get eggs from your egglayer)
+dynamic $fb_cycle, 'сырное_пюре', '치즈를 넣은 채소 수프 [<<$food_quality[6]>>]', 'vegetables', 'cheese', 'milk', 'none' &! 2 + 6 + 6 = 14$ (-2$ if you get milk from your cow)
+
+! average cost at this tier is 9$ if stocking all ingredients (6.1$ if produced at home), 10$ if stocking no meat/milk/eggs; minimum 3$ (only your own slaughtered tenderloin with spices)
+! compare virgin hip pub (5$ for B+ quality meal) which is on average 5$ to 1.1$ cheaper than home cooking, but costs more than a min-max diet (stock only tenderloin and spices)
+
+! Food level 4 - Now is rating 8 on new system (A+)
+dynamic $fb_cycle, 'чебуреки', '아마레토를 곁들인 육즙 파스티 [<<$food_quality[8]>>]', 'alcohol', 'grain', 'mince', 'none' &! 2 + 2 + 1 = 5$ (-0.4$ if you slaughter your own mince)
+dynamic $fb_cycle, 'котлеты_с_картошкой', '브랜디를 곁들인 커틀릿과 삶은 감자 [<<$food_quality[8]>>]', 'vegetables', 'alcohol', 'mince', 'none' &! 2 + 2 + 1 = 5$ (-0.4$ if you slaughter your own mince)
+dynamic $fb_cycle, 'азу_с_рисом', '매콤한 쌀을 곁들인 아쥬 [<<$food_quality[8]>>]', 'spice', 'grain', 'meat', 'none' &! 2 + 2 + 4 = 8$ (-2$ if you slaughter your own tenderloin)
+dynamic $fb_cycle, 'шашлык', '양파, 토마토, 허브를 곁들인 샤슬릭 [<<$food_quality[8]>>]', 'vegetables', 'spice', 'meat', 'none' &! 2 + 2 + 4 = 8$ (-2$ if you slaughter your own tenderloin)
+dynamic $fb_cycle, 'купаты', '적포도주와 숯불에 구운 소시지 [<<$food_quality[8]>>]', 'alcohol', 'mince', 'spice', 'none' &! 2 + 4 + 2 = 8$ (-2$ if you slaughter your own tenderloin)
+dynamic $fb_cycle, 'ветчина_с_сыром', '치즈와 바질을 얹은 구운 햄 [<<$food_quality[8]>>]', 'vegetables', 'grain', 'meat', 'none' &! 2 + 2 + 4 = 8$ (-2$ if you slaughter your own tenderloin)
+dynamic $fb_cycle, 'овощи_с_фасолью', '칼바도스에 졸인 향신 채소와 콩 [<<$food_quality[8]>>]', 'vegetables', 'grain', 'alcohol', 'spice' &! 2 + 2 + 2 + 2 = 8$
+dynamic $fb_cycle, 'суп_бальзамико', '발사미코 고기 크림수프 [<<$food_quality[8]>>]', 'alcohol', 'mince', 'milk', 'none' &! 2 + 1 + 6 = 9$ (-0.4$ if you slaughter your own mince, -2$ if you get milk from your cow)
+dynamic $fb_cycle, 'окрошка', '햄을 넣은 케피르 오크로시카 [<<$food_quality[8]>>]', 'vegetables', 'milk', 'meat', 'none' &! 2 + 6 + 4 = 12$ (-2$ if you slaughter your own tenderloin, -2$ if you get milk from your cow)
+dynamic $fb_cycle, 'рулет_с_яйцом', '달걀을 넣은 매콤한 미트로프 [<<$food_quality[8]>>]', 'spice', 'eggs', 'meat', 'none' &! 2 + 6 + 4 = 12$ (-5$ if you get eggs from your egglayer, -2$ if you slaughter your own tenderloin)
+dynamic $fb_cycle, 'ромовые_блинчики', '바삭한 럼 팬케이크 [<<$food_quality[8]>>]', 'alcohol', 'grain', 'spice', 'eggs' &! 2 + 2 + 2 + 6$ = 12$ (-5$ if you get eggs from your egglayer)
+dynamic $fb_cycle, 'рагу_с_сыром', '치즈 소스를 곁들인 소고기 스튜 [<<$food_quality[8]>>]', 'vegetables', 'cheese', 'meat', 'none' &! 2 + 6 + 4 = 12$ (-2$ if you slaughter your own tenderloin)
+dynamic $fb_cycle, 'стейк_с_макаронами', '화이트 소스를 곁들인 스테이크와 파스타 [<<$food_quality[8]>>]', 'milk', 'grain', 'meat', 'none' &! 6 + 2 + 4 = 12$ (-2$ if you slaughter your own tenderloin, -2$ if you get milk from your cow)
+dynamic $fb_cycle, 'тушеная_чечевица', '치즈와 허브를 넣고 졸인 렌틸콩 [<<$food_quality[8]>>]', 'vegetables', 'grain', 'cheese', 'spice' &! 2 + 2 + 6 + 2 = 12$
+dynamic $fb_cycle, 'вегетарианское_рагу', '치즈와 향신료를 넣은 채소 스튜 [<<$food_quality[8]>>]', 'vegetables', 'grain', 'cheese', 'spice' &! 2 + 2 + 6 + 2 = 12$
+dynamic $fb_cycle, 'зразы_с_яйцом', '양파와 달걀을 채운 감자 즈라지 [<<$food_quality[8]>>]', 'vegetables', 'eggs', 'spice', 'milk' &! 2 + 6 + 2 + 6 = 20$ (-2$ if you get milk from your cow, -5$ if you get eggs from your egglayer)
+
+! level 4 scenario 1 - vegetarian (no mince/tenderloin) - recipes are zrazy (20$), veg stew (12$), lentils (12$), rum pancakes (12$), spiced veg calvados (8$), averaging 10.4$
+! legel 4 scenario 2 - veg-minmax (spiced veg calvados) - only buy vegetables/alcohol/flower/spice (2$ each), fixes daily cost at 8$ (requires not having a cow/egglayer)
+! level 4 scenario 3 - omnivorous (adding meat recipes) - average cost 10.2$ if stocking all ingredients (7.7$ if produced at home)
+! level 4 scenario 3 - omniminmax (only make 5$ dishes) - only stock alcohol + mince + flower/vegetables, fixes daily cost at 5$ (4.6$ if you slaughter your own mince)
+! compare restaurant (8$) which is equivalent to S+ meal quality and club (included in A+ or higher cost of living) which is equivalent to A+ meal quality
+! eating at the restaurant (which requires 5 merit to avoid spoiling) can save 4.4$ per visit best case and be more expensive by 3.4$ per visit worst case
+! there are additional benefits to eating at the restaurant, for the slave: up to A+ strength, it is equivalent to one gymnastics (+3 stamina) without exertion and calorie cost (only cost is travel energy and that can be halved if living in Camira) and it also gives positive mood, builds devotion and adds next-day calories
+! eating at the club can save 4.6$ to 10.4$ per day depending on the scenario vs home cooking, not considering the cost of A+ or higher standard of living for club membership
+! eating at the pub is not an adequate substitute at this tier (will not maintain master strength above B+)
+
+! Food level 5 - Now is rating 10 on new system (S+)
+dynamic $fb_cycle, 'печенье', '아마레토 리큐어를 넣은 초콜릿 마스카르포네 필로 삼각과자 [<<$food_quality[10]>>]', 'alcohol', 'grain', 'spice', 'cheese' &! 2 + 2 + 2 + 6 = 12$
+dynamic $fb_cycle, 'девчатина_с_макаронами', '크루통을 곁들인 가장 부드러운 처녀 고기 커틀릿 [<<$food_quality[10]>>]', 'spice', 'grain', 'virgin_meat', 'none' &! 2 + 2 + 8 = 12$ (you must slaughter your own virgin meat))
+dynamic $fb_cycle, 'девчатина_с_бобами', '붉은 소스를 곁들인 콩과 처녀 고기 스튜 [<<$food_quality[10]>>]', 'vegetables', 'grain', 'virgin_meat', 'none' &! 2 + 2 + 8 = 12$ (you must slaughter your own virgin meat)
+dynamic $fb_cycle, 'девчатина_с_картошкой', '바삭한 감자를 곁들인 육즙 처녀 가슴살 스테이크 [<<$food_quality[10]>>]', 'vegetables', 'spice', 'virgin_meat', 'none' &! 2 + 2 + 8 = 12$ (you must slaughter your own virgin meat)
+dynamic $fb_cycle, 'лазанья_бешамель', '베샤멜 소스와 화이트 와인을 곁들인 채소 라자냐 [<<$food_quality[10]>>]', 'vegetables', 'grain', 'cream', 'alcohol' &! 2 + 2 + 6 + 2 = 12$
+dynamic $fb_cycle, 'ребрышки_гриль', '매운 소스와 버번을 곁들인 구운 처녀 갈비 [<<$food_quality[10]>>]', 'alcohol', 'grain', 'virgin_meat', 'spice' &! 2 + 2 + 8 + 2 = 14$ (you must slaughter your own virgin meat)
+dynamic $fb_cycle, 'шашлык_с_вином', '신선한 허브, 감자, 적포도주를 곁들인 처녀 케밥 [<<$food_quality[10]>>]', 'alcohol', 'spice', 'virgin_meat', 'vegetables' &! 2 + 2 + 8 + 2 = 14$ (반드시 직접 도축한 처녀 고기가 필요)
+dynamic $fb_cycle, 'пряная_ветчина', '매콤하고 크리미한 처녀 햄 [<<$food_quality[10]>>]', 'cream', 'spice', 'virgin_meat', 'none' &! 6 + 2 + 8 = 16$ (반드시 직접 도축한 처녀 고기가 필요)
+dynamic $fb_cycle, 'кексы', '수제 아이스크림을 곁들인 바닐라 컵케이크 [<<$food_quality[10]>>]', 'spice', 'grain', 'cream', 'milk' &! 2 + 2 + 6 + 6 = 16$ (-2$ if you get milk from your cow)
+dynamic $fb_cycle, 'круассаны', '매콤한 크림치즈를 넣은 바삭한 크루아상 [<<$food_quality[10]>>]', 'grain', 'cheese', 'eggs', 'spice' &! 2 + 6 + 6 + 2 = 16$ (-5$ if you get eggs from your egglayer)
+dynamic $fb_cycle, 'пирог_из_девчатины', '달걀과 처녀 고기를 넣은 퍼프 파이 [<<$food_quality[10]>>]', 'eggs', 'grain', 'virgin_meat', 'none' &! 6 + 2 + 8 = 16$ (-5$ if you get eggs from your egglayer, 반드시 직접 도축한 처녀 고기가 필요)
+dynamic $fb_cycle, 'рагу_с_рисом', '크리미한 소스에 재스민 쌀을 곁들인 처녀 스튜 [<<$food_quality[10]>>]', 'cream', 'grain', 'virgin_meat', 'none' &! 6 + 2 + 8 = 16$ (반드시 직접 도축한 처녀 고기가 필요)
+dynamic $fb_cycle, 'девчатина_с_сыром', '채소와 치즈를 곁들인 처녀 고기 라구 [<<$food_quality[10]>>]', 'vegetables', 'cheese', 'virgin_meat', 'none' &! 2 + 6 + 8 = 16$ (반드시 직접 도축한 처녀 고기가 필요)
+dynamic $fb_cycle, 'мясо_под_сливочным', '채소와 함께 크림소스에 졸인 냄비 처녀 고기 [<<$food_quality[10]>>]', 'vegetables', 'cream', 'virgin_meat', 'none' &! 2 + 6 + 8 = 16$ (반드시 직접 도축한 처녀 고기가 필요)
+dynamic $fb_cycle, 'суп_из_девчатины', '덤플링을 넣은 처녀 고기 수프 [<<$food_quality[10]>>]', 'spice', 'grain', 'eggs', 'virgin_meat' &! 2 + 2 + 6 + 8 = 18$ (-5$ if you get eggs from your egglayer, 반드시 직접 도축한 처녀 고기가 필요)
+
+! level 5 scenario 1 - vegetarian (no mince/tenderloin) - recipes are cupcakes (16$), croissants (16$), lasagna (12$), phyllo (12$), averaging 14$ (12.3$ if eggs/milk produced at home)
+! legel 5 scenario 2 - veg-minmax (only phyllo/lasagna) - not possible to avoid more expensive cupcake/croissant recipes unless not stocking milk/eggs
+! level 5 scenario 3 - omnivorous (adding meat recipes) - average cost 14.6$ if stocking all ingredients (13.4$ if produced at home)
+! level 5 scenario 4 - omniminmax (only virgin egg pie) - only stock home-produced eggs, flower and virgin meat, fixes daily cost at 11$
+! get virgin meat cheapest from Fogs (min slave auction market price is 20$ vs. cost of a healing balm is 8$)
+! compare restaurant (8$) which is equivalent to S+ meal quality and club (included in A+ or higher cost of living) which is equivalent to A+ meal quality
+! eating at the restaurant (which requires 5 merit to avoid spoiling) can save 3$ to 6.6$ per visit vs home cooking
+! eating at the club is not an adequate substitute at this tier (will not maintain strength above A+) but can save 11$ to 14.6$ per day depending on the scenario vs home cooking
+! eating at the pub is not an adequate substitute at this tier (will not maintain master strength above B+)
+
+!Since the club is no longer S+ quality food, if the master is still hungry after eating there and if no one else cooks, he will cook for himself unless he ends the day with negative energy (at least one full red star). So it is still possible to "save" some money by eating at the club and overspending master energy (or not stocking [any/many/expensive] ingredients for the slave/assistant/master to auto-cook with). But if this is done, then unless regularly sparring top-tier opponents at the colosseum or hunting in the Fogs to compensate, master strength will eventually drop to A+. Can save 11$ to 14.6$ per day this way, which adds up (111$ / 146$ per decade). This is offset by medical and/or energy costs (sparring once a day is not enough).
+
+!EXAMPLE
+dynamic $fb_cycle, 'образец', ' [<<$food_quality[10]>>]', 'vegetables', 'grain', 'virgin_meat', 'spice'
+------------ #food_base ------------

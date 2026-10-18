@@ -1,0 +1,351 @@
+# relations_fastcalc
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2932 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'relations_fastcalc': gs 'snk_room_bridge', 'guard', 'relations_fastcalc'
+! JO9 MOD END J9M2932
+! Быстрый рассчёт взаимоотношений между рабыней и ассистенткой в конце дня - mrross
+
+
+if sa_rel = 1:
+	copyarr '$slave1', '$slave'
+	copyarr 'slave1', 'slave'
+	$slave1['name'] = $slave_name	
+	slave1["other_rel"] = slave['<<assistant["id"]>>']
+	copyarr '$slave2', '$assistant'
+	copyarr 'slave2', 'assistant'
+	$slave2['name'] = $assistant_name
+elseif sa_rel = 2:
+	copyarr '$slave1', '$assistant'
+	copyarr 'slave1', 'assistant'
+	$slave1['name'] = $assistant_name	
+	slave1["other_rel"] = assistant['<<slave["id"]>>']
+	copyarr '$slave2', '$slave'
+	copyarr 'slave2', 'slave'
+	$slave2['name'] = $slave_name
+end
+
+int_index = 1 + slave1["intellect"]/2
+int_index2 = 1 + slave2["intellect"]/2
+
+
+sa_relations = 0
+sa_domination = 0
+
+
+! Если сёстры, то биография не влияет
+if slave1["relative_id"] = slave2["id"]: jump 'bio_override'
+
+!Если рабыня не идёт на контакт
+if sa_rel = 2 and slave["obedience"] < 1: jump 'bio_override'
+
+! Если есть приказ "Ограничить общение"
+if slave1['isolate'] >= 3: jump 'bio_override'
+
+
+
+
+
+! МИРОВЫЕ ОТНОШЕНИЯ
+
+if slave1["tolerant_world"] >= 20:
+	if slave2["tolerant_world"] >= 20:
+		sa_relations += 2
+	end
+else
+	if slave1["world_index"] < slave2["world_index"]: 
+		sa_relations += ((slave1["world_index"] - slave2["world_index"])/2)
+	elseif slave1["world_index"] > slave2["world_index"]: 
+		sa_relations -= ((slave1["world_index"] - slave2["world_index"])/2)
+	elseif slave1["world_index"] = slave2["world_index"]: 
+		sa_relations += 1
+	end
+end
+
+
+! НАЦИИ
+if slave1["tolerant_nation"] >= 20:
+	if slave2["tolerant_nation"] >= 20:
+		sa_relations += 2
+	end
+else	
+	if slave1["nation_index"] = slave2["nation_index"]: 
+		sa_relations += 1
+	elseif slave2["nation_index"] = 9:
+		sa_relations -= 3
+	else
+		sa_relations -= 1
+	end
+end
+
+
+! КЛАССОВЫЕ ОТНОШЕНИЯ
+
+if slave1["tolerant_family"] >= 20:
+	if slave2["tolerant_family"] >= 20:
+		sa_relations += 2
+	end
+else	
+! Правители 
+	if slave1["family_index"] = 1:
+		sa_relations += 3 - slave2["family_index"]
+! Мажоры
+	elseif slave1["family_index"] = 2:
+		sa_relations += 4 - slave2["family_index"]
+! Средний класс
+	elseif slave1["family_index"] = 3: 
+		sa_relations += 5 - slave2["family_index"]
+! Пролы
+	elseif slave1["family_index"] = 4:
+		if slave1["world_index"] > 3:
+			if slave2["family_index"] < 3: 
+				sa_relations += 3
+			elseif slave2["family_index"] = 3: 
+				sa_relations += -1
+			elseif slave2["family_index"] = 4: 
+				sa_relations += 1
+			elseif slave2["family_index"] = 5: 
+				sa_relations += -2
+			end
+		else
+			if slave2["family_index"] = 1: 
+				sa_relations += -4
+			elseif slave2["family_index"] = 2: 
+				sa_relations += -3
+			elseif slave2["family_index"] = 3: 
+				sa_relations += -1
+			elseif slave2["family_index"] = 4: 
+				sa_relations += 1
+			elseif slave2["family_index"] = 5: 
+				sa_relations += -2
+			end
+		end
+! Дно 
+	elseif slave1["family_index"] = 5: 
+		sa_relations += -6 + slave2["family_index"]
+	end
+end
+
+
+! ЛИЧНЫЕ ОТНОШЕНИЯ
+if slave1["tolerant_work"] >= 20:
+	if slave2["tolerant_work"] >= 20:
+		sa_relations += 2
+	end
+else	
+!Если обе взрослые
+	if slave1["age"] ! CONST_INT["young_age"] and slave2["age"] ! CONST_INT['young_age']:
+! Принцессы
+		if slave1["work_index"] = 1:
+			if slave2["work_index"] = 1: 
+				sa_relations += 1
+			elseif slave2["work_index"] = 5: 
+				sa_relations -= 2
+			end
+! Элита
+		elseif slave1["work_index"] = 2:
+			if slave2["work_index"] < 3: 
+				sa_relations += 1
+			elseif slave2["work_index"] = 3 or slave2["work_index"] = 4 : 
+				sa_relations -= 1
+			elseif slave2["work_index"] = 5: 
+				sa_relations -= 2
+			end
+! Специалисты
+		elseif slave1["work_index"] = 3:
+			if slave2["work_index"] = 1: 
+				sa_relations += 1
+			elseif slave2["work_index"] = 2: 
+				sa_relations -= 1
+			elseif slave2["work_index"] = 4: 
+				sa_relations -= 1
+			elseif slave2["work_index"] = 5: 
+				sa_relations -= 2
+			end
+! Рабочие
+		elseif slave1["work_index"] = 4:
+			if slave2["work_index"] <> 4: 
+				sa_relations -= 1
+			else
+				sa_relations += 1
+			end
+! Нищие
+		elseif slave1["work_index"] = 5:
+			if slave2["work_index"] <> 5: sa_relations -= 2
+		end
+!Если slave1 - лоли	
+	elseif slave1["age"] = CONST_INT["young_age"] and slave2["age"] <> CONST_INT["young_age"] :
+		if slave1["family_index"] = 5:
+			sa_relations -= 1
+		elseif slave2["family_index"] = 1: 
+			sa_relations += 2
+		else
+			sa_relations += 1
+		end
+!Если slave2 - лоли
+	elseif slave1["age"] <> CONST_INT["young_age"] and slave2["age"] = CONST_INT["young_age"] :
+		if slave1['other_rel'] > acc_rel['good1']: 
+			sa_relations += 1
+		elseif slave1['other_rel'] < acc_rel['bad1']:
+			sa_relations -= 1
+		end
+!Если обе - лоли
+	elseif slave1["age"] = CONST_INT["young_age"] and slave2["age"] = CONST_INT["young_age"] :
+		if slave1["family_index"] - slave2["family_index"] > 2:
+			sa_relations -= 1
+		elseif slave1["family_index"] - slave2["family_index"] < -2: 
+			sa_relations -= 1
+		else
+			sa_relations += 3
+		end
+	end
+end
+
+:bio_override
+
+
+!Сравнение интеллекта
+
+if int_index = 3 and int_index2 = 1:
+	sa_relations -= 1
+elseif int_index = 1 and int_index2 = 3:
+	sa_relations -= 1
+elseif int_index = int_index2 and int_index = 3: 
+	sa_relations += 1
+end
+!Сравнение красоты
+if slave2["beauty"] <= slave1["beauty"] - 3:
+	sa_relations -= 1
+elseif slave1["beauty"] <= slave2["beauty"] - 3:
+	sa_relations -= 1
+elseif slave2["beauty"] >= 4 and slave1["beauty"] >= 4:
+	if slave1['other_rel'] > acc_rel['good1']: 
+		sa_relations += 2
+	elseif slave1['other_rel'] < acc_rel['bad1']:
+		sa_relations -= 2
+	end
+end
+!Сравнение гордости
+	if slave2["pride"] <= slave1["pride"] - 3:
+		sa_relations -= 1
+	elseif slave1["pride"] <= slave2["pride"] - 3:
+		sa_relations -= 1
+	end
+!Сравнение характера
+	if slave2["ego"] <= slave1["ego"] - 3:
+		sa_relations -= 1
+	elseif slave1["ego"] <= slave2["ego"] - 3:
+		sa_relations += 1
+	end
+!Сравнение толстоты
+	if slave2["fat"] < 2 and slave1["fat"] > 3:
+		sa_relations -= 1
+	elseif slave1["fat"] < 2 and slave2["fat"] > 3:
+		sa_relations -= 1
+	end
+
+
+! Взаимная любовь делает отношения лучше
+if slave1['love'] = slave2['id'] and slave2['love'] = slave1['id']: sa_relations += 5
+
+! Вставка ревности
+if slave1["jealousy"] > 0: sa_relations -= slave1["jealousy"]/10
+
+! Если есть приказ "Охладить отношение"
+if slave1["smear"] = 5:	sa_relations -= 3 + int_index
+
+! Если есть приказ "Проявить сочувствие"
+if slave1["praise_potence"] = 5: sa_relations += 1 + slave1['temper']
+
+! Ограничение Темпераментом
+if sa_relations > slave1["temper"]: sa_relations = slave1["temper"]
+if sa_relations < 0:
+	 sa_relations = sa_relations * (-1)
+	 if sa_relations > slave1["temper"]: sa_relations = slave1["temper"]
+	 sa_relations = sa_relations * (-1)
+end
+
+
+! Суммирование с накопительными отношениями, ограничение
+
+slave1["other_rel"] += sa_relations
+if slave1["other_rel"] > acc_rel['good4']: slave1["other_rel"] = acc_rel['good4']
+if slave1["other_rel"] < acc_rel['bad4']: slave1["other_rel"] = acc_rel['bad4']
+slave1["last_relations"] = sa_relations
+
+
+
+! Любовь рабыни и ассистентки
+if slave1['other_rel'] > acc_rel["good3"] and slave2['other_rel'] > acc_rel["good3"]:
+	if slave1["love"] ! slave2["id"]:
+		if slave2["love"] ! slave1["id"]:
+			love_chance = RAND(1,100)
+		else
+			love_chance = RAND(20,100)
+		end
+		if slave1["homosexualism"] = -1:
+!			slave1["homosexualism_revealed"] = 1
+		elseif slave1["homosexualism"] = 0 and love_chance = 98:
+			slave1["homosexualism"] = 1
+			slave1["love"] = slave2["id"]
+		elseif slave1["homosexualism"] = 1 and love_chance >= 92:
+			slave1["love"] = slave2["id"]
+		elseif slave1["homosexualism"] = 2 and love_chance >= 80:
+			slave1["love"] = slave2["id"]
+		end
+		killvar 'love_chance'
+	end
+end
+
+
+! Конец любви рабыни и ассистентки
+if slave1["love"] = slave2["id"]:
+	no_love_chance = RAND (20,100)
+	if slave2["love"] ! slave1["id"] and no_love_chance > 95: slave1["love"] = 0
+	if slave1['other_rel'] <= acc_rel["bad3"]:
+		slave1["love"] = 0
+	elseif slave1['other_rel'] <= acc_rel["bad1"] and no_love_chance > 65:
+		slave1["love"] = 0	
+	elseif slave1['other_rel'] < acc_rel["good1"] and no_love_chance > 85:
+		slave1["love"] = 0
+	elseif slave1['other_rel'] < acc_rel["good3"] and no_love_chance > 95:
+		slave1["love"] = 0
+	end
+end
+
+if slave1["love"] ! slave2["id"] and slave1["love"] ! 0:
+	no_love_chance = RAND (1,100)
+	if no_love_chance = 42: slave1["love"] = 0
+end
+
+if slave2["love"] ! slave2["id"] and slave2["love"] ! 0:
+	no_love_chance = RAND (1,100)
+	if no_love_chance = 42: slave2["love"] = 0
+end
+
+killvar 'no_love_chance'
+
+
+
+! Передача данных обратно в slave и assistant
+
+if sa_rel = 1:
+	copyarr '$slave', '$slave1'
+	copyarr 'slave', 'slave1'
+	slave['<<assistant["id"]>>'] = slave1["other_rel"]
+elseif sa_rel = 2:
+	copyarr '$assistant', '$slave1'
+	copyarr 'assistant', 'slave1'
+	assistant['<<slave["id"]>>'] = slave1["other_rel"]
+end
+
+
+
+
+
+killvar 'slave1'
+killvar '$slave1'
+killvar 'slave2'
+killvar '$slave2'
+
+
+------------ relations_fastcalc ------------

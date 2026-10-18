@@ -1,0 +1,17 @@
+# $difficulty_setting
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2826 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$difficulty_setting': gs 'snk_room_bridge', 'guard', '$difficulty_setting'
+! JO9 MOD END J9M2826
+!Difficulty Setting - created by crushboss
+
+!Easy difficulty setting for tutorial / demo mode - crushboss
+if exam_in_progress = 1: difficulty_setting = 1
+
+!Obedience adjustments for difficulty setting - crushboss
+
+!ImperatorAugustus: converted to dynamic function, apply same formula for all slaves (including inactive ones in case they are taken out of storage)
+
+dynamic $do_for_each_slave_in_list, '$set_obedience_difficulty', '$all_slave_characters' &! see #static_base
+
+------------ $difficulty_setting ------------

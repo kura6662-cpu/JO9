@@ -1,0 +1,80 @@
+# moodlets
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2846 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'moodlets': gs 'snk_room_bridge', 'guard', 'moodlets'
+! JO9 MOD END J9M2846
+!update master "permanent" (situationally derived, constantly refreshed) moodlets
+
+wealth_quality_modifier = master_wealth - brand_reputation - 1
+if wealth_quality_modifier > 0: master_moodlet['pos_wealth'] = 100 & master_moodlet['neg_wealth'] = 0
+if wealth_quality_modifier = 0: master_moodlet['pos_wealth'] = 0 & master_moodlet['neg_wealth'] = 0
+if wealth_quality_modifier < 0: master_moodlet['neg_wealth'] = 100 & master_moodlet['pos_wealth'] = 0
+
+!estate_quality_modifier is calculated in $newloc
+if estate_quality_modifier > master_cha + house_mess:
+	! partially align with conditions for master_cha to rise in next_day
+	master_moodlet['pos_housing'] = 100 & master_moodlet['neg_housing'] = 0
+else
+	master_moodlet['pos_housing'] = 0
+end
+if master_cha > min(master_wealth - 1, estate_quality_modifier):
+	! match conditions for master_cha to drop in next_day
+	if master_cha > estate_quality_modifier: master_moodlet['neg_housing'] = 100 & master_moodlet['pos_housing'] = 0
+	if master_cha > master_wealth - 1: master_moodlet['neg_wealth'] = 100 & master_moodlet['pos_wealth'] = 0
+else
+	master_moodlet['neg_housing'] = 0
+end
+
+master_moodlet['pos_house_clean'] = 0
+master_moodlet['neg_house_mess'] = 0
+if is_home = 1:
+	if house_mess = 0: master_moodlet['pos_house_clean'] = 100
+	if house_mess > 3: master_moodlet['neg_house_mess'] = 100
+end
+if master_hygiene > 1: master_moodlet['pos_self_clean'] = 0
+if master_hygiene > 3: master_moodlet['neg_dirty'] = 100
+if master_hygiene <= 3: master_moodlet['neg_dirty'] = 0
+
+if master_moodlet['pos_satisfied'] < 0: master_moodlet['pos_satisfied'] = 0
+if master_excitement > master_moodlet['pos_satisfied']: master_moodlet['neg_boner'] = master_excitement
+if master_moodlet['pos_satisfied'] > 2: master_moodlet['neg_boner'] = 0
+if master_excitement <= master_moodlet['pos_satisfied']: master_moodlet['neg_boner'] = 0
+if master_excitement < -2 and master_libido > 0: master_moodlet['neg_softcore'] = 100
+if master_excitement > -3 or master_libido = 0: master_moodlet['neg_softcore'] = 0
+if master_excitement = 5 and blazing_counter >= 3:
+	master_moodlet['neg_blazing'] = 100
+else
+	master_moodlet['neg_blazing'] = 0
+end
+
+if master_wounds = 0: master_moodlet['neg_wounded'] = 0
+
+if master_energy < 0:
+	master_moodlet['pos_energy'] = 0
+	master_moodlet['neg_tired'] = 100
+elseif master_energy >= master_str and max(master_moodlet['neg_drunk'], master_moodlet['neg_wounded'], master_moodlet['neg_no_koffe'], master_moodlet['neg_no_meth'], master_moodlet['neg_no_opium'], master_moodlet['neg_master_ill']) = 0:
+	master_moodlet['pos_energy'] = 100
+	master_moodlet['neg_tired'] = 0
+else
+	master_moodlet['pos_energy'] = 0
+	master_moodlet['neg_tired'] = 0
+end
+
+master_moodlet['neg_alone'] = 0
+master_moodlet['pos_optimism'] = 0
+master_moodlet['neg_grumpy'] = 0
+
+if master_moodlet['pos_show'] > 0: master_moodlet['neg_boring'] = 0
+
+if slave_state < CONST_INT['slave_exist'] and assistant_state < CONST_INT['slave_exist']:
+	!check < exist instead of = no_slave: dead slaves do not cure loneliness - ImperatorAugustus
+	if alone_count > 2: master_moodlet['neg_alone'] = 100 &! alone_count is incremented nightly in next_day if no slave or assistant
+else
+	alone_count = 0
+	!update master moodlets related to slave psy status
+	if slave['beauty'] > 2 and slave['expression'] > 3 and slave['status_met'] = 1: master_moodlet['pos_optimism'] = 100
+	if assistant['beauty'] > 2 and assistant['expression'] > 3 and assistant['status_met'] = 1: master_moodlet['pos_optimism'] = 100
+	if $slave_psy_status = 'broken' or $assistant_psy_status = 'broken': master_moodlet['neg_grumpy'] = 100 & master_moodlet['pos_optimism'] = 0
+end
+
+------------ moodlets ------------

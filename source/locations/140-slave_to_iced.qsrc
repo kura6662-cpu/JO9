@@ -1,0 +1,12 @@
+# slave_to_iced
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2887 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'slave_to_iced': gs 'snk_room_bridge', 'guard', 'slave_to_iced'
+! JO9 MOD END J9M2887
+!move slave to a cryo cell with replacement (call with gosub, not goto)
+
+dynamic $swap_slave_instances, 'slave', 'iced_<<args[0]>>'
+
+if slave_state > CONST_INT['no_slave']: easy_for_slave = 1 & dynamic $slave_energy_drop &! decanting from cryo costs slave half an energy star - ImperatorAugustus
+
+------------ slave_to_iced ------------

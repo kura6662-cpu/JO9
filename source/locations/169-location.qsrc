@@ -1,0 +1,135 @@
+# конец_боя
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1432 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'конец_боя': gs 'snk_room_bridge', 'guard', 'конец_боя'
+! JO9 MOD END J9M1432
+! JO9 MOD START FOG_DEFEAT_HANDOFF | 2026-10-17_fog_relay
+!WHEN FIGHT IS FINISHED WE WILL BE HERE
+if jo9_fog['active'] = 1 and jo9_fog['switched'] = 0 and combatant > 0 and $итог_боя ! 'победа':
+ gt 'jo9_fog_relay', 'handoff'
+end
+! JO9 MOD END FOG_DEFEAT_HANDOFF
+arena_mode = 0
+killvar 'суперудар_сделан'
+
+dynamic $броня_снять[$броня]
+
+!Information about the latest actions of the player and opponents
+$информация_о_бое = ''
+if $боевая_обстановка ! '': $информация_о_бое += '<<$боевая_обстановка>><br><br>'
+$информация_о_бое += '<<$действия_игрока>><br><br>'
+$информация_о_бое += '<<$действия_врага[1]>><br>'
+$информация_о_бое += '<<$действия_врага[2]>><br>'
+$информация_о_бое += '<<$действия_врага[3]>><br>'
+$информация_о_бое += '<<$действия_врага[4]>><br>'
+$информация_о_бое += '<<$действия_врага[5]>><br>'
+
+if $place = 'edge_patrol':
+! JO9 MOD START J9M1431 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "fight_bg"><img src = "content/pic/bg/<<$bg["edge_patrol"]>>.png"></div>')
+! JO9 MOD END J9M1431
+elseif ui_style = 2:
+! JO9 MOD START J9M1430 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "fight_bg"><img src = "content\pic\ui\grimdark\bg\fight.png"></div>')
+! JO9 MOD END J9M1430
+else
+! JO9 MOD START J9M1429 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	*p func('interior_change', 'jo9_html', '<div id = "fight_bg"><img src = "content\pic\bg\fight.png"></div>')
+! JO9 MOD END J9M1429
+end
+
+*p '<div id = "fight_txt"><<$информация_о_бое>></div>'
+
+!control menu
+if $extra_special_used = '': $extra_special_used = 'content/pic/buttons/shield_used.png'
+if $extra_special_used = 'content/pic/buttons/dual_used.png': $extra_special_used = 'content/pic/buttons/shield_used.png'
+if $extra_special_used = 'content/pic/buttons/net_used.png': $extra_special_used = 'content/pic/buttons/shield_used.png'
+if $extra_special_used = 'content/pic/buttons/whip_used.png': $extra_special_used = 'content/pic/buttons/shield_used.png'
+if $extra_special_used = 'content/pic/buttons/heavy_used.png': $extra_special_used = 'content/pic/buttons/shield_used.png'
+
+if $итог_боя = 'победа':
+	if ui_style = 2:
+		$боевое_меню = "<a href='EXEC: gt ""выход_из_боя""'><img src = 'content/pic/ui/grimdark/buttons/thumb_up.png'></a><br>"
+	else
+		$боевое_меню = "<a href='EXEC: gt ""выход_из_боя""'><img src = 'content/pic/buttons/thumb_up.png'></a><br>"
+	end
+	if ui_style = 2:
+		*p "<div id = 'fight_options_ui2'><img src = '<<$extra_special_used>>'></div>"
+	else
+		*p "<div id = 'fight_options'><img src = '<<$extra_special_used>>'></div>"
+	end
+end
+if $итог_боя = 'бегство':
+	if ui_style = 2:
+		$боевое_меню = "<a href='EXEC: gt ""выход_из_боя""'><img src = 'content/pic/ui/grimdark/buttons/thumb_down.png'></a><br>"
+	else
+		$боевое_меню = "<a href='EXEC: gt ""выход_из_боя""'><img src = 'content/pic/buttons/thumb_down.png'></a><br>"
+	end
+	if ui_style = 2:
+		*p "<div id = 'fight_options_ui2'><img src = '<<$extra_special_used>>'></div>"
+	else
+		*p "<div id = 'fight_options'><img src = '<<$extra_special_used>>'></div>"
+	end
+end
+if $итог_боя = 'вырубился':
+	if ui_style = 2:
+		$боевое_меню = "<a href='EXEC: gt ""выход_из_боя""'><img src = 'content/pic/ui/grimdark/buttons/thumb_down.png'></a><br>"
+	else
+		$боевое_меню = "<a href='EXEC: gt ""выход_из_боя""'><img src = 'content/pic/buttons/thumb_down.png'></a><br>"
+	end
+	if ui_style = 2:
+		*p "<div id = 'fight_options_ui2'><img src = '<<$extra_special_used>>'></div>"
+	else
+		*p "<div id = 'fight_options'><img src = '<<$extra_special_used>>'></div>"
+	end
+end
+if $итог_боя = 'убит':
+	if ui_style = 2:
+		$боевое_меню = "<a href='EXEC: gt ""выход_из_боя""'><img src = 'content/pic/ui/grimdark/buttons/thumb_down.png'></a><br>"
+	else
+		$боевое_меню = "<a href='EXEC: gt ""выход_из_боя""'><img src = 'content/pic/buttons/thumb_down.png'></a><br>"
+	end
+	if ui_style = 2:
+		*p "<div id = 'fight_options_ui2'><img src = '<<$extra_special_used>>'></div>"
+	else
+		*p "<div id = 'fight_options'><img src = '<<$extra_special_used>>'></div>"
+	end
+end
+
+
+
+*p '<div id = "fight_subtions"><<$боевое_меню>></div>'
+
+
+*p '<div id = "ally_combat_ui">'
+	*p '<div id = "combat_ui_pic"><img src = "<<$combatant_ava>>"></div>'
+	*p '<div id = "combat_ui_name"><<$combatant_name>></div>'
+	*p '<div id = "combat_ui_def"><<$защита_описание[$защита[0]]>></div>'
+	*p '<div id = "next_def"><a href="EXEC: dynamic $сменить_защиту"><img src = "content/pic/buttons/loop.png"></a></div>'
+	*p '<div id = "combat_ui_health"><img src = "content/pic/hart_red.png"></div>'
+	*p '<div id = "combat_ui_health"><<здоровье_игрока>></div>'
+	*p '<div id = "combat_ui_stamina"><img src = "content/pic/hart_green.png"></div>'
+	*p '<div id = "combat_ui_stamina"><<выносливость_игрока>></div>'
+	*p '<div id = "combat_ui_will"><img src = "content/pic/hart_purple.png"></div>'
+	*p '<div id = "combat_ui_will"><<дух_игрока>></div>'
+*p '</div>'
+
+*p '<div id = "enemy_combat_ui">'
+	*p '<div id = "combat_ui_pic"><img src = "<<$аватара_моба[$враг[текущий]]>>"></div>'
+	*p '<div id = "combat_ui_name"><<$имя_врага[текущий]>></div>'
+	*p '<div id = "combat_ui_def">무방비 상태</div>'
+	*p '<div id = "combat_ui_health"><img src = "content/pic/hart_red.png"></div>'
+	*p '<div id = "combat_ui_health"><center><<здоровье_врага[текущий]>></center></div>'
+	*p '<div id = "combat_ui_stamina"><img src = "content/pic/hart_green.png"></div>'
+	*p '<div id = "combat_ui_stamina"><center><<выносливость_врага[текущий]>></center></div>'
+	*p '<div id = "combat_ui_will"><img src = "content/pic/hart_purple.png"></div>'
+	*p '<div id = "combat_ui_will"><center><<дух_врага[текущий]>></center></div>'
+*p '</div>'
+
+
+
+
+
+
+
+------------ конец_боя ------------

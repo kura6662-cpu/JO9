@@ -1,0 +1,135 @@
+# display_fullimage
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1256 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'display_fullimage': gs 'snk_room_bridge', 'guard', 'display_fullimage'
+! JO9 MOD END J9M1256
+! func('display_fullimage', 'slavetype', 'divtype', 'psy') -- parameters are optional except the slavetype
+
+if $args[1] = '': $args[1] = 'bg'
+
+!$result = '<div id="bg"><img src="content\pic\<<$slave["fullimage"]>>.png"></div>'
+
+! fainted (or otherwise indisposed) slaves currently have no display (TODO: maybe apply a sepia filter?)
+if dyneval('result = <<$args[0]>>_state') ! CONST_INT['slave_exist']: $result = '' & exit
+
+$actor_name = $args[0]
+$outfit_game = dyneval('$result = $<<$args[0]>>["cloth"]')
+
+if $outfit_game = 'голая': $outfit_patch = 'naked'
+if $outfit_game = 'common_apron': $outfit_patch = 'apron'
+if $outfit_game = 'maid_dress': $outfit_patch = 'maid'
+if $outfit_game = 'nurse_dress': $outfit_patch = 'nurse'
+if $outfit_game = 'sailor_foku': $outfit_patch = 'school'
+if $outfit_game = 'enchanter_robe': $outfit_patch = 'sorc'
+if $outfit_game = 'leotard': $outfit_patch = 'leotard'
+if $outfit_game = 'chainmail_bikini': $outfit_patch = 'chainmail'
+if $outfit_game = 'ukata': $outfit_patch = 'kimono'
+if $outfit_game = 'sun_dress': $outfit_patch = 'sundress'
+if $outfit_game = 'laced_underwear': $outfit_patch = 'lace'
+if $outfit_game = 'cocktail_dress': $outfit_patch = 'cocktail'
+if $outfit_game = 'rubber_dress': $outfit_patch = 'latex'
+if $outfit_game = 'bellydance': $outfit_patch = 'exotic'
+if $outfit_game = 'leather_corset': $outfit_patch = 'corset'
+if $outfit_game = 'rich_dress': $outfit_patch = 'gorgeous'
+if $outfit_game = 'wedding_dress': $outfit_patch = 'bride'
+if $outfit_game = 'anal_tail': $outfit_patch = 'tail'
+if $outfit_game = 'cow_gear': $outfit_patch = 'cow'
+if $outfit_game = 'petsuit': $outfit_patch = 'pet'
+if $outfit_game = 'deprivation_suit': $outfit_patch = 'restrain'
+
+$def_img_key = 'fullimage'
+$patch_img_arr_name = ''
+$patch_image_path = ''
+$patch_mood_image_path = ''
+$def_image_path = ''
+
+if $outfit_patch <> '' :
+    $patch_img_arr_name = 'indpack_' + $outfit_patch
+
+    actor_type = 0
+    actor_moral = 0
+    actor_arousal = 0
+
+    if $actor_name = 'slave':
+        actor_type = slave_type
+        $def_image_path = $slave[ $def_img_key ]
+        actor_moral = slave['moral']
+        actor_arousal = slave['arousal']
+    elseif $actor_name = 'assistant':
+        $assistant_img_key = ''
+		if assistant['image_mode'] = 1:
+			$assistant_img_key = 'fullmistress'
+            $patch_img_arr_name = 'indpack_dom'
+		end
+		if assistant['image_mode'] = 2:
+            $assistant_img_key = 'fullmade'
+			$patch_img_arr_name = 'indpack_maid'
+		end
+		if assistant['image_mode'] = 3:
+			$assistant_img_key = 'fullsecretary'
+            $patch_img_arr_name = 'indpack_secr'
+		end
+        actor_type = assistant_type
+        actor_moral = assistant['moral']
+        actor_arousal = assistant['arousal']
+
+        $assistant_image_path = $assistant[ $assistant_img_key ]
+        if $assistant_image_path <> '':
+            $def_image_path = $assistant_image_path
+        else
+            $def_image_path = $assistant[ $def_img_key ]
+        end
+
+    elseif $actor_name = 'cow':
+        $patch_img_arr_name = 'indpack_cow'
+        actor_type = cow_type
+        $def_image_path = $cow[ $def_img_key ]
+        actor_moral = cow['moral']
+        actor_arousal = cow['arousal']
+    elseif $actor_name = 'prisoner':
+        actor_type = prisoner_type
+        $def_image_path = $prisoner[ $def_img_key ]
+        actor_moral = prisoner['moral']
+        actor_arousal = prisoner['arousal']
+    elseif $actor_name = 'stock':
+        $patch_img_arr_name = 'indpack_title'
+        actor_type = stock_type
+        $def_image_path = $stock[ $def_img_key ]
+    elseif $actor_name = 'farmhand':
+        actor_type = farmhand_type
+        $def_image_path = $farmhand[ $def_img_key ]
+    end
+end
+
+$patch_image_path = dyneval('$result = $<<$patch_img_arr_name>>[actor_type]')
+
+if $patch_image_path = '':
+    $res_image_path = $def_image_path
+else
+    $patch_mood_suffix = ''
+    if actor_arousal > 3:
+        $patch_mood_suffix = '_horny'
+    elseif actor_moral < 3:
+        $patch_mood_suffix = '_rebel'
+    end
+
+    $patch_mood_tagname = $patch_img_arr_name+$patch_mood_suffix
+    
+    if $patch_mood_suffix <> '':
+        $patch_mood_image_path = dyneval('$result = $<<$patch_mood_tagname>>[actor_type]')
+    end
+
+    if $patch_mood_image_path <> '':
+        $res_image_path = $patch_mood_image_path
+    else
+        $res_image_path = $patch_image_path
+    end
+
+end
+
+! JO9 MOD START J9M1255 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+$result = '<div id="<<$args[1]>>"><img src="content\pic\<<$res_image_path>>.png"></div>'
+if $args[1] = 'bg' or $args[1] = 'large_image': $result = func('interior_change', 'jo9_html', $result)
+! JO9 MOD END J9M1255
+
+------------ display_fullimage ------------

@@ -1,0 +1,1093 @@
+# teach_screen
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2868 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'teach_screen': gs 'snk_room_bridge', 'guard', 'teach_screen'
+! JO9 MOD END J9M2868
+!SLAVE TEACH STATS SCREEN
+stat_importance['stamina'] = 1
+stat_importance['sensitivity'] = 1
+stat_importance['temper'] = 1
+stat_importance['intellect'] = 1
+stat_importance['ego'] = 1
+stat_importance['exotic'] = 1
+stat_importance['fat'] = 1
+
+stat_importance['obedience'] = 1
+stat_importance['custom'] = 1
+stat_importance['pride'] = 1
+stat_importance['spoil'] = 1
+
+stat_importance['expression'] = 1
+stat_importance['pet'] = 1
+stat_importance['dressage'] = 1
+stat_importance['cowSK'] = 1
+stat_importance['nurse'] = 1
+stat_importance['service'] = 1
+stat_importance['cook'] = 1
+stat_importance['roleplay'] = 1
+stat_importance['gladiatrix'] = 1
+stat_importance['alchemy'] = 1
+stat_importance['enchanter'] = 1
+stat_importance['calisthenics'] = 1
+stat_importance['art'] = 1
+stat_importance['music'] = 1
+stat_importance['secretary'] = 1
+
+stat_importance['oral'] = 1
+stat_importance['penetration'] = 1
+stat_importance['petting'] = 1
+stat_importance['orgy'] = 1
+stat_importance['xenophily'] = 1
+stat_importance['fetishism'] = 1
+stat_importance['nipplefuck'] = 1
+stat_importance['lesbiansex'] = 1
+
+*p '<div id="right_column">
+
+<<$slave_nipplefuck[slave["nipplefuck"]]>>
+<<$slave_lesbiansex[slave["lesbiansex"]]>>
+</div>'
+gs 'stats_layout'
+
+*p '<div id = "bookmark_one">직접 교육</div>'
+*p '<div id = "bookmark_two">조수 교육</div>'
+*p '<div id = "bookmark_three">학과(<<school_price[0]>>-<<school_price[5]>>$)</div>'
+*p '<div id = "bookmark_four">강사(<<coach_price[0]>>-<<coach_price[5]>>$)</div>'
+if exam_in_progress = 1:
+	*p '<div id = "close"><a href = "EXEC: gt ''demo_menu_form''"><img src = "content\pic\buttons\close_button.png"></a></div>'
+else
+	*p '<div id = "close"><a href = "EXEC: gt ''menu_form''"><img src = "content\pic\buttons\close_button.png"></a></div>'
+end
+
+!수정작업
+gs '$slave_price'
+gs '$slave_traits'
+gs '$addon', 'info_box'
+
+*p '<div id="left_column"><br>'
+*nl '호 칭 : &nbsp;<<$slave_name>>'
+*nl '연 령 대 : &nbsp;<<$slave_age_name[slave["age"]]>>'
+if slave['age_count'] = 1:
+  *nl '소 유 일 수 : &nbsp;1 일'
+elseif slave['age_count'] < 1000:
+  *nl '소 유 일 수 : &nbsp;<<slave["age_count"]>> 일'
+else
+  *nl '소 유 주 기 : &nbsp;<<slave["age_count"]/10>> 주기'
+end
+
+*nl '<br>'
+*p '<a style="font-size:30px" class="tooltip-right" tooltip-data="등급을 올리는 방법" href="EXEC: msg $rating_help"><<$rating[rating]>></a>  노예 속성정보 <a class="tooltip-right" tooltip-data="속성에 대하여" style="color:black" href = "EXEC: msg $rank_help & msg $rank_help_2"><img style="width:15px;height:15px;" src="content/pic/chart.png"></a><br>' 
+
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'beauty', slave['beauty'], 1)
+*nl '<font style="font-size:12px;"> 외모 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $красота_справка & dynamic $msg, $красота_справка_2 & $info_text = $красота_совет & gt $curloc"><<$beauty[slave["beauty"]]>></a>'
+$tooltip_text = func('$addon', 'stat_tooltip_text', 'stamina')
+*nl '<font style="font-size:12px;"> 체력 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $здоровье_справка & dynamic $msg, $здоровье_справка_2 & $info_text = $здоровье_совет & gt $curloc"><<$stamina[slave["stamina"]]>></a>'
+$tooltip_text = func('$addon', 'stat_tooltip_text', 'sensitivity')
+*nl '<font style="font-size:12px;"> 감수성 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $чувствительность_справка & dynamic $msg, $чувствительность_справка_2 & $info_text = $чувствительность_совет & gt $curloc"><<$sensitivity[slave["sensitivity"]]>></a><br>'
+$tooltip_text = func('$addon', 'stat_tooltip_text', 'temper')
+*nl '<font style="font-size:12px;"> 성격 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $темперамент_справка & dynamic $msg, $темперамент_справка_2 & $info_text = $темперамент_совет & gt $curloc"><<$temper[slave["temper"]]>></a>'
+$tooltip_text = func('$addon', 'stat_tooltip_text', 'intellect')
+*nl '<font style="font-size:12px;"> 지성 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $ум_справка & dynamic $msg, $ум_справка_2 & $info_text = $ум_совет & gt $curloc"><<$intellect[slave["intellect"]]>></a>'
+$tooltip_text = func('$addon', 'stat_tooltip_text', 'ego')
+*nl '<font style="font-size:12px;"> 자아 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $характер_справка & dynamic $msg, $характер_справка_2 & $info_text = $характер_совет & gt $curloc"><<$ego[slave["ego"]]>></a><br>'
+$tooltip_text = func('$addon', 'stat_tooltip_text', 'pride', -1)
+*nl '<font style="font-size:12px;"> 태도 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $гордыня_справка & dynamic $msg, $гордыня_справка_2 & $info_text = $гордыня_совет & gt $curloc"><<$pride[slave["pride"]]>></a>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'exotic', slave['exotic'], 1)
+*nl '<font style="font-size:12px;"> 독특함 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $экзотичность_справка & dynamic $msg, $экзотичность_справка_2 & $info_text = $экзотичность_совет & gt $curloc"><<$exotic[slave["exotic"]]>></a>'
+$tooltip_text = func('$addon', 'physique_tooltip_text', 'fat', slave['fat'])
+*nl '<font style="font-size:12px;"> 체형 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $жыр_справка & dynamic $msg, $жыр_справка_2 & $info_text = $жыр_совет & gt $curloc"><<$fat[slave["fat"]]>></a><br>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'style', slave['style'], 1)
+*nl '<font style="font-size:12px;"> 세련됨 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $стиль_справка & dynamic $msg, $стиль_справка_2 & $info_text = $стиль_совет & gt $curloc"><<$style[slave["style"]]>></a>'
+$tooltip_text = func('$addon', 'no_rate_stat_tooltip_text', 'fame', slave['fame'], 1)
+*nl '<font style="font-size:12px;"> 인지도 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: dynamic $msg, $слава_справка & dynamic $msg, $слава_справка_2 & $info_text = $слава_совет & gt $curloc"><<$girl_fame[slave["fame"]]>></a>'
+$tooltip_text = func('$addon', 'no_rate_full_grade_tooltip_text', 'mood', slave['mood'], 1)
+*nl '<font style="font-size:12px;"> 기분 </font><a class="tooltip-right" tooltip-data="<<$tooltip_text>>" href="EXEC: msg $mood_chart & $info_text = $slave_mood_help & gt $curloc"><<$mood[slave_mood_plus]>></a><br>'
+*nl '노예의 특성'
+*nl '<div style="line-height:5%"><br></div><<$slave_features_list>></div>'
+
+!*p '<div id="rank_help"><a href = "EXEC: msg $rank_help & msg $rank_help_2 & gt $curloc"><img src="content/pic/chart.png"></a></div>'
+
+*p '<div class="right_column">'
+	*nl '<div class="column_title">지식 / SKILLS&nbsp</div>'
+	*p  '<div style="line-height:25%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''service'']>> rating"><<$slave_service[slave["service"]]>></div>'
+	*nl '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''cook'']>> rating"><<$slave_cook[slave["cook"]]>></div>'
+	*nl '<div style="line-height:25%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''secretary'']>> rating"><<$slave_secretary[slave["secretary"]]>></div>'
+	*nl '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''expression'']>> rating"><<$slave_expression[slave["expression"]]>></div>'
+	*nl '<div style="line-height:25%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''nurse'']>> rating"><<$slave_nurse[slave["nurse"]]>></div>'
+	*nl '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''alchemy'']>> rating"><<$slave_alchemy[slave["alchemy"]]>></div>'
+	*nl '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''enchanter'']>> rating"><<$slave_enchanter[slave["enchanter"]]>></div>'
+	*nl '<div style="line-height:25%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="체육 등급"><<$gym_lesson[slave["stamina"]]>></div>'
+	*nl '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''gladiatrix'']>> rating"><<$slave_gladiatrix[slave["gladiatrix"]]>></div>'
+	*nl '<div style="line-height:25%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''calisthenics'']>> rating"><<$slave_calisthenics[slave["calisthenics"]]>></div>'
+	*nl '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''music'']>> rating"><<$slave_music[slave["music"]]>></div>'
+	*nl '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''art'']>> rating"><<$slave_art[slave["art"]]>></div>'
+	*nl '<div style="line-height:25%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''pet'']>> rating"><<$slave_pet[slave["pet"]]>></div>'
+	*nl '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''dressage'']>> rating"><<$slave_dressage[slave["dressage"]]>></div>'
+	*nl '<div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="<<$atr_name[''cowSK'']>> rating"><<$slave_cowSK[slave["cowSK"]]>></div>'
+	*nl '<div class="column_title">성애기술 / S.T&nbsp</div>'
+	*p  '<div style="line-height:25%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="핸드잡, 풋잡, 비비기, 파이즈리"><<$slave_petting[slave["petting"]]>></div>'
+	*nl '<div style="line-height:25%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="키스, 핥기, 블로우잡, 딥스로트, 리밍"><<$slave_oral[slave["oral"]]>></div>'
+	*nl '<div style="line-height:25%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="질 섹스, 피스팅, 애널 섹스, 애널 피스팅"><<$slave_penetration[slave["penetration"]]>></div>'
+	*nl '<div style="line-height:25%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="쓰리섬, 붓카케, 양구멍 삽입, 세구멍 삽입, 난교"><<$slave_orgy[slave["orgy"]]>></div>'
+	*nl '<div style="line-height:25%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="유혹, 자위, 딜도, 굴욕, 노출증"><<$slave_roleplay[slave["roleplay"]]>></div>'
+	*nl '<div style="line-height:25%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="관장, 마조히즘, 자학, 골든 샤워, 스캇"><<$slave_fetishism[slave["fetishism"]]>></div>'
+	*nl '<div style="line-height:25%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="개 교미, 말 교미, 돼지 교미, 안개 괴물 착정, 거미 교미, 바다 촉수 교미"><<$slave_xenophily[slave["xenophily"]]>></div>'
+	*nl '<div style="line-height:25%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="유두 성교"><<$slave_nipplefuck[slave["sub_nipplefuck"]]>></div>'
+	*nl '<div style="line-height:25%"><br></div><div style="display:inline-block;position:relative;line-height:110%" class="tooltip-left" tooltip-data="레즈비언, 커닐링구스, 적극적 레즈비언, 그룹 레즈비언"><<$slave_lesbiansex[slave["lesbiansex"]]>></div>'
+*p '</div>'
+
+!PERSONAL TRAINING TAB
+if teach_stat_screen = 0:
+
+	!creating a training list
+
+	$left_text_teach = ''
+	$middle_text_1 = ''
+	$middle_text_2 = ''
+	$middle_text_3 = ''
+	$middle_text_4 = ''
+	$middle_text_5 = ''
+	$middle_text_6 = ''
+	$middle_text_7 = ''
+	$middle_text_8 = ''
+	$left_text_heading = ''
+	$right_text_heading = ''
+
+	if debug_interactions = 2:
+		copyarr 'backup_slave', 'slave'
+		interaction = 1211
+		gt 'interaction'
+	end
+
+	$left_text_heading += '<u>기술 훈련 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</u>'
+	if slave["service"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">하녀 수업</font></a><br>'
+	elseif house_mess < 1:
+		$left_text_teach += '<a href = "EXEC: msg $no_house_mess & gt $curloc"><font color="#424242">하녀 수업</font></a><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1211 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["service"], "하녀 수업" + $skill_grade[slave["service"]])>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1211] + ")", "")>><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1211 & gt ''interaction''"><<$slave_service[slave[''service'']]>></a><br>'
+	end
+	if slave["cook"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">요리 수업</font></a><br>'
+	elseif kitchen < 1:
+		$left_text_teach += '<a href = "EXEC: msg $no_kitchen & gt $curloc"><font color="#424242">요리 수업</font></a><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1212 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["cook"], "요리 수업" + $skill_grade[slave["cook"]])>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1212] + ")", "")>><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1212 & gt ''interaction''"><<$slave_cook[slave[''cook'']]>></a><br>'
+	end
+	if slave["secretary"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">비서 수업</font></a><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1214 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["secretary"], "비서 수업" + $skill_grade[slave["secretary"]])>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1214] + ")", "")>><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1214 & gt ''interaction''"><<$slave_secretary[slave[''secretary'']]>></a><br>'
+	end
+	if slave["expression"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">화술 수업</font></a><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1231 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["expression"], "화술 수업" + $skill_grade[slave["expression"]])>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1231] + ")", "")>><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1231 & gt ''interaction''"><<$slave_expression[slave[''expression'']]>></a><br>'
+	end
+	if slave["nurse"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">간호 수업</font></a><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1213 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["nurse"], "간호 수업" + $skill_grade[slave["nurse"]])>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1213] + ")", "")>><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1213 & gt ''interaction''"><<$slave_nurse[slave[''nurse'']]>></a><br>'
+	end
+	if slave["alchemy"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">연금술 수업</font></a><br>'
+	elseif exam_in_progress = 1:
+		$left_text_teach += '<a href = "EXEC: msg $no_services_exam & gt $curloc"><font color="#424242">연금술 수업</font></a><br>'
+	elseif lab < 1:
+		$left_text_teach += '<a href = "EXEC: msg $no_lab & gt $curloc"><font color="#424242">연금술 수업</font></a><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1243 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["alchemy"], "연금술 수업" + $skill_grade[slave["alchemy"]])>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1243] + ")", "")>><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1243 & gt ''interaction''"><<$slave_alchemy[slave[''alchemy'']]>></a><br>'
+	end
+	if slave["enchanter"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">마법력 수업</font></a><br>'
+	elseif exam_in_progress = 1:
+		$left_text_teach += '<a href = "EXEC: msg $no_services_exam & gt $curloc"><font color="#424242">마법력 수업</font></a><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1244 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["enchanter"], "마법력 수업" + $skill_grade[slave["enchanter"]])>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1244] + ")", "")>><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1244 & gt ''interaction''"><<$slave_enchanter[slave[''enchanter'']]>></a><br>'
+	end
+	if slave['stamina'] < 1:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">체육 수업</font></a><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1221 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["stamina"], "체육 수업" + $skill_grade[slave["stamina"]])>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1221] + ")", "")>><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1221 & gt ''interaction''"><<$gym_lesson[slave[''stamina'']]>></a><br>'
+	end
+	if slave["gladiatrix"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">검투 수업</font></a><br>'
+	elseif slave['stamina'] < 2:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">검투 수업</font></a><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1223 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["gladiatrix"], "검투 수업" + $skill_grade[slave["gladiatrix"]])>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1223] + ")", "")>><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1223 & gt ''interaction''"><<$slave_gladiatrix[slave[''gladiatrix'']]>></a><br>'
+	end
+	if slave["calisthenics"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">무용 수업</font></a><br>'
+	elseif slave['stamina'] < 2:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">무용 수업</font></a><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1222 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["calisthenics"], "무용 수업" + $skill_grade[slave["calisthenics"]])>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1222] + ")", "")>><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1222 & gt ''interaction''"><<$slave_calisthenics[slave[''calisthenics'']]>></a><br>'
+	end
+	if slave["music"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">음악 수업</font></a><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: menu_form = 1233 & gt ''menu_form''"><<dyneval($vb_cycle_skill, slave["music"], "음악 수업" + $skill_grade[slave["music"]])>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1233] + ")", "")>><br>'
+		!$left_text_teach += '<a href = "EXEC: menu_form = 1233 & gt ''menu_form''"><<$slave_music[slave[''music'']]>></a><br>'
+	end
+	if slave["art"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">미술 수업</font></a><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1234 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["art"], "미술 수업" + $skill_grade[slave["art"]])>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1234] + ")", "")>><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1234 & gt ''interaction''"><<$slave_art[slave[''art'']]>></a><br>'
+	end
+	if slave["pet"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">펫 수업</font></a><br>'
+		!$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">Pet Lesson (Dog)</font></a><br>'
+	elseif slave['stamina'] < 2:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">펫 수업</font></a><br>'
+		!$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">Pet Lesson (Dog)</font></a><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1241 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["pet"], "펫 수업" + $skill_grade[slave["pet"]])>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1241] + ")", "")>><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1241 & gt ''interaction''"><<$slave_pet[slave[''pet'']]>></a><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1242 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["pet"], "Pet Lesson (Dog)" + $skill_grade[slave["pet"]])>></a><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1242 & gt ''interaction''"><<$slave_pet[slave[''pet'']]>></a><br>'
+	end
+	if slave["dressage"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">조랑말 레이싱 수업</font></a><br>'
+	elseif slave['stamina'] < 2:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">조랑말 레이싱 수업</font></a><br>'
+	elseif slave['stamina'] < 3 and slave['dressage'] >= 3:
+		$left_text_teach += '<a href = "EXEC: msg $not_enough_stamina & gt $curloc"><font color="#424242">조랑말 레이싱 수업</font></a><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1224 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["dressage"], "조랑말 레이싱 수업" + $skill_grade[slave["dressage"]])>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1224] + ")", "")>><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1224 & gt ''interaction''"><<$slave_dressage[slave[''dressage'']]>></a><br>'
+	end
+	!if slave["dressage"] > 5:
+	!	$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">Chariot Racing Lesson</font></a><br>'
+	!elseif slave['stamina'] < 2:
+	!	$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">Chariot Racing Lesson</font></a><br>'
+	!elseif slave['stamina'] < 3 and slave['dressage'] >= 3:
+	!	$left_text_teach += '<a href = "EXEC: msg $not_enough_stamina & gt $curloc"><font color="#424242">Chariot Racing Lesson</font></a><br>'
+	!else
+	!	$left_text_teach += '<a href = "EXEC: interaction = 1225 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["dressage"], "Chariot Racing Lesson" + $skill_grade[slave["dressage"]])>></a><br>'
+	!	!$left_text_teach += '<a href = "EXEC: interaction = 1225 & gt ''interaction''"><<$slave_dressage[slave[''dressage'']]>></a><br>'
+	!end
+	if slave["cowSK"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">젖소 수업</font></a><br>'
+	elseif slave['stamina'] < 2:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">젖소 수업</font></a><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1226 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["cowSK"], "젖소 수업" + $skill_grade[slave["cowSK"]])>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1226] + ")", "")>><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1226 & gt ''interaction''"><<$slave_cowSK[slave[''cowSK'']]>></a><br>'
+	end
+
+	$right_text_heading += '<u>성 기술 훈련 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</u>'
+	if slave["sub_hj"] > 5:
+		$middle_text_1 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">핸드잡</font></a><br>'
+	else
+		$middle_text_1 += '<a href = "EXEC: interaction = 1311 & gt ''interaction''"><<$slave_sub_hj[slave[''sub_hj'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1311] + "," + debug_sex_acceptance[1311] + ")", "")>><br>'
+	end
+	if slave["sub_fj"] > 5:
+		$middle_text_1 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">풋잡</font></a><br>'
+	else
+		$middle_text_1 += '<a href = "EXEC: interaction = 1312 & gt ''interaction''"><<$slave_sub_fj[slave[''sub_fj'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1312] + "," + debug_sex_acceptance[1312] + ")", "")>><br>'
+	end
+	if slave["sub_hug"] > 5:
+		$middle_text_1 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">비비기</font></a><br>'
+	else
+		$middle_text_1 += '<a href = "EXEC: interaction = 1313 & gt ''interaction''"><<$slave_sub_hug[slave[''sub_hug'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1313] + "," + debug_sex_acceptance[1313] + ")", "")>><br>'
+	end
+	if slave["sub_paizuri"] > 5:
+		$middle_text_1 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">파이즈리</font></a><br>'
+	else
+		$middle_text_1 += '<a href = "EXEC: interaction = 1314 & gt ''interaction''"><<$slave_sub_paizuri[slave[''sub_paizuri'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1314] + "," + debug_sex_acceptance[1314] + ")", "")>><br>'
+	end
+
+	if slave["sub_vaginal"] > 5:
+		$middle_text_2 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">Vaginal Sex</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	else
+		$middle_text_2 += '<a href = "EXEC: interaction = 1331 & gt ''interaction''"><<$slave_sub_vaginal[slave[''sub_vaginal'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1331] + "," + debug_sex_acceptance[1331] + ")", "")>><br>'
+	end
+	if slave["sub_fisting"] > 5:
+		$middle_text_2 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">피스팅</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	else
+		$middle_text_2 += '<a href = "EXEC: interaction = 1333 & gt ''interaction''"><<$slave_sub_fisting[slave[''sub_fisting'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1333] + "," + debug_sex_acceptance[1333] + ")", "")>><br>'
+	end
+	if slave["sub_anal"] > 5:
+		$middle_text_2 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">애널 섹스</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	else
+		$middle_text_2 += '<a href = "EXEC: interaction = 1332 & gt ''interaction''"><<$slave_sub_anal[slave[''sub_anal'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1332] + "," + debug_sex_acceptance[1332] + ")", "")>><br>'
+	end
+	if slave["anal_stretch"] > 5:
+		$middle_text_2 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">애널 피스팅</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	else
+		$middle_text_2 += '<a href = "EXEC: interaction = 1334 & gt ''interaction''"><<$slave_anal_stretch[slave[''anal_stretch'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1334] + "," + debug_sex_acceptance[1334] + ")", "")>><br>'
+	end
+
+	if slave["sub_kiss"] > 5:
+		$middle_text_3 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">키스</font></a><br>'
+	else
+		$middle_text_3 += '<a href = "EXEC: interaction = 1321 & gt ''interaction''"><<$slave_sub_kiss[slave[''sub_kiss'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1321] + "," + debug_sex_acceptance[1321] + ")", "")>><br>'
+	end
+	if slave["sub_tongue"] > 5:
+		$middle_text_3 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">핥기</font></a><br>'
+	else
+		$middle_text_3 += '<a href = "EXEC: interaction = 1322 & gt ''interaction''"><<$slave_sub_tongue[slave[''sub_tongue'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1322] + "," + debug_sex_acceptance[1322] + ")", "")>><br>'
+	end
+	if slave["sub_bj"] > 5:
+		$middle_text_3 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">블로우잡</font></a><br>'
+	else
+		$middle_text_3 += '<a href = "EXEC: interaction = 1323 & gt ''interaction''"><<$slave_sub_bj[slave[''sub_bj'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1323] + "," + debug_sex_acceptance[1323] + ")", "")>><br>'
+	end
+	if slave["sub_dt"] > 5:
+		$middle_text_3 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">딥스로트</font></a><br>'
+	else
+		$middle_text_3 += '<a href = "EXEC: interaction = 1324 & gt ''interaction''"><<$slave_sub_dt[slave[''sub_dt'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1324] + "," + debug_sex_acceptance[1324] + ")", "")>><br>'
+	end
+	if slave["sub_asslik"] > 5:
+		$middle_text_3 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">리밍</font></a><br>'
+	else
+		$middle_text_3 += '<a href = "EXEC: interaction = 1325 & gt ''interaction''"><<$slave_sub_asslik[slave[''sub_asslik'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1325] + "," + debug_sex_acceptance[1325] + ")", "")>><br>'
+	end
+
+	if exam_in_progress = 1:
+		$middle_text_4 += '<a href = "EXEC: msg $no_services_exam & gt $curloc"><font color="#424242">쓰리섬</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+		$middle_text_4 += '<a href = "EXEC: msg $no_services_exam & gt $curloc"><font color="#424242">붓카케</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+		$middle_text_4 += '<a href = "EXEC: msg $no_services_exam & gt $curloc"><font color="#424242">양구멍 삽입</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+		$middle_text_4 += '<a href = "EXEC: msg $no_services_exam & gt $curloc"><font color="#424242">세구멍 삽입</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+		$middle_text_4 += '<a href = "EXEC: msg $no_services_exam & gt $curloc"><font color="#424242">난교</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	else
+		if slave["sub_threesome"] > 5:
+			$middle_text_4 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">쓰리섬</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+		elseif assistant_state ! CONST_INT['slave_exist']:
+			if sparks > 0:
+				$middle_text_4 += '<a href = "EXEC: interaction = 1382 & gt ''interaction''"><<$slave_sub_threesome[slave[''sub_threesome'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1382] + "," + debug_sex_acceptance[5422] + ")", "")>><br>'
+			else
+				$middle_text_4 += '<a href = "EXEC: msg ''창녀를 고용할 돈이 없습니다.''"><font color="#424242">쓰리섬</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+			end
+		else
+			$middle_text_4 += '<a href = "EXEC: interaction = 1380 & gt ''interaction''"><<$slave_sub_threesome[slave[''sub_threesome'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1380] + "," + debug_sex_acceptance[1380] + ")", "")>><br>'
+		end
+		if slave["sub_bukkake"] > 5:
+			$middle_text_4 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">붓카케</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+		else
+			$middle_text_4 += '<a href = "EXEC: interaction = 1345 & gt ''interaction''"><<$slave_sub_bukkake[slave[''sub_bukkake'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1345] + "," + debug_sex_acceptance[1345] + ")", "")>><br>'
+		end
+		if slave["sub_dp"] > 5:
+			$middle_text_4 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">양구멍 삽입</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+		else
+			$middle_text_4 += '<a href = "EXEC: interaction = 1342 & gt ''interaction''"><<$slave_sub_dp[slave[''sub_dp'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1342] + "," + debug_sex_acceptance[1342] + ")", "")>><br>'
+		end
+		if slave["sub_tp"] > 5:
+			$middle_text_4 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">세구멍 삽입</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+		else
+			$middle_text_4 += '<a href = "EXEC: interaction = 1343 & gt ''interaction''"><<$slave_sub_tp[slave[''sub_tp'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1343] + "," + debug_sex_acceptance[1343] + ")", "")>><br>'
+		end
+		if slave["sub_gangbang"] > 5:
+			$middle_text_4 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">난교</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+		else
+			$middle_text_4 += '<a href = "EXEC: interaction = 1344 & gt ''interaction''"><<$slave_sub_gangbang[slave[''sub_gangbang'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1344] + "," + debug_sex_acceptance[1344] + ")", "")>><br>'
+		end
+	end
+
+	if slave["sub_seduce"] > 5:
+		$middle_text_5 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">유혹</font></a><br>'
+	else
+		$middle_text_5 += '<a href = "EXEC: interaction = 1371 & gt ''interaction''"><<$slave_sub_seduce[slave[''sub_seduce'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1371] + "," + debug_sex_acceptance[1371] + ")", "")>><br>'
+	end
+	if slave["sub_masturbation"] > 5:
+		$middle_text_5 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">자위</font></a><br>'
+	else
+		$middle_text_5 += '<a href = "EXEC: interaction = 1372 & gt ''interaction''"><<$slave_sub_masturbation[slave[''sub_masturbation'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1372] + "," + debug_sex_acceptance[1372] + ")", "")>><br>'
+	end
+	if slave["sub_dildo"] > 5:
+		$middle_text_5 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">딜도</font></a><br>'
+	else
+		$middle_text_5 += '<a href = "EXEC: interaction = 1373 & gt ''interaction''"><<$slave_sub_dildo[slave[''sub_dildo'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1373] + "," + debug_sex_acceptance[1373] + ")", "")>><br>'
+	end
+	if slave["sub_humiliation"] > 5:
+		$middle_text_5 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">굴욕</font></a><br>'
+	else
+		$middle_text_5 += '<a href = "EXEC: interaction = 1375 & gt ''interaction''"><<$slave_sub_humiliation[slave[''sub_humiliation'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1375] + "," + debug_sex_acceptance[1375] + ")", "")>><br>'
+	end
+	if slave["sub_exhibit"] > 5:
+		$middle_text_5 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">노출증</font></a><br>'
+	else
+		$middle_text_5 += '<a href = "EXEC: interaction = 1374 & gt ''interaction''"><<$slave_sub_exhibit[slave[''sub_exhibit'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1374] + "," + debug_sex_acceptance[1374] + ")", "")>><br>'
+	end
+
+	if slave["sub_enema"] > 5:
+		$middle_text_6 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">관장</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	elseif bath < 1:
+		$middle_text_6 += '<a href = "EXEC: msg $no_bath & gt $curloc"><font color="#424242">관장</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	else
+		$middle_text_6 += '<a href = "EXEC: interaction = 1365 & gt ''interaction''"><<$slave_sub_enema[slave[''sub_enema'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1365] + "," + debug_sex_acceptance[1365] + ")", "")>><br>'
+	end
+	if slave["sub_mazo"] > 5:
+		$middle_text_6 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">마조히즘</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	else
+		$middle_text_6 += '<a href = "EXEC: interaction = 1361 & gt ''interaction''"><<$slave_sub_mazo[slave[''sub_mazo'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1361] + "," + debug_sex_acceptance[1361] + ")", "")>><br>'
+	end
+	if slave["sub_selfpain"] > 5:
+		$middle_text_6 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">자학</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	else
+		$middle_text_6 += '<a href = "EXEC: interaction = 1362 & gt ''interaction''"><<$slave_sub_selfpain[slave[''sub_selfpain'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1362] + "," + debug_sex_acceptance[1362] + ")", "")>><br>'
+	end
+	if slave["sub_piss"] > 5:
+		$middle_text_6 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">골든 샤워</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	elseif bath < 1:
+		$middle_text_6 += '<a href = "EXEC: msg $no_bath & gt $curloc"><font color="#424242">골든 샤워</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	else
+		$middle_text_6 += '<a href = "EXEC: interaction = 1363 & gt ''interaction''"><<$slave_sub_piss[slave[''sub_piss'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1363] + "," + debug_sex_acceptance[1363] + ")", "")>><br>'
+	end
+	if slave["sub_kopro"] > 5:
+		$middle_text_6 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">식분증</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	elseif bath < 1:
+		$middle_text_6 += '<a href = "EXEC: msg $no_bath & gt $curloc"><font color="#424242">식분증</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	else
+		$middle_text_6 += '<a href = "EXEC: interaction = 1364 & gt ''interaction''"><<$slave_sub_kopro[slave[''sub_kopro'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1364] + "," + debug_sex_acceptance[1364] + ")", "")>><br>'
+	end
+
+	if exam_in_progress = 1:
+		!$middle_text_7 += '<a href = "EXEC: msg $no_services_exam & gt $curloc"><font color="#424242">Dog Mating</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+		!$middle_text_7 += '<a href = "EXEC: msg $no_services_exam & gt $curloc"><font color="#424242">Pig Mating</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+		!$middle_text_7 += '<a href = "EXEC: msg $no_services_exam & gt $curloc"><font color="#424242">Horse Mating</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+		!$middle_text_8 += '<a href = "EXEC: msg $no_services_exam & gt $curloc"><font color="#424242">Spider Mating</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+		!$middle_text_8 += '<a href = "EXEC: msg $no_services_exam & gt $curloc"><font color="#424242">Sea Tentacle Mating</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+		!$middle_text_8 += '<a href = "EXEC: msg $no_services_exam & gt $curloc"><font color="#424242">Fiend Milking</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	else
+		if slave["sub_zoosex"] > 5:
+			$middle_text_7 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">개 교미</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	elseif dog ! 1:
+		$middle_text_7 += '<a href = "EXEC: msg $no_creature & gt $curloc"><font color="#424242">개 교미</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	else
+		$middle_text_7 += '<a href = "EXEC: interaction = 1351 & gt ''interaction''"><<$slave_sub_zoosex[slave[''sub_zoosex'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1351] + "," + debug_sex_acceptance[1351] + ")", "")>><br>'
+	end
+	if slave["sub_bestiality"] > 5:
+		$middle_text_7 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">돼지 교미</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	else
+		$middle_text_7 += '<a href = "EXEC: interaction = 1352 & gt ''interaction''"><<$slave_svinesex[slave[''sub_bestiality'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1352] + "," + debug_sex_acceptance[1352] + ")", "")>><br>'
+	end
+	if slave["sub_horse"] > 5:
+		$middle_text_7 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">말 교미</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	else
+		$middle_text_7 += '<a href = "EXEC: interaction = 1353 & gt ''interaction''"><<$slave_horsesex[slave[''sub_horse'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1353] + "," + debug_sex_acceptance[1353] + ")", "")>><br>'
+	end
+	if slave["sub_arachnidSpider"] > 5:
+		$middle_text_8 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">거미 교미</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	elseif arachnidSpider ! 1 or dungeon < 1:
+		$middle_text_8 += '<a href = "EXEC: msg $no_dungeon & gt $curloc"><font color="#424242">거미 교미</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	else
+		$middle_text_8 += '<a href = "EXEC: interaction = 1355 & gt ''interaction''"><<$slave_arachnidSpider[slave[''sub_arachnidSpider'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1355] + "," + debug_sex_acceptance[1355] + ")", "")>><br>'
+	end
+	if slave["sub_polypusvermin"] > 5:
+		$middle_text_8 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">바다 촉수 교미</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	elseif polypusvermin ! 1 or dungeon < 1:
+		$middle_text_8 += '<a href = "EXEC: msg $no_dungeon & gt $curloc"><font color="#424242">바다 촉수 교미</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	else
+		$middle_text_8 += '<a href = "EXEC: interaction = 1356 & gt ''interaction''"><<$slave_polypusvermin[slave[''sub_polypusvermin'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1356] + "," + debug_sex_acceptance[1356] + ")", "")>><br>'
+	end
+	if slave["sub_tentacles"] > 5:
+		$middle_text_8 += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">안개 괴물 착정</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	elseif pen < 1:
+		$middle_text_8 += '<a href = "EXEC: msg $no_pen & gt $curloc"><font color="#424242">안개 괴물 착정</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	elseif pet_tentacle ! 1:
+		$middle_text_8 += '<a href = "EXEC: msg $no_creature & gt $curloc"><font color="#424242">안개 괴물 착정</font></a>&nbsp;&nbsp;&nbsp;&nbsp;<br>'
+	else
+		$middle_text_8 += '<a href = "EXEC: interaction = 1354 & gt ''interaction''"><<$slave_tentacle[slave[''sub_tentacles'']]>></a><<iif(debug_interactions = 3, "(" + debug_repulse[1354] + "," + debug_sex_acceptance[1354] + ")", "")>><br>'
+	end
+
+
+		!Главное меню - Заняться воспитуемой - Секс-обучение - Lesbian Sex
+END
+	*p '<div id = "mark_one"><img src = "content\pic\buttons\sel_button.png"></div>'
+	!добавлена проверка здесь и у ассистентки (teach_stat_screen = 1) на присутствие у мастера денег, иначе обучение невозможно
+	if assistant_state = CONST_INT['slave_exist']:
+		*p '<div id = "mark_two"><a href = "EXEC: teach_stat_screen = 1 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	else
+		*p '<div id = "mark_two"><a href = "EXEC: msg $no_assistant & gt $curloc"><img src = "content\pic\buttons\unactive_button.png"></a></div>'
+	end
+	if exam_in_progress = 1:
+		*p '<div id = "mark_three"><a href = "EXEC: msg $no_services_exam & gt $curloc"><img src = "content\pic\buttons\unactive_button.png"></a></div>'
+	!elseif sparks < school_price[0]:
+	!	*p '<div id = "mark_three"><a href = "EXEC: msg $no_money_school & gt $curloc"><img src = "content\pic\buttons\unactive_button.png"></a></div>'
+	else
+		*p '<div id = "mark_three"><a href = "EXEC: teach_stat_screen = 2 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	end
+	!if sparks >= coach_price[0]:
+		*p '<div id = "mark_four"><a href = "EXEC: teach_stat_screen = 3 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	!else
+	!	*p '<div id = "mark_two"><a href = "EXEC: msg $no_money_coach & gt $curloc"><img src = "content\pic\buttons\unactive_button.png"></a></div>'
+	!end
+	if ui_style = 2:
+		*p '<div id="center_image"><img src = "content\pic\ui\grimdark\bg\page_blank.png"></div>'
+	else
+		*p '<div id="center_image"><img src = "content\pic\page_blank.png"></div>'
+	end
+	*p '<div id = "left_text_teach"><<$left_text_teach>></div>'
+	*p '<div id = "left_text_heading"><<$left_text_heading>></div>'
+	*p '<div id = "right_text_heading"><<$right_text_heading>></div>'
+	*p '<div id = "middle_text_1"><<$middle_text_1>></div>'
+	*p '<div id = "middle_text_2"><<$middle_text_2>></div>'
+	*p '<div id = "middle_text_3"><<$middle_text_3>></div>'
+	*p '<div id = "middle_text_4"><<$middle_text_4>></div>'
+	*p '<div id = "middle_text_5"><<$middle_text_5>></div>'
+	*p '<div id = "middle_text_6"><<$middle_text_6>></div>'
+	*p '<div id = "middle_text_7"><<$middle_text_7>></div>'
+	*p '<div id = "middle_text_8"><<$middle_text_8>></div>'
+end
+
+!ASSISTANT TRAINING TAB
+if teach_stat_screen = 1:
+	$left_text_teach = ''
+	$left_text_heading = ''
+
+	$left_text_heading += '<u>기술 훈련 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</u>'
+	if assistant["stamina"] < 0:
+		$assistant_too_weak_to_teach = '<<$assistant_name>>는 너무 약해서 <<$slave_name>>를 가르칠 수 없습니다.'
+		$left_text_teach += '<a href = "EXEC: msg $assistant_too_weak_to_teach & gt $curloc"><font color="#424242">하녀 수업</font></a><br>'
+		$left_text_teach += '<a href = "EXEC: msg $assistant_too_weak_to_teach & gt $curloc"><font color="#424242">요리 수업</font></a><br>'
+		$left_text_teach += '<a href = "EXEC: msg $assistant_too_weak_to_teach & gt $curloc"><font color="#424242">간호 수업</font></a><br>'
+		$left_text_teach += '<a href = "EXEC: msg $assistant_too_weak_to_teach & gt $curloc"><font color="#424242">비서 수업</font></a><br>'
+		$left_text_teach += '<a href = "EXEC: msg $assistant_too_weak_to_teach & gt $curloc"><font color="#424242">연금술 수업</font></a><br>'
+		$left_text_teach += '<a href = "EXEC: msg $assistant_too_weak_to_teach & gt $curloc"><font color="#424242">마법력 수업</font></a><br>'
+		$left_text_teach += '<a href = "EXEC: msg $assistant_too_weak_to_teach & gt $curloc"><font color="#424242">화술 수업</font></a><br>'
+		$left_text_teach += '<a href = "EXEC: msg $assistant_too_weak_to_teach & gt $curloc"><font color="#424242">검투 수업</font></a><br>'
+		$left_text_teach += '<a href = "EXEC: msg $assistant_too_weak_to_teach & gt $curloc"><font color="#424242">무용 수업</font></a><br>'
+		$left_text_teach += '<a href = "EXEC: msg $assistant_too_weak_to_teach & gt $curloc"><font color="#424242">체육 수업</font></a><br>'
+		$left_text_teach += '<a href = "EXEC: msg $assistant_too_weak_to_teach & gt $curloc"><font color="#424242">미술 수업</font></a><br>'
+		$left_text_teach += '<a href = "EXEC: msg $assistant_too_weak_to_teach & gt $curloc"><font color="#424242">음악 수업</font></a><br>'
+		$left_text_teach += '<a href = "EXEC: msg $assistant_too_weak_to_teach & gt $curloc"><font color="#424242">애완동물 수업</font></a><br>'
+		$left_text_teach += '<a href = "EXEC: msg $assistant_too_weak_to_teach & gt $curloc"><font color="#424242">조랑말 수업</font></a><br>'
+		$left_text_teach += '<a href = "EXEC: msg $assistant_too_weak_to_teach & gt $curloc"><font color="#424242">소 수업</font></a><br>'
+	else
+		if slave["service"] > 5:
+			$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">하녀 수업</font></a><br>'
+		elseif house_mess < 1:
+			$left_text_teach += '<a href = "EXEC: msg $no_house_mess & gt $curloc"><font color="#424242">하녀 수업</font></a><br>'
+		elseif assistant['service'] <= slave['service']:
+			$left_text_teach += '<a href = "EXEC: msg $assistant_skill & gt $curloc"><font color="#424242">하녀 수업</font></a><br>'
+		else
+			$left_text_teach += '<a href = "EXEC: interaction = 4111 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["service"], "하녀 수업" + $skill_grade[slave["service"]])>></a><br>'
+			!$left_text_teach += '<a href = "EXEC: interaction = 4111 & gt ''interaction''"><<$slave_service[slave[''service'']]>></a><br>'
+		end
+		if slave["cook"] > 5:
+			$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">요리 수업</font></a><br>'
+		elseif kitchen < 1:
+			$left_text_teach += '<a href = "EXEC: msg $no_kitchen & gt $curloc"><font color="#424242">요리 수업</font></a><br>'
+		elseif assistant['cook'] <= slave['cook']:
+			$left_text_teach += '<a href = "EXEC: msg $assistant_skill & gt $curloc"><font color="#424242">요리 수업</font></a><br>'
+		else
+			$left_text_teach += '<a href = "EXEC: interaction = 4112 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["cook"], "요리 수업" + $skill_grade[slave["cook"]])>></a><br>'
+			!$left_text_teach += '<a href = "EXEC: interaction = 4112 & gt ''interaction''"><<$slave_cook[slave[''cook'']]>></a><br>'
+		end
+		if slave["secretary"] > 5:
+			$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">비서 수업</font></a><br>'
+		elseif assistant['secretary'] <= slave['secretary']:
+			$left_text_teach += '<a href = "EXEC: msg $assistant_skill & gt $curloc"><font color="#424242">비서 수업</font></a><br>'
+		else
+			$left_text_teach += '<a href = "EXEC: interaction = 4114 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["secretary"], "비서 수업" + $skill_grade[slave["secretary"]])>></a><br>'
+			!$left_text_teach += '<a href = "EXEC: interaction = 4114 & gt ''interaction''"><<$slave_secretary[slave[''secretary'']]>></a><br>'
+		end
+		if slave["expression"] > 5:
+			$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">화술 수업</font></a><br>'
+		elseif assistant['expression'] <= slave['expression']:
+			$left_text_teach += '<a href = "EXEC: msg $assistant_skill & gt $curloc"><font color="#424242">화술 수업</font></a><br>'
+		else
+			$left_text_teach += '<a href = "EXEC: interaction = 4131 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["expression"], "화술 수업" + $skill_grade[slave["expression"]])>></a><br>'
+			!$left_text_teach += '<a href = "EXEC: interaction = 4131 & gt ''interaction''"><<$slave_expression[slave[''expression'']]>></a><br>'
+		end
+		if slave["nurse"] > 5:
+			$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">간호 수업</font></a><br>'
+		elseif assistant['nurse'] <= slave['nurse']:
+			$left_text_teach += '<a href = "EXEC: msg $assistant_skill & gt $curloc"><font color="#424242">간호 수업</font></a><br>'
+		else
+			$left_text_teach += '<a href = "EXEC: interaction = 4113 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["nurse"], "간호 수업" + $skill_grade[slave["nurse"]])>></a><br>'
+			!$left_text_teach += '<a href = "EXEC: interaction = 4113 & gt ''interaction''"><<$slave_nurse[slave[''nurse'']]>></a><br>'
+		end
+		if slave["alchemy"] > 5:
+			$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">연금술 수업</font></a><br>'
+		elseif lab < 1:
+			$left_text_teach += '<a href = "EXEC: msg $no_lab & gt $curloc"><font color="#424242">연금술 수업</font></a><br>'
+		elseif assistant['alchemy'] <= slave['alchemy']:
+			$left_text_teach += '<a href = "EXEC: msg $assistant_skill & gt $curloc"><font color="#424242">연금술 수업</font></a><br>'
+		else
+			$left_text_teach += '<a href = "EXEC: interaction = 4142 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["alchemy"], "연금술 수업" + $skill_grade[slave["alchemy"]])>></a><br>'
+			!$left_text_teach += '<a href = "EXEC: interaction = 4142 & gt ''interaction''"><<$slave_alchemy[slave[''alchemy'']]>></a><br>'
+		end
+		if slave["enchanter"] > 5:
+			$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">마법력 수업</font></a><br>'
+		elseif assistant['enchanter'] <= slave['enchanter']:
+			$left_text_teach += '<a href = "EXEC: msg $assistant_skill & gt $curloc"><font color="#424242">마법력 수업</font></a><br>'
+		else
+			$left_text_teach += '<a href = "EXEC: interaction = 41421 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["enchanter"], "마법력 수업" + $skill_grade[slave["enchanter"]])>></a><br>'
+			!$left_text_teach += '<a href = "EXEC: interaction = 41421 & gt ''interaction''"><<$slave_enchanter[slave[''enchanter'']]>></a><br>'
+		end
+		if slave['stamina'] < 1:
+			$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">체육 수업</font></a><br>'
+		elseif assistant['stamina'] < slave['stamina']:
+			$left_text_teach += '<a href = "EXEC: msg $assistant_skill & gt $curloc"><font color="#424242">체육 수업</font></a><br>'
+		else
+			$left_text_teach += '<a href = "EXEC: interaction = 4121 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["stamina"], "체육 수업" + $skill_grade[slave["stamina"]])>></a><br>'
+			!$left_text_teach += '<a href = "EXEC: interaction = 4121 & gt ''interaction''"><<$gym_lesson[slave[''stamina'']]>></a><br>'
+		end
+		if slave["gladiatrix"] > 5:
+			$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">검투 수업</font></a><br>'
+		elseif slave['stamina'] < 2:
+			$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">검투 수업</font></a><br>'
+		elseif assistant['gladiatrix'] <= slave['gladiatrix']:
+			$left_text_teach += '<a href = "EXEC: msg $assistant_skill & gt $curloc"><font color="#424242">검투 수업</font></a><br>'
+		else
+			$left_text_teach += '<a href = "EXEC: interaction = 4123 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["gladiatrix"], "검투 수업" + $skill_grade[slave["gladiatrix"]])>></a><br>'
+			!$left_text_teach += '<a href = "EXEC: interaction = 4123 & gt ''interaction''"><<$slave_gladiatrix[slave[''gladiatrix'']]>></a><br>'
+		end
+		if slave["calisthenics"] > 5:
+			$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">Dance Lesson</font></a><br>'
+		elseif slave['stamina'] < 2:
+			$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">무용 수업</font></a><br>'
+		elseif assistant['calisthenics'] <= slave['calisthenics']:
+			$left_text_teach += '<a href = "EXEC: msg $assistant_skill & gt $curloc"><font color="#424242">무용 수업</font></a><br>'
+		else
+			$left_text_teach += '<a href = "EXEC: interaction = 4122 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["calisthenics"], "무용 수업" + $skill_grade[slave["calisthenics"]])>></a><br>'
+			!$left_text_teach += '<a href = "EXEC: interaction = 4122 & gt ''interaction''"><<$slave_calisthenics[slave[''calisthenics'']]>></a><br>'
+		end
+		if slave["music"] > 5:
+			$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">음악 수업</font></a><br>'
+		elseif assistant['music'] <= slave['music']:
+			$left_text_teach += '<a href = "EXEC: msg $assistant_skill & gt $curloc"><font color="#424242">음악 수업</font></a><br>'
+		else
+			$left_text_teach += '<a href = "EXEC: interaction = 4132 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["music"], "음악 수업" + $skill_grade[slave["music"]])>></a><br>'
+			!$left_text_teach += '<a href = "EXEC: interaction = 4132 & gt ''interaction''"><<$slave_music[slave[''music'']]>></a><br>'
+		end
+		if slave["art"] > 5:
+			$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">미술 수업</font></a><br>'
+		elseif assistant['art'] <= slave['art']:
+			$left_text_teach += '<a href = "EXEC: msg $assistant_skill & gt $curloc"><font color="#424242">미술 수업</font></a><br>'
+		else
+			$left_text_teach += '<a href = "EXEC: interaction = 4133 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["art"], "미술 수업" + $skill_grade[slave["art"]])>></a><br>'
+			!$left_text_teach += '<a href = "EXEC: interaction = 4133 & gt ''interaction''"><<$slave_art[slave[''art'']]>></a><br>'
+		end
+		if slave["pet"] > 5:
+			$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">애완동물 수업</font></a><br>'
+		elseif slave['stamina'] < 2:
+			$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">애완동물 수업</font></a><br>'
+		elseif assistant['pet'] <= slave['pet']:
+			$left_text_teach += '<a href = "EXEC: msg $assistant_skill & gt $curloc"><font color="#424242">애완동물 수업</font></a><br>'
+		else
+			$left_text_teach += '<a href = "EXEC: interaction = 4141 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["pet"], "애완동물 수업" + $skill_grade[slave["pet"]])>></a><br>'
+			!$left_text_teach += '<a href = "EXEC: interaction = 4141 & gt ''interaction''"><<$slave_pet[slave[''pet'']]>></a><br>'
+		end
+		if slave["dressage"] > 5:
+			$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">조랑말 레이싱 수업</font></a><br>'
+		elseif slave['stamina'] < 2:
+			$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">조랑말 레이싱 수업</font></a><br>'
+		elseif slave['stamina'] < 3 and slave['dressage'] >= 3:
+			$left_text_teach += '<a href = "EXEC: msg $not_enough_stamina & gt $curloc"><font color="#424242">조랑말 레이싱 수업</font></a><br>'
+		elseif assistant['dressage'] <= slave['dressage']:
+			$left_text_teach += '<a href = "EXEC: msg $assistant_skill & gt $curloc"><font color="#424242">조랑말 레이싱 수업</font></a><br>'
+		else
+			$left_text_teach += '<a href = "EXEC: interaction = 4143 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["dressage"], "조랑말 레이싱 수업" + $skill_grade[slave["dressage"]])>></a><br>'
+			!$left_text_teach += '<a href = "EXEC: interaction = 4143 & gt ''interaction''"><<$slave_dressage[slave[''dressage'']]>></a><br>'
+		end
+		if slave["cowSK"] > 5:
+			$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">소 수업</font></a><br>'
+		elseif slave['stamina'] < 2:
+			$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">소 수업</font></a><br>'
+		elseif assistant['cowSK'] <= slave['cowSK']:
+			$left_text_teach += '<a href = "EXEC: msg $assistant_skill & gt $curloc"><font color="#424242">소 수업</font></a><br>'
+		else
+			$left_text_teach += '<a href = "EXEC: interaction = 4134 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["cowSK"], "소 수업" + $skill_grade[slave["cowSK"]])>></a><br>'
+			!$left_text_teach += '<a href = "EXEC: interaction = 4134 & gt ''interaction''"><<$slave_cowSK[slave[''cowSK'']]>></a><br>'
+		end
+	end
+
+	*p '<div id = "mark_one"><a href = "EXEC: teach_stat_screen = 0 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	*p '<div id = "mark_two"><img src = "content\pic\buttons\sel_button.png"></div>'
+	!if sparks >= school_price[0]:
+		*p '<div id = "mark_three"><a href = "EXEC: teach_stat_screen = 2 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	!else
+	!	*p '<div id = "mark_three"><a href = "EXEC: msg $no_money_school & gt $curloc"><img src = "content\pic\buttons\unactive_button.png"></a></div>'
+	!end
+	!if sparks >= coach_price[0]:
+		*p '<div id = "mark_four"><a href = "EXEC: teach_stat_screen = 3 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	!else
+	!	*p '<div id = "mark_two"><a href = "EXEC: msg $no_money_coach & gt $curloc"><img src = "content\pic\buttons\unactive_button.png"></a></div>'
+	!end
+	if ui_style = 2:
+		*p '<div id="center_image"><img src = "content\pic\ui\grimdark\bg\page_blank.png"></div>'
+	else
+		*p '<div id="center_image"><img src = "content\pic\page_blank.png"></div>'
+	end
+	*p '<div id = "left_text_teach"><<$left_text_teach>></div>'
+	*p '<div id = "left_text_heading"><<$left_text_heading>></div>'
+end
+
+!SCHOOL TRAINING TAB
+if teach_stat_screen = 2:
+	$left_text_teach = ''
+	$left_text_heading = ''
+
+	$left_text_heading += '<u>기술 훈련 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</u>'
+
+	if slave["service"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">하녀 수업</font></a><br>'
+	elseif sparks < school_price[slave["service"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_school & gt $curloc"><font color="#424242">하녀 수업</font></a>&nbsp;<font color="#000000">(<<school_price[slave["service"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 561 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["service"], "하녀 수업" + $skill_grade[slave["service"]])>></a>&nbsp;<font color="#000000">(<<school_price[slave["service"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 561 & gt ''interaction''"><<$slave_service[slave[''service'']]>></a><br>'
+	end
+
+	if slave["cook"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">요리 수업</font></a><br>'
+	elseif sparks < school_price[slave["cook"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_school & gt $curloc"><font color="#424242">요리 수업</font></a>&nbsp;<font color="#000000">(<<school_price[slave["cook"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 562 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["cook"], "요리 수업" + $skill_grade[slave["cook"]])>></a>&nbsp;<font color="#000000">(<<school_price[slave["cook"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 562 & gt ''interaction''"><<$slave_cook[slave[''cook'']]>></a><br>'
+	end
+
+	if slave["secretary"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">비서 수업</font></a><br>'
+	elseif sparks < school_price[slave["secretary"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_school & gt $curloc"><font color="#424242">비서 수업</font></a>&nbsp;<font color="#000000">(<<school_price[slave["secretary"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 564 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["secretary"], "비서 수업" + $skill_grade[slave["secretary"]])>></a>&nbsp;<font color="#000000">(<<school_price[slave["secretary"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 564 & gt ''interaction''"><<$slave_secretary[slave[''secretary'']]>></a><br>'
+	end
+
+	if slave["expression"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">화술 수업</font></a><br>'
+	elseif sparks < school_price[slave["expression"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_school & gt $curloc"><font color="#424242">화술 수업</font></a>&nbsp;<font color="#000000">(<<school_price[slave["expression"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 5610 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["expression"], "화술 수업" + $skill_grade[slave["expression"]])>></a>&nbsp;<font color="#000000">(<<school_price[slave["expression"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 5610 & gt ''interaction''"><<$slave_expression[slave[''expression'']]>></a><br>'
+	end
+
+	if slave["nurse"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">간호 수업</font></a><br>'
+	elseif sparks < school_price[slave["nurse"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_school & gt $curloc"><font color="#424242">간호 수업</font></a>&nbsp;<font color="#000000">(<<school_price[slave["nurse"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 563 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["nurse"], "간호 수업" + $skill_grade[slave["nurse"]])>></a>&nbsp;<font color="#000000">(<<school_price[slave["nurse"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 563 & gt ''interaction''"><<$slave_nurse[slave[''nurse'']]>></a><br>'
+	end
+
+	if slave["alchemy"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">연금술 수업</font></a><br>'
+	elseif sparks < school_price[slave["alchemy"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_school & gt $curloc"><font color="#424242">연금술 수업</font></a>&nbsp;<font color="#000000">(<<school_price[slave["alchemy"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 5613 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["alchemy"], "연금술 수업" + $skill_grade[slave["alchemy"]])>></a>&nbsp;<font color="#000000">(<<school_price[slave["alchemy"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 5613 & gt ''interaction''"><<$slave_alchemy[slave[''alchemy'']]>></a><br>'
+	end
+
+	if slave["enchanter"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">마법력 수업</font></a><br>'
+	elseif sparks < school_price[slave["enchanter"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_school & gt $curloc"><font color="#424242">마법력 수업</font></a>&nbsp;<font color="#000000">(<<school_price[slave["enchanter"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 56131 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["enchanter"], "마법력 수업" + $skill_grade[slave["enchanter"]])>></a>&nbsp;<font color="#000000">(<<school_price[slave["enchanter"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 56131 & gt ''interaction''"><<$slave_enchanter[slave[''enchanter'']]>></a><br>'
+	end
+
+	if slave['stamina'] < 1:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">체육 수업</font></a><br>'
+	elseif sparks < school_price[slave["stamina"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_school & gt $curloc"><font color="#424242">체육 수업</font></a>&nbsp;<font color="#000000">(<<school_price[slave["stamina"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 565 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["stamina"], "체육 수업" + $skill_grade[slave["stamina"]])>></a>&nbsp;<font color="#000000">(<<school_price[slave["stamina"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 565 & gt ''interaction''"><<$gym_lesson[slave[''stamina'']]>></a><br>'
+	end
+
+	if slave["gladiatrix"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">검투 수업</font></a><br>'
+	elseif slave['stamina'] < 2:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">검투 수업</font></a><br>'
+	elseif sparks < school_price[slave["gladiatrix"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_school & gt $curloc"><font color="#424242">검투 수업</font></a>&nbsp;<font color="#000000">(<<school_price[slave["gladiatrix"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 567 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["gladiatrix"], "검투 수업" + $skill_grade[slave["gladiatrix"]])>></a>&nbsp;<font color="#000000">(<<school_price[slave["gladiatrix"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 567 & gt ''interaction''"><<$slave_gladiatrix[slave[''gladiatrix'']]>></a><br>'
+	end
+
+	if slave["calisthenics"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">무용 수업</font></a><br>'
+	elseif slave['stamina'] < 2:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">무용 수업</font></a><br>'
+	elseif sparks < school_price[slave["calisthenics"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_school & gt $curloc"><font color="#424242">무용 수업</font></a>&nbsp;<font color="#000000">(<<school_price[slave["calisthenics"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 566 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["calisthenics"], "무용 수업" + $skill_grade[slave["calisthenics"]])>></a>&nbsp;<font color="#000000">(<<school_price[slave["calisthenics"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 566 & gt ''interaction''"><<$slave_calisthenics[slave[''calisthenics'']]>></a><br>'
+	end
+
+	if slave["music"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">음악 수업</font></a><br>'
+	elseif sparks < school_price[slave["music"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_school & gt $curloc"><font color="#424242">음악 수업</font></a>&nbsp;<font color="#000000">(<<school_price[slave["music"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 5611 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["music"], "음악 수업" + $skill_grade[slave["music"]])>></a>&nbsp;<font color="#000000">(<<school_price[slave["music"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 5611 & gt ''interaction''"><<$slave_music[slave[''music'']]>></a><br>'
+	end
+
+	if slave["art"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">미술 수업</font></a><br>'
+	elseif sparks < school_price[slave["art"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_school & gt $curloc"><font color="#424242">미술 수업</font></a>&nbsp;<font color="#000000">(<<school_price[slave["art"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 5612 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["art"], "미술 수업" + $skill_grade[slave["art"]])>></a>&nbsp;<font color="#000000">(<<school_price[slave["art"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 5612 & gt ''interaction''"><<$slave_art[slave[''art'']]>></a><br>'
+	end
+
+	if slave["pet"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">펫 수업</font></a><br>'
+	elseif slave['stamina'] < 2:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">펫 수업</font></a><br>'
+	elseif sparks < school_price[slave["pet"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_school & gt $curloc"><font color="#424242">펫 수업</font></a>&nbsp;<font color="#000000">(<<school_price[slave["pet"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 569 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["pet"], "펫 수업" + $skill_grade[slave["pet"]])>></a>&nbsp;<font color="#000000">(<<school_price[slave["pet"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 569 & gt ''interaction''"><<$slave_pet[slave[''pet'']]>></a><br>'
+	end
+
+	if slave["dressage"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">조랑말 레이싱 수업</font></a><br>'
+	elseif slave['stamina'] < 2:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">조랑말 레이싱 수업</font></a><br>'
+	elseif slave['stamina'] < 3 and slave["dressage"] >= 3:
+		$left_text_teach += '<a href = "EXEC: msg $not_enough_stamina & gt $curloc"><font color="#424242">조랑말 레이싱 수업</font></a><br>'
+	elseif sparks < school_price[slave["dressage"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_school & gt $curloc"><font color="#424242">조랑말 레이싱 수업</font></a>&nbsp;<font color="#000000">(<<school_price[slave["dressage"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 568 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["dressage"], "조랑말 레이싱 수업" + $skill_grade[slave["dressage"]])>></a>&nbsp;<font color="#000000">(<<school_price[slave["dressage"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 568 & gt ''interaction''"><<$slave_dressage[slave[''dressage'']]>></a><br>'
+	end
+
+	if slave["cowSK"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">젖소 수업</font></a><br>'
+	elseif slave['stamina'] < 2:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">젖소 수업</font></a><br>'
+	elseif sparks < school_price[slave["cowSK"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_school & gt $curloc"><font color="#424242">젖소 수업</font></a>&nbsp;<font color="#000000">(<<school_price[slave["cowSK"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 570 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["cowSK"], "젖소 수업" + $skill_grade[slave["cowSK"]])>></a>&nbsp;<font color="#000000">(<<school_price[slave["cowSK"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 570 & gt ''interaction''"><<$slave_cowSK[slave[''cowSK'']]>></a><br>'
+	end
+
+	*p '<div id = "mark_one"><a href = "EXEC: teach_stat_screen = 0 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	if assistant_state = CONST_INT['slave_exist']:
+		*p '<div id = "mark_two"><a href = "EXEC: teach_stat_screen = 1 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	else
+		*p '<div id = "mark_two"><a href = "EXEC: msg $no_assistant & gt $curloc"><img src = "content\pic\buttons\unactive_button.png"></a></div>'
+	end
+	*p '<div id = "mark_three"><img src = "content\pic\buttons\sel_button.png"></div>'
+	!if sparks >= coach_price[0]:
+		*p '<div id = "mark_four"><a href = "EXEC: teach_stat_screen = 3 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	!else
+	!	*p '<div id = "mark_two"><a href = "EXEC: msg $no_money_coach & gt $curloc"><img src = "content\pic\buttons\unactive_button.png"></a></div>'
+	!end
+	if ui_style = 2:
+		*p '<div id="center_image"><img src = "content\pic\ui\grimdark\bg\page_blank.png"></div>'
+	else
+		*p '<div id="center_image"><img src = "content\pic\page_blank.png"></div>'
+	end
+	*p '<div id = "left_text_teach"><<$left_text_teach>></div>'
+	*p '<div id = "left_text_heading"><<$left_text_heading>></div>'
+end
+
+!TUTOR TRAINING TAB
+if teach_stat_screen = 3:
+	$left_text_teach = ''
+	$left_text_heading = ''
+
+	$left_text_heading += '<u>기술 훈련 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</u>'
+
+	if slave["service"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">하녀 수업</font></a><br>'
+	elseif house_mess < 1:
+		$left_text_teach += '<a href = "EXEC: msg $no_house_mess & gt $curloc"><font color="#424242">하녀 수업</font></a><br>'
+	elseif sparks < coach_price[slave["service"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_coach & gt $curloc"><font color="#424242">하녀 수업</font></a>&nbsp;<font color="#000000">(<<coach_price[slave["service"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1711 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["service"], "하녀 수업" + $skill_grade[slave["service"]])>></a>&nbsp;<font color="#000000">(<<coach_price[slave["service"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1711 & gt ''interaction''"><<$slave_service[slave[''service'']]>></a><br>'
+	end
+
+	if slave["cook"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">요리 수업</font></a><br>'
+	elseif kitchen < 1:
+		$left_text_teach += '<a href = "EXEC: msg $no_kitchen & gt $curloc"><font color="#424242">요리 수업</font></a><br>'
+	elseif sparks < coach_price[slave["cook"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_coach & gt $curloc"><font color="#424242">요리 수업</font></a>&nbsp;<font color="#000000">(<<coach_price[slave["cook"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1712 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["cook"], "요리 수업" + $skill_grade[slave["cook"]])>></a>&nbsp;<font color="#000000">(<<coach_price[slave["cook"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1712 & gt ''interaction''"><<$slave_cook[slave[''cook'']]>></a><br>'
+	end
+
+	if slave["secretary"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">비서 수업</font></a><br>'
+	elseif sparks < coach_price[slave["secretary"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_coach & gt $curloc"><font color="#424242">비서 수업</font></a>&nbsp;<font color="#000000">(<<coach_price[slave["secretary"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1714 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["secretary"], "비서 수업" + $skill_grade[slave["secretary"]])>></a>&nbsp;<font color="#000000">(<<coach_price[slave["secretary"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1714 & gt ''interaction''"><<$slave_secretary[slave[''secretary'']]>></a><br>'
+	end
+
+	if slave["expression"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">화술 수업</font></a><br>'
+	elseif sparks < coach_price[slave["expression"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_coach & gt $curloc"><font color="#424242">화술 수업</font></a>&nbsp;<font color="#000000">(<<coach_price[slave["expression"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1731 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["expression"], "화술 수업" + $skill_grade[slave["expression"]])>></a>&nbsp;<font color="#000000">(<<coach_price[slave["expression"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1731 & gt ''interaction''"><<$slave_expression[slave[''expression'']]>></a><br>'
+	end
+
+	if slave["nurse"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">간호 수업</font></a><br>'
+	elseif sparks < coach_price[slave["nurse"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_coach & gt $curloc"><font color="#424242">간호 수업</font></a>&nbsp;<font color="#000000">(<<coach_price[slave["nurse"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1713 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["nurse"], "간호 수업" + $skill_grade[slave["nurse"]])>></a>&nbsp;<font color="#000000">(<<coach_price[slave["nurse"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1713 & gt ''interaction''"><<$slave_nurse[slave[''nurse'']]>></a><br>'
+	end
+
+	if slave["alchemy"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">연금술 수업</font></a><br>'
+	elseif exam_in_progress = 1:
+		$left_text_teach += '<a href = "EXEC: msg $no_services_exam & gt $curloc"><font color="#424242">연금술 수업</font></a><br>'
+	elseif lab < 1:
+		$left_text_teach += '<a href = "EXEC: msg $no_lab & gt $curloc"><font color="#424242">연금술 수업</font></a><br>'
+	elseif sparks < coach_price[slave["alchemy"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_coach & gt $curloc"><font color="#424242">연금술 수업</font></a>&nbsp;<font color="#000000">(<<coach_price[slave["alchemy"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1734 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["alchemy"], "연금술 수업" + $skill_grade[slave["alchemy"]])>></a>&nbsp;<font color="#000000">(<<coach_price[slave["alchemy"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1734 & gt ''interaction''"><<$slave_alchemy[slave[''alchemy'']]>></a><br>'
+	end
+
+	if slave["enchanter"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">마법력 수업</font></a><br>'
+	elseif sparks < coach_price[slave["enchanter"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_coach & gt $curloc"><font color="#424242">마법력 수업</font></a>&nbsp;<font color="#000000">(<<coach_price[slave["enchanter"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 17341 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["enchanter"], "마법력 수업" + $skill_grade[slave["enchanter"]])>></a>&nbsp;<font color="#000000">(<<coach_price[slave["enchanter"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 17341 & gt ''interaction''"><<$slave_enchanter[slave[''enchanter'']]>></a><br>'
+	end
+
+	if slave['stamina'] < 1:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">체육 수업</font></a><br>'
+	elseif sparks < coach_price[slave["stamina"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_coach & gt $curloc"><font color="#424242">체육 수업</font></a>&nbsp;<font color="#000000">(<<coach_price[slave["stamina"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1721 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["stamina"], "체육 수업" + $skill_grade[slave["stamina"]])>></a>&nbsp;<font color="#000000">(<<coach_price[slave["stamina"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1721 & gt ''interaction''">Athletics Lesson</a><br>'
+	end
+
+	if slave["gladiatrix"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">검투 수업</font></a><br>'
+	elseif slave['stamina'] < 2:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">검투 수업</font></a><br>'
+	elseif sparks < coach_price[slave["gladiatrix"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_coach & gt $curloc"><font color="#424242">검투 수업</font></a>&nbsp;<font color="#000000">(<<coach_price[slave["gladiatrix"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1723 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["gladiatrix"], "검투 수업" + $skill_grade[slave["gladiatrix"]])>></a>&nbsp;<font color="#000000">(<<coach_price[slave["gladiatrix"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1723 & gt ''interaction''"><<$slave_gladiatrix[slave[''gladiatrix'']]>></a><br>'
+	end
+
+	if slave["calisthenics"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">무용 수업</font></a><br>'
+	elseif slave['stamina'] < 2:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">무용 수업</font></a><br>'
+	elseif sparks < coach_price[slave["calisthenics"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_coach & gt $curloc"><font color="#424242">무용 수업</font></a>&nbsp;<font color="#000000">(<<coach_price[slave["calisthenics"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1722 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["calisthenics"], "무용 수업" + $skill_grade[slave["calisthenics"]])>></a>&nbsp;<font color="#000000">(<<coach_price[slave["calisthenics"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1722 & gt ''interaction''"><<$slave_calisthenics[slave[''calisthenics'']]>></a><br>'
+	end
+
+	if slave["music"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">음악 수업</font></a><br>'
+	elseif sparks < coach_price[slave["music"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_coach & gt $curloc"><font color="#424242">음악 수업</font></a>&nbsp;<font color="#000000">(<<coach_price[slave["music"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1732 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["music"], "음악 수업" + $skill_grade[slave["music"]])>></a>&nbsp;<font color="#000000">(<<coach_price[slave["music"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1732 & gt ''interaction''"><<$slave_music[slave[''music'']]>></a><br>'
+	end
+
+	if slave["art"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">미술 수업</font></a><br>'
+	elseif sparks < coach_price[slave["art"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_coach & gt $curloc"><font color="#424242">미술 수업</font></a>&nbsp;<font color="#000000">(<<coach_price[slave["art"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1733 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["art"], "미술 수업" + $skill_grade[slave["art"]])>></a>&nbsp;<font color="#000000">(<<coach_price[slave["art"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1733 & gt ''interaction''"><<$slave_art[slave[''art'']]>></a><br>'
+	end
+
+	if slave["pet"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">애완동물 수업</font></a><br>'
+	elseif slave['stamina'] < 2:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">애완동물 수업</font></a><br>'
+	elseif sparks < coach_price[slave["pet"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_coach & gt $curloc"><font color="#424242">애완동물 수업</font></a>&nbsp;<font color="#000000">(<<coach_price[slave["pet"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1725 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["pet"], "애완동물 수업" + $skill_grade[slave["pet"]])>></a>&nbsp;<font color="#000000">(<<coach_price[slave["pet"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1725 & gt ''interaction''"><<$slave_pet[slave[''pet'']]>></a><br>'
+	end
+
+	if slave["dressage"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">조랑말 레이싱 수업</font></a><br>'
+	elseif slave['stamina'] < 2:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">조랑말 레이싱 수업</font></a><br>'
+	elseif slave['stamina'] < 3 and slave["dressage"] >= 3:
+		$left_text_teach += '<a href = "EXEC: msg $not_enough_stamina & gt $curloc"><font color="#424242">조랑말 레이싱 수업</font></a><br>'
+	elseif sparks < coach_price[slave["dressage"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_coach & gt $curloc"><font color="#424242">조랑말 레이싱 수업</font></a>&nbsp;<font color="#000000">(<<coach_price[slave["dressage"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1724 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["dressage"], "조랑말 레이싱 수업" + $skill_grade[slave["dressage"]])>></a>&nbsp;<font color="#000000">(<<coach_price[slave["dressage"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1724 & gt ''interaction''"><<$slave_dressage[slave[''dressage'']]>></a><br>'
+	end
+
+	if slave["cowSK"] > 5:
+		$left_text_teach += '<a href = "EXEC: msg $max_skill & gt $curloc"><font color="#424242">소 수업</font></a><br>'
+	elseif slave['stamina'] < 2:
+		$left_text_teach += '<a href = "EXEC: msg $no_slave_stamina & gt $curloc"><font color="#424242">소 수업</font></a><br>'
+	elseif sparks < coach_price[slave["cowSK"]]:
+		$left_text_teach += '<a href = "EXEC: msg $no_money_coach & gt $curloc"><font color="#424242">소 수업</font></a>&nbsp;<font color="#000000">(<<coach_price[slave["cowSK"]]>>$)</font><br>'
+	else
+		$left_text_teach += '<a href = "EXEC: interaction = 1726 & gt ''interaction''"><<dyneval($vb_cycle_skill, slave["cowSK"], "소 수업" + $skill_grade[slave["cowSK"]])>></a>&nbsp;<font color="#000000">(<<coach_price[slave["cowSK"]]>>$)</font><br>'
+		!$left_text_teach += '<a href = "EXEC: interaction = 1726 & gt ''interaction''"><<$slave_cowSK[slave[''cowSK'']]>></a><br>'
+	end
+
+	*p '<div id = "mark_one"><a href = "EXEC: teach_stat_screen = 0 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	if assistant_state = CONST_INT['slave_exist']:
+		*p '<div id = "mark_two"><a href = "EXEC: teach_stat_screen = 1 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	else
+		*p '<div id = "mark_two"><a href = "EXEC: msg $no_assistant & gt $curloc"><img src = "content\pic\buttons\unactive_button.png"></a></div>'
+	end
+	if exam_in_progress = 1:
+		*p '<div id = "mark_three"><a href = "EXEC: msg $no_services_exam & gt $curloc"><img src = "content\pic\buttons\unactive_button.png"></a></div>'
+	!elseif sparks < school_price[0]:
+	!	*p '<div id = "mark_three"><a href = "EXEC: msg $no_money_school & gt $curloc"><img src = "content\pic\buttons\unactive_button.png"></a></div>'
+	else
+		*p '<div id = "mark_three"><a href = "EXEC: teach_stat_screen = 2 & gt $curloc"><img src = "content\pic\buttons\unsel_button.png"></a></div>'
+	end
+	*p '<div id = "mark_four"><img src = "content\pic\buttons\sel_button.png"></div>'
+	if ui_style = 2:
+		*p '<div id="center_image"><img src = "content\pic\ui\grimdark\bg\page_blank.png"></div>'
+	else
+		*p '<div id="center_image"><img src = "content\pic\page_blank.png"></div>'
+	end
+	*p '<div id = "left_text_teach"><<$left_text_teach>></div>'
+	*p '<div id = "left_text_heading"><<$left_text_heading>></div>'
+end
+
+*p '<div id="info"><<$info_text>></div>'
+
+------------ teach_screen ------------

@@ -1,0 +1,79 @@
+# jo9_meiki_checks
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START MEIKI_CHECKS_V1
+! Numeric result only: 0 or 1. No actor/session values are changed.
+! Calls below are required dependencies; block markers are provenance, not removal instructions.
+result = 0
+
+! useless START CHECK_AGE | existing additional checks
+! args1: age
+if $args[0] = 'age':
+	if args[1] = CONST_INT['young_age'] or args[1] = CONST_INT['milf_age'] or args[1] = CONST_INT['loli_age']: result = 1
+end
+! useless END CHECK_AGE
+
+! useless START CHECK_ACTOR | existing additional checks
+! args1..8: state, age, fear, domini_dictum, neg_raped, neg_disgust, res, sex_acceptance
+if $args[0] = 'actor':
+	if args[1] = CONST_INT['slave_exist']: result = 1
+end
+! useless END CHECK_ACTOR
+
+! useless START CHECK_DIRECT | existing additional checks
+! args1..2: diligence, actor check result
+if $args[0] = 'direct':
+	if args[1] > 0 and args[2] = 1: result = 1
+end
+! useless END CHECK_DIRECT
+
+! useless START CHECK_TRANSITION | existing additional checks
+! args1..3: interaction_type, diligence, actor check result
+if $args[0] = 'transition':
+	if $args[1] ! '' and args[3] = 1: result = 1
+end
+! useless END CHECK_TRANSITION
+
+! useless START CHECK_GROUP | existing additional checks
+! args1..4: slave diligence, assistant diligence, two actor check results
+if $args[0] = 'group':
+	if min(args[1], args[2]) > 0 and args[3] = 1 and args[4] = 1: result = 1
+end
+! useless END CHECK_GROUP
+
+! useless START CHECK_COMPANION | existing additional checks
+! args1: slave_les_txt5; existing literal values retained
+if $args[0] = 'companion':
+	if $args[1] = '젊은' or $args[1] = '밀프' or $args[1] = '로리': result = 1
+end
+! useless END CHECK_COMPANION
+
+! useless START CHECK_SESSION_ROUTE | existing additional checks
+! args1: sex_interaction
+if $args[0] = 'session_route':
+	if args[1] = 101 or args[1] = 102 or args[1] = 103 or args[1] = 104 or args[1] = 1041 or args[1] = 1042 or args[1] = 1043 or args[1] = 1044 or args[1] = 1045 or args[1] = 105 or args[1] = 106 or args[1] = 19 or args[1] = 12 or args[1] = 15 or args[1] = 151 or args[1] = 152 or args[1] = 153 or args[1] = 154 or args[1] = 155 or args[1] = 161 or args[1] = 162 or args[1] = 91 or args[1] = 94 or args[1] = 95: result = 1
+end
+! useless END CHECK_SESSION_ROUTE
+
+! useless START CHECK_SESSION_STATE | existing additional checks
+! args1..6: interaction_type, diligence, bondage, girl_raped, girl_disgust, girl_fear
+if $args[0] = 'session_state':
+	if $args[1] ! 'deny' and args[2] >= 0: result = 1
+end
+! useless END CHECK_SESSION_STATE
+
+! useless START CHECK_SESSION_STEP | existing additional checks
+! args1..3: sex_interaction, interaction_type, diligence
+if $args[0] = 'session_step':
+	if args[1] = 12 and $args[2] = 'penetration' and args[3] > 0: result = 1
+end
+! useless END CHECK_SESSION_STEP
+
+! useless START CHECK_SESSION_FINISH | existing additional checks
+! args1..4: interaction_type, cum_pleasure, jo9_meiki_voluntary_steps, jo9_meiki_bonus_paid
+if $args[0] = 'session_finish':
+	if $args[1] = 'ejaculate' and args[2] > 0 and args[3] > 0 and args[4] = 0: result = 1
+end
+! useless END CHECK_SESSION_FINISH
+! JO9 MOD END MEIKI_CHECKS_V1
+
+------------ jo9_meiki_checks ------------

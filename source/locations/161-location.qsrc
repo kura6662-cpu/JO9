@@ -1,0 +1,56 @@
+# #тексты_движка
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2561 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '#тексты_движка': gs 'snk_room_bridge', 'guard', '#тексты_движка'
+! JO9 MOD END J9M2561
+!FIGHT ENGINE TEXT MESSAGES
+!&nbsp used - simple space doesnt work with tags
+$защита_описание['блок'] = "<a href='EXEC: msg $блок_справка'><font color='red'>막기</font></a>"
+$защита_описание['контратака'] = "<a href='EXEC: msg $контратака_справка'><font color='purple'>반격</font></a>"
+$защита_описание['уклонение'] = "<a href='EXEC: msg $уклонение_справка'><font color='green'>회피</font></a>"
+
+$защита_врага_описание['блок'] = "<a href='EXEC: msg $блок_справка'><font color='red'>막음</font></a>"
+$защита_врага_описание['контратака'] = "<a href='EXEC: msg $контратака_справка'><font color='purple'>반격함</font></a>"
+$защита_врага_описание['уклонение'] = "<a href='EXEC: msg $уклонение_справка'><font color='green'>회피함</font></a>"
+
+$слабость_справка = "   약화된 캐릭터는 자신의 <font color='red'>힘</font> 공격으로 절반의 피해만 준다."
+$скованность_справка = "   경직 상태의 캐릭터는 자신의 <font color='green'>속도</font> 공격으로 절반의 피해만 준다."
+$боль_справка = "   심한 고통을 겪는 캐릭터는 자신의 <font color='purple'>정밀</font> 공격으로 절반의 피해만 준다."
+$шаткость_справка = "   발을 제대로 딛지 못하는 캐릭터는 <font color='red'>힘</font> 공격으로 두 배의 피해를 입는다."
+$ошеломление_справка = "   기절한 캐릭터는 <font color='green'>속도</font> 공격으로 두 배의 피해를 입는다."
+$рассеянность_справка = "   주의가 흐트러진 캐릭터는 <font color='purple'>정밀</font> 공격으로 두 배의 피해를 입는다."
+$бешенство_справка = "   캐릭터는 전투 광란 상태에 빠져 자신의 <font color='red'>힘</font> 공격 피해가 두 배가 된다."
+$разгон_справка = "   관성을 현명하게 이용해 가속한 캐릭터는 <font color='green'>속도</font> 공격으로 두 배의 피해를 준다."
+$меткость_справка = "&nbsp;&nbsp;&nbsp;이 캐릭터의 <font color='purple'>정밀</font> 공격은 두 배의 피해를 준다."
+$адреналин_справка = "   아드레날린 분출로 이 캐릭터는 <font color='red'>힘</font> 공격 피해의 절반을 무시한다."
+$верткость_справка = "   캐릭터는 <font color='green'>속도</font> 공격을 민첩하게 흘려 피해의 절반만 받는다."
+$внимание_справка = "   집중한 캐릭터는 <font color='purple'>정밀</font> 공격을 두 배 더 잘 받아쳐, 피해를 절반만 입는다."
+
+$хиты_справка = "&nbsp;&nbsp;&nbsp;<font color='red'>빨간 하트</font>는 생명력을 나타낸다. 0 = 사망." + _
+"   <font color='green'>초록 하트</font>는 지구력을 나타낸다. 0 = 의식 상실." + _
+"   <font color='purple'>보라 하트</font>는 사기를 나타낸다. 0 = 후퇴." + _
+"   더 자세한 정보는 각 하트를 클릭하면 된다."
+
+! JO9 MOD START J9M2560 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+$блок_справка = "<br><center>이 방어 형태에 대해 -<br>" + _
+"<br>VS<font color='red'>힘 공격</font> = 효과 무력화 및 두 배 피격<br>" + _
+"VS<font color='purple'>정밀 공격</font> = 공격자 유리 상태이상 획득<br>" + _
+"VS<font color='green'>속도 공격</font> = 피격자 불리 상태이상 획득<br>" + _
+"<br>초상화 측면 하단 화살표는 방어 형태를 바꿉니다"
+$контратака_справка = "<br><center>이 방어 형태에 대해 -<br>" + _
+"<br>VS<font color='purple'>정밀 공격</font> = 효과 무력화 및 두 배 피격<br>" + _
+"VS<font color='red'>힘 공격</font> = 피격자 불리 상태이상 획득<br>" + _
+"VS<font color='green'>속도 공격</font> = 공격자 유리 상태이상 획득<br>" + _
+"<br>초상화 측면 하단 화살표는 방어 형태를 바꿉니다</center>"
+$уклонение_справка = "<br><center>이 방어 형태에 대해 -<br>" + _
+"<br>VS<font color='green'>속도 공격</font> = 효과 무력화 및 두 배 피격<br>" + _
+"VS<font color='purple'>정밀 공격</font> = 피격자 불리 상태이상 획득<br>" + _
+"VS<font color='red'>힘 공격</font> = 공격자 유리 상태이상 획득<br>" + _
+"<br>초상화 측면 하단 화살표는 방어 형태를 바꿉니다</center>"
+! JO9 MOD END J9M2560
+
+$живучесть_справка = "   <font color='red'>빨간 하트</font>는 생명력 수치를 보여 준다. 생명력을 잃으면 상처와 외상을 입는다. 수치가 0에 도달하면 캐릭터는 죽는다. 어떤 하트에 영향을 주는지는 무기 종류와 방어구에 따라 달라지며, 공격 색상과는 무관하다."
+$выносливость_справка = "   <font color='green'>초록 하트</font>는 지구력 수치를 보여 준다. 지구력을 잃으면 타박상이나 전투 후 기력 저하가 생길 수 있다. 지구력이 0에 도달하면 캐릭터는 기절하지만 살아 있다. 어떤 하트에 영향을 주는지는 무기 종류와 방어구에 따라 달라지며, 공격 색상과는 무관하다."
+$боевой_дух_справка = "   <font color='purple'>보라 하트</font>는 사기의 수치를 보여 준다. 매 라운드 상대에게 가한 피해의 절반이 사기에 더해진다. 사기 손실은 장기적인 후유증을 남기지 않는다. 사기가 0이 되면 캐릭터는 항복하거나 전장에서 도망친다. 각 무기는 방어구에 따라 서로 다른 하트에 영향을 주며, 공격 색상은 무관하다."
+
+------------ #тексты_движка ------------

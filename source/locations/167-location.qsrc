@@ -1,0 +1,19 @@
+# ход_противников
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2895 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'ход_противников': gs 'snk_room_bridge', 'guard', 'ход_противников'
+! JO9 MOD END J9M2895
+!CALCULATE THE ACTIONS QUEUE OF THE OPPONENTS
+i = 0
+:loop
+if i < количество_врагов:
+	i += 1
+ 	if враг[i] = 1:
+  		gs '<<$интеллект[$враг[i]]>>'
+	end
+	jump 'loop'
+end
+
+gt 'конец_раунда'
+
+------------ ход_противников ------------

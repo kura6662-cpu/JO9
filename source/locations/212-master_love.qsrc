@@ -1,0 +1,230 @@
+# master_love
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2934 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'master_love': gs 'snk_room_bridge', 'guard', 'master_love'
+! JO9 MOD END J9M2934
+
+! Любовь рабыни или ассистентки к мастеру - mrross
+!{
+
+Влюблённость					|	Извращённая любовь БДСМ	|	Дочерняя любовь		|	Настоящая любовь	|	Нимфомания				| 	Зависимость
+pos_slave_love_2				|	pos_slave_love_5		|	pos_slave_love_3	|	pos_slave_love_1	|	pos_slave_love_4		|	pos_slave_love_6
+--------------------------------|---------------------------|-----------------------|-----------------------|---------------------------|-------------------------
+- master_str >= 3		(0:5)	|	= 5						|	>= 3				|	= 5					|	>= 3					|	>= 3
+- master_cha = 5 		(0:5)	|	>= 3					|	>= 3				|	= 5					|	>= 3 					|	>= 3
+- master_style = 5 		(0:5)	|	*						|	>= 2				|	= 5					|	>= 3					|	>= 3
+- master_domination >= 2 (0:5)	|	= 5						|	>= 3				|	= 5					|	>= 3					|	>= 4
+--------------------------------|---------------------------|-----------------------|-----------------------|---------------------------|-------------------------
+- obedience >= 8		(-10:10)|	= 10					|	= 10				|	= 10				|	>= 5					|	= 10
+- arousal >= 3			(0:5)	|	>= 1					|	*					|	>= 3				|	>= 4					|	*
+- fear <= 1				(0:5)	|	>= 1					|	<= 2				|	= 0					|	<= 2					|	<= 3
+- angst = 0				(0:5)	|	<= 3					|	<= 1				|	= 0					|	= 0 					|	<= 3
+- rational *			(0:5)	|	*						|	>= 2				|	*					|	*	 					|	>= 2
+- instinct >= 3			(0:5)	|	>= 2					|	= 5					|	= 5					|	>= 2					|	= 5
+- custom >= 3			(0:5)	|	>= 2					|	= 5					|	= 5					|	>= 3					|	= 5
+- spoil <= 1			(0:5)	|	*						|	<= 3				|	<= 2				|	<= 3					|	<= 1
+- moral >= 2			(0:5)	|	>= 2					|	>= 4				|	= 5					|	>= 2					|	>= 3
+--------------------------------|---------------------------|-----------------------|-----------------------|---------------------------|-------------------------
+- mood = 5				(-5:5)	|	*						|	= 5					|	= 5					|	>= 4					|	*
+								|							|						|						|							|
+- sensitivity >=3		(0:5)	|	>= 2					|	>= 2				|	>= 3				|	>= 3					|	*
+- temper >= 3			(0:5)	|	>= 2					|	>= 1				|	>= 3				|	= 5						|	<= 4
+- pride >= 3			(0:5)	|	>= 4					|	*					|	>= 2				|	>= 4					|	>= 3
+								|							|						|						|							|
+	- abuse_attitude = -1		|- masochism = 2				| - Лоли или девушка	|	-нет любви к ассист.|	- nymphomania = 1 		| - courage = -1
+	- perversion = -1			|- abuse_attitude = 2		| 						|						|   - perversion = 2 		| - passion_fame = -1
+	- masochism = -1				|- deprivation_attitude = 2	| 						|						|	- exhibitionism = 2 	| - selfesteem = -1
+	- nymphomania = -1			|- compassion = -1			|						|						|							|
+	- exhibitionism = -1		|							|						|						|							|
+	- compassion = 1			|							|						|						|							|
+}
+
+
+if sa_rel = 1:
+	copyarr 'slave1', 'slave'
+elseif sa_rel = 2:
+	copyarr 'slave1', 'assistant'	
+end
+
+! Проверка на настоящую любовь
+
+if slave1["love"] = 0:
+!	msg "1_1"
+	if master_str = 5 and master_cha = 5 and master_style = 5 and master_domination = 5:
+!		msg "1_2"
+		if slave1["obedience"] >= 10 and slave1["arousal"] >= 3 and slave1["fear"] = 0 and slave1["angst"] = 0 and slave1["instinct"] = 5 and slave1["custom"] = 5 and slave1["spoil"] <= 2 and slave1["moral"] = 5:
+!			msg "1_3"
+			if slave1["sensitivity"] >= 3 and slave1["temper"] >= 3 and slave1["pride"] <= 4:
+				slave1["pos_slave_love"] = 100
+				slave1["pos_slave_love2"] = 0
+				slave1["pos_slave_love3"] = 0
+				slave1["pos_slave_love4"] = 0
+				slave1["pos_slave_love5"] = 0
+				slave1["pos_slave_love6"] = 0
+!				msg "<<sa_rel>> 1-рабыня, 2-ассист.<br><br>Настоящая любовь к мастеру"
+				jump 'override'
+			end
+		end
+	end
+end
+
+! Проверка на влюблённость
+
+if slave1["abuse_attitude"] = -1 or slave1["perversion"] = -1 or slave1["masochism"] = -1 or slave1["nymphomania"] = -1 or slave1["exhibitionism"] = -1 or slave1["compassion"] = 1:
+!	msg "2_1"
+	if master_str >= 3 and master_cha = 5 and master_style = 5 and master_domination >= 2:
+!		msg "2_2"
+		if slave1["obedience"] >= 8 and slave1["arousal"] >= 3 and slave1["fear"] <= 1 and slave1["angst"] = 0 and slave1["instinct"] >= 3 and slave1["custom"] >= 3 and slave1["spoil"] <= 1 and slave1["moral"] >= 2:
+!			msg "2_3"
+			if slave1["mood"] >= 5 and slave1["sensitivity"] >= 3 and slave1["temper"] >= 3 and slave1["pride"] <= 2:
+				slave1["pos_slave_love"] = 0
+				slave1["pos_slave_love2"] = 100
+				slave1["pos_slave_love3"] = 0
+				slave1["pos_slave_love4"] = 0
+				slave1["pos_slave_love5"] = 0
+				slave1["pos_slave_love6"] = 0
+!				msg "<<sa_rel>> 1-рабыня, 2-ассист.<br><br>Влюблённость в мастера"
+				jump 'override'
+			end
+		end
+	end
+end
+
+! Проверка на дочернюю любовь
+
+if slave1["age"] ! CONST_INT['milf_age']:
+!	msg "3_1"
+	if master_str >= 3 and master_cha >= 3 and master_style >= 2 and master_domination >= 3:
+!		msg '3_2<br><<slave1["obedience"]>><br><<slave1["fear"]>><br><<slave1["angst"]>><br><<slave1["rational"]>><br><<slave1["instinct"]>><br><<slave1["custom"]>><br><<slave1["spoil"]>><br><<slave1["moral"]>>'
+		if slave1["obedience"] >= 10 and slave1["fear"] <= 2 and slave1["angst"] <= 1 and slave1["rational"] >= 2 and slave1["instinct"] = 5 and slave1["custom"] = 5 and slave1["spoil"] <= 3 and slave1["moral"] >= 4:
+!			msg '3_3<br><<slave1["mood"]>><br><<slave1["sensitivity"]>><br><<slave1["temper"]>>'
+			if slave1["sensitivity"] >= 2 and slave1["temper"] >= 1:
+				slave1["pos_slave_love"] = 0
+				slave1["pos_slave_love2"] = 0
+				slave1["pos_slave_love3"] = 100
+				slave1["pos_slave_love4"] = 0
+				slave1["pos_slave_love5"] = 0
+				slave1["pos_slave_love6"] = 0
+!				msg "<<sa_rel>> 1-рабыня, 2-ассист.<br><br>Дочерняя любовь к мастеру"
+				jump 'override'
+			end
+		end
+	end
+end
+
+! Проверка на нимфоманию
+
+if slave1["nymphomania"] = 1 or slave1["perversion"] = 2 or slave1["exhibitionism"] = 2:
+!	msg "4_1"
+	if master_str >= 3 and master_cha >= 3 and master_style >= 3 and master_domination >= 3:
+!		msg '4_2 <<slave1["obedience"]>><br><<slave1["arousal"]>><br><<slave1["fear"]>><br><<slave1["angst"]>><br><<slave1["instinct"]>><br><<slave1["custom"]>><br><<slave1["spoil"]>><br><<slave1["moral"]>>'
+		if slave1["obedience"] >= 5 and slave1["arousal"] >= 4 and slave1["fear"] <= 2 and slave1["angst"] = 0 and slave1["instinct"] >= 2 and slave1["custom"] >= 3 and slave1["spoil"] <= 3 and slave1["moral"] >= 2:
+!			msg '4_3<br><<slave1["mood"]>><br><<slave1["sensitivity"]>><br><<slave1["temper"]>><br><<slave1["pride"]>>'
+			if slave1["mood"] >= 4 and slave1["sensitivity"] >= 3 and slave1["temper"] = 5 and slave1["pride"] <= 1:
+				slave1["pos_slave_love"] = 0
+				slave1["pos_slave_love2"] = 0
+				slave1["pos_slave_love3"] = 0
+				slave1["pos_slave_love4"] = 100
+				slave1["pos_slave_love5"] = 0
+				slave1["pos_slave_love6"] = 0
+!				msg "<<sa_rel>> 1-рабыня, 2-ассист.<br><br>Нимфоманская любовь к мастеру"
+				jump 'override'
+			end
+		end
+	end
+end
+
+! Проверка на БДСМ
+
+if slave1["masochism"] = 2 or slave1["abuse_attitude"] = 2 or slave1["deprivation_attitude"] = 2 or slave1["compassion"] = -1:
+!	msg "5_1"
+	if master_str = 5 and master_cha >= 3 and master_domination = 5:
+!		msg "5_2"
+		if slave1["obedience"] >= 10 and slave1["arousal"] >= 1 and slave1["fear"] >= 1 and slave1["angst"] <= 3 and slave1["instinct"] >= 2 and slave1["custom"] >= 2 and slave1["moral"] >= 2:
+!			msg "5_3"
+			if slave1["sensitivity"] >= 2 and slave1["temper"] >= 2 and slave1["pride"] <= 1:
+				slave1["pos_slave_love"] = 0
+				slave1["pos_slave_love2"] = 0
+				slave1["pos_slave_love3"] = 0
+				slave1["pos_slave_love4"] = 0
+				slave1["pos_slave_love5"] = 100
+				slave1["pos_slave_love6"] = 0
+!				msg "<<sa_rel>> 1-рабыня, 2-ассист.<br><br>Извращённая любовь к мастеру"
+				jump 'override'
+			end
+		end
+	end
+end
+
+
+! Проверка на зависимость
+
+if slave1["courage"] = -1 or slave1["passion_fame"] = -1 or slave1["selfesteem"] = -1:
+!	msg "6_1"
+	if master_str >= 3 and master_cha >= 3 and master_style >= 3 and master_domination >= 4:
+!		msg "6_2"
+		if slave1["obedience"] >= 10 and slave1["fear"] <= 3 and slave1["angst"] <= 3 and slave1["rational"] >= 2 and slave1["instinct"] = 5 and slave1["custom"] = 5 and slave1["spoil"] <= 1 and slave1["moral"] >= 3:
+!			msg "6_3"
+			if slave1["temper"] <= 4 and slave1["pride"] <= 2:
+				slave1["pos_slave_love"] = 0
+				slave1["pos_slave_love2"] = 0
+				slave1["pos_slave_love3"] = 0
+				slave1["pos_slave_love4"] = 0
+				slave1["pos_slave_love5"] = 0
+				slave1["pos_slave_love6"] = 100
+!				msg "<<sa_rel>> 1-рабыня, 2-ассист.<br><br>Зависимость от мастера"
+			end
+		end
+	end
+end
+
+
+:override
+
+if sa_rel = 1:
+	copyarr 'slave', 'slave1'
+elseif sa_rel = 2:
+	copyarr 'assistant', 'slave1'	
+end
+
+
+!{
+
+
+статы				|	Настоящая любовь	|	Влюблённость		|	Дочерняя любовь		|	Нимфомания			|	Садомазохизм		|	Зависимость			|
+--------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|
+	Мастер:			|						|						|						|						|						|						|
+Сила 				|			5			|		>=	3			|		>=	3			|		>=	3			|			5			|		>=	3			|
+Сила личности		|			5			|			5			|		>=	3			|		>=	3			|		>=	3			|		>=	3			|
+Привлекательность	|			5			|			5			|		>=	2			|		>=	3			|			*			|		>=	3			|
+Доминирование		|			5			|		>=	2			|		>=	3			|		>=	3			|			5			|		>=	4			|
+--------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|
+	Рабыня (аура):	|						|						|						|						|						|						|
+Подчинённость		|			10			|			8			|			10			|		>=	5			|			10			|			10			|
+Возбуждение			|		>=	3 			|		>=	3			|			*			|		>=	4			|		>=	1			|			*			|
+Страх				|			0			|		<=	1			|		<=	2			|		<=	2			|		>=	1			|		<=	3			|
+Отчаяние			|			0			|			0			|		<=	1			|			0			|		<=	3			|		<=	3			|
+Осознание			|			*			|			*			|		>=	2			|			*			|			*			|		>=	2			|
+Укрощение			|			5			|		>=	3			|			5			|		>=	2			|		>=	2			|			5			|
+Привычка			|			5			|		>=	3			|			5			|		>=	3			|		>=	2			|			5			|
+Испорченность		|		<=	2			|		<=	1			|		<=	3			|		<=	3			|			*			|		<=	1			|
+Преданность			|			5			|		>=	2			|		>=	4			|		>=	2			|		>=	2			|		>=	3			|
+--------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|
+	Рабыня:			|						|						|						|						|						|						|
+Настроение			|			5			|			5			|			5			|		>=	4			|			*			|			*			|
+Чувствительность	|		>=	3			|		>=	3			|		>=	2			|		>=	3			|		>=	2			|			*			|
+Темперамент			|		>=	3			|		>=	3			|		>=	1			|			5			|		>=	2			|		<=	4			|
+Гордыня				|		>=	2 (<= 4)	|		>=	3 (<= 2)	|			*			|		>=	4	(<= 1)	|		>=	4	(<= 1)	|		>=	3	(<= 2)	|
+					|						|						|						|						|						|						|
+					|	- больше никого		|	- истеричка			|	- лоли 				|	- нимфоманка		|	- мазохистка		|	- трусиха			|
+					|		не любит		|	- пуристка			|	- девушка			|	- извращенка		|	- пси-мазохистка	|	- хиккикимори		|
+					|						|	- боится боли		|						|	- эксгибиционистка	|- любит беспомощность	|	- комплекс вины		|
+					|						|	- фригидная			|						|						|	- садистка			|						|
+					|						|	- стеснительная		|						|						|						|						|
+					|						|	- милосердная		|						|						|						|						|
+					|						|						|						|						|						|						|
+					|						|						|						|						|						|						|
+
+}
+
+------------ master_love ------------

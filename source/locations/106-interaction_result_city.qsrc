@@ -1,0 +1,900 @@
+# interaction_result_city
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1689 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'interaction_result_city': gs 'snk_room_bridge', 'guard', 'interaction_result_city'
+! JO9 MOD END J9M1689
+! JO9 MOD START TBV_SALE_REWARD_SNAPSHOT | 2026-10-17_trait_value
+killvar 'jo9_trait_value_sold_peerless'
+if $interaction_type = 'sell_slave_simple' or $interaction_type = 'slave_sold_house' or $interaction_type = 'sell_slave_complex' or $interaction_type = 'slave_sold': jo9_trait_value_sold_peerless = slave['jo9_peerless']
+!handling templates
+! JO9 MOD END TBV_SALE_REWARD_SNAPSHOT
+if sp_txt_is_set_from_save = 0: sp_txt = 1
+
+!interaction type - talk
+if $interaction_type = 'standart':
+	dynamic $special_part
+end
+
+!interaction type - buyer invitation
+if $interaction_type = 'buyer_invitation':
+	gs '$slave_price'
+	npc = 1
+	killvar '$text'
+	dynamic '$text[1] = $<<$npc_id>>_pref[1]'
+	if npc_progress[$npc_id] = 2:
+		if personal_relations[$npc_id] < 0:
+! JO9 MOD START J9M1688 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+			$text[1] = '[<<$npc_name[$npc_id]>>]<br>&nbsp;다시는 당신에게서 사지 않겠어. 그리고 전에 당신이 내게 어떻게 했는지 몇몇 친구들에게도 한마디 해뒀지.'
+! JO9 MOD END J9M1688
+		else
+! JO9 MOD START J9M1687 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+			$text[1] = '[<<$npc_name[$npc_id]>>]<br>&nbsp;난 아직 새 노예가 필요 없네. 하지만 몇몇 친구들에게 한마디 해뒀으니, 그런 상품의 구매자는 어렵지 않게 찾게 될 거야.'
+! JO9 MOD END J9M1687
+		end
+	else
+		if slave_state = CONST_INT['slave_exist'] and slave['brand'] > 0:
+			txt = 1
+			$yes = {
+				!TODO: give NPCs money in a better way
+				npc_money[$npc_id] = common_price[demand_rating[$npc_id]]
+				npc_money[$npc_id] += (48271 * (day + slave_type + city_form + len($npc_id)) mod 65537) / (65537 / (2 * common_price[demand_rating[$npc_id]]))
+				!$interaction_type = 'sell_slave_simple' &! no negotiation
+				$interaction_type = 'sell_slave_house' &! use negotiation
+				gt 'interaction_result_city'
+			}
+			$no = {
+				if from_club = 1:
+					from_club = 0
+					gt $return_lock
+				else
+					gt 'city_menu_form'
+				end
+			}
+			gt 'choice_screen'
+		end
+	end
+end
+
+!interaction type - slave sell simple scheme
+if $interaction_type = 'sell_slave_simple':
+	gs '$slave_price'
+	if slave[$npc_id] > 0 and (day - slave[$npc_id]) >= 10: slave[$npc_id] = 0
+	if slave_specialisation[$interesting_specialisation[$npc_id]] >= demand_rating[$npc_id]/2 and rating >= demand_rating[$npc_id] and slave[$npc_id] = 0: buyer_interested = 1
+	!charm_demand_max = 10 + demand_rating[$npc_id]
+	!charm_demand = rand(5,charm_demand_max)
+									charm_demand = 6  &! require D- charm ( 6+) at F-/D-/D+ rating    (0-2)
+	if demand_rating[$npc_id] >= 3: charm_demand = 12 &! require C- charm (12+) at C-/C+ rating       (3-4)
+	if demand_rating[$npc_id] >= 5: charm_demand = 18 &! require B+ charm (18+) at B-/B+ rating       (5-6)
+	if demand_rating[$npc_id] >= 7: charm_demand = 24 &! require A+ charm (24+) at A-/A+ rating       (7-8)
+	if demand_rating[$npc_id] >= 9: charm_demand = 38 &! require S+ charm (38+) at S-/S+ rating       (9-10)
+	! if charm_demand > charm and buyer_interested = 1 and no_charm_check = 1: buyer_interested = 1
+	if charm_demand > charm and buyer_interested = 1 and no_charm_check = 0: buyer_interested = 0
+	if slave['wounds'] > 0 or slave['energy'] < 0 or slave['stamina'] < 2: buyer_interested = 0
+	if slave['rehabilitation'] > 0 or $slave_psy_status = 'broken': buyer_interested = 0
+	if slave['pregnant'] > 0 and slave['pregnant_revealed'] > 0: buyer_interested = 0
+	! msg 'Slave Rating: <<rating>>'
+	! msg 'Demand Rating: <<demand_rating[$npc_id]>>'
+	! msg 'Slave Charm: <<charm>>'
+	! msg 'Charm Demand: <<charm_demand>>'
+	! msg 'NPC ID: <<slave[$npc_id]>>'
+	! msg 'Buyer Interested:  <<buyer_interested>>'
+	! msg 'No Charm check: <<no_charm_check>>'
+	if buyer_interested = 1:
+		npc_progress[$npc_id] = 2
+		$text[1] = $buy_quote[$npc_id]
+! JO9 MOD START TBV_FIXED_PRICE_78 | 2026-10-17_trait_value
+		sparks += func('jo9_traits_value', 'base_price', 'slave', common_price[demand_rating[$npc_id]])
+! JO9 MOD END TBV_FIXED_PRICE_78
+		if sound_on = 1: play $large_money_sound, sound_volume
+		if slave['ill'] > 0: sold_ill_slave += 1 &! trigger follow-up event
+		if slave['parasite'] > 0: sold_parasite_slave += 1 &! trigger follow-up event
+		dynamic $clear_slave_instance, 'slave'
+		master_moodlet['pos_deal'] = 5
+! JO9 MOD START TBV_SALE_REWARD_0_2 | 2026-10-17_trait_value
+		if fixed_brand_rise = 0:
+			if brand_reputation <= demand_rating[$npc_id]/2: brand_rate += func('jo9_traits_value', 'reward', '', demand_rating[$npc_id]/2, jo9_trait_value_sold_peerless)
+! JO9 MOD END TBV_SALE_REWARD_0_2
+			if faction_fame[$npc_alignment[$npc_id]] < demand_rating[$npc_id]/2:
+				dynamic $rise_faction_fame
+! JO9 MOD START TBV_SALE_REWARD_0_1 | 2026-10-17_trait_value
+				brand_rate += func('jo9_traits_value', 'reward', '', 1, jo9_trait_value_sold_peerless)
+! JO9 MOD END TBV_SALE_REWARD_0_1
+! JO9 MOD START TBV_SALE_REWARD_0_0 | 2026-10-17_trait_value
+			end
+		elseif brand_reputation < 3:
+			brand_rate += func('jo9_traits_value', 'reward', '', fixed_brand_rise, jo9_trait_value_sold_peerless)
+! JO9 MOD END TBV_SALE_REWARD_0_0
+		end
+	else
+		killvar '$text'
+		if charm_demand > charm: $text[1] = $refuse_charm_quote[$npc_id]
+		if slave_specialisation[$interesting_specialisation[$npc_id]] < demand_rating[$npc_id]/2: $text[1] = $refuse_skill_quote[$npc_id]
+		if demand_rating[$npc_id] > rating: $text[1] = $refuse_level_quote[$npc_id]
+		if slave['wounds'] > 0 or slave['energy'] < 0 or slave['stamina'] < 2: $text[1] = $refuse_health_quote[$npc_id]
+		if slave['rehabilitation'] > 0 or $slave_psy_status = 'broken': $text[1] = $refuse_health_quote[$npc_id]
+		if slave['pregnant'] > 0 and slave['pregnant_revealed'] > 0: $text[1] = $refuse_pregnant_quote[$npc_id]
+		if slave[$npc_id] > 0: $text[1] = $refuse_again_quote[$npc_id]
+	end
+end
+
+!interaction type - slave sell to clients from houses, new scheme
+if $interaction_type = 'sell_slave_house':
+	gs '$slave_price'
+	if slave[$npc_id] > 0 and (day - slave[$npc_id]) >= 10: slave[$npc_id] = 0
+	if rating >= demand_rating[$npc_id] and slave[$npc_id] = 0: buyer_interested = 1
+	!if slave_specialisation[$interesting_specialisation[$npc_id]] >= demand_rating[$npc_id]/2: buyer_interested = 1
+	!charm_demand_max = 15 + demand_rating[$npc_id]
+	!charm_demand = rand(5,charm_demand_max)
+									charm_demand = 6  &! require D- charm ( 6+) at F-/D-/D+ rating    (0-2)
+	if demand_rating[$npc_id] >= 3: charm_demand = 12 &! require C- charm (12+) at C-/C+ rating       (3-4)
+	if demand_rating[$npc_id] >= 5: charm_demand = 18 &! require B+ charm (18+) at B-/B+ rating       (5-6)
+	if demand_rating[$npc_id] >= 7: charm_demand = 24 &! require A+ charm (24+) at A-/A+ rating       (7-8)
+	if demand_rating[$npc_id] >= 9: charm_demand = 38 &! require S+ charm (38+) at S-/S+ rating       (9-10)
+	if charm_demand > charm and buyer_interested = 1 and no_charm_check = 1: buyer_interested = 1
+	if charm_demand > charm and buyer_interested = 1 and no_charm_check = 0: buyer_interested = 0
+	if slave['wounds'] > 0 or slave['energy'] < 0 or slave['stamina'] < 2: buyer_interested = 0
+	if slave['rehabilitation'] > 0 or $slave_psy_status = 'broken': buyer_interested = 0
+	if slave['pregnant'] > 0 and slave['pregnant_revealed'] > 0: buyer_interested = 0
+	if buyer_interested = 1:
+		buyer_from_house = 1
+		gt 'slave_sell'
+	else
+		killvar '$text'
+		if charm_demand > charm: $text[1] = $refuse_charm_quote[$npc_id]
+		if demand_rating[$npc_id] > rating: $text[1] = $refuse_level_quote[$npc_id]
+		if slave_specialisation[$interesting_specialisation[$npc_id]] < demand_rating[$npc_id]/2: $text[1] = $refuse_skill_quote[$npc_id]
+		if slave['wounds'] > 0 or slave['energy'] < 0 or slave['stamina'] < 2: $text[1] = $refuse_health_quote[$npc_id]
+		if slave['rehabilitation'] > 0 or $slave_psy_status = 'broken': $text[1] = $refuse_health_quote[$npc_id]
+		if slave['pregnant'] > 0 and slave['pregnant_revealed'] > 0: $text[1] = $refuse_pregnant_quote[$npc_id]
+		if slave[$npc_id] > 0: $text[1] = $refuse_again_quote[$npc_id]
+	end
+end
+
+!interaction type - slave sold to clients from houses, new scheme (used for negotiation sales)
+if $interaction_type = 'slave_sold_house':
+	npc = 1
+! JO9 MOD START TBV_SALE_REWARD_1_4 | 2026-10-17_trait_value
+	npc_progress[$npc_id] = 2
+	personal_relations[$npc_id] += func('jo9_traits_value', 'reward', '', client_satisfaction, jo9_trait_value_sold_peerless)
+! JO9 MOD END TBV_SALE_REWARD_1_4
+	if client_satisfaction > 0:
+		if fixed_brand_rise = 0:
+			if have_discounted = 1:
+! JO9 MOD START TBV_SALE_REWARD_1_3 | 2026-10-17_trait_value
+				if brand_reputation <= demand_rating[$npc_id]/2: brand_rate += func('jo9_traits_value', 'reward', '', demand_rating[$npc_id], jo9_trait_value_sold_peerless)
+! JO9 MOD END TBV_SALE_REWARD_1_3
+				have_discounted = 0
+			else
+! JO9 MOD START TBV_SALE_REWARD_1_2 | 2026-10-17_trait_value
+				if brand_reputation <= demand_rating[$npc_id]/2: brand_rate += func('jo9_traits_value', 'reward', '', demand_rating[$npc_id]/2, jo9_trait_value_sold_peerless)
+! JO9 MOD END TBV_SALE_REWARD_1_2
+			end
+			if faction_fame[$npc_alignment[$npc_id]] < demand_rating[$npc_id]/2: dynamic $rise_faction_fame
+		elseif brand_reputation < 3:
+! JO9 MOD START TBV_SALE_REWARD_1_1 | 2026-10-17_trait_value
+			brand_rate += func('jo9_traits_value', 'reward', '', fixed_brand_rise, jo9_trait_value_sold_peerless)
+! JO9 MOD END TBV_SALE_REWARD_1_1
+		end
+! JO9 MOD START TBV_SALE_REWARD_1_0 | 2026-10-17_trait_value
+	elseif client_satisfaction < 0:
+		brand_rate += func('jo9_traits_value', 'reward', '', client_satisfaction, jo9_trait_value_sold_peerless)
+! JO9 MOD END TBV_SALE_REWARD_1_0
+	end
+	sparks += sell_price
+	if sound_on = 1: play $large_money_sound, sound_volume
+	if slave['ill'] > 0: sold_ill_slave = 1 &! trigger follow-up event
+	if slave['parasite'] > 0: sold_parasite_slave = 1 &! trigger follow-up event
+	dynamic $sold_clothing
+	dynamic $clear_slave_instance, 'slave'
+	master_moodlet['pos_deal'] = 5
+	city_form = city_form_transfer
+	$place = $place_transfer
+end
+
+!interaction type - sell_slave_complex (no negotiating, but check special demands and charm and raise brand rate by demand rating)
+if hero_choice < 100:
+	if $interaction_type = 'sell_slave_complex':
+		gs 'slave_sell_chek'
+		if buyer_interested = 1:
+			killvar '$text'
+			$text[1] = $buy_quote[$npc_id]
+			if noprice = 0:
+! JO9 MOD START TBV_FIXED_PRICE_177 | 2026-10-17_trait_value
+				sparks += func('jo9_traits_value', 'base_price', 'slave', common_price[demand_rating[$npc_id]])
+! JO9 MOD END TBV_FIXED_PRICE_177
+				if sound_on = 1: play $large_money_sound, sound_volume
+				master_moodlet['pos_deal'] = 5
+			end
+			if slave['ill'] > 0: sold_ill_slave = 1 &! trigger follow-up event
+			if slave['parasite'] > 0: sold_parasite_slave = 1 &! trigger follow-up event
+			dynamic $clear_slave_instance, 'slave'
+		!fixed code for kings
+			if demand_rating[$npc_id] = 10:
+! JO9 MOD START TBV_SALE_REWARD_2_3 | 2026-10-17_trait_value
+				brand_rate += func('jo9_traits_value', 'reward', '', 20, jo9_trait_value_sold_peerless)
+! JO9 MOD END TBV_SALE_REWARD_2_3
+			else
+! JO9 MOD START TBV_SALE_REWARD_2_2 | 2026-10-17_trait_value
+				brand_rate += func('jo9_traits_value', 'reward', '', demand_rating[$npc_id], jo9_trait_value_sold_peerless)
+! JO9 MOD END TBV_SALE_REWARD_2_2
+			end
+
+			if faction_fame[$npc_alignment[$npc_id]] < demand_rating[$npc_id]/2: dynamic $rise_faction_fame
+			npc_progress[$npc_id] = 2
+			active[$quest[5]] = 0
+			if noble_status = 0 and demand_rating[$npc_id] = 10:
+				noble_status = 1
+				if $npc_alignment[$npc_id] = 'taurus' or $npc_alignment[$npc_id] = 'serpis' or $npc_alignment[$npc_id] = 'kamira' or $npc_alignment[$npc_id] = 'korvus':
+					noble_via_faction = 1
+				end
+			end
+		else
+			if sl_txt = 105: $text[1] = $refuse_pregnant_quote[$npc_id]
+			if sl_txt = 104: $text[1] = $refuse_health_quote[$npc_id]
+			if sl_txt = 103: $text[1] = $refuse_charm_quote[$npc_id]
+			if sl_txt = 102: $text[1] = $refuse_skill_quote[$npc_id]
+			if sl_txt = 101: $text[1] = $refuse_level_quote[$npc_id]
+			if sl_txt = 100 and $refuse_special_quote[$npc_id] ! '': $text[1] = $refuse_special_quote[$npc_id]
+		end
+	end
+else
+	if $interaction_type = 'sell_slave_complex':
+		gs 'slave_sell_chek'
+! JO9 MOD START TBV_FIXED_PRICE_215 | 2026-10-17_trait_value
+		if buyer_interested = 1:
+			$text[1] = $buy_quote[$npc_id]
+			if noprice = 0:
+				sparks += func('jo9_traits_value', 'base_price', 'slave', common_price[demand_rating[$npc_id]])
+! JO9 MOD START TBV_SALE_REWARD_2_0 | 2026-10-17_trait_value
+! JO9 MOD START TBV_SALE_REWARD_2_1 | 2026-10-17_trait_value
+! JO9 MOD END TBV_FIXED_PRICE_215
+				if sound_on = 1: play $large_money_sound, sound_volume
+				master_moodlet['pos_deal'] = 5
+			end
+			if slave['ill'] > 0: sold_ill_slave = 1 &! trigger follow-up event
+			if slave['parasite'] > 0: sold_parasite_slave = 1 &! trigger follow-up event
+			dynamic $clear_slave_instance, 'slave'
+		!fixed code for kings
+			if demand_rating[$npc_id] = 10:
+				brand_rate += func('jo9_traits_value', 'reward', '', 20, jo9_trait_value_sold_peerless)
+! JO9 MOD END TBV_SALE_REWARD_2_1
+			else
+				brand_rate += func('jo9_traits_value', 'reward', '', demand_rating[$npc_id], jo9_trait_value_sold_peerless)
+! JO9 MOD END TBV_SALE_REWARD_2_0
+			end
+
+			if faction_fame[$npc_alignment[$npc_id]] < demand_rating[$npc_id]/2: dynamic $rise_faction_fame
+			npc_progress[$npc_id] = 2
+			active[$quest[5]] = 0
+			if noble_status = 0 and demand_rating[$npc_id] = 10: noble_status = 1
+		else
+			if sl_txt = 105: $text[1] = $refuse_pregnant_quote[$npc_id]
+			if sl_txt = 104: $text[1] = $refuse_health_quote[$npc_id]
+			if sl_txt = 103: $text[1] = $refuse_charm_quote[$npc_id]
+			if sl_txt = 102: $text[1] = $refuse_skill_quote[$npc_id]
+			if sl_txt = 101: $text[1] = $refuse_level_quote[$npc_id]
+			if sl_txt = 100 and $refuse_special_quote[$npc_id] ! '': $text[1] = $refuse_special_quote[$npc_id]
+		end
+	end
+end
+
+!interaction type - cow sell
+if $interaction_type = 'sell_milk_cow':
+	gs '$cow_price'
+	$text[1] = '야릭는 타산적인 눈빛으로 네 노예를 훑어보며 너를 외양간으로 안내한다.'
+	if cow['cowSK'] > 2: buyer_interested = 1
+	if cow['wounds'] > 0 or cow['energy'] < 0 or cow['stamina'] < 1: buyer_interested = 0
+	if cow['cowSK'] > 2 and cowprice < 800:
+		buyer_interested = 0
+	end
+	if buyer_interested = 1:
+		copyarr '$text', '$cow_auction'
+		$special_action[arrsize('$cow_auction')-1] = { gt 'choice_screen' }
+		$yes = {
+			npc_progress[$npc_id] = 2
+			sparks += cowprice
+			if sound_on = 1: play $large_money_sound, sound_volume
+			if cow['ill'] > 0: sold_ill_slave += 1 &! trigger follow-up event
+			if cow['parasite'] > 0: sold_parasite_slave += 1 &! trigger follow-up event
+			dynamic $clear_slave_instance, 'cow'
+			master_moodlet['pos_deal'] = 5
+			gt 'shop_general'
+		}
+		$no = {
+			gt 'shop_general'
+		}
+	else
+		if cow['cowSK'] < 3:
+! JO9 MOD START J9M1686 | 2026-10-09_dialogue_format_and_protagonist, 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+			$text[2] = '<i>야릭가 네 여자를 재빨리 살펴본 뒤, 네 쪽으로 돌아선다:</i><br>[야릭]<br>&nbsp;' + _
+			'젖이 돈다고 소가 되는 건 아니지! 네 여자는 외양간에서 더 오래 지내면서 소처럼 행동하는 법을 배워야 해. 제안은 못 하겠군, 미안하오 조련사님.'
+! JO9 MOD END J9M1686
+		elseif cow['wounds'] > 0 or cow['energy'] < 0 or cow['stamina'] < 2:
+			$text[2] = $refuse_health_quote[$npc_id]
+		elseif cow['cowSK'] > 2 and cowprice < 800:
+! JO9 MOD START J9M1685 | 2026-10-09_dialogue_format_and_protagonist, 2026-10-15_trim_leading_body_blank_lines | changed block; context may be included
+			$text[2] = '<i>야릭가 네 여자를 재빨리 살펴본 뒤, 네 쪽으로 돌아선다:</i><br>[야릭]<br>&nbsp;' + _
+			'죄송하지만 조련사님, 이 여잔 받을 수 없소, 생산성이 충분하지 않을 거요. 외양간 생활에 더 익숙해진다면 모를까… 하지만, 음흠, 어쩌면 영영 좋은 소는 되지 못할지도 모르겠군.'
+! JO9 MOD END J9M1685
+		end
+	end
+end
+
+if $interaction_type = 'ask_milk_tip':
+	! tip_asked is set in interaction_city to a random value between 2 and 6 (roll of 1 does not come here)
+	! a roll of 1, or not buying a tip, results in equal probability of overnight price rise/drop/no change
+	! buying tips daily costs on average 41$ per decade (no fee if no tip), offsetting profits in exchange for lower risk of being forced to sell at unfavorable market price
+	! since farmhand automates selling milk at optimal market price, influencing probability through tips is unnecessary unless a run of bad luck occurs over multiple decades
+	! or, when finances are tight enough that some milk may need to be sold at below-optimal prices to cover costs, it is prudent to invest in tips, especially on day 8 of 10
+	milk_tip = 1
+	if milk_price < 2 and tip_asked < 5:
+		tip_asked += 2 &! price cannot go down further; worst case no change (2 + 2 = 4); buying a tip at min price doubles chance of price rise to 2/3 instead of 1/3
+		! because a roll of 3 becomes a price rise instead of a price drop, and a roll of 4 becomes a price rise instead of no change
+	elseif milk_price < 7 and milk_price > 1 and tip_asked < 6:
+		tip_asked += 1 &! below-max price makes higher demand more likely; buying a tip while below max price halves chance of price drop to 1/6 instead of 1/3
+		! because a roll of 3 becomes no change instead of a price drop and a roll of 4 becomes a price rise instead of no change
+	elseif milk_price > 6 and tip_asked > 2:
+		tip_asked = 4 &! price cannot go up further; buying a tip at max price halves chance of price drop 1/6 instead of 1/3
+		! because a roll of 3 or 5 or 6 becomes no change instead of a price drop or a price rise
+	end
+	if tip_asked = 2 or tip_asked = 3:
+		milk_demand = 0 &! going down
+		$text[1] = '<<$tip_milk[milk_demand]>>'
+	end
+	if tip_asked = 4:
+		milk_demand = 1 &! no change
+		$text[1] = '<<$tip_milk[milk_demand]>>'
+	end
+	if tip_asked = 5 or tip_asked = 6:
+		milk_demand = 2 &! going up
+		$text[1] = '<<$tip_milk[milk_demand]>>'
+	end
+end
+
+!interaction type - Bryn teaches the hero a special technique
+if $interaction_type = 'learn_spm':
+	$place = 'colosseum'
+	$return_lock = 'next_day' & is_home = 1 &! is_home = 1 to bypass menu_form ESC intercept
+	npc = 1
+	$npc_id = 'брина_рыжая'
+! JO9 MOD START J9M1684 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+	$text[1] = '[적발의 브리나]<br>&nbsp;자! 더 세게!! 더 빠르게!!! 네 싸움 솜씨는 열두 살짜리 계집애보다도 못하군, 노예상인. 하하, 받아라! 느껴지나? 그래, 바로 이거야. 이렇게 해야 적을 죽일 수 있어! 일어나, 멍청아! 다시. 더 세게!! 더 빠르게!!!'
+	$text[2] = '  브리나은 하루 종일 널 훈련장 안에서 굴려 대고, 그 결과 당신은 완전히 쥐어짠 듯한 기분이 든다. 시범 타격을 얻어맞은 탓에 온몸에 멍이 들었다. 그런데 그걸로 스파크까지 받아 간다! 뭐, 적어도 이제 당신은 새로운 강력한 기술을 알게 됐다. 이제 집으로. 쉴 시간이다…'
+! JO9 MOD END J9M1684
+	if $master_spm[1] = '': 
+		$master_spm[1] = $spm_to_learn 
+	elseif $master_spm[2] = '': 
+		$master_spm[2] = $spm_to_learn 
+	elseif $master_spm[3] = '': 
+		$master_spm[3] = $spm_to_learn 
+	elseif $master_spm[4] = '': 
+		$master_spm[4] = $spm_to_learn 
+	elseif $master_spm[5] = '': 
+		$master_spm[5] = $spm_to_learn 
+	elseif $master_spm[6] = '': 
+		$master_spm[6] = $spm_to_learn 
+	elseif $master_spm[7] = '': 
+		$master_spm[7] = $spm_to_learn 
+	elseif $master_spm[8] = '': 
+		$master_spm[8] = $spm_to_learn 
+	end
+	spm_learned[$spm_to_learn] = 1
+	spm_number += 1
+end
+
+!interaction type - sold slave
+if $interaction_type = 'slave_sold':
+! JO9 MOD START TBV_SALE_REWARD_3_3 | 2026-10-17_trait_value
+	personal_relations[$npc_id] += func('jo9_traits_value', 'reward', '', client_satisfaction, jo9_trait_value_sold_peerless)
+! JO9 MOD END TBV_SALE_REWARD_3_3
+	if client_satisfaction > 0 and npc_bennies[$npc_id] > 0:
+		bennies_give = 1 + rating - demand_rating[$npc_id]
+		if bennies_give <=  npc_bennies[$npc_id]:
+! JO9 MOD START TBV_SALE_REWARD_3_2 | 2026-10-17_trait_value
+			brand_rate += func('jo9_traits_value', 'reward', '', bennies_give, jo9_trait_value_sold_peerless)
+! JO9 MOD END TBV_SALE_REWARD_3_2
+			npc_bennies[$npc_id] -= bennies_give
+		else
+! JO9 MOD START TBV_SALE_REWARD_3_1 | 2026-10-17_trait_value
+			brand_rate += func('jo9_traits_value', 'reward', '', npc_bennies[$npc_id], jo9_trait_value_sold_peerless)
+! JO9 MOD END TBV_SALE_REWARD_3_1
+			npc_bennies[$npc_id] = 0
+		end
+	end
+	if client_satisfaction < 0 and npc_bennies[$npc_id] > 0:
+! JO9 MOD START TBV_SALE_REWARD_3_0 | 2026-10-17_trait_value
+		brand_rate += func('jo9_traits_value', 'reward', '', client_satisfaction, jo9_trait_value_sold_peerless)
+! JO9 MOD END TBV_SALE_REWARD_3_0
+		npc_bennies[$npc_id] += client_satisfaction
+		if npc_bennies[$npc_id] < 0: npc_bennies[$npc_id] = 0
+	end
+	$return_lock = $return_lock_transfer
+	sparks += sell_price
+	if slave['ill'] > 0: sold_ill_slave = 1 &! trigger follow-up event
+	if slave['parasite'] > 0: sold_parasite_slave = 1 &! trigger follow-up event
+	dynamic $sold_clothing
+	dynamic $clear_slave_instance, 'slave'
+	master_moodlet['pos_deal'] = 5
+	rr = rand(0,10)
+	no_slave_count[$npc_id] = count_size[$npc_id] + rr
+	$place = $place_transfer
+end
+
+!interaction type - demonstration of the apartments for rent
+if $interaction_type = 'rental_demo':
+	npc = 1
+	$npc_id = 'realtor'
+	$return_lock  = 'shop_general'
+	$special_action[3] = {
+		$place = 'demo'
+		$place_name['demo'] = '방 점검'
+		$place_info['demo'] = '   쓰레기 같은 걸 떠넘겨받지 않으려면 모든 방을 꼼꼼히 살펴볼 필요가 있다.'
+		$bg['demo'] = $interior_study['<<$demo_var>>']
+	}
+	$special_action[5] = {
+		npc = 0
+	}
+	$special_action[6] = {
+		npc = 1
+		$bg['demo'] = $interior_bed['<<$demo_var>>']
+	}
+	$special_action[7] = {
+		npc = 0
+	}
+	$special_action[8] = {
+		npc = 1
+		$bg['demo'] = $interior_bath['<<$demo_var>>']
+	}
+	$special_action[9] = {
+		npc = 0
+	}
+	$special_action[10] = {
+		npc = 1
+		$bg['demo'] = $interior_kitchen['<<$demo_var>>']
+	}
+	$special_action[11] = {
+		npc = 0
+	}
+	$special_action[12] = {
+		npc = 1
+		$bg['demo'] = $interior_study['<<$demo_var>>']
+	}
+	$special_action[13] = {
+		npc = 0
+		$bg['demo'] = $interior_boudoir['<<$demo_var>>']
+	}
+	$special_action[14] = {
+		$bg['demo'] = $interior_dungeon['<<$demo_var>>']
+	}
+	$special_action[15] = {
+		$bg['demo'] = $interior_lab['<<$demo_var>>']
+	}
+	$special_action[16] = {
+		npc = 1
+		$bg['demo'] = $interior_study['<<$demo_var>>']
+		gt 'choice_screen'
+	}
+	$no = {
+		$place = 'realtor_office'
+		gt 'shop_general'
+	}
+end
+
+!interaction type - signing rent
+if $interaction_type = 'rental_sex':
+	npc = 1
+	$npc_id = 'realtor'
+	menu_form = 0
+	gs 'new_estate'
+	$place = 'bedroom'
+	$return_lock = 'menu_form' & city_form = 0 &! city_form = 0 to bypass menu_form ESC intercept but still play door sound
+	$special_action[3] = {npc = 0}
+	if sound_on = 1: play $large_money_sound, sound_volume
+	if master_excitement = 0: master_excitement = rand(0,5)
+	if is_perv > 1 and loli_magic < 2:
+		if loli_magic = 0:
+			master_excitement_rate -= 41
+			master_mood_rate += 31
+			master_libido_rate = 0
+		else
+			master_excitement_rate -= 16
+			master_mood_rate -= 33
+			master_libido_rate = 2
+		end
+		loli_magic += 1 &! renting a new home unlocks the next is_perv reduction for dirty old man
+		dynamic $master_energy_drop
+		fridge['vegetables'] += 1 & fridge['grain'] += 1 & fridge['cream'] += 1
+		gs '$food_choice', 5 &! consume ingredients, update cooked_food and $cooked_meal - lack of ingredients or skill limits meal quality - will only replace a lower quality meal
+		house_mess_rate = 0
+		house_mess = 0
+		copyarr '$text', '$realtor_no_sex'
+	elseif master_excitement >= 0:
+		if is_master_virgin = 1:
+			$special_image[3] = 'girls\sex_scenes\oral_general_milf_2.png'
+			$special_image[4] = 'girls\sex_scenes\bj_purple_long_milf.png'
+			$special_image[5] = 'girls\sex_scenes\sex_purple_long_milf.png'
+			$special_image[6] = 'girls\sex_scenes\sex_general_milf.png'
+			$play_sound[3] = '<<$bj_sound[2]>>'
+			$play_sound[5] = '<<$fuck_sound[2]>>'
+			is_master_virgin = 0
+		else
+			$special_image[3] = 'girls\sex_scenes\oral_general_milf_2.png'
+			$special_image[4] = 'girls\sex_scenes\bj_purple_long_milf.png'
+			$special_image[5] = 'girls\sex_scenes\analsex_general_young.png'
+			$special_image[6] = 'girls\sex_scenes\analsex_purple_long_milf_3.png'
+			$play_sound[3] = '<<$bj_sound[2]>>'
+			$play_sound[5] = '<<$assfuck_sound[2]>>'
+		end
+		ejaculation_intensity = master_excitement
+		dynamic $master_ejaculate
+		dynamic $master_ejaculate
+		dynamic $master_energy_drop
+		master_hygiene_rate += 10
+		house_mess_rate += 10
+		copyarr '$text', '$realtor_bonus_sex'
+	else
+		dynamic $master_energy_drop
+		fridge['vegetables'] += 1 & fridge['grain'] += 1 & fridge['cream'] += 1
+		gs '$food_choice', 5 &! consume ingredients, update cooked_food and $cooked_meal - lack of ingredients or skill limits meal quality - will only replace a lower quality meal
+		house_mess_rate = 0
+		house_mess = 0
+		sparks += 5
+		copyarr '$text', '$realtor_no_sex'
+	end
+end
+
+!interaction type - brothel
+if $interaction_type = 'whore':
+	$place = 'brothel'
+	$return_lock  = 'shop_general'
+	sparks -= whore_price
+	if master_excitement < -2:
+		!$special_image[2] = 'empty.png'
+		if is_flaccid2 = 1:
+			$special_image[2] = 'scene/flaccid'
+			g = rand(1, picMax["flaccid"])
+			if g > 1: $special_image[2] += '_' + $str(g)
+			$special_image[2] += ".png"
+		end
+		$special_image[3] = 'scene/flaccid'
+		g = rand(1, picMax["flaccid"])
+		if g > 1: $special_image[3] += '_' + $str(g)
+		$special_image[3] += ".png"
+	else
+		ejaculation_intensity = whore_quality*5
+		if is_perv = 1:
+			ejaculation_intensity += whore_quality/2
+			master_perv_rate += whore_quality
+		end
+		dynamic $master_ejaculate
+		if easy_for_master = 0:
+			if master_str <= min(3, whore_quality): master_str_rate += 1 &! sex in the brothel can raise master strength up to A+
+			if master_penetration < whore_quality: master_penetration_rate += 1
+		end
+	end
+	dynamic $master_energy_drop &! after easy_for_master check above
+	gs '$calculate_attributes' &! ensure master excitement is updated in case he continues sampling the wares
+	master_hygiene_rate += 5 * whore_quality
+	$picture_type = 'pic_png'
+	dynamic $special_part &! currently unused
+end
+
+!interaction type - borrow money
+if $interaction_type = 'moneylender':
+	$return_lock  = 'shop_general'
+	if nsfw = 1: not_safe = 1
+	$place = 'moneylender'
+	$npc_id = 'moneylender'
+	npc = 1
+! JO9 MOD START J9M1683 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+	$text[1] = '[고리대금업자]<br>&nbsp;여기 네 스파크다, 노예상인. 제때 빚을 갚고 돌아오면, 대출액을 늘려 줄지도 모르지. 어쩌면. 하지만 그걸 못 해내면 - 네 목숨을 줄여 주마. 그건 확실하다. <<debt_count>>일 기다리겠다. 늦지 마라.'
+! JO9 MOD END J9M1683
+	sparks += loan
+end
+
+!interaction type - buy item for current slave
+if $interaction_type = 'buy_item':
+	$return_lock  = 'shop_general'
+	if nsfw = 0 and $item_demo[$item_id] ! '': $bg_path = $item_demo[$item_id] & $picture_type = 'pic_png'
+	shop_description = 1
+	dynamic "$text[1] = '<<$item_description[$item_id]>>'"
+	killvar 'shop_description'
+	if one_time_aurabound_items_hint = 0:
+		one_time_aurabound_items_hint = 1
+! JO9 MOD START J9M1682 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+		msg '<font size= 3%>   구매를 검토하던 당신은 불멸의 로마의 대부분 옷과 장신구엔 마법이 깃들어 있다는 사실을 떠올린다. 그것들은 착용자에게 맞춰 스스로 형태를 바꾸지만, 그 과정에서 그 사람의 오라에 묶여 버려 다른 사람에게는 맞춰지지 않는다. 그래서 모든 판매는 확실히 최종 거래가 된다. 주의해서 사라! 아마 경제를 굴러가게 하려는 수단일 것이다...'
+! JO9 MOD END J9M1682
+	end
+	if sparks >= item_price[$item_id]:
+		$do_buy = {
+			if sound_on = 1: 
+				if item_price[$item_id] >= 50:
+					play $large_money_sound, sound_volume
+				else
+					play $small_money_sound, sound_volume
+				end
+			end
+			sparks -= item_price[$item_id]
+			inventory[$item_id] += item_qty
+			end
+		}
+	else
+		killvar '$do_buy'
+		$text[2] = '  가격이 지금 네가 감당할 수 있는 것보다 조금 비싸지만, 그건 쉽게 해결된다. 노예 두어 명만 팔면 된다…'
+	end
+	gt 'item_buy'
+end
+
+!interaction type - purchase item for the home
+if $interaction_type = 'buy_item_home':
+	$return_lock  = 'shop_general'
+	if nsfw = 0 and $item_demo[$item_id] ! '': $bg_path = $item_demo[$item_id] & $picture_type = 'pic_png'
+	shop_description = 1
+	dynamic "$text[1] = '<<$item_description[$item_id]>>'"
+	killvar 'shop_description'
+	if sparks >= item_price[$item_id]:
+		$do_buy = {
+			if sound_on = 1:
+				if item_price[$item_id] >= 50:
+					play $large_money_sound, sound_volume
+				else
+					play $small_money_sound, sound_volume
+				end
+			end
+			sparks -= item_price[$item_id]
+			inventory[$item_id] += 1
+		}
+	else
+		killvar '$do_buy'
+		$text[2] = '  가격이 지금 네가 감당할 수 있는 것보다 조금 비싸지만, 그건 쉽게 해결된다. 노예 두어 명만 팔면 된다…'
+	end
+	gt 'item_buy'
+end
+
+if $interaction_type = 'buy_item_personal':
+	if $return_lock = '': $return_lock = 'city_menu_form' & msg '$return_lock이 <<$item_id>>에 대해 설정되지 않았습니다, 보고해 주세요'
+	if nsfw = 0 and $item_demo[$item_id] ! '': $bg_path = $item_demo[$item_id] & $picture_type = 'pic_png' & npc = 0
+	shop_description = 1
+	dynamic "$text[1] = '<<$item_description[$item_id]>>'"
+	base_str = master_str
+	base_flagelation = master_flagelation
+	gs '#боевые_предметы' &! recalculate damage values using above variables
+	if $item_id ! '' and $броня_надеть[$item_id] ! '':
+		killvar 'модификатор_колющий' &! piercing modifier
+		killvar 'модификатор_рубящий' &! slashing modifier
+		killvar 'модификатор_дробящий' &! crushing modifier
+		killvar 'модификатор_холод' &! cold modifier
+		killvar 'модификатор_огонь' &! heat modifier
+		killvar 'модификатор_молния' &! electricity modifier
+		dynamic $броня_надеть[$item_id] &! get on-equip armor values
+		$text[1] += '<br><br>관통 <<модификатор_колющий>>. 참격 <<модификатор_рубящий>>. 타격 <<модификатор_дробящий>>. 냉기 <<модификатор_холод>>. 화염 <<модификатор_огонь>>. 전격 <<модификатор_молния>>.'
+	end
+	if $item_id ! '' and базовый_вред[$item_id] > 0: $text[1] += '<br><br>현재 네 힘과 숙련도를 기준으로, 다른 무기들과 비교했을 때 이것의 위력 평가는 <<базовый_вред[$item_id]>>다.'
+	killvar 'shop_description'
+	if sparks >= max(item_price[$item_id], wpn_price):
+		$do_buy = {
+			if sound_on = 1: 
+				if max(item_price[$item_id], wpn_price) >= 50:
+					play $large_money_sound, sound_volume
+				else
+					play $small_money_sound, sound_volume
+				end
+			end
+			sparks -= max(item_price[$item_id], wpn_price)
+			dynamic '<<$item_id>> += max(1,multiple)' &! at least one if no multiple specified - ImperatorAugustus
+			if $return_lock = 'shop_wpn': wpn_price = 0 & npc = 1 & skip_to = 999 & $text[1] = $shop_wpn_accept
+		}
+		$do_no_buy = {
+			wpn_price = 0 &! avoid infinite loop - ImperatorAugustus
+		}
+	elseif wpn_price > 0:
+		$do_buy = {
+			npc = 1
+			skip_to = 999
+			wpn_price = 0 &! avoid infinite loop - ImperatorAugustus
+			$text[1] = $shop_wpn_deny
+		}
+		$do_no_buy = {
+			wpn_price = 0 &! avoid infinite loop - ImperatorAugustus
+		}
+	else
+		killvar '$do_buy' &! disables the yes button on the item_buy screen - ImperatorAugustus
+		$text[2] = '  가격이 지금 네가 감당할 수 있는 것보다 조금 비싸지만, 그건 쉽게 해결된다. 노예 두어 명만 팔면 된다…'
+	end
+	gt 'item_buy'
+end
+
+!interaction type - service
+if $interaction_type = 'service':
+	$return_lock  = 'shop_general'
+	$picture_type = 'pic_png'
+	$bg_path  = $service_picture
+	if sparks >= service_price:
+		sparks -= service_price
+		if sound_on = 1: 
+			if service_price >= 50:
+				play $large_money_sound, sound_volume
+			else
+				play $small_money_sound, sound_volume
+			end
+		end
+		dynamic $do_service
+	else
+		$bg_path  = ''
+		killvar '$text'
+		$text[1] = '  서비스 가격은 <<service_price>> 스파크로, 지금 네가 감당할 수 있는 것보다 조금 비싸지만, 그건 쉽게 해결된다. 노예 두어 명만 팔면 된다…'
+	end
+end
+
+!interaction type - treat a girl at the bar
+if $interaction_type = 'hit_on_patron':
+	$place = 'tavern'
+	if city_already_done_today[$str(interaction_city)] <= 0:
+		a = rand(1,2)
+		if a = 1: $npc_id = 'брина_рыжая'
+		if a = 2: $npc_id = 'poison'
+		npc = 1
+		dynamic $npc_flirt[$npc_id]
+		npc_reveal[$npc_id] = 1
+		sparks -= 2
+	else
+! JO9 MOD START J9M1681 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+		$text[1] = '  당신은 다른 지루하고 외로운 여자들을 찾아 술집을 둘러보지만, 구애할 만한 적당한 상대는 보이지 않는다. 아마 내일 다시 운을 시험해 봐야 할 것 같다.'
+! JO9 MOD END J9M1681
+	end
+end
+
+if $interaction_type = 'dine':
+	$text[1] = '<<$text[1]>>'
+end
+
+IF $interaction_type = 'whore_redlight':
+	$place = 'DosugRedLight'
+	$return_lock  = 'shop_general'
+	sparks -= whore_price
+	ejaculation_intensity = whore_quality
+	dynamic $master_ejaculate
+	dynamic $master_energy_drop
+	add_master_hygiene = 5 * whore_quality
+	master_hygiene_rate += add_master_hygiene
+	$picture_type = 'pic_png'
+	dynamic $special_part
+END
+
+IF $interaction_type = 'buy_item_nun':
+ txt_count = 1
+ $return_lock  = 'shop_general'
+ $picture_type = 'pic_png'
+ if nsfw = 0: $special_bg  = "<<$item_demo[$item_id]>>"
+ $text[1] = $item_description[$item_id]
+ IF sparks >= item_price[$item_id]:
+  $do_buy = {
+  if sound_on = 1: play 'content\snd\kkm.wav', sound_volume
+  sparks -= item_price[$item_id]
+  slave_inventory[$item_id] += 1
+  slave_inventory['underwear_nun'] += 1
+  slave_inventory['wimple_nun'] += 1
+  slave_inventory['rosary_nun'] += 1
+  slave_inventory['heels_nun'] += 1}
+  gt 'item_buy'
+  else
+  $text[1] = '   물건 가격은 <<item_price[$item_id]>> 스파크로, 지금 네가 감당할 수 있는 것보다 조금 비싸지만, 그건 해결 가능하다. 노예 두어 명만 팔면 된다...'
+ END
+END
+!Тип взаимодействия - покупка костюма шлюхи для текущей рабыни
+IF $interaction_type = 'buy_item_slut':
+ txt_count = 1
+ $return_lock  = 'shop_general'
+ $picture_type = 'pic_png'
+ if nsfw = 0: $special_bg  = "<<$item_demo[$item_id]>>"
+ $text[1] = $item_description[$item_id]
+ IF sparks >= item_price[$item_id]:
+  $do_buy = {
+  if sound_on = 1: play 'content\snd\kkm.wav', sound_volume
+  sparks -= item_price[$item_id]
+  slave_inventory[$item_id] += 1
+  slave_inventory['slut_dress'] += 1
+  slave_inventory['slut_wig'] += 1
+  slave_inventory['slut_boots'] += 1}
+  gt 'item_buy'
+  else
+  $text[1] = '   물건 가격은 <<item_price[$item_id]>> 스파크로, 지금 네가 감당할 수 있는 것보다 조금 비싸지만, 그건 해결 가능하다. 노예 두어 명만 팔면 된다...'
+ END
+END
+
+IF $interaction_type = 'byer_invitation':
+	gs '$slave_price'
+	npc = 1
+	copyarr '$text', '$<<$npc_id>>_pref'
+	IF npc_progress[$npc_id] = 2:
+		copyarr '$text', '$<<$npc_id>>_otkaz'
+	else
+		IF slave_state = CONST_INT['slave_exist'] and slave['brand'] > 0 and slave['brand'] < 4:
+			killvar '$text'
+			$text[1] = '괜찮은 상품이 있군. 팔아 볼까?'
+			$yes = {$interaction_type = 'sell_slave_simple'
+			gt 'interaction_result_city'}
+			$no = {
+			if from_club = 1:
+				from_club = 0
+				gt "<<$return_lock>>"
+			else
+				gt "<<$return_lock>>"
+			end
+			}
+			gt 'choice_screen'
+		END
+	END
+END
+
+
+!Тип взаимодействия - покупка предмета для текущей ассистентки
+IF $interaction_type = 'buy_item_assistant':
+ txt_count = 1
+ $return_lock  = 'shop_general'
+ $picture_type = 'pic_jpg'
+ if nsfw = 0: $special_bg  = "<<$item_demo[$item_id]>>"
+ $text[1] = $item_description[$item_id]
+ IF sparks >= item_price[$item_id]:
+  $do_buy = {
+  if sound_on = 1: play 'content\snd\kkm.wav', sound_volume
+  sparks -= item_price[$item_id]
+  assistant_inventory[$item_id] += 1}
+  gt 'item_buy'
+  else
+  $text[1] = '가격은 <<item_price[$item_id]>> 스파크다 — 가격이 지금 네가 감당할 수 있는 것보다 조금 비싸지만, 그건 쉽게 해결된다. 노예 두어 명만 팔면 된다…'
+ END
+END
+!Тип взаимодействия - покупка предмета для текущей ассистентки
+IF $interaction_type = 'buy_item_assistant_nun':
+ txt_count = 1
+ $return_lock  = 'shop_general'
+ $picture_type = 'pic_jpg'
+ if nsfw = 0: $special_bg  = "<<$item_demo[$item_id]>>"
+ $text[1] = $item_description[$item_id]
+ IF sparks >= item_price[$item_id]:
+  $do_buy = {
+  if sound_on = 1: play 'content\snd\kkm.wav', sound_volume
+  sparks -= item_price[$item_id]
+  assistant_inventory[$item_id] += 1
+  assistant_inventory['underwear_nun'] += 1
+  assistant_inventory['wimple_nun'] += 1
+  assistant_inventory['rosary_nun'] += 1
+  assistant_inventory['heels_nun'] += 1}
+  gt 'item_buy'
+  else
+  $text[1] = '가격은 <<item_price[$item_id]>> 스파크다 — 가격이 지금 네가 감당할 수 있는 것보다 조금 비싸지만, 그건 쉽게 해결된다. 노예 두어 명만 팔면 된다…'
+ END
+END
+!Тип взаимодействия - покупка предмета для текущей ассистентки
+IF $interaction_type = 'buy_item_assistant_slut':
+ txt_count = 1
+ $return_lock  = 'shop_general'
+ $picture_type = 'pic_jpg'
+ if nsfw = 0: $special_bg  = "<<$item_demo[$item_id]>>"
+ $text[1] = $item_description[$item_id]
+ IF sparks >= item_price[$item_id]:
+  $do_buy = {
+  if sound_on = 1: play 'content\snd\kkm.wav', sound_volume
+  sparks -= item_price[$item_id]
+  assistant_inventory[$item_id] += 1
+  assistant_inventory['slut_dress'] += 1
+  assistant_inventory['slut_wig'] += 1
+  assistant_inventory['slut_boots'] += 1}
+  gt 'item_buy'
+  else
+  $text[1] = '가격은 <<item_price[$item_id]>> 스파크다 — 가격이 지금 네가 감당할 수 있는 것보다 조금 비싸지만, 그건 쉽게 해결된다. 노예 두어 명만 팔면 된다…'
+ END
+END
+
+!completion tags
+city_already_done_today[$str(interaction_city)] += 1
+city_already_done_ever[$str(interaction_city)] += 1
+
+! JO9 MOD START TBV_SALE_REWARD_CLEANUP | 2026-10-17_trait_value
+killvar 'jo9_trait_value_sold_peerless'
+if txt_is_set_from_save = 0: txt = 1
+gt 'interaction_screen_city'
+! JO9 MOD END TBV_SALE_REWARD_CLEANUP
+
+------------ interaction_result_city ------------

@@ -1,0 +1,38 @@
+# black_market_get_comm_slave
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2926 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'black_market_get_comm_slave': gs 'snk_room_bridge', 'guard', 'black_market_get_comm_slave'
+! JO9 MOD END J9M2926
+!activates the slave for training mode
+slave_state = CONST_INT['slave_exist']
+slave_type = s_type
+gs 'get_special_slave'
+$slave_psy_basic = $seed_psy_basic[slave_type]
+$slave_type = 'unic'
+
+if bm_sequence_index < 3003 or bm_sequence_index > 3026:
+    bm_sequence_index = 3003
+end
+
+
+special_stock = bm_sequence_index
+gs 'generate_stock'
+gs 'stock_to_slave_nogt'
+gs '$slave_price'
+
+
+rand_roll = RAND(0,1)
+slave["grace"] = rand_roll
+killvar 'rand_roll'
+
+
+bm_sequence_index += 1
+
+
+if bm_sequence_index > 3026: bm_sequence_index = 3003
+
+gs '#txt'
+gs '#txt_2'
+
+
+------------ black_market_get_comm_slave ------------

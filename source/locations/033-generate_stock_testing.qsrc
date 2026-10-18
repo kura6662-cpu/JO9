@@ -1,0 +1,156 @@
+# generate_stock_testing
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2821 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'generate_stock_testing': gs 'snk_room_bridge', 'guard', 'generate_stock_testing'
+! JO9 MOD END J9M2821
+!Generate Stock Testing Cheat
+!Created by crushboss
+
+!Temporary code for testing - crushboss
+
+!Slave Attributes and Skills
+stock['fat'] = rand(1,2)
+stock['beauty'] += rand(2,3)
+stock['fame'] = rand(1,3)
+stock['sub_vaginal'] += rand(1,3)
+stock['sub_fisting'] += rand(1,3)
+stock['sub_anal'] += rand(1,4)
+stock['anal_stretch'] = stock['sub_anal']
+if stock['anal_stretch'] > 5: stock['anal_stretch'] = 5
+
+stock['sub_threesome'] += rand(1,3)
+stock['sub_dp'] += rand(1,3)
+stock['sub_tp'] += rand(1,3)
+stock['sub_gangbang'] += rand(1,3)
+stock['sub_bukkake'] += rand(3,4)
+
+!stock['sub_zoosex'] += rand(4,5)
+!stock['sub_bestiality'] += rand(4,5)
+!stock['sub_horse'] += rand(4,5)
+!stock['sub_tentacles'] += rand(2,4)
+!stock['sub_arachnidspider'] += rand(4,5)
+!stock['sub_polypusvermin'] += rand(4,5)
+
+stock['sub_hug'] += rand(3,5)
+stock['sub_kiss'] += rand(3,5)
+stock['sub_bj'] += rand(3,5)
+stock['sub_exhibit'] += rand(3,5)
+stock['sub_humiliation'] += rand(3,5)
+stock['sub_hj'] += rand(3,5)
+stock['sub_fj'] += rand(3,5)
+stock['sub_paizuri'] += rand(3,5)
+stock['sub_tongue'] += rand(3,5)
+stock['sub_dt'] += rand(3,5)
+stock['sub_asslik'] += rand(3,5)
+stock['sub_seduce'] += rand(3,5)
+stock['sub_masturbation'] += rand(3,5)
+stock['sub_dildo'] += rand(3,5)
+
+!stock['sub_enema'] += rand(4,5)
+!stock['sub_mazo'] += rand(3,5)
+!stock['sub_selfpain'] += rand(3,5)
+!stock['sub_piss'] += rand(2,5)
+!stock['sub_kopro'] += rand(2,5)
+
+stock['stamina'] += rand(2,3)
+stock['sensitivity'] += rand(2,3)
+stock['temper'] += rand(2,3)
+stock['ego'] += rand(2,3)
+stock['pride'] -= rand(1,3)
+stock['intellect'] += rand(2,3)
+stock['service'] += rand(2,5)
+stock['expression'] += rand(2,5)
+stock['secretary'] += rand(2,5)
+stock['calisthenics'] += rand(2,5)
+if stock['age'] ! CONST_INT['loli_age']: stock['gladiatrix'] += rand(3,4)
+stock['cook'] += rand(2,5)
+if stock['age'] = CONST_INT['loli_age']: stock['dressage'] += rand(0,4)
+if stock['age'] = CONST_INT['loli_age']: stock['pet'] += rand(0,4)
+if stock['age'] = CONST_INT['loli_age']: stock['cowSK'] += rand(0,1)
+stock['nurse'] += rand(3,4)
+stock['alchemy'] += rand(3,4)
+stock['enchanter'] += rand(3,4)
+stock['art'] += rand(2,4)
+stock['music'] += rand(2,4)
+stock['custom'] += rand(2,3)
+stock['moral'] = rand(2,3)
+stock['rational'] += rand(2,3)
+stock['instinct'] += rand(2,3)
+stock['exotic'] += rand(2,3)
+
+!Slave Piercings
+stock['nipple_piercing'] = 1
+stock['clit_piercing'] = 1
+stock['ear_piercing'] = 1
+stock['tongue_piercing'] = 1
+stock['belly_piercing'] = 1
+stock['nostril_piercing'] = 1
+stock['nose_piercing'] = 1
+stock['tongue_split'] = 1
+stock['scarification'] = 1
+
+!Slave Makeup and Tattoos
+if stock['age'] ! CONST_INT['loli_age']:
+	stock['makeup'] = 3
+	stock['fiend_tattoo'] = 1
+	stock['tattoo'] = 5
+end
+stock['manicure'] = 5
+stock['perfume'] = 1
+stock['hygiene'] = 0
+stock_rate['hygiene'] = 0
+stock['epilation'] = 12
+stock['hairstyle'] = 7
+stock['pos_gentle'] = 2
+stock['pos_slave_clean'] = 1
+
+!Slave Clothing Inventory
+stock_inventory['maid_dress'] = 1
+stock_inventory['apron'] = 1
+stock_inventory['nurse_dress'] = 1
+stock_inventory['sailor_foku'] = 1
+stock_inventory['leotard'] = 1
+stock_inventory['chainmail_bikini'] = 1
+stock_inventory['sun_dress'] = 1
+stock_inventory['leather_corset'] = 1
+stock_inventory['fluffy_stepins'] = 1
+stock_inventory['high_boots'] = 1
+stock_inventory['sneakers'] = 1
+stock_inventory['tabi'] = 1
+stock_inventory['glasses'] = 1
+stock_inventory['nekomimi'] = 1
+stock_inventory['leather_gloves'] = 1
+stock_inventory['fluffy_gloves'] = 1
+stock_inventory['rubber_gloves'] = 1
+stock_inventory['plain_headband'] = 1
+stock_inventory['golden_collar'] = 1
+stock_inventory['leather_collar'] = 1
+stock_inventory['spiked_collar'] = 1
+stock_inventory['common_apron'] = 1
+stock_inventory['maid_dress'] = 1
+stock_inventory['enchanter_robe'] = 1
+stock_inventory['laced_underwear'] = 1
+stock_inventory['bellydance'] = 1
+stock_inventory['anal_tail'] = 1
+stock_inventory['exotic_wig'] = 1
+stock_inventory['pony_plume'] = 1
+stock_inventory['ponygirl_harness'] = 1
+stock_inventory['cow_gear'] = 1
+stock_inventory['high_heels'] = 1
+stock_inventory['high_boots'] = 1
+stock_inventory['hoofed_boots'] = 1
+
+!Slave Equipped Gear
+$stock['earrings'] = 'incrusted_earrings'
+$stock['collar'] = 'golden_collar'
+$stock['headband'] = 'exotic_wig'
+$stock['gloves'] = 'laced_gloves'
+$stock['nipplerings'] = 'nipple_chain'
+$stock['clitring'] = 'incrusted_earrings'
+$stock['boots'] = 'high_boots'
+$stock['ring_left'] = 'incrusted_ring'
+$stock['ring_right'] = 'incrusted_ring'
+$stock['navel'] = 'heavy_gauge_rings'
+$stock['tongue'] = 'barbells'
+
+------------ generate_stock_testing ------------

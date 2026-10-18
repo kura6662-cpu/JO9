@@ -1,0 +1,40 @@
+# snk_room_diet_migrate
+! Readable view; authoritative fields are in ../locations.json.
+if snk_room_diet_version < 1:
+ if room1_ration = -1 or room1_ration = 2: room1_ration = 1
+ room1['special_diet_days'] = 0
+ if room2_ration = -1 or room2_ration = 2: room2_ration = 1
+ room2['special_diet_days'] = 0
+ if room3_ration = -1 or room3_ration = 2: room3_ration = 1
+ room3['special_diet_days'] = 0
+ if room4_ration = -1 or room4_ration = 2: room4_ration = 1
+ room4['special_diet_days'] = 0
+ snk_room_diet_version = 1
+end
+
+! Refresh cached diet help on existing saves.
+! JO9 MOD START J9M3025 | 2026-10-15_private_room_diet_selection, 2026-10-15_z_private_diet_state_and_font | changed block; context may be included
+$room1_ration[1] = '일반식 (하루 2$): 곡물과 채소를 중심으로 소박한 끼니를 차린다. 살이 붙으면 양을 줄이고 마르면 늘려 몸매를 관리한다. 막 방에 들어온 노예라면 초라한 밥상에 불평할 수도 있지만, 차츰 이 집의 대우에 익숙해질 것이다.'
+$room1_ration[2] = '일반식 (하루 2$): 곡물과 채소를 중심으로 소박한 끼니를 차린다. 살이 붙으면 양을 줄이고 마르면 늘려 몸매를 관리한다. 막 방에 들어온 노예라면 초라한 밥상에 불평할 수도 있지만, 차츰 이 집의 대우에 익숙해질 것이다.'
+$room1_ration[3] = '고열량식 (하루 4$): 고기와 우유를 넉넉히 곁들여 든든하게 먹인다. 마른 몸에 살을 붙이거나 수유로 소모하는 기력을 보충하기에 알맞다. 몸매를 다듬기보다는 풍족하게 살찌우는 식사다.'
+$room1_ration[4] = '특별식단 (하루 8$): 몸매에 맞춰 조절한 양에 좋은 재료와 간식을 더한다. 닷새를 이어 대접하면 특별대우를 실감하며 기분이 풀리고 응석도 늘기 시작한다. 열흘쯤 지나면 달콤한 후식까지 당연한 몫으로 여기며 더욱 흡족해할 것이다. 다른 식단으로 바꾸면 연속해서 대접받은 날은 새로 센다.'
+! JO9_DIET_HELP_STRINGS_ONLY_20261015: do not COPYARR numeric ration state.
+$room2_ration[1] = $room1_ration[1]
+$room2_ration[2] = $room1_ration[2]
+$room2_ration[3] = $room1_ration[3]
+$room2_ration[4] = $room1_ration[4]
+$room3_ration[1] = $room1_ration[1]
+$room3_ration[2] = $room1_ration[2]
+$room3_ration[3] = $room1_ration[3]
+$room3_ration[4] = $room1_ration[4]
+$room4_ration[1] = $room1_ration[1]
+$room4_ration[2] = $room1_ration[2]
+$room4_ration[3] = $room1_ration[3]
+$room4_ration[4] = $room1_ration[4]
+! JO9 MOD END J9M3025
+if room1_ration = -1: room1_ration = 1
+if room2_ration = -1: room2_ration = 1
+if room3_ration = -1: room3_ration = 1
+if room4_ration = -1: room4_ration = 1
+
+------------ snk_room_diet_migrate ------------

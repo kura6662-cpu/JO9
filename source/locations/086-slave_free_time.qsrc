@@ -1,0 +1,26 @@
+# slave_free_time
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2866 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'slave_free_time': gs 'snk_room_bridge', 'guard', 'slave_free_time'
+! JO9 MOD END J9M2866
+! UNUSED LOCATION
+
+if free_time > 0 and assistant["washes_slave_rule"] ! 1:
+	if bath > 0 and slave["hygiene"] > 1:
+		free_time -= 1
+		slave['energy'] -= 1
+		slave_rate["mood"] += slave["hygiene"]
+		slave_rate["hygiene"] = 0
+		$bg_path = func('display_pic', 'slave', 'bath', 'girls/normal_scenes/')
+		dynamic $replace("$text[] = '<<$bathing_slave_alone[$slave_psy_status]>>'", 'dyn'+'slave', 'slave') &! evaluate delayed sub-expressions with substitution
+	end
+end
+
+if txt = 0:
+	$text[1] = '<<$slave_name>>'
+	slave['well_rested'] += free_time
+	slave_rate["mood"] += free_time
+	slave['energy'] -= free_time
+end
+
+------------ slave_free_time ------------

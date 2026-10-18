@@ -1,0 +1,567 @@
+# $calculate_attributes
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2830 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$calculate_attributes': gs 'snk_room_bridge', 'guard', '$calculate_attributes'
+! JO9 MOD END J9M2830
+!NOW FOR MASTER ONLY (SLAVES ARE UPDATED SEPARATELY FROM $NEWLOC) - ImperatorAugustus
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+*nl
+!Calculate rate stats and increases
+!Overhauled by crushboss
+!Converted to dynamic - ImperatorAugustus
+
+!Master Characteristic Increases and Skillups - New System - crushboss
+
+!Set Master Rates when slaver is first created - crushboss, rewritten by i107760 (added some padding for strength, personality and libido to offset early losses - ImperatorAugustus)
+if master_check = 0:
+	gs '#variative' &! ensure we use the correct rate caps - ImperatorAugustus
+	if master_str = 1 and master_str_rate < master_str_rate_cap[0]: master_str_rate = master_str_rate_cap[0] + master_str_rate_cap[0]/2
+	if master_str = 2 and master_str_rate < master_str_rate_cap[1]: master_str_rate = master_str_rate_cap[1] + master_str_rate_cap[1]/2
+	if master_str = 3 and master_str_rate < master_str_rate_cap[2]: master_str_rate = master_str_rate_cap[2] + master_str_rate_cap[2]/2
+	if master_str = 4 and master_str_rate < master_str_rate_cap[3]: master_str_rate = master_str_rate_cap[3] + master_str_rate_cap[3]/2
+	if master_str = 5 and master_str_rate < master_str_rate_cap[4]: master_str_rate = master_str_rate_cap[4] + master_str_rate_cap[4]/2
+
+	if master_cha = 1 and master_cha_rate < master_cha_rate_cap[0]: master_cha_rate = master_cha_rate_cap[0] + master_cha_rate_cap[0]/2
+	if master_cha = 2 and master_cha_rate < master_cha_rate_cap[1]: master_cha_rate = master_cha_rate_cap[1] + master_cha_rate_cap[1]/2
+	if master_cha = 3 and master_cha_rate < master_cha_rate_cap[2]: master_cha_rate = master_cha_rate_cap[2] + master_cha_rate_cap[2]/2
+	if master_cha = 4 and master_cha_rate < master_cha_rate_cap[3]: master_cha_rate = master_cha_rate_cap[3] + master_cha_rate_cap[3]/2
+	if master_cha = 5 and master_cha_rate < master_cha_rate_cap[4]: master_cha_rate = master_cha_rate_cap[4] + master_cha_rate_cap[4]/2
+
+	if master_libido = 1 and master_libido_rate < master_libido_rate_cap[0]: master_libido_rate = master_libido_rate_cap[0] + master_libido_rate_cap[0]/2
+	if master_libido = 2 and master_libido_rate < master_libido_rate_cap[1]: master_libido_rate = master_libido_rate_cap[1] + master_libido_rate_cap[1]/2
+	if master_libido = 3 and master_libido_rate < master_libido_rate_cap[2]: master_libido_rate = master_libido_rate_cap[2] + master_libido_rate_cap[2]/2
+	if master_libido = 4 and master_libido_rate < master_libido_rate_cap[3]: master_libido_rate = master_libido_rate_cap[3] + master_libido_rate_cap[3]/2
+	if master_libido = 5 and master_libido_rate < master_libido_rate_cap[4]: master_libido_rate = master_libido_rate_cap[4] + master_libido_rate_cap[4]/2
+
+	if master_excitement = 1 and master_excitement_rate < 15: master_excitement_rate = 15
+	if master_excitement = 2 and master_excitement_rate < 30: master_excitement_rate = 30
+	if master_excitement = 3 and master_excitement_rate < 60: master_excitement_rate = 60
+	if master_excitement = 4 and master_excitement_rate < 100: master_excitement_rate = 100
+	if master_excitement = 5 and master_excitement_rate < 180: master_excitement_rate = 180
+
+	if master_tutor = 1 and master_tutor_rate < master_tutor_rate_cap[0]: master_tutor_rate = master_tutor_rate_cap[0]
+	if master_tutor = 2 and master_tutor_rate < master_tutor_rate_cap[1]: master_tutor_rate = master_tutor_rate_cap[1]
+	if master_tutor = 3 and master_tutor_rate < master_tutor_rate_cap[2]: master_tutor_rate = master_tutor_rate_cap[2]
+	if master_tutor = 4 and master_tutor_rate < master_tutor_rate_cap[3]: master_tutor_rate = master_tutor_rate_cap[3]
+	if master_tutor = 5 and master_tutor_rate < master_tutor_rate_cap[4]: master_tutor_rate = master_tutor_rate_cap[4]
+
+	if master_butler = 1 and master_butler_rate < master_butler_rate_cap[0]: master_butler_rate = master_butler_rate_cap[0]
+	if master_butler = 2 and master_butler_rate < master_butler_rate_cap[1]: master_butler_rate = master_butler_rate_cap[1]
+	if master_butler = 3 and master_butler_rate < master_butler_rate_cap[2]: master_butler_rate = master_butler_rate_cap[2]
+	if master_butler = 4 and master_butler_rate < master_butler_rate_cap[3]: master_butler_rate = master_butler_rate_cap[3]
+	if master_butler = 5 and master_butler_rate < master_butler_rate_cap[4]: master_butler_rate = master_butler_rate_cap[4]
+
+	if master_artdirector = 1 and master_artdirector_rate < master_artdirector_rate_cap[0]: master_artdirector_rate = master_artdirector_rate_cap[0]
+	if master_artdirector = 2 and master_artdirector_rate < master_artdirector_rate_cap[1]: master_artdirector_rate = master_artdirector_rate_cap[1]
+	if master_artdirector = 3 and master_artdirector_rate < master_artdirector_rate_cap[2]: master_artdirector_rate = master_artdirector_rate_cap[2]
+	if master_artdirector = 4 and master_artdirector_rate < master_artdirector_rate_cap[3]: master_artdirector_rate = master_artdirector_rate_cap[3]
+	if master_artdirector = 5 and master_artdirector_rate < master_artdirector_rate_cap[4]: master_artdirector_rate = master_artdirector_rate_cap[4]
+
+	if master_medic = 1 and master_medic_rate < master_medic_rate_cap[0]: master_medic_rate = master_medic_rate_cap[0]
+	if master_medic = 2 and master_medic_rate < master_medic_rate_cap[1]: master_medic_rate = master_medic_rate_cap[1]
+	if master_medic = 3 and master_medic_rate < master_medic_rate_cap[2]: master_medic_rate = master_medic_rate_cap[2]
+	if master_medic = 4 and master_medic_rate < master_medic_rate_cap[3]: master_medic_rate = master_medic_rate_cap[3]
+	if master_medic = 5 and master_medic_rate < master_medic_rate_cap[4]: master_medic_rate = master_medic_rate_cap[4]
+
+	if master_fighter = 1 and master_fighter_rate < master_fighter_rate_cap[0]: master_fighter_rate = master_fighter_rate_cap[0]
+	if master_fighter = 2 and master_fighter_rate < master_fighter_rate_cap[1]: master_fighter_rate = master_fighter_rate_cap[1]
+	if master_fighter = 3 and master_fighter_rate < master_fighter_rate_cap[2]: master_fighter_rate = master_fighter_rate_cap[2]
+	if master_fighter = 4 and master_fighter_rate < master_fighter_rate_cap[3]: master_fighter_rate = master_fighter_rate_cap[3]
+	if master_fighter = 5 and master_fighter_rate < master_fighter_rate_cap[4]: master_fighter_rate = master_fighter_rate_cap[4]
+
+	if master_mage = 1 and master_mage_rate < master_mage_rate_cap[0]: master_mage_rate = master_mage_rate_cap[0]
+	if master_mage = 2 and master_mage_rate < master_mage_rate_cap[1]: master_mage_rate = master_mage_rate_cap[1]
+	if master_mage = 3 and master_mage_rate < master_mage_rate_cap[2]: master_mage_rate = master_mage_rate_cap[2]
+	if master_mage = 4 and master_mage_rate < master_mage_rate_cap[3]: master_mage_rate = master_mage_rate_cap[3]
+	if master_mage = 5 and master_mage_rate < master_mage_rate_cap[4]: master_mage_rate = master_mage_rate_cap[4]
+
+	if master_domination = 1 and master_domination_rate < master_domination_rate_cap[0]: master_domination_rate = master_domination_rate_cap[0]
+	if master_domination = 2 and master_domination_rate < master_domination_rate_cap[1]: master_domination_rate = master_domination_rate_cap[1]
+	if master_domination = 3 and master_domination_rate < master_domination_rate_cap[2]: master_domination_rate = master_domination_rate_cap[2]
+	if master_domination = 4 and master_domination_rate < master_domination_rate_cap[3]: master_domination_rate = master_domination_rate_cap[3]
+	if master_domination = 5 and master_domination_rate < master_domination_rate_cap[4]: master_domination_rate = master_domination_rate_cap[4]
+
+	if master_flagelation = 1 and master_flagelation_rate < master_flagelation_rate_cap[0]: master_flagelation_rate = master_flagelation_rate_cap[0]
+	if master_flagelation = 2 and master_flagelation_rate < master_flagelation_rate_cap[1]: master_flagelation_rate = master_flagelation_rate_cap[1]
+	if master_flagelation = 3 and master_flagelation_rate < master_flagelation_rate_cap[2]: master_flagelation_rate = master_flagelation_rate_cap[2]
+	if master_flagelation = 4 and master_flagelation_rate < master_flagelation_rate_cap[3]: master_flagelation_rate = master_flagelation_rate_cap[3]
+	if master_flagelation = 5 and master_flagelation_rate < master_flagelation_rate_cap[4]: master_flagelation_rate = master_flagelation_rate_cap[4]
+
+	if master_torture = 1 and master_torture_rate < master_torture_rate_cap[0]: master_torture_rate = master_torture_rate_cap[0]
+	if master_torture = 2 and master_torture_rate < master_torture_rate_cap[1]: master_torture_rate = master_torture_rate_cap[1]
+	if master_torture = 3 and master_torture_rate < master_torture_rate_cap[2]: master_torture_rate = master_torture_rate_cap[2]
+	if master_torture = 4 and master_torture_rate < master_torture_rate_cap[3]: master_torture_rate = master_torture_rate_cap[3]
+	if master_torture = 5 and master_torture_rate < master_torture_rate_cap[4]: master_torture_rate = master_torture_rate_cap[4]
+
+	if master_bondage = 1 and master_bondage_rate < master_bondage_rate_cap[0]: master_bondage_rate = master_bondage_rate_cap[0]
+	if master_bondage = 2 and master_bondage_rate < master_bondage_rate_cap[1]: master_bondage_rate = master_bondage_rate_cap[1]
+	if master_bondage = 3 and master_bondage_rate < master_bondage_rate_cap[2]: master_bondage_rate = master_bondage_rate_cap[2]
+	if master_bondage = 4 and master_bondage_rate < master_bondage_rate_cap[3]: master_bondage_rate = master_bondage_rate_cap[3]
+	if master_bondage = 5 and master_bondage_rate < master_bondage_rate_cap[4]: master_bondage_rate = master_bondage_rate_cap[4]
+
+	if master_petting = 1 and master_petting_rate < master_petting_rate_cap[0]: master_petting_rate = master_petting_rate_cap[0]
+	if master_petting = 2 and master_petting_rate < master_petting_rate_cap[1]: master_petting_rate = master_petting_rate_cap[1]
+	if master_petting = 3 and master_petting_rate < master_petting_rate_cap[2]: master_petting_rate = master_petting_rate_cap[2]
+	if master_petting = 4 and master_petting_rate < master_petting_rate_cap[3]: master_petting_rate = master_petting_rate_cap[3]
+	if master_petting = 5 and master_petting_rate < master_petting_rate_cap[4]: master_petting_rate = master_petting_rate_cap[4]
+
+	if master_oral = 1 and master_oral_rate < master_oral_rate_cap[0]: master_oral_rate = master_oral_rate_cap[0]
+	if master_oral = 2 and master_oral_rate < master_oral_rate_cap[1]: master_oral_rate = master_oral_rate_cap[1]
+	if master_oral = 3 and master_oral_rate < master_oral_rate_cap[2]: master_oral_rate = master_oral_rate_cap[2]
+	if master_oral = 4 and master_oral_rate < master_oral_rate_cap[3]: master_oral_rate = master_oral_rate_cap[3]
+	if master_oral = 5 and master_oral_rate < master_oral_rate_cap[4]: master_oral_rate = master_oral_rate_cap[4]
+
+	if master_penetration = 1 and master_penetration_rate < master_penetration_rate_cap[0]: master_penetration_rate = master_penetration_rate_cap[0]
+	if master_penetration = 2 and master_penetration_rate < master_penetration_rate_cap[1]: master_penetration_rate = master_penetration_rate_cap[1]
+	if master_penetration = 3 and master_penetration_rate < master_penetration_rate_cap[2]: master_penetration_rate = master_penetration_rate_cap[2]
+	if master_penetration = 4 and master_penetration_rate < master_penetration_rate_cap[3]: master_penetration_rate = master_penetration_rate_cap[3]
+	if master_penetration = 5 and master_penetration_rate < master_penetration_rate_cap[4]: master_penetration_rate = master_penetration_rate_cap[4]
+
+	if master_fetish = 1 and master_fetish_rate < master_fetish_rate_cap[0]: master_fetish_rate = master_fetish_rate_cap[0]
+	if master_fetish = 2 and master_fetish_rate < master_fetish_rate_cap[1]: master_fetish_rate = master_fetish_rate_cap[1]
+	if master_fetish = 3 and master_fetish_rate < master_fetish_rate_cap[2]: master_fetish_rate = master_fetish_rate_cap[2]
+	if master_fetish = 4 and master_fetish_rate < master_fetish_rate_cap[3]: master_fetish_rate = master_fetish_rate_cap[3]
+	if master_fetish = 5 and master_fetish_rate < master_fetish_rate_cap[4]: master_fetish_rate = master_fetish_rate_cap[4]
+	master_check = 1
+end
+
+!Calculate all of master stats based on rate - crushboss, rewritten by i107760
+master_wounds = 0
+if master_wounds_rate >= master_wounds_rate_cap[0]: master_wounds = 1
+if master_wounds_rate >= master_wounds_rate_cap[1]: master_wounds = 2
+if master_wounds_rate >= master_wounds_rate_cap[2]: master_wounds = 3
+if master_wounds_rate >= master_wounds_rate_cap[3]: master_wounds = 4
+if master_wounds_rate >= master_wounds_rate_cap[4]: master_wounds = 5
+
+master_str = 0
+if master_str_rate >= master_str_rate_cap[0]: master_str = 1
+if master_str_rate >= master_str_rate_cap[1]: master_str = 2
+if master_str_rate >= master_str_rate_cap[2]: master_str = 3
+if master_str_rate >= master_str_rate_cap[3]: master_str = 4
+if master_str_rate >= master_str_rate_cap[4]: master_str = 5
+master_str_rate = min(master_str_rate, master_str_rate_cap[4] + master_str_rate_cap[4]/2) &! cap at 1.5x - ImperatorAugustus
+
+master_cha = 0
+if master_cha_rate >= master_cha_rate_cap[0]: master_cha = 1
+if master_cha_rate >= master_cha_rate_cap[1]: master_cha = 2
+if master_cha_rate >= master_cha_rate_cap[2]: master_cha = 3
+if master_cha_rate >= master_cha_rate_cap[3]: master_cha = 4
+if master_cha_rate >= master_cha_rate_cap[4]: master_cha = 5
+master_cha_rate = min(master_cha_rate, master_cha_rate_cap[4] + master_cha_rate_cap[4]/2) &! cap at 1.5x - ImperatorAugustus
+
+! Uncle Tom impotence challenge (is_perv > 1) caps libido and arousal increases until conditions are met
+if is_perv ! 0:
+	master_perv_rate = max(0, master_perv_rate) &! prevent negative rate from overnight penalty for training non-loli slave
+	if is_perv = 3:
+		master_libido_rate = 2 & master_excitement_rate = min(master_excitement_rate, -60)
+	elseif is_perv = 2:
+		master_libido_rate = min(master_libido_rate, master_libido_rate_cap[1] - 5) & master_excitement_rate = min(master_excitement_rate, 0)
+	elseif master_perv_rate <= 40:
+		master_libido_rate = min(master_libido_rate,master_libido_rate_cap[0])      & master_excitement_rate = min(master_excitement_rate, 16)
+	elseif master_perv_rate <= 80:
+		master_libido_rate = min(master_libido_rate,master_libido_rate_cap[1])      & master_excitement_rate = min(master_excitement_rate, 32)
+	elseif master_perv_rate <= 160:
+		master_libido_rate = min(master_libido_rate,master_libido_rate_cap[2])      & master_excitement_rate = min(master_excitement_rate, 64)
+	elseif master_perv_rate <= 320:
+		master_libido_rate = min(master_libido_rate,master_libido_rate_cap[3])      & master_excitement_rate = min(master_excitement_rate, 128)
+	end
+end
+
+if is_perv ! 0 and one_time_virgin_bonus = 0 and slave['virginity'] > 1 and was_virgin = 1:
+	one_time_virgin_bonus = 1
+	master_perv_rate += 20
+	if is_perv = 3: is_perv = 2
+	if loli_magic = 0: loli_magic = 1
+	master_mood_rate += 16
+	if master_excitement_rate < 16: master_excitement_rate = 16
+	libido_msg = max(libido_msg,1) &! at least level 1
+	master_libido_rate = max(master_libido_rate, master_libido_rate_cap[0]) &! at least level 1
+	msg '   이<<$little_txt>> 소녀의 타고난 순결을 빼앗는 일은 지난 수십 년 동안 네게 일어난 일 중 가장 ' + dyneval($vb_cycle, 1, '흥분되는') +' 일이었다. 어쩌면 평생 통틀어서도 그럴지 모른다. 불멸의 로마가 네게 제공하는 기분 전환은 추잡한 늙은이의 시들어 가는 성욕에 꼭 필요한 것일지도 모른다! 어쩌면 더 많은 변태 행위가 너를 더욱 강하게 만들지도 모른다.'
+elseif is_perv ! 0 and slave['virginity'] > 1 and was_virgin = 1:
+	master_perv_rate += 20
+	master_mood_rate += 16
+	if master_excitement_rate < 16: master_excitement_rate = 16
+elseif is_perv ! 0 and libido_msg < master_libido:
+	$tmp = ''
+	if no_loli ! 2: $tmp = '작은 소녀들을 더 많이 희롱할수록 더 꼴리게 되는 것 같다!'
+	libido_msg = master_libido
+	$libido_msg[1] =  '당신은 예전보다 섹스에 더 ' + dyneval($vb_cycle, 1, '관심이 가는') +  ' 상태가 되었다. 불멸의 로마가 당신 체질에 맞는 모양이다.'
+	$libido_msg[2] =  '요즘 당신은 꽤 ' + dyneval($vb_cycle, 2, '음탕한') +  ' 상태다. 성욕 쪽이 확실히 살아나고 있다. <<$tmp>>'
+	$libido_msg[3] =  '이 일로 당신은 꽤 ' + dyneval($vb_cycle, 3, '색정적인') + ' 기분이 들었다. 음탕한 늙은이치고는 꽤 괜찮군. <<$tmp>>'
+	$libido_msg[4] =  '당신은 황홀할 만큼 ' + dyneval($vb_cycle, 4, '호색적이다') + '. <<$tmp>>'
+	$libido_msg[5] =  '발기 문제를 겪곤 했던 때가 기억나느냐? 하! 이제 너는 ' + dyneval($vb_cycle, 5, '음탕한') + ' 늙은 호색한' + iif(no_loli = 2, ', 언제나 다음 작은 소녀을 맞을 준비가 되어 있다!', '!')
+	msg '   <<$libido_msg[master_libido]>>'
+	$tmp = ''
+end
+was_virgin = 0 &! reset flag
+
+master_libido = 0
+if master_libido_rate >= master_libido_rate_cap[0]: master_libido = 1
+if master_libido_rate >= master_libido_rate_cap[1]: master_libido = 2
+if master_libido_rate >= master_libido_rate_cap[2]: master_libido = 3
+if master_libido_rate >= master_libido_rate_cap[3]: master_libido = 4
+if master_libido_rate >= master_libido_rate_cap[4]: master_libido = 5
+master_libido_rate = min(master_libido_rate, master_libido_rate_cap[4] + master_libido_rate_cap[4]/2) &! cap at 1.5x - ImperatorAugustus
+
+master_excitement = 0
+if master_excitement_rate < 15: master_excitement = 0
+if master_excitement_rate <= -15: master_excitement = -1
+if master_excitement_rate <= -30: master_excitement = -2
+if master_excitement_rate <= -60: master_excitement = -3
+if master_excitement_rate <= -100: master_excitement = -4
+if master_excitement_rate <= -180: master_excitement = -5
+if master_excitement_rate >= 15: master_excitement = 1
+if master_excitement_rate >= 30: master_excitement = 2
+if master_excitement_rate >= 60: master_excitement = 3
+if master_excitement_rate >= 100: master_excitement = 4
+if master_excitement_rate >= 180: master_excitement = 5
+
+brand_reputation = 0
+if brand_rate >= brand_rate_cap[0]: brand_reputation = 1
+if brand_rate >= brand_rate_cap[1]: brand_reputation = 2
+if brand_rate >= brand_rate_cap[2]: brand_reputation = 3
+if brand_rate >= brand_rate_cap[3]: brand_reputation = 4
+if brand_rate >= brand_rate_cap[4]: brand_reputation = 5
+
+guild_reputation = 0
+if guild_reputation_rate >= guild_reputation_rate_cap[0]: guild_reputation = 1
+if guild_reputation_rate >= guild_reputation_rate_cap[1]: guild_reputation = 2
+if guild_reputation_rate >= guild_reputation_rate_cap[2]: guild_reputation = 3
+if guild_reputation_rate >= guild_reputation_rate_cap[3]: guild_reputation = 4
+if guild_reputation_rate >= guild_reputation_rate_cap[4]: guild_reputation = 5
+
+master_hygiene = 0
+if master_hygiene_rate >= master_hygiene_rate_cap[0]: master_hygiene = 1
+if master_hygiene_rate >= master_hygiene_rate_cap[1]: master_hygiene = 2
+if master_hygiene_rate >= master_hygiene_rate_cap[2]: master_hygiene = 3
+if master_hygiene_rate >= master_hygiene_rate_cap[3]: master_hygiene = 4
+if master_hygiene_rate >= master_hygiene_rate_cap[4]: master_hygiene = 5
+
+master_tutor = 0
+if master_tutor_rate >= master_tutor_rate_cap[0]: master_tutor = 1
+if master_tutor_rate >= master_tutor_rate_cap[1]: master_tutor = 2
+if master_tutor_rate >= master_tutor_rate_cap[2]: master_tutor = 3
+if master_tutor_rate >= master_tutor_rate_cap[3]: master_tutor = 4
+if master_tutor_rate >= master_tutor_rate_cap[4]: master_tutor = 5
+
+master_butler = 0
+if master_butler_rate >= master_butler_rate_cap[0]: master_butler = 1
+if master_butler_rate >= master_butler_rate_cap[1]: master_butler = 2
+if master_butler_rate >= master_butler_rate_cap[2]: master_butler = 3
+if master_butler_rate >= master_butler_rate_cap[3]: master_butler = 4
+if master_butler_rate >= master_butler_rate_cap[4]: master_butler = 5
+
+master_artdirector = 0
+if master_artdirector_rate >= master_artdirector_rate_cap[0]: master_artdirector = 1
+if master_artdirector_rate >= master_artdirector_rate_cap[1]: master_artdirector = 2
+if master_artdirector_rate >= master_artdirector_rate_cap[2]: master_artdirector = 3
+if master_artdirector_rate >= master_artdirector_rate_cap[3]: master_artdirector = 4
+if master_artdirector_rate >= master_artdirector_rate_cap[4]: master_artdirector = 5
+
+master_medic = 0
+if master_medic_rate >= master_medic_rate_cap[0]: master_medic = 1
+if master_medic_rate >= master_medic_rate_cap[1]: master_medic = 2
+if master_medic_rate >= master_medic_rate_cap[2]: master_medic = 3
+if master_medic_rate >= master_medic_rate_cap[3]: master_medic = 4
+if master_medic_rate >= master_medic_rate_cap[4]: master_medic = 5
+
+!Fog trophies give one-time xp once master skill without bonuses reaches 4 (A+) - ImperatorAugustus
+!There are 14 trophies in total and fighting xp is no longer given for sparring or non-unique Fog battles at A+
+!So to reach S+ all of the trophies must be obtained, or other sources of xp must be used to supplement progress
+!Currently the only other source of xp is personally teaching gladiatrix lessons, which gives master +1 per lesson
+!Note it is currently impossible to obtain all trophies before reaching A+ skill because Fog battles give 5-15 xp each
+if master_fighter_rate >= master_fighter_rate_cap[3]:
+	if trophy_youngfiend  = 1: trophy_youngfiend  = 2 & master_fighter_rate += (master_fighter_rate_cap[4] - master_fighter_rate_cap[3])/14
+	if trophy_maturefiend = 1: trophy_maturefiend = 2 & master_fighter_rate += (master_fighter_rate_cap[4] - master_fighter_rate_cap[3])/14
+	if trophy_hugefiend   = 1: trophy_hugefiend   = 2 & master_fighter_rate += (master_fighter_rate_cap[4] - master_fighter_rate_cap[3])/14
+	if trophy_blackmedic  = 1: trophy_blackmedic  = 2 & master_fighter_rate += (master_fighter_rate_cap[4] - master_fighter_rate_cap[3])/14
+	if trophy_paladin     = 1: trophy_paladin     = 2 & master_fighter_rate += (master_fighter_rate_cap[4] - master_fighter_rate_cap[3])/14
+	if trophy_beastmen    = 1: trophy_beastmen    = 2 & master_fighter_rate += (master_fighter_rate_cap[4] - master_fighter_rate_cap[3])/14
+	if trophy_werewolf    = 1: trophy_werewolf    = 2 & master_fighter_rate += (master_fighter_rate_cap[4] - master_fighter_rate_cap[3])/14
+	if trophy_vampire     = 1: trophy_vampire     = 2 & master_fighter_rate += (master_fighter_rate_cap[4] - master_fighter_rate_cap[3])/14
+	if trophy_lich        = 1: trophy_lich        = 2 & master_fighter_rate += (master_fighter_rate_cap[4] - master_fighter_rate_cap[3])/14
+	if trophy_scum        = 1: trophy_scum        = 2 & master_fighter_rate += (master_fighter_rate_cap[4] - master_fighter_rate_cap[3])/14
+	if trophy_ogre        = 1: trophy_ogre        = 2 & master_fighter_rate += (master_fighter_rate_cap[4] - master_fighter_rate_cap[3])/14
+	if trophy_goblins     = 1: trophy_goblins     = 2 & master_fighter_rate += (master_fighter_rate_cap[4] - master_fighter_rate_cap[3])/14
+	if trophy_warg        = 1: trophy_warg        = 2 & master_fighter_rate += (master_fighter_rate_cap[4] - master_fighter_rate_cap[3])/14
+	if trophy_orc         = 1: trophy_orc         = 2 & master_fighter_rate += (master_fighter_rate_cap[4] - master_fighter_rate_cap[3])/14
+end
+
+master_fighter = 0
+if master_fighter_rate >= master_fighter_rate_cap[0]: master_fighter = 1
+if master_fighter_rate >= master_fighter_rate_cap[1]: master_fighter = 2
+if master_fighter_rate >= master_fighter_rate_cap[2]: master_fighter = 3
+if master_fighter_rate >= master_fighter_rate_cap[3]: master_fighter = 4
+if master_fighter_rate >= master_fighter_rate_cap[4]: master_fighter = 5
+
+master_mage = 0
+if master_mage_rate >= master_mage_rate_cap[0]: master_mage = 1
+if master_mage_rate >= master_mage_rate_cap[1]: master_mage = 2
+if master_mage_rate >= master_mage_rate_cap[2]: master_mage = 3
+if master_mage_rate >= master_mage_rate_cap[3]: master_mage = 4
+if master_mage_rate >= master_mage_rate_cap[4]: master_mage = 5
+
+master_domination = 0
+if master_domination_rate >= master_domination_rate_cap[0]: master_domination = 1
+if master_domination_rate >= master_domination_rate_cap[1]: master_domination = 2
+if master_domination_rate >= master_domination_rate_cap[2]: master_domination = 3
+if master_domination_rate >= master_domination_rate_cap[3]: master_domination = 4
+if master_domination_rate >= master_domination_rate_cap[4]: master_domination = 5
+
+master_flagelation = 0
+if master_flagelation_rate >= master_flagelation_rate_cap[0]: master_flagelation = 1
+if master_flagelation_rate >= master_flagelation_rate_cap[1]: master_flagelation = 2
+if master_flagelation_rate >= master_flagelation_rate_cap[2]: master_flagelation = 3
+if master_flagelation_rate >= master_flagelation_rate_cap[3]: master_flagelation = 4
+if master_flagelation_rate >= master_flagelation_rate_cap[4]: master_flagelation = 5
+
+master_torture = 0
+if master_torture_rate >= master_torture_rate_cap[0]: master_torture = 1
+if master_torture_rate >= master_torture_rate_cap[1]: master_torture = 2
+if master_torture_rate >= master_torture_rate_cap[2]: master_torture = 3
+if master_torture_rate >= master_torture_rate_cap[3]: master_torture = 4
+if master_torture_rate >= master_torture_rate_cap[4]: master_torture = 5
+
+master_bondage = 0
+if master_bondage_rate >= master_bondage_rate_cap[0]: master_bondage = 1
+if master_bondage_rate >= master_bondage_rate_cap[1]: master_bondage = 2
+if master_bondage_rate >= master_bondage_rate_cap[2]: master_bondage = 3
+if master_bondage_rate >= master_bondage_rate_cap[3]: master_bondage = 4
+if master_bondage_rate >= master_bondage_rate_cap[4]: master_bondage = 5
+
+master_petting = 0
+if master_petting_rate >= master_petting_rate_cap[0]: master_petting = 1
+if master_petting_rate >= master_petting_rate_cap[1]: master_petting = 2
+if master_petting_rate >= master_petting_rate_cap[2]: master_petting = 3
+if master_petting_rate >= master_petting_rate_cap[3]: master_petting = 4
+if master_petting_rate >= master_petting_rate_cap[4]: master_petting = 5
+
+master_oral = 0
+if master_oral_rate >= master_oral_rate_cap[0]: master_oral = 1
+if master_oral_rate >= master_oral_rate_cap[1]: master_oral = 2
+if master_oral_rate >= master_oral_rate_cap[2]: master_oral = 3
+if master_oral_rate >= master_oral_rate_cap[3]: master_oral = 4
+if master_oral_rate >= master_oral_rate_cap[4]: master_oral = 5
+
+master_penetration = 0
+if master_penetration_rate >= master_penetration_rate_cap[0]: master_penetration = 1
+if master_penetration_rate >= master_penetration_rate_cap[1]: master_penetration = 2
+if master_penetration_rate >= master_penetration_rate_cap[2]: master_penetration = 3
+if master_penetration_rate >= master_penetration_rate_cap[3]: master_penetration = 4
+if master_penetration_rate >= master_penetration_rate_cap[4]: master_penetration = 5
+
+master_fetish = 0
+if master_fetish_rate >= master_fetish_rate_cap[0]: master_fetish = 1
+if master_fetish_rate >= master_fetish_rate_cap[1]: master_fetish = 2
+if master_fetish_rate >= master_fetish_rate_cap[2]: master_fetish = 3
+if master_fetish_rate >= master_fetish_rate_cap[3]: master_fetish = 4
+if master_fetish_rate >= master_fetish_rate_cap[4]: master_fetish = 5
+
+!Counting master cloth characteristic boosts - crushboss
+killvar 'boost_up'
+dynamic $item_property[$master_cloth]
+
+if boost_up['master_artdirector'] = 1:
+	master_artdirector += 1
+end
+
+if boost_up['master_fighter'] = 1:
+	master_fighter += 1
+end
+
+if boost_up['master_butler'] = 1:
+	master_butler += 1
+end
+
+if boost_up['master_medic'] = 1:
+	master_medic += 1
+end
+
+if boost_up['master_mage'] = 1:
+	master_mage += 1
+end
+
+!Characteristic Alignment for Master - crushboss
+if master_hygiene_rate < 0: master_hygiene_rate = 0
+if master_excitement_rate < -200: master_excitement_rate = -200
+if master_excitement_rate > 200: master_excitement_rate = 200
+if master_str > 5: master_str = 5
+if master_str < 0: master_str = 0
+! negative str will trigger game over via $master_pass_out call from menu_form
+if master_cha > 5: master_cha = 5
+if master_cha < 0: master_cha = 0
+if master_cha_rate < 0: master_cha_rate = 0
+if master_libido > 5: master_libido = 5
+if master_libido < 0: master_libido = 0
+if master_libido_rate <= 1: master_libido_rate = 2
+if master_domination > 5: master_domination = 5
+if master_domination < 0: master_domination = 0
+if master_domination_rate < 0: master_domination_rate = 0
+
+if master_tutor > 5: master_tutor = 5
+if master_tutor < 0: master_tutor = 0
+if master_tutor_rate < 0: master_tutor_rate = 0
+if master_fighter > 6: master_fighter = 6
+if master_fighter < 0: master_fighter = 0
+if master_fighter_rate < 0: master_fighter_rate = 0
+if master_butler > 6: master_butler = 6
+if master_butler < 0: master_butler = 0
+if master_butler_rate < 0: master_butler_rate = 0
+if master_artdirector > 6: master_artdirector = 6
+if master_artdirector < 0: master_artdirector = 0
+if master_artdirector_rate < 0: master_artdirector_rate = 0
+if master_medic > 6: master_medic = 6
+if master_medic < 0: master_medic = 0
+if master_medic_rate < 0: master_medic_rate = 0
+if master_mage > 6: master_mage = 6
+if master_mage < 0: master_mage = 0
+if master_mage_rate < 0: master_mage_rate = 0
+if master_torture > 5: master_torture = 5
+if master_torture < 0: master_torture = 0
+if master_torture_rate < 0: master_torture_rate = 0
+if master_bondage > 5: master_bondage = 5
+if master_bondage < 0: master_bondage = 0
+if master_bondage_rate < 0: master_bondage_rate = 0
+if master_flagelation > 5: master_flagelation = 5
+if master_flagelation < 0: master_flagelation = 0
+if master_flagelation_rate < 0: master_flagelation_rate = 0
+if master_petting > 5: master_petting = 5
+if master_petting < 0: master_petting = 0
+if master_petting_rate < 0: master_petting_rate = 0
+if master_oral > 5: master_oral = 5
+if master_oral < 0: master_oral = 0
+if master_oral_rate < 0: master_oral_rate = 0
+if master_penetration > 5: master_penetration = 5
+if master_penetration < 0: master_penetration = 0
+if master_penetration_rate < 0: master_penetration_rate = 0
+if master_fetish > 5: master_fetish = 5
+if master_fetish < 0: master_fetish = 0
+if master_fetish_rate < 0: master_fetish_rate = 0
+
+if master_ill < 0: master_ill = 0
+if master_ill > 6: master_ill = 6
+if master_issues < 0: master_issues = 0
+if master_issues > 5: master_issues = 5
+if master_wounds > 5: master_wounds = 5
+if master_wounds_rate < 0: master_wounds_rate = 0
+
+if code_defined['update_master_energy_stars'] = 0:
+	code_defined['update_master_energy_stars'] = 1 &! do-once
+
+	$update_master_energy_stars = {
+		$master_energy_stars = ''
+		! if energy exceeds cap and a half star is missing, refill it
+		if master_energy > 5 and master_half_action = 1: master_half_action = 0
+		! transfer bonus energy stars (negative half_actions) to normal energy stars
+		if master_half_action < 0 and master_energy < 5:
+			master_energy += (-1 * master_half_action) / 2
+			master_half_action = master_half_action MOD 2 - max(0, master_energy - 5)*2
+		end
+		! consume spent half actions (positive half_actions)
+		:_process_master_half_actions_loop
+			if master_half_action > 1: master_half_action -= 2 & dynamic $master_energy_drop
+			if master_half_action > 1: jump '_process_master_half_actions_loop'
+		! clamp value
+		master_energy = max(-5, min(5, master_energy))
+		! update overexerted moodlet state, which affects the color of energy stars (TODO: not fully implemented)
+		!if master_energy < 0 or already_done_today['exertion'] >= master_str:
+		!	master_moodlet['neg_master_overexerted'] = 100
+		!else
+		!	master_moodlet['neg_master_overexerted'] = 0
+		!end
+		! assemble row of images corresponding to current energy level and exhaustion status
+		if master_energy = 0:
+			if master_half_action = 1:
+				$master_energy_stars = '<img src = "content/pic/ui overhaul/energy/energy_empty.png"><img src = "content/pic/ui overhaul/energy/energy_empty.png"><img src = "content/pic/ui overhaul/energy/energy_empty.png"><img src = "content/pic/ui overhaul/energy/energy_empty.png"><img src = "content/pic/ui overhaul/energy/energy_red_half.png">'
+			elseif master_half_action = -1:
+				$master_energy_stars = iif(master_moodlet['neg_master_overexerted'] = 0, '<img src = "content/pic/ui overhaul/energy/energy_green_half.png">', '<img src = "content/pic/ui overhaul/energy/energy_purple_half.png">') + '<img src = "content/pic/ui overhaul/energy/energy_empty.png"><img src = "content/pic/ui overhaul/energy/energy_empty.png"><img src = "content/pic/ui overhaul/energy/energy_empty.png"><img src = "content/pic/ui overhaul/energy/energy_empty.png">'
+			else
+				$master_energy_stars = '-'
+			end
+		else
+			if master_energy < 0:
+				for i = 1 to (5 + master_energy) step 1: $master_energy_stars += iif(i = (5 + master_energy) and master_half_action = 1, '<img src = "content/pic/ui overhaul/energy/energy_red_half.png">', '<img src = "content/pic/ui overhaul/energy/energy_empty.png">')
+				for i = 1 to (-1 * master_energy) step 1: $master_energy_stars += iif(i = 1 and (master_half_action MOD 2) = -1, '<img src = "content/pic/ui overhaul/energy/energy_red_half.png">', '<img src = "content/pic/ui overhaul/energy/energy_red.png">')
+			else
+				for i = 1 to (master_energy + max(0, master_half_action/-2)) step 1: $master_energy_stars += iif(i = master_energy and master_half_action = 1, iif(master_moodlet['neg_master_overexerted'] = 0, '<img src = "content/pic/ui overhaul/energy/energy_green_half.png">', '<img src = "content/pic/ui overhaul/energy/energy_purple_half.png">'), iif(master_moodlet['neg_master_overexerted'] = 0, '<img src = "content/pic/ui overhaul/energy/energy_green.png">', '<img src = "content/pic/ui overhaul/energy/energy_purple.png">'))
+				if (master_half_action MOD 2) = -1:
+					$master_energy_stars += iif(master_moodlet['neg_master_overexerted'] = 0, '<img src = "content/pic/ui overhaul/energy/energy_green_half.png">', '<img src = "content/pic/ui overhaul/energy/energy_purple_half.png">')
+					if (5 - master_energy - max(0, master_half_action/-2)) > 1: for i = 2 to (5 - master_energy - max(0, master_half_action/-2)) step 1: $master_energy_stars += '<img src = "content/pic/ui overhaul/energy/energy_empty.png">'
+				elseif (5 - master_energy - max(0, master_half_action/-2)) > 0:
+					for i = 1 to (5 - master_energy - max(0, master_half_action/-2)) step 1: $master_energy_stars += '<img src = "content/pic/ui overhaul/energy/energy_empty.png">'
+				end
+			end
+		end
+
+	}
+end
+dynamic $update_master_energy_stars
+
+!Update situational master moodlets (expects slaves have been updated already - specifically, $newloc_update_slave in #static_base)
+gs 'moodlets' &! depends on house_mess, master_hygiene, master_wealth, brand_reputation, master_excitement, master_energy, master_str, does not depend on master_style
+
+! $moodlets_account refreshes mood (and mood description strings) for master
+if args[0] = 0: gs '$moodlets_account' &! #dynamic passes a 1 here from $master_ejaculate to bypass mood update to avoid side effects to next_day mood checks due to alarm rule
+
+!style update after hygiene, energy and mood updates (above) and before updating master_supermacy (below) - ImperatorAugustus
+master_style = 2 + style_modifer[$master_cloth] - max(0, master_hygiene - 2)
+if master_hygiene = 0: master_style += 1
+if master_energy > 0: master_style += 1
+if master_energy < 0: master_style -= 1
+if master_visage > 0: master_style += 1
+if master_visage = 0: master_style -= 1
+if master_haircut > 0: master_style += 1
+if master_haircut = 0: master_style -= 1
+if master_str > 3: master_style += 1
+if master_str < 3: master_style -= 1
+if master_mood > 0: master_style += 1
+if master_mood < 0: master_style -= 1
+if master_style > 5: master_style = 5
+if master_style < 0: master_style = 0
+
+!Calculate Master Supermacy
+
+dynamic $replace("
+	master_supermacy = (master_cha + master_domination + master_style + master_str + dynslave['beaten_ever'] + magna_magnifika + item_supermacy_bonus) - (dynslave['temper'] + dynslave['ego'] + dynslave['pride'] + dynslave['stamina'] + (dynslave['intellect'] - 3))
+	if $master_cloth = 'regal_suit': master_supermacy += 1
+	if $master_cloth = 'comfy_robes': master_supermacy -= 1
+	if $master_back_wpn = 'посох_огня': master_supermacy += 2
+
+	! lolis are easier to dominate.  Uncle Tom is particularly good at it, and it’s easier for Johny to pick on someone smaller than him
+	if dynslave['age'] = CONST_INT['loli_age']:
+		master_supermacy += 2
+		if hero_select = 5:  master_supermacy += 3  &! Teacher
+		if hero_select = 9:  master_supermacy += 8  &! Old Man
+		if hero_select = 10: master_supermacy += 1  &! Kid
+	end
+	if dynslave['age'] = CONST_INT['milf_age']:
+		if hero_select = 8:  master_supermacy += 2  &! Butler
+		if hero_select = 9:  master_supermacy -= 1  &! Old Man
+	end
+	if dynslave['age'] = CONST_INT['young_age']:
+		if hero_select = 5:  master_supermacy += 2  &! Teacher
+	end
+", 'dyn'+'slave', iif(slave_state > CONST_INT['no_slave'], 'slave', 'assistant'))
+
+------------ $calculate_attributes ------------

@@ -1,0 +1,53 @@
+# item_buy
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M1381 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'item_buy': gs 'snk_room_bridge', 'guard', 'item_buy'
+! JO9 MOD END J9M1381
+!Screen for item purchasing
+gs '_layout'
+
+if txt = 0: txt = 1
+
+! JO9 MOD START J9M1380 | 2026-10-08_persistent_image_cycle, 2026-10-15_z_inline_text_prefix | changed block; context may be included
+*p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\bg\<<$bg[$place]>>.png"></div>')
+if $bg_path ! '': *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\<<$bg_path>>.png"></div>')
+! JO9_INLINE_TEXT_PREFIX_20261015
+local $jo9_leading_empty = $strfind($text[txt], '^(\s|&nbsp;|<[bB][rR]\s*/?>)+')
+if $jo9_leading_empty ! '': $text[txt] = $mid($text[txt], len($jo9_leading_empty) + 1, len($text[txt]))
+! JO9 MOD END J9M1380
+*p '<div id = "text"><<$text[txt]>></div>'
+
+if npc = 0:
+	$info_bar = ''
+	*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<$place_name[$place]>></div><<$place_location[$place]>><br>'
+	*nl '참고 정보:</center></div>'
+	*p '<div id = "side_panel_text"><span class="jo9-reference-body"><<dyneval($show_item_effects, $item_id)>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style></div>'
+	!*p '<div id = "side_panel_text"><<$place_info[$place]>><<dyneval($show_item_effects, $item_id)>></div>'
+else
+	$info_bar = ''
+! JO9 MOD START J9M1379 | 2026-10-08_persistent_image_cycle | changed block; context may be included
+	if nsfw = 0 and $npc_image[$npc_id] ! '': *p func('interior_change', 'jo9_html', '<div id = "bg"><img src="content\pic\characters\<<$npc_image[$npc_id]>>.png"></div>')
+! JO9 MOD END J9M1379
+	*p '<div id = "side_panel_main"><center><div style="font-size: 40px;"><<$npc_name[$npc_id]>></div><<$npc_status[$npc_id]>><br>' 
+	*nl '참고 정보:</center></div>'
+	*p '<div id = "side_panel_text"><<$npc_attitude[npc_attitude[$npc_id]]>>'
+	*nl '<span class="jo9-reference-body"><<$npc_info[$npc_id]>></span><style>.jo9-reference-body,.jo9-reference-body *{font-size:20px !important;}</style></div>'
+end
+
+*p '<div id = "interaction_stat_bar"><<$info_bar>></div>'
+*p '<div id = "sparks_display"><<sparks>>$</div>'
+
+!Commented out - doesn’t work here, must be placed in interaction_city_result for each $do_buy section - crushboss
+!if sound_on = 1 and $play_sound[txt] ! '': play 'content\snd\<<$play_sound[txt]>>.wav', sound_volume
+!if $play_sound[txt] ! '': $play_sound[txt] = ''
+
+if $do_buy ! '': *p '<div id = "approve"><a href = "EXEC: killobj & dynamic $do_buy & killvar ''$do_buy'' & gt $return_lock"><img src="content\pic\buttons\approve.png"></a></div>'
+*p '<div id = "deny"><a href = "EXEC: killobj & dynamic $do_no_buy & killvar ''$do_no_buy'' & gt $return_lock"><img src="content\pic\buttons\deny.png"></a></div>'
+
+if txt = 1 and $text[2] ! '':
+	addobj '<img src = "content\pic\buttons\forward_button.png">'
+elseif txt = 2:
+	addobj '<img src = "content\pic\buttons\back_button.png">'
+end
+
+------------ item_buy ------------

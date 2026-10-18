@@ -1,0 +1,21 @@
+# $slave_traits
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2691 | 2026-10-10_restore_private_room_ui, 2026-10-10_pregnancy_stage_display | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$slave_traits': gs 'snk_room_bridge', 'guard', '$slave_traits'
+! JO9_PREG_STAGE: refresh saved feature-rendering code without resetting character data
+if instr($update_slave_features_list, 'JO9_PREG_STAGE') = 0:
+	$update_slave_features_list += {
+! JO9_PREG_STAGE
+if dynslave_state > CONST_INT['no_slave']:
+	$dynslave_features_list += func('sjm_UI_UIadds', 'preg_feature', dynslave['pregnant'], dynslave['pregnant_revealed'], dynslave['fertility'], dynslave['vaginal_modification'], dynslave['parasite'])
+end
+}
+end
+
+! JO9 MOD END J9M2691
+!reveals slave traits
+
+dynamic $do_for_each_slave_in_list, '$check_slave_for_revealed_traits', '$main_screen_slave_characters' &! see #static_base
+dynamic $do_for_each_slave_in_list, '$update_slave_features_list', '$main_screen_slave_characters' &! see #static_base
+
+------------ $slave_traits ------------

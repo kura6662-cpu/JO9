@@ -1,0 +1,1064 @@
+# demo_menu_form
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2925 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'demo_menu_form': gs 'snk_room_bridge', 'guard', 'demo_menu_form'
+! JO9 MOD END J9M2925
+gs '$newloc' &! ensure all stats are updated before displaying them
+
+!check for drug sound, all other sounds will be disabled except bulk sound
+if bulk ! 1:
+	!close all
+else
+	bulk = 0
+end
+dynamic $slave_pass_out
+dynamic $master_pass_out &! master should be last
+
+is_home = 1
+
+$text_display = ''
+!option display
+$setting_display = ''
+$setting_display_c = ''
+$setting_display_c2 = ''
+$setting_display_r = ''
+$return_lock = 'demo_menu_form'
+sp_txt = 0
+
+!gs '$moodlets_account' - no need to update mood every single time a menu is displayed or navigated, doing it in $newloc is sufficient - ImperatorAugustus
+quest_description_mode = 0
+
+!training ending condition
+if exam_in_progress = 1:
+	if slave_state = CONST_INT['no_slave']:
+		txt = 1
+		lecture = 12
+		gt 'demo_intro'
+	end
+end
+
+if nsfw = 0 and menu_form ! 0 and menu_form ! 3 and (menu_form ! 31 or slave['account_rule'] ! 0 or assistant['account_rule'] ! 0) and menu_form ! 37 and menu_form ! 38 and menu_form ! 2000:
+	$text_display += func('display_fullimage', iif(assistant_state > CONST_INT['no_slave'], 'assistant', 'slave'), 'center_image_home_demo')
+end
+
+!main menu
+if menu_form = 0:
+	$place = 'home_lux'
+
+	if slave_state = CONST_INT['slave_exist']:
+		$text_display += {<br><div id="under">노예 활동 <br><div id = "clear"><a href = 'EXEC: menu_form = 1 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">노예 활동<br></div>}
+	end
+	if slave_state = CONST_INT['slave_exist']:
+		$text_display += {<br><div id="under">노예 작업 배정 <br><div id = "clear"><a href = 'EXEC: menu_form = 5 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">노예 작업 배정<br></div>}
+	end
+	$text_display += {<br><div id="under">집안 문제 <br><div id = "clear"><a href = 'EXEC: menu_form = 3 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	if sparks > 0:
+		$text_display += {<br><div id="under">주문 시전<br><div id = "clear"><a href = 'EXEC: menu_form = 6 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">주문 시전<br></div>}
+	end
+
+	$text_display += {<br><div id="under">하루 마무리 <br><div id = "clear"><a href = "EXEC: gt 'next_day'"><img src = "content\pic\clear.png"></a></div></div>}
+
+	$text_display += {<br><div id="under">길드로 가기<br><div id = "clear"><a href = 'EXEC: lecture = 100 & txt = 1 & gt "demo_intro"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 1:
+	$text_display += {<div id="under">대화 <br><div id = "clear"><a href = 'EXEC: menu_form = 11 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	if sparks >= coach_price[0]:
+		$text_display += {<br><div id="under">가정교사 초대 <br><div id = "clear"><a href = 'EXEC: menu_form = 17 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">가정교사 초대 <br></div>}
+	end
+	$text_display += {<br><div id="under">수업 진행 <br><div id = "clear"><a href = 'EXEC: menu_form = 12 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">성교육 <br><div id = "clear"><a href = 'EXEC: menu_form = 13 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">섹스 <br><div id = "clear"><a href = 'EXEC: menu_form = 16 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">보상 <br><div id = "clear"><a href = 'EXEC: menu_form = 15 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">벌주기 <br><div id = "clear"><a href = 'EXEC: menu_form = 14 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 3:
+	if bath > 0:
+		$text_display += {<br><div id="under">목욕하기 <br><div id = "clear"><a href = 'EXEC: interaction = 34 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">목욕하기 <br></div>}
+	end
+
+	if kitchen > 0:
+		$text_display += {<br><div id="under">식사 준비하기<br><div id = "clear"><a href = 'EXEC: interaction = 35 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">식사 준비하기<br></div>}
+	end
+	if house_mess > 0:
+		$text_display += {<br><div id="under">집 정리하기<br><div id = "clear"><a href = 'EXEC: interaction = 36 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">집 정리하기<br></div>}
+	end
+	$text_display += {<br><div id="under">약물 복용<br><div id = "clear"><a href = 'EXEC: menu_form = 37 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">물약 마시기<br><div id = "clear"><a href = 'EXEC: menu_form = menu_Drink_potion & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">회계 <br><div id = "clear"><a href = 'EXEC: menu_form = 31 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 5:
+	if slave['stamina'] >= 1:
+		$text_display += {<br><div id="under">체조하기<br><div id = "clear"><a href = 'EXEC: interaction = menu_gymnastics_S & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	end
+	if house_mess > 0:
+		$text_display += {<br><div id="under">집 정리하기<br><div id = "clear"><a href = 'EXEC: interaction = menu_tidy_S & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	end
+	if kitchen > 0 and cooked_food < slave['cook']:
+		$text_display += {<br><div id="under">저녁 준비하기<br><div id = "clear"><a href = 'EXEC: interaction = menu_dinner_S & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	end
+	if bath > 0 and slave['hygiene'] > 1:
+		$text_display += {<br><div id="under">목욕하기 <br><div id = "clear"><a href = 'EXEC: interaction = menu_bath_S & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	end
+	$text_display += {<br><div id="under">시중들기<br><div id = "clear"><a href = 'EXEC: menu_form = 541 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">약물 복용<br><div id = "clear"><a href = 'EXEC: menu_form = 57 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">물약 마시기<br><div id = "clear"><a href = 'EXEC: menu_form = menu_potion_S & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 6:
+	$text_display += {<br><div id="under">주문서<br><div id = "clear"><a href = 'EXEC: interaction = 70 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+
+	if auspex = 0 and sparks >= 2:
+		$text_display += {<br><div id="under">아우스펙스 (2 스파크)<br><div id = "clear"><a href = 'EXEC: interaction = 61 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">아우스펙스 (2 스파크)<br></div>}
+	end
+
+	if magna_magnifika = 0 and already_done_today['65'] = 0 and sparks >= 5 and master_mage >= 1:
+		$text_display += {<br><div id="under">마그나 마그니피카 (5 스파크)<br><div id = "clear"><a href = 'EXEC: interaction = 65 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">마그나 마그니피카 (5 스파크)<br></div>}
+	end
+
+	if slave_state = CONST_INT['slave_exist'] and slave_already_done_today['64'] = 0 and slave['sententia_veritas'] = 0 and sparks >= 5 and master_mage >= 2:
+		$text_display += {<br><div id="under">센텐티아 베리타스 (5 스파크)<br><div id = "clear"><a href = 'EXEC: interaction = 64 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">센텐티아 베리타스 (5 스파크)<br></div>}
+	end
+
+	if slave_state = CONST_INT['slave_exist'] and slave_already_done_today['66'] = 0 and sparks >= 5 and master_mage >= 3:
+		$text_display += {<br><div id="under">트레멘디오 (5 스파크)<br><div id = "clear"><a href = 'EXEC: interaction = 66 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">트레멘디오 (5 스파크)<br></div>}
+	end
+
+	if slave_state = CONST_INT['slave_exist'] and slave["sin"] > 4 and sparks >= 5 and master_mage >= 4:
+		$text_display += {<br><div id="under">크루시아토 (5 스파크)<br><div id = "clear"><a href = 'EXEC: interaction = 62 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">크루시아토 (5 스파크)<br></div>}
+	end
+
+	if slave_state = CONST_INT['slave_exist'] and slave["virtue"] > 4 and sparks >= 5 and master_mage >= 4:
+		$text_display += {<br><div id="under">델리카시아 (5 스파크)<br><div id = "clear"><a href = 'EXEC: interaction = 63 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">델리카시아 (5 스파크)<br></div>}
+	end
+
+	if slave_state = CONST_INT['slave_exist'] and slave_already_done_today['67'] = 0 and sparks >= 5 and master_mage >= 4:
+		$text_display += {<br><div id="under">도미니 딕툼 (5 스파크)<br><div id = "clear"><a href = 'EXEC: interaction = 67 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">도미니 딕툼 (5 스파크)<br></div>}
+	end
+
+	if slave_state = CONST_INT['slave_exist'] and slave['brand'] ! 3 and slave['brand'] ! 4 and sparks >= 25 and master_mage >= 5:
+		$text_display += {<br><div id="under">아드베르토 세르빌리 (25 스파크)<br><div id = "clear"><a href = 'EXEC: interaction = 68 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">아드베르토 세르빌리 (25 스파크)<br></div>}
+	end
+
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 11:
+	$text_display += {<br><div id="under">묻기 <br><div id = "clear"><a href = 'EXEC: menu_form = 111 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">영향 주기 <br><div id = "clear"><a href = 'EXEC: menu_form = 112 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+!	$text_display += {<br><div id="under_gray">Socialize <br></div>}
+	if wizard_mode = 1: $text_display += {<br><div id="under">* 복종 *<br><div id = "clear"><a href = 'EXEC: interaction = 1125 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 1 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 12:
+	$text_display += {<br><div id="under">실용 기술<br><div id = "clear"><a href = 'EXEC: menu_form = 121 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	if slave['stamina'] >= 1:
+		$text_display += {<br><div id="under">신체 발달<br><div id = "clear"><a href = 'EXEC: menu_form = 122 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">신체 발달<br></div>}
+	end
+	$text_display += {<br><div id="under">창의성 개발 <br><div id = "clear"><a href = 'EXEC: menu_form = 123 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">동물 행동 <br><div id = "clear"><a href = 'EXEC: menu_form = 124 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 1 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 13:
+	$text_display += {<br><div id="under">애무<br><div id = "clear"><a href = 'EXEC: menu_form = 131 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">구강 기술<br><div id = "clear"><a href = 'EXEC: menu_form = 132 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">삽입<br><div id = "clear"><a href = 'EXEC: menu_form = 133 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">시범 <br><div id = "clear"><a href = 'EXEC: menu_form = 137 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">페티시즘<br><div id = "clear"><a href = 'EXEC: menu_form = 136 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 1 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 14:
+	$text_display += {<br><div id="under">심리적 압박<br><div id = "clear"><a href = 'EXEC: menu_form = 141 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">채찍질<br><div id = "clear"><a href = 'EXEC: menu_form = 143 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">구타<br><div id = "clear"><a href = 'EXEC: menu_form = 142 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">속박과 박탈<br><div id = "clear"><a href = 'EXEC: menu_form = 146 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 1 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 15:
+	$text_display += {<br><div id="under">정신적 격려<br><div id = "clear"><a href = 'EXEC: menu_form = 156 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">함께 시간 보내기<br><div id = "clear"><a href = 'EXEC: menu_form = 151 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">자유 시간 주기<br><div id = "clear"><a href = 'EXEC: menu_form = 152 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">에로틱 보상<br><div id = "clear"><a href = 'EXEC: menu_form = 153 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">선물하기<br><div id = "clear"><a href = 'EXEC: menu_form = 154 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 1 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 16:
+	if master_excitement >= 0:
+		$text_display += {<br><div id="under">능동 섹스<br><div id = "clear"><a href = 'EXEC: interaction = 5415 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+		$text_display += {<br><div id="under">편안한 질 섹스<br><div id = "clear"><a href = 'EXEC: interaction = 5414 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+		$text_display += {<br><div id="under">편안한 애널 섹스<br><div id = "clear"><a href = 'EXEC: interaction = 54141 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+		$text_display += {<br><div id="under">편안한 구강 섹스<br><div id = "clear"><a href = 'EXEC: interaction = 54142 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+		$text_display += {<br><div id="under">질 강간<br><div id = "clear"><a href = 'EXEC: interaction = 161 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+		$text_display += {<br><div id="under">애널 강간<br><div id = "clear"><a href = 'EXEC: interaction = 163 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+		$text_display += {<br><div id="under">구강 강간<br><div id = "clear"><a href = 'EXEC: interaction = 162 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">능동 섹스<br></div>}
+		$text_display += {<br><div id="under_gray">편안한 질 섹스<br></div>}
+		$text_display += {<br><div id="under_gray">편안한 애널 섹스<br></div>}
+		$text_display += {<br><div id="under_gray">편안한 구강 섹스<br></div>}
+		$text_display += {<br><div id="under_gray">질 강간<br></div>}
+		$text_display += {<br><div id="under_gray">애널 강간<br></div>}
+		$text_display += {<br><div id="under_gray">구강 강간<br></div>}
+	end
+	!$text_display += {<br><div id="under_gray">Complex rape<br></div>}
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 1 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 17:
+	if house_mess > 0 and slave['service'] <= 5:
+		$text_display += '<div id="under">메이드 수업 (<<$coach_price[slave["service"]]>>)<br><div id = "clear"><a href = "EXEC: interaction = 1711 & gt ''interaction''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<div id="under_gray">메이드 수업<br></div>}
+	end
+	if kitchen > 0 and slave['cook'] <= 5:
+		$text_display += '<div id="under">요리 수업 (<<$coach_price[slave["cook"]]>>)<br><div id = "clear"><a href = "EXEC: interaction = 1712 & gt ''interaction''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<div id="under_gray">요리 수업<br></div>}
+	end
+	if slave['secretary'] <= 5:
+		$text_display += '<div id="under">비서 수업 (<<$coach_price[slave["secretary"]]>>)<br><div id = "clear"><a href = "EXEC: interaction = 1714 & gt ''interaction''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<div id="under_gray">비서 수업<br></div>}
+	end
+	if slave['expression'] <= 5:
+		$text_display += '<div id="under">화술 수업 (<<$coach_price[slave["expression"]]>>)<br><div id = "clear"><a href = "EXEC: interaction = 1731 & gt ''interaction''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<div id="under_gray">화술 수업<br></div>}
+	end
+	if slave['nurse'] <= 5:
+		$text_display += '<div id="under">간호 수업 (<<$coach_price[slave["nurse"]]>>)<br><div id = "clear"><a href = "EXEC: interaction = 1713 & gt ''interaction''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<div id="under_gray">간호 수업<br></div>}
+	end
+	if lab = 1 and slave['alchemy'] <= 5:
+		$text_display += '<div id="under">연금술 수업 (<<$coach_price[slave["alchemy"]]>>)<br><div id = "clear"><a href = "EXEC: interaction = 1734 & gt ''interaction''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<div id="under_gray">연금술 수업<br></div>}
+	end
+	if slave['enchanter'] <= 5:
+		$text_display += '<div id="under">마법력 수업 (<<$coach_price[slave["enchanter"]]>>)<br><div id = "clear"><a href = "EXEC: interaction = 17341 & gt ''interaction''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<div id="under_gray">마법력 수업<br></div>}
+	end
+	if slave['stamina'] >= 1 and slave['stamina'] <= 5:
+		$text_display += '<div id="under">체육 수업 (<<$coach_price[slave["stamina"]]>>)<br><div id = "clear"><a href = "EXEC: interaction = 1721 & gt ''interaction''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<div id="under_gray">체육 수업<br></div>}
+	end
+	if slave['stamina'] >= 2 and slave['gladiatrix'] <= 5:
+		$text_display += '<div id="under">여검투사 수업 (<<$coach_price[slave["gladiatrix"]]>>)<br><div id = "clear"><a href = "EXEC: interaction = 1723 & gt ''interaction''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<div id="under_gray">여검투사 수업<br></div>}
+	end
+	if slave['stamina'] >= 2 and slave['calisthenics'] <= 5:
+		$text_display += '<div id="under">춤 수업 (<<$coach_price[slave["calisthenics"]]>>)<br><div id = "clear"><a href = "EXEC: interaction = 1722 & gt ''interaction''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<div id="under_gray">춤 수업<br></div>}
+	end
+	if slave['music'] <= 5:
+		$text_display += '<div id="under">음악 수업 (<<$coach_price[slave["music"]]>>)<br><div id = "clear"><a href = "EXEC: interaction = 1732 & gt ''interaction''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<div id="under_gray">음악 수업<br></div>}
+	end
+	if slave['art'] <= 5:
+		$text_display += '<div id="under">그림 수업 (<<$coach_price[slave["art"]]>>)<br><div id = "clear"><a href = "EXEC: interaction = 1733 & gt ''interaction''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<div id="under_gray">그림 수업<br></div>}
+	end
+	if slave['stamina'] >= 2 and slave['pet'] <= 5:
+		$text_display += '<div id="under">펫 수업 (<<$coach_price[slave["pet"]]>>)<br><div id = "clear"><a href = "EXEC: interaction = 1725 & gt ''interaction''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<div id="under_gray">애완동물 수업<br></div>}
+	end
+	if slave['stamina'] >= iif(slave["dressage"] < 3, 2, 3) and slave['dressage'] <= 5:
+		$text_display += '<div id="under">조랑말 레이싱 수업 (<<$coach_price[slave["dressage"]]>>)<br><div id = "clear"><a href = "EXEC: interaction = 1724 & gt ''interaction''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<div id="under_gray">조랑말 경주 수업<br></div>}
+	end
+	if slave['stamina'] >= 2 and slave['cowSK'] <= 5:
+		$text_display += '<div id="under">젖소 수업 (<<$coach_price[slave["cowSK"]]>>)<br><div id = "clear"><a href = "EXEC: interaction = 1726 & gt ''interaction''"><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<div id="under_gray">젖소 수업<br></div>}
+	end
+	$text_display += {<div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 1 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 31:
+	if master_wealth_target = 0:
+		$text_display += {<br><div id="under_gray">생활 수준: 궁핍<br></div>}
+		$text_display += {<div id="under">올리기<br><div id = "clear"><a href = 'EXEC: master_wealth_target = 1 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+		$text_display += {<div id="under_gray">내리기<br></div>}
+	end
+	if master_wealth_target = 1:
+		$text_display += {<br><div id="under_gray">생활 수준: 빈곤<br></div>}
+		$text_display += {<div id="under">올리기<br><div id = "clear"><a href = 'EXEC: master_wealth_target = 2 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+		$text_display += {<div id="under">내리기<br><div id = "clear"><a href = 'EXEC: master_wealth_target = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	end
+	if master_wealth_target = 2:
+		$text_display += {<br><div id="under_gray">생활 수준: 기본<br></div>}
+		$text_display += {<div id="under">올리기<br><div id = "clear"><a href = 'EXEC: master_wealth_target = 3 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+		$text_display += {<div id="under">내리기<br><div id = "clear"><a href = 'EXEC: master_wealth_target = 1 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	end
+	if master_wealth_target = 3:
+		$text_display += {<br><div id="under_gray">생활 수준: 안락<br></div>}
+		$text_display += {<div id="under">올리기<br><div id = "clear"><a href = 'EXEC: master_wealth_target = 4 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+		$text_display += {<div id="under">내리기<br><div id = "clear"><a href = 'EXEC: master_wealth_target = 2 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	end
+	if master_wealth_target = 4:
+		$text_display += {<br><div id="under_gray">생활 수준: 품위 있음<br></div>}
+		$text_display += {<div id="under">올리기<br><div id = "clear"><a href = 'EXEC: master_wealth_target = 5 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+		$text_display += {<div id="under">내리기<br><div id = "clear"><a href = 'EXEC: master_wealth_target = 3 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	end
+	if master_wealth_target = 5:
+		$text_display += {<br><div id="under_gray">생활 수준: 호화<br></div>}
+		$text_display += {<div id="under">올리기<br><div id = "clear"><a href = 'EXEC: master_wealth_target = 6 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+		!$text_display += {<div id="under">Decrease<br><div id = "clear"><a href = 'EXEC: master_wealth_target = 4 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+		$text_display += {<div id="under_gray">내리기<br></div>}
+	end
+	if master_wealth_target = 6:
+		$text_display += {<br><div id="under_gray">생활 수준: 사치<br></div>}
+		$text_display += {<div id="under_gray">올리기<br></div>}
+		$text_display += {<div id="under">내리기<br><div id = "clear"><a href = 'EXEC: master_wealth_target = 5 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	end
+	if $bill_message ! '':
+		$text_display += {<br><div id="under">재무 보고서<br><div id = "clear"><a href = 'EXEC: msg "<<$bill_message>>"'><img src = "content\pic\clear.png"></a></div></div>}
+		else
+		$text_display += {<br><div id="under_gray">재무 보고서<br></div>}
+	end
+	!lillimerge need to check this
+	if slave["account_rule"] = 0 and assistant["account_rule"] = 0:
+		$text_display += {<br><br><div id="under">직접 회계 보기<br></div>}
+	else
+		$text_display += {<br><br><div id="under_gray">직접 회계 보기<br><div id = "clear"><a href = 'EXEC: assistant["account_rule"] = 0 & slave["account_rule"] = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	end
+	if slave_state = CONST_INT['slave_exist'] and slave["account_rule"] = 1:
+		$text_display += {<br><div id="under">노예 - 회계 담당<br></div>}
+	elseif slave_state ! CONST_INT['slave_exist']: 
+		$text_display += {<br><div id="under_gray">노예 - 회계 담당<br></div>}
+	else
+		$text_display += {<br><div id="under_gray">노예 - 회계 담당<br><div id = "clear"><a href = 'EXEC: slave["account_rule"] = 1 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	end
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 3 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 37:
+	if lab_store["koffe"] > 0:
+		$text_display += '<br><div id="under">진액 커피 마시기 (<<lab_store["koffe"]>>)<br><div id = "clear"><a href = ''EXEC: interaction = 371 & gt "interaction"''><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<br><div id="under_gray">진액이 다 떨어짐<br></div>}
+	end
+	if lab_store["kanabis"] > 0:
+		$text_display += '<br><div id="under">독말풀을 피운다 (<<lab_store["kanabis"]>>)<br><div id = "clear"><a href = ''EXEC: interaction = 372 & gt "interaction"''><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<br><div id="under_gray">독말풀이 다 떨어짐<br></div>}
+	end
+	if fridge["alcohol"] > 0:
+		$text_display += '<br><div id="under">술 마시기 (<<fridge["alcohol"]>>)<br><div id = "clear"><a href = ''EXEC: interaction = 373 & gt "interaction"''><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<br><div id="under_gray">술이 다 떨어짐<br></div>}
+	end
+	if lab_store["meth"] > 0:
+		$text_display += '<br><div id="under">요정의 가루 (<<lab_store["meth"]>>)<br><div id = "clear"><a href = ''EXEC: interaction = 374 & gt "interaction"''><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += <br><div id="under_gray">요정의 가루가 다 떨어짐<br></div>}
+	end
+	if lab_store["opium"] > 0:
+		$text_display += '<br><div id="under">망각의 정수 (<<lab_store["opium"]>>)<br><div id = "clear"><a href = ''EXEC: interaction = 375 & gt "interaction"''><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += {<br><div id="under_gray">망각의 정수가 다 떨어짐<br></div>}
+	end
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 3 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+!main menu - Drink a potion - self
+if menu_form = menu_Drink_potion:
+
+	func('$menu', '===BEGIN===', 'column_0')
+
+	if вакхический_нектар > 0:
+			func('$menu', 'goto', $menu_item_nectar_master, menu_nectar_master, 'interaction', 'interaction', '바쿠스의 넥타르', '바쿠스의 넥타르 물약 마시기 (<<вакхический_нектар>>)')
+	else
+			func('$menu', 'exec', $menu_item_nectar_master_gray, empty, '바쿠스의 넥타르', '바쿠스의 넥타르 물약이 다 떨어졌다')
+	end
+	if тонизируюзщий_эликсир > 0:
+			func('$menu', 'goto', $menu_item_elixir_master, menu_elixir_master, 'interaction', 'interaction', '강장 영약', '강장 영약 마시기 (<<тонизируюзщий_эликсир>>)')
+	else
+			func('$menu', 'exec', $menu_item_elixir_master_gray, empty, '강장 영약', '강장 영약 물약이 다 떨어졌다')
+	end
+	if целительный_бальзам > 0:
+			func('$menu', 'goto', $menu_item_Balm_master, menu_Balm_master, 'interaction', 'interaction', '기적의 연고', '기적의 연고 물약 마시기 (<<целительный_бальзам>>)')
+	else
+			func('$menu', 'exec', $menu_item_Balm_master_gray, empty, '기적의 연고', '기적의 연고 물약이 다 떨어졌다')
+	end
+	if афродизиак > 0:
+			func('$menu', 'goto', $menu_item_Aphrodisiac_master, menu_Aphrodisiac_master, 'interaction', 'interaction', '최음제', '최음제 물약 마시기 (<<афродизиак>>)')
+	else
+			func('$menu', 'exec', $menu_item_Aphrodisiac_master_gray, empty, '최음제', '최음제 물약이 다 떨어졌다')
+	end
+	if мощный_афодизиак > 0:
+			func('$menu', 'goto', $menu_item_PowerfulAphrodisiac_master, menu_PowerfulAphrodisiac_master, 'interaction', 'interaction', '배란 유발제', '배란 유발제 물약 마시기 (<<мощный_афодизиак>>)')
+	else
+			func('$menu', 'exec', $menu_item_PowerfulAphrodisiac_master_gray, empty, '배란 유발제', '배란 유발제 물약이 다 떨어졌다')
+	end
+	if приворотное_зелье > 0:
+			func('$menu', 'goto', $menu_item_Philtre_master, menu_Philtre_master, 'interaction', 'interaction', '사랑의 묘약', '사랑의 묘약 마시기 (<<приворотное_зелье>>)')
+	else
+			func('$menu', 'exec', $menu_item_Philtre_master_gray, empty, '사랑의 묘약', '사랑의 묘약 물약이 다 떨어졌다')
+	end
+	if вода_леты > 0:
+			func('$menu', 'goto', $menu_item_Lethe_master, menu_Lethe_master, 'interaction', 'interaction', '레테의 물', '레테의 물 마시기 (<<вода_леты>>)')
+	else
+			func('$menu', 'exec', $menu_item_Lethe_master_gray, empty, '레테의 물', '레테의 물 물약이 다 떨어졌다')
+	end
+
+	func('$menu', '===END===')
+	$text_display += '<br><div id="Back_Drink_potion"><a style="padding-top: 75px;" class="icon tooltip-right" tooltip-data="뒤로" href = "EXEC: menu_form = 3 & gt ''demo_menu_form''"><img src = "content\pic\ui overhaul\back.png"></a></div>'
+	$text_display += '<br><div id="Cancel_Drink_potion"><a style="padding-top: 75px;" class="icon tooltip-right" tooltip-data="취소" href = "EXEC: menu_form = 0 & gt ''demo_menu_form''"><img src = "content\pic\ui overhaul\cancel.png"></a></div>'
+end
+
+!main menu - Slave assignments - Drink a potion
+if menu_form = menu_potion_S:
+	func('$menu', 'spacer', 2)
+
+	func('$menu', '===BEGIN===', 'column_0')
+
+	if вакхический_нектар > 0:
+		func('$menu', 'goto', $menu_item_nectar_slave, menu_nectar_assistant, 'interaction', 'interaction', '바커스의 술', '바커스의 술 음용:(<<вакхический_нектар>>)/흥분 단계 증가')
+	else
+		func('$menu', 'exec', $menu_item_nectar_slave_gray, empty, '바커스의 술', '바커스의 술이 없다.')
+	end
+	if тонизируюзщий_эликсир > 0:
+		func('$menu', 'goto', $menu_item_elixir_slave, menu_elixir_assistant, 'interaction', 'interaction', '자양 강장제', '자양 강장제 음용:(<<тонизируюзщий_эликсир>>)/행동력 2 증가')
+	else
+		func('$menu', 'exec', $menu_item_elixir_slave_gray, empty, '자양 강장제', '자양 강장제가 없다.')
+	end
+	if целительный_бальзам > 0:
+		func('$menu', 'goto', $menu_item_Balm_slave, menu_Balm_assistant, 'interaction', 'interaction', '기적의 향유', '기적의 향유 사용:(<<целительный_бальзам>>)/상처 25% 치료')
+	else
+		func('$menu', 'exec', $menu_item_Balm_slave_gray, empty, '기적의 향유', '기적의 향유가 없다.')
+	end
+	if афродизиак > 0:
+		func('$menu', 'goto', $menu_item_Aphrodisiac_slave, menu_Aphrodisiac_assistant, 'interaction', 'interaction', '최음제', '최음제 음용:(<<афродизиак>>)/흥분 단계 증가')
+	else
+		func('$menu', 'exec', $menu_item_Aphrodisiac_slave_gray, empty, '최음제', '최음제가 없다.')
+	end
+	if мощный_афодизиак > 0:
+		func('$menu', 'goto', $menu_item_PowerfulAphrodisiac_slave, menu_PowerfulAphrodisiac_assistant, 'interaction', 'interaction', '배란 유발제', '배란 유발제 음용:(<<афродизиак>>)/흥분 등급 증가')
+	else
+		func('$menu', 'exec', $menu_item_PowerfulAphrodisiac_slave_gray, empty, '배란 유발제', '배란 유발제가 없다.')
+	end
+	if приворотное_зелье > 0:
+		func('$menu', 'goto', $menu_item_Philtre_slave, menu_Philtre_assistant, 'interaction', 'interaction', '순애의 미약', '순애의 미약 음용:(<<приворотное_зелье>>)/충성심 등급 증가')
+	else
+		func('$menu', 'exec', $menu_item_Philtre_slave_gray, empty, '순애의 미약', '순애의 미약이 없다.')
+	end
+	if вода_леты > 0:
+		func('$menu', 'goto', $menu_item_Lethe_slave, menu_Lethe_assistant, 'interaction', 'interaction', '망각의 정수', '저승의 강물 음용:(<<вода_леты>>)/복종심 요소 초기화')
+	else
+		func('$menu', 'exec', $menu_item_Lethe_slave_gray, empty, '저승의 강물', '저승의 강물이 없다.')
+	end
+	if potion_of_mystra > 0:
+		func('$menu', 'goto', $menu_item_mystra_assistant, menu_mystra_assistant, 'interaction', 'interaction', '미스트라의 비약', '미스트라의 비약 음용:(<<potion_of_mystra>>)/부정적인 마음만을 제거')
+	else
+		func('$menu', 'exec', $menu_item_mystra_assistant_gray, empty, '미스트라의 비약', '미스트라의 비약이 없다')
+	end
+
+	func('$menu', '===END===')
+	$text_display += '<br><div id="Back_Drink_S_potion"><a style="padding-top: 75px;" class="icon tooltip-right" tooltip-data="뒤로" href = "EXEC: menu_form = 5 & gt ''demo_menu_form''"><img src = "content\pic\ui overhaul\back.png"></a></div>'
+	$text_display += '<br><div id="Cancel_Drink_S_potion"><a style="padding-top: 75px;" class="icon tooltip-right" tooltip-data="취소" href = "EXEC: menu_form = 0 & gt ''demo_menu_form''"><img src = "content\pic\ui overhaul\cancel.png"></a></div>'
+end
+
+if menu_form = 57:
+	if lab_store["koffe"] > 0:
+		$text_display += '<br><div id="under">카므라 마시기 (<<lab_store["koffe"]>>)<br><div id = "clear"><a href = ''EXEC: interaction = 571 & gt "interaction"''><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += '{<br><div id="under_gray">카므라가 다 떨어짐<br></div>}'
+	end
+	if lab_store["kanabis"] > 0:
+		$text_display += '<br><div id="under">다투라 태우기 (<<lab_store["kanabis"]>>)<br><div id = "clear"><a href = ''EXEC: interaction = 572 & gt "interaction"''><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += '{<br><div id="under_gray">다투라가 다 떨어짐<br></div>}'
+	end
+	if fridge["alcohol"] > 0:
+		$text_display += '<br><div id="under">술 들이켜기 (<<fridge["alcohol"]>>)<br><div id = "clear"><a href = ''EXEC: interaction = 573 & gt "interaction"''><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += '{<br><div id="under_gray">술이 다 떨어짐<br></div>}'
+	end
+	if lab_store["meth"] > 0:
+		$text_display += '<br><div id="under">요정의 가루 (<<lab_store["meth"]>>)<br><div id = "clear"><a href = ''EXEC: interaction = 574 & gt "interaction"''><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += '<br><div id="under_gray">요정의 가루가 다 떨어짐<br></div>}'
+	end
+	if lab_store["opium"] > 0:
+		$text_display += '<br><div id="under">망각의 정수 (<<lab_store["opium"]>>)<br><div id = "clear"><a href = ''EXEC: interaction = 575 & gt "interaction"''><img src = "content\pic\clear.png"></a></div></div>'
+	else
+		$text_display += '{<br><div id="under_gray">망각의 정수가 다 떨어짐<br></div>}'
+	end
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 5 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 111:
+	$text_display += {<br><div id="under">저에 대해 어떻게 생각하세요?<br><div id = "clear"><a href = 'EXEC: interaction = 1112 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">당신이 싫어하는 게 있나요?<br><div id = "clear"><a href = 'EXEC: interaction = 1115 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">제게 바라는 게 있나요?<br><div id = "clear"><a href = 'EXEC: interaction = 1113 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">기분은 어때요?<br><div id = "clear"><a href = 'EXEC: interaction = 1116 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">뭘 하고 싶나요?<br><div id = "clear"><a href = 'EXEC: interaction = 1114 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">과거 이야기를 들려줘<br><div id = "clear"><a href = 'EXEC: interaction = 1111 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 11 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 112:
+	if slave_already_done_today['1121'] = 0:
+		$text_display += {<br><div id="under">그녀에게 자기 처지를 설명하기<br><div id = "clear"><a href = 'EXEC: interaction = 1121 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">자기 처지를 설명하기<br></div>}
+	end
+	if slave_already_done_today['1122'] = 0:
+		$text_display += {<br><div id="under">격려하기<br><div id = "clear"><a href = 'EXEC: interaction = 1122 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">격려하기<br></div>}
+	end
+	if slave_already_done_today['1123'] = 0:
+		$text_display += {<br><div id="under">협박하기<br><div id = "clear"><a href = 'EXEC: interaction = 1123 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">협박하기<br></div>}
+	end
+	if slave_already_done_today['1124'] = 0 and slave['spoil'] > 0:
+		$text_display += {<br><div id="under">분수 알게 하기<br><div id = "clear"><a href = 'EXEC: interaction = 1124 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">제자리에 앉히기<br></div>}
+	end
+!	FUNC('$menu', 'goto', $menu_item_new_name, menu_new_name, 'interaction', 'interaction', 'Give new name', 'Give ward new name')
+!	FUNC('$menu', 'menu_form', $menu_item_tolerant_girl, menu_tolerant_slave, 'Teach tolerance', 'Give a lecture on tolerance. In Eternal Rome, everyone is equal or at least slaves are.')
+!	FUNC('$menu', 'menu_form', $menu_item_bigotry_girl, menu_bigotry_slave, 'Teach intolerance', 'Give a lecture on what distinguishes some people from others. In Eternal Rome, there are those who are more equal than others.')
+	$text_display += {<br><div id="under">새 이름 주기<br><div id = "clear"><a href = 'EXEC: interaction = 1125 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}	
+	FUNC('$menu', '===END===')
+
+!	$text_display += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 11 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+!	$text_display += {<br><div id="under">Cancel <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 121:
+	if house_mess > 0:
+		$text_display += {<br><div id="under">메이드 수업<br><div id = "clear"><a href = 'EXEC: interaction = 1211 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">메이드 수업<br></div>}
+	end
+	if kitchen > 0:
+		$text_display += {<br><div id="under">요리 수업<br><div id = "clear"><a href = 'EXEC: interaction = 1212 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">요리 수업<br></div>}
+	end
+	$text_display += {<br><div id="under">비서 수업<br><div id = "clear"><a href = 'EXEC: interaction = 1214 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">화술 수업<br><div id = "clear"><a href = 'EXEC: interaction = 1231 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">간호 수업<br><div id = "clear"><a href = 'EXEC: interaction = 1213 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	if lab = 1:
+		$text_display += {<br><div id="under">연금술 수업<br><div id = "clear"><a href = 'EXEC: interaction = 1243 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">연금술 수업<br></div>}
+	end
+	if library >= 0:
+		$text_display += {<br><div id="under">마법력 수업<br><div id = "clear"><a href = 'EXEC: interaction = 1244 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">마법력 수업<br></div>}
+	end
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 12 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 122:
+	$text_display += {<br><div id="under">체육 수업<br><div id = "clear"><a href = 'EXEC: interaction = 1221 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">춤 수업<br><div id = "clear"><a href = 'EXEC: interaction = 1222 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">여검투사 수업<br><div id = "clear"><a href = 'EXEC: interaction = 1223 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 12 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 123:
+	$text_display += {<br><div id="under">음악 수업<br><div id = "clear"><a href = 'EXEC: menu_form = 1233 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">그림 수업<br><div id = "clear"><a href = 'EXEC: interaction = 1234 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 12 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 124:
+	$text_display += {<br><div id="under">펫 수업 <br><div id = "clear"><a href = 'EXEC: interaction = 1241 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	!$text_display += {<br><div id="under">Pet Lesson (Dog)<br><div id = "clear"><a href = 'EXEC: interaction = 1242 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	if slave['stamina'] >= 2:
+		$text_display += {<br><div id="under">Pony Racing Lesson<br><div id = "clear"><a href = 'EXEC: interaction = 1224 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Pony Racing Lesson<br></div>}
+	end
+	!if slave['stamina'] >= 3:
+	!	$text_display += {<br><div id="under">Chariot Racing Lesson<br><div id = "clear"><a href = 'EXEC: interaction = 1225 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	!else
+	!	$text_display += {<br><div id="under_gray">Chariot Racing Lesson<br></div>}
+	!end
+	if slave['stamina'] >= 2:
+		$text_display += {<br><div id="under">Cow Lesson<br><div id = "clear"><a href = 'EXEC: interaction = 1226 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Cow Lesson<br></div>}
+	end
+	$text_display += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 12 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Cancel <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 1233:
+	if slave["music"] = 0:
+		$text_display += {<br><div id="under">Percussion<br><div id = "clear"><a href = 'EXEC: interaction = 112331 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Percussion<br></div>}
+	end
+	if slave["music"] = 1:
+		$text_display += {<br><div id="under">Singing<br><div id = "clear"><a href = 'EXEC: interaction = 112332 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Singing<br></div>}
+	end
+	if slave["music"] = 2:
+		$text_display += {<br><div id="under">Woodwinds<br><div id = "clear"><a href = 'EXEC: interaction = 112333 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Woodwinds<br></div>}
+	end
+	if slave["music"] = 3:
+		$text_display += {<br><div id="under">Piano<br><div id = "clear"><a href = 'EXEC: interaction = 112334 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Piano<br></div>}
+	end
+	if slave["music"] = 4:
+		$text_display += {<br><div id="under">Strings<br><div id = "clear"><a href = 'EXEC: interaction = 112335 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Strings<br></div>}
+	end
+	$text_display += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 123 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Cancel <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 131:
+	$text_display += {<br><div id="under">Handjob<br><div id = "clear"><a href = 'EXEC: interaction = 1311 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Footjob<br><div id = "clear"><a href = 'EXEC: interaction = 1312 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Rubbing<br><div id = "clear"><a href = 'EXEC: interaction = 1313 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Paizuri<br><div id = "clear"><a href = 'EXEC: interaction = 1314 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 13 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Cancel <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 132:
+	$text_display += {<br><div id="under">Kissing<br><div id = "clear"><a href = 'EXEC: interaction = 1321 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Licking<br><div id = "clear"><a href = 'EXEC: interaction = 1322 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Blowjob<br><div id = "clear"><a href = 'EXEC: interaction = 1323 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Irrumatio<br><div id = "clear"><a href = 'EXEC: interaction = 1324 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Rimming<br><div id = "clear"><a href = 'EXEC: interaction = 1325 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 13 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Cancel <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 133:
+	$text_display += {<br><div id="under">Vaginal sex<br><div id = "clear"><a href = 'EXEC: interaction = 1331 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Fisting<br><div id = "clear"><a href = 'EXEC: interaction = 1333 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Anal sex<br><div id = "clear"><a href = 'EXEC: interaction = 1332 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Anal fisting<br><div id = "clear"><a href = 'EXEC: interaction = 1334 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 13 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Cancel <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 136:
+	if bath > 0:
+		$text_display += {<br><div id="under">Enema<br><div id = "clear"><a href = 'EXEC: interaction = 1365 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Enema<br></div>}
+	end
+	$text_display += {<br><div id="under">Masochism<br><div id = "clear"><a href = 'EXEC: interaction = 1361 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Self-torture<br><div id = "clear"><a href = 'EXEC: interaction = 1362 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	if bath > 0:
+		$text_display += {<br><div id="under">Golden shower<br><div id = "clear"><a href = 'EXEC: interaction = 1363 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Golden shower<br></div>}
+	end
+	if bath > 0:
+		$text_display += {<br><div id="under">Coprophagia<br><div id = "clear"><a href = 'EXEC: interaction = 1364 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Coprophagia<br></div>}
+	end
+	$text_display += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 13 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Cancel <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 137:
+	$text_display += {<br><div id="under">Seduction<br><div id = "clear"><a href = 'EXEC: interaction = 1371 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Masturbation<br><div id = "clear"><a href = 'EXEC: interaction = 1372 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Dildo<br><div id = "clear"><a href = 'EXEC: interaction = 1373 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Worship and humiliation<br><div id = "clear"><a href = 'EXEC: interaction = 1375 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Exhibitionism<br><div id = "clear"><a href = 'EXEC: interaction = 1374 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 13 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Cancel <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 141:
+	$text_display += {<br><div id="under">Strictly chastise (=1)<br><div id = "clear"><a href = 'EXEC: interaction = 1411 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Roughly scold (=1)<br><div id = "clear"><a href = 'EXEC: interaction = 1412 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Threaten with sale (=2)<br><div id = "clear"><a href = 'EXEC: interaction = 1414 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Threaten with tortures (=2)<br><div id = "clear"><a href = 'EXEC: interaction = 1413 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Threaten with death (=3)<br><div id = "clear"><a href = 'EXEC: interaction = 1415 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 14 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Cancel <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 142:
+	$text_display += {<br><div id="under">Paddle (=2)<br><div id = "clear"><a href = 'EXEC: interaction = 1421 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Slap (=2)<br><div id = "clear"><a href = 'EXEC: interaction = 1422 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Pinch (=2)<br><div id = "clear"><a href = 'EXEC: interaction = 1423 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Hit in the stomach (=3)<br><div id = "clear"><a href = 'EXEC: interaction = 1424 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Beat brutally (=4)<br><div id = "clear"><a href = 'EXEC: interaction = 1425 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 14 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Cancel <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 143:
+	$text_display += {<br><div id="under">Spank with slipper (=1)<br><div id = "clear"><a href = 'EXEC: interaction = 1431 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Flog with belt (=2)<br><div id = "clear"><a href = 'EXEC: interaction = 1432 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Flog with cane (=4)<br><div id = "clear"><a href = 'EXEC: interaction = 1433 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 14 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Cancel <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 146:
+	$text_display += {<br><div id="under">Put into a corner (=1)<br><div id = "clear"><a href = 'EXEC: interaction = 1461 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Put on peas (=2)<br><div id = "clear"><a href = 'EXEC: interaction = 1462 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	if vibrator > 0:
+		$text_display += {<br><div id="under">Erotic bondage (=3 to 4)<br><div id = "clear"><a href = 'EXEC: interaction = 1466 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Erotic bondage<br></div>}
+	end
+	$text_display += {<br><div id="under">Painful bondage (=3 to 4)<br><div id = "clear"><a href = 'EXEC: interaction = 1467 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 14 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Cancel <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+
+if menu_form = 151:
+	$text_display = ''
+	$text_display += {<br><div id="under">Stroll on the roof (=1)<br><div id = "clear"><a href = 'EXEC: interaction = 1511 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 15 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Cancel <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+full_day = slave['stamina'] - 1
+if full_day < 1: full_day = 1
+
+if menu_form = 152:
+	if slave['energy'] >= 1:
+		$text_display += {<br><div id="under">An hour of rest (=1)<br><div id = "clear"><a href = 'EXEC: interaction = 1521 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">An hour of rest (=1)<br></div>}
+	end
+	if slave['energy'] >= 1 and boardgames >= 0:
+		$text_display += {<br><div id="under">An hour of fun (=1)<br><div id = "clear"><a href = 'EXEC: interaction = 1522 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">An hour of fun (=1)<br></div>}
+	end
+	if slave['energy'] >= full_day:
+		$text_display += {<br><div id="under">Day off for rest (=2)<br><div id = "clear"><a href = 'EXEC: interaction = 1523 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Day off for rest (=2)<br></div>}
+	end
+	if slave['energy'] >= full_day and boardgames >= 0:
+		$text_display += {<br><div id="under">Day off for fun (=2)<br><div id = "clear"><a href = 'EXEC: interaction = 1524 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Day off for fun (=2)<br></div>}
+	end
+	$text_display += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 15 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Cancel <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 153:
+	if slave["obedience"] > 0:
+		$text_display += {<br><div id="under">Gentle hug (=2)<br><div id = "clear"><a href = 'EXEC: interaction = 1531 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+		else
+		$text_display += {<br><div id="under_gray">Gentle hug (=2)<br></div>}
+	end
+	if slave["obedience"] > 1:
+		$text_display += {<br><div id="under">Sensual massage (=3)<br><div id = "clear"><a href = 'EXEC: interaction = 1532 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Sensual massage (=3)<br></div>}
+	end
+	if slave["obedience"] > 2 and slave["arousal"] > 0:
+		$text_display += {<br><div id="under">Petting (=4)<br><div id = "clear"><a href = 'EXEC: interaction = 1533 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Petting (=4)<br></div>}
+	end
+	if slave["obedience"] > 2 and slave["arousal"] > 1:
+		$text_display += {<br><div id="under">Vibes (=4)<br><div id = "clear"><a href = 'EXEC: interaction = 1534 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Vibes (=4)<br></div>}
+	end
+	if slave["obedience"] > 2 and slave["arousal"] > 2:
+		$text_display += {<br><div id="under">Cunnilingus (=5)<br><div id = "clear"><a href = 'EXEC: interaction = 1535 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Cunnilingus (=5)<br></div>}
+	end
+	$text_display += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 15 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Cancel <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 154:
+	if sparks >= 2:
+		$text_display += {<br><div id="under">Bouquet of flowers ($2) (=1)<br><div id = "clear"><a href = 'EXEC: interaction = 1541 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Bouquet of flowers ($2) (=1)<br></div>}
+	end
+	if sparks >= 9:
+		$text_display += {<div id="under">Warm plaid ($9) (=2)<br><div id = "clear"><a href = 'EXEC: interaction = 1542 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<div id="under_gray">Warm plaid ($9) (=2)<br></div>}
+	end
+	if sparks >= 15:
+		$text_display += {<div id="under">Plush toy ($15) (=3)<br><div id = "clear"><a href = 'EXEC: interaction = 1543 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<div id="under_gray">Plush toy ($15) (=3)<br></div>}
+	end
+	if sparks >= 25:
+		$text_display += {<div id="under">Perfume ($20) (=4)<br><div id = "clear"><a href = 'EXEC: interaction = 1544 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<div id="under_gray">Perfume ($20) (=4)<br></div>}
+	end
+	if sparks >= 50 and slave_inventory['pony'] = 0:
+		$text_display += {<div id="under">Mini-pony ($50 + $1/day) (=5)<br><div id = "clear"><a href = 'EXEC: interaction = 1545 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<div id="under_gray">Mini-pony ($50 + $1/day) (=5)<br></div>}
+	end
+	$text_display += {<br><div id="under">Clothes <br><div id = "clear"><a href = 'EXEC: menu_form = 1547 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Accessories <br><div id = "clear"><a href = 'EXEC: menu_form = 1546 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Sweet treats <br><div id = "clear"><a href = 'EXEC: menu_form = 155 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 15 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Cancel <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 1546:
+	if sparks >= 3:
+		$text_display += {<br><div id="under">Headband ($3) (=1)<br><div id = "clear"><a href = 'EXEC: interaction = 15461 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Headband ($3) (=1)<br></div>}
+	end
+	if sparks >= 3:
+		$text_display += {<br><div id="under">Elegant ring ($3) (=2)<br><div id = "clear"><a href = 'EXEC: interaction = 15462 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Elegant ring ($3) (=2)<br></div>}
+	end
+	if sparks >= 5:
+		$text_display += {<br><div id="under">Gemstone earrings ($5) (=3)<br><div id = "clear"><a href = 'EXEC: interaction = 15463 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Gemstone earrings ($5) (=3)<br></div>}
+	end
+	if sparks >= 10:
+		$text_display += {<br><div id="under">Sparkling necklace ($10) (=4)<br><div id = "clear"><a href = 'EXEC: interaction = 15464 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Sparkling necklace ($10) (=4)<br></div>}
+	end
+	if sparks >= 20:
+		$text_display += {<br><div id="under">Precious tiara ($20) (=5)<br><div id = "clear"><a href = 'EXEC: interaction = 15465 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Precious tiara ($20) (=5)<br></div>}
+	end
+	$text_display += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 154 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">Cancel <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 1547:
+
+	if sparks >= 5:
+		$text_display += {<br><div id="under">Soft slippers ($5) (=1)<br><div id = "clear"><a href = 'EXEC: interaction = 15471 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Soft slippers ($5) (=1)<br></div>}
+	end
+	if sparks >= 5:
+		$text_display += {<br><div id="under">Sundress ($5) (=2)<br><div id = "clear"><a href = 'EXEC: interaction = 15472 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Sundress ($5) (=2)<br></div>}
+	end
+	if sparks >= 10:
+		$text_display += {<br><div id="under">Gown ($10) (=3)<br><div id = "clear"><a href = 'EXEC: interaction = 15473 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Gown ($10) (=3)<br></div>}
+	end
+	if sparks >= 50:
+		$text_display += {<br><div id="under">Gorgeous dress ($50) (=4)<br><div id = "clear"><a href = 'EXEC: interaction = 15474 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">화려한 드레스 ($50) (=4)<br></div>}
+	end
+	if sparks >= 100:
+		$text_display += {<br><div id="under">웨딩드레스 ($100) (=5)<br><div id = "clear"><a href = 'EXEC: interaction = 15475 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">Wedding dress ($100) (=5)<br></div>}
+	end
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 154 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+
+if menu_form = 155:
+	if sparks >= 1:
+		$text_display += {<br><div id="under">초콜릿 ($1) (=1)<br><div id = "clear"><a href = 'EXEC: interaction = 1551 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">초콜릿 ($1) (=1)<br></div>}
+	end
+	if sparks >= 2:
+		$text_display += {<br><div id="under">크림 케이크 ($2) (=2)<br><div id = "clear"><a href = 'EXEC: interaction = 1552 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">크림 케이크 ($2) (=2)<br></div>}
+	end
+	if sparks >= 4:
+		$text_display += {<br><div id="under">바나나 선데이 ($4) (=3)<br><div id = "clear"><a href = 'EXEC: interaction = 1553 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">바나나 선데이 ($4) (=3)<br></div>}
+	end
+	if sparks >= 8:
+		$text_display += {<br><div id="under">유포리젤리 ($8) (=4)<br><div id = "clear"><a href = 'EXEC: interaction = 1554 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">유포리젤리 ($8) (=4)<br></div>}
+	end
+	if sparks >= 25:
+		$text_display += {<br><div id="under">베스투리아의 암브로시아 ($25) (=5)<br><div id = "clear"><a href = 'EXEC: interaction = 1555 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">베스투리아의 암브로시아 ($25) (=5)<br></div>}
+	end
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 154 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 156:
+	$text_display += {<br><div id="under">아주 조금 인정해 주기 (=1)<br><div id = "clear"><a href = 'EXEC: interaction = 1561 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">칭찬하기 (=1)<br><div id = "clear"><a href = 'EXEC: interaction = 1562 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">무게감 있는 칭찬 (=2)<br><div id = "clear"><a href = 'EXEC: interaction = 1563 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">보상을 약속하기 (=2)<br><div id = "clear"><a href = 'EXEC: interaction = 1564 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">선물을 약속하기 (=3)<br><div id = "clear"><a href = 'EXEC: interaction = 1565 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 15 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 541:
+	if bath > 0:
+		$text_display += {<br><div id="under">날 씻겨라<br><div id = "clear"><a href = 'EXEC: interaction = 5411 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">날 씻겨라<br></div>}
+	end
+	$text_display += {<br><div id="under">마사지해라<br><div id = "clear"><a href = 'EXEC: interaction = 5412 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">날 즐겁게 해라<br><div id = "clear"><a href = 'EXEC: menu_form = 5413 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	if master_excitement >= 0:
+		$text_display += {<br><div id="under">능동 섹스<br><div id = "clear"><a href = 'EXEC: interaction = 5415 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+		$text_display += {<br><div id="under">편안한 질 섹스<br><div id = "clear"><a href = 'EXEC: interaction = 5414 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+		$text_display += {<br><div id="under">편안한 애널 섹스<br><div id = "clear"><a href = 'EXEC: interaction = 54141 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+		$text_display += {<br><div id="under">편안한 구강 섹스<br><div id = "clear"><a href = 'EXEC: interaction = 54142 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$text_display += {<br><div id="under_gray">능동 섹스<br></div>}
+		$text_display += {<br><div id="under_gray">편안한 질 섹스<br></div>}
+		$text_display += {<br><div id="under_gray">편안한 애널 섹스<br></div>}
+		$text_display += {<br><div id="under_gray">편안한 구강 섹스<br></div>}
+	end
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 5 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 5413:
+	$text_display += {<br><div id="under">연주회<br><div id = "clear"><a href = 'EXEC: interaction = 54131 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">곡예<br><div id = "clear"><a href = 'EXEC: interaction = 54132 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">스트립쇼<br><div id = "clear"><a href = 'EXEC: interaction = 54133 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">에로틱 쇼<br><div id = "clear"><a href = 'EXEC: interaction = 54134 & gt "interaction"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">뒤로 <br><div id = "clear"><a href = 'EXEC: menu_form = 541 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	$text_display += {<br><div id="under">취소 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 1000:
+	$text_display = {<BR><div id="under">일어나 <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+end
+
+if menu_form = 2000:
+	$setting_display += {<div id="under_gray">{ 자동 저장 방식 }<br></div>}
+
+	$setting_display += {<br><div id="under_gray">{ 매일 아침 }<br></div>}
+	if autosave_day ! 1:
+		$setting_display += {<br><div id="under">비활성<br><div id = "clear"><a href = 'EXEC: autosave_day = 1 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$setting_display += {<br><div id="under">활성중<br><div id = "clear"><a href = 'EXEC: autosave_day = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	end
+	$setting_display += {<br><div id="under_gray">{  매 주  }<br></div>}
+	if autosave_decade ! 1:
+		$setting_display += {<br><div id="under">비활성<br><div id = "clear"><a href = 'EXEC: autosave_decade = 1 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$setting_display += {<br><div id="under">활성중<br><div id = "clear"><a href = 'EXEC: autosave_decade = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	end
+
+	$setting_display_r += {<div id="under_gray">{ 시각 설정 }<br></div>}
+	if nsfw ! 1:
+		$setting_display_r += {<br><div id="under">전체 19금 장면 : 활성중<br><div id = "clear"><a href = 'EXEC: nsfw = 1 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+		$setting_display_r += {<br><div id="under">전체 19금 장면 : 비활성<br><div id = "clear"><a href = 'EXEC: nsfw = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	end
+
+	$setting_display_r += {<br><div id="under_gray">{ 음향 설정 }<br></div>}
+	if nsfw_sound_disabled = 0:
+			$setting_display_r += {<br><div id="under">19금 소리 : 활성중<br><div id="clear"><a href = 'EXEC: nsfw_sound_disabled = 1 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	else
+			$setting_display_r += {<br><div id="under">19금 소리 : 비활성<br><div id="clear"><a href = 'EXEC: nsfw_sound_disabled = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+	end
+
+	$setting_display_c += {<br><div id="under">Back <br><div id = "clear"><a href = 'EXEC: menu_form = 0 & gt "demo_menu_form"'><img src = "content\pic\clear.png"></a></div></div>}
+
+	! $setting_display_c2 += {<br><div id="under_gray"> Next <br></div>}
+end
+
+gt 'main_screen'
+------------ demo_menu_form ------------

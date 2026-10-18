@@ -1,0 +1,8 @@
+# goto_loc1
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2950 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'goto_loc1': gs 'snk_room_bridge', 'guard', 'goto_loc1'
+! JO9 MOD END J9M2950
+interaction_city = 331
+gt 'interaction_city'
+------------ goto_loc1 ------------

@@ -1,0 +1,56 @@
+# end_contract
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2852 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'end_contract': gs 'snk_room_bridge', 'guard', 'end_contract'
+! JO9 MOD END J9M2852
+!Обрабатываем завершение контракта на обучение рабыни
+!unused location
+
+:loop
+if $slave['contractor'] ! '':
+	$npc_id = $slave['contractor']
+	dynamic $npc_preferences[$npc_id]
+	gs '$slave_price'
+
+	if price >= npc_worth[$npc_id] and npc_bennies[$npc_id] > 0:
+		npc_bennies[$npc_id] -= 1
+! JO9 MOD START TBV_OLD_REWARD_end_contract_14 | 2026-10-17_trait_value
+		npc_relations[$npc_id] += func('jo9_traits_value', 'reward', 'slave', 1)
+! JO9 MOD END TBV_OLD_REWARD_end_contract_14
+! JO9 MOD START TBV_OLD_REWARD_end_contract_15 | 2026-10-17_trait_value
+		brand_rate += func('jo9_traits_value', 'reward', 'slave', 1)
+! JO9 MOD END TBV_OLD_REWARD_end_contract_15
+	else
+		if npc_bennies[$npc_id] > 0:
+			npc_bennies[$npc_id] -= 1
+			npc_relations[$npc_id] -= 2
+			brand_rate -= 1
+		end
+	end
+
+	dynamic $sold_clothing
+	dynamic $clear_slave_instance, 'slave'
+	sparks += npc_reward[$npc_id]
+	contract_done = 1
+end
+
+if $prisoner['contractor'] ! '' and contract_done = 0:
+	gs 'slave_to_cage'
+	jump 'loop'
+end
+
+if $cow['contractor'] ! '' and contract_done = 0:
+	gs 'slave_to_cow'
+	jump 'loop'
+end
+
+if contract_done = 0:
+	contract_fail = 1
+	contract_penalty = npc_worth[$npc_id]*2
+	sparks -= contract_penalty
+end
+
+contract['time'] = 0
+end_contract = 0
+
+------------ end_contract ------------

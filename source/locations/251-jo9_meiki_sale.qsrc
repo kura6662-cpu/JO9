@@ -1,0 +1,98 @@
+# jo9_meiki_sale
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M3029 | 2026-10-16_meiki_customer_max_price | changed block; context may be included
+! JO9_MEIKI_SALE_V1: price selection only; local scratch variables do not persist.
+result = 0
+if $args[0] = 'eligible':
+! JO9 MOD START TBV_HAGGLE_ELIGIBLE | 2026-10-17_trait_value
+ if slave['virginity'] ! 4 and slave['jo9_peerless'] ! 1: exit
+! JO9 MOD END TBV_HAGGLE_ELIGIBLE
+ if $interesting_specialisation[$npc_id] = 'concubine': result = 1
+ if max(stat_importance['petting'], stat_importance['oral'], stat_importance['penetration'], stat_importance['orgy'], stat_importance['roleplay'], stat_importance['fetishism'], stat_importance['xenophily'], stat_importance['lesbiansex'], stat_importance['nipplefuck']) > 0: result = 1
+ if max(demand['lesbiansex'], demand['nipplefuck'], demand['selftorture'], demand['golden_shower']) > 0: result = 1
+ exit
+end
+! JO9 MOD START TBV_HAGGLE_NATIVE57 | 2026-10-17_trait_value
+if $args[0] = 'roll':
+ jo9_trait_value_haggle_base = common_price[demand_rating[$npc_id]]
+ jo9_trait_value_haggle_unit = jo9_trait_value_haggle_base / 100
+ jo9_trait_value_haggle_brand = 1 + (brand_reputation - 1) / 2
+ jo9_trait_value_haggle_rating = (rating - demand_rating[$npc_id]) / 2
+ jo9_trait_value_haggle_excess = 0
+ if (demand_rating[$npc_id] + 1) / 2 = 1: jo9_trait_value_haggle_excess = charm - 6
+ if (demand_rating[$npc_id] + 1) / 2 = 2: jo9_trait_value_haggle_excess = charm - 12
+ if (demand_rating[$npc_id] + 1) / 2 = 3: jo9_trait_value_haggle_excess = charm - 18
+ if (demand_rating[$npc_id] + 1) / 2 = 4: jo9_trait_value_haggle_excess = charm - 24
+ if (demand_rating[$npc_id] + 1) / 2 = 5: jo9_trait_value_haggle_excess = 2 * (charm - 38)
+ jo9_trait_value_haggle_factor = 0
+ if jo9_trait_value_haggle_excess < 0:
+  jo9_trait_value_haggle_factor = 0
+ elseif jo9_trait_value_haggle_excess <= 7:
+  jo9_trait_value_haggle_factor = 1
+ elseif jo9_trait_value_haggle_excess < 15:
+  jo9_trait_value_haggle_factor = 2
+ else
+  jo9_trait_value_haggle_factor = 3
+ end
+ jo9_trait_value_haggle_best = -2147483647
+ jo9_trait_value_haggle_best_roll = 0
+ jo9_trait_value_haggle_i = 0
+ jo9_trait_value_haggle_roll = 0
+ jo9_trait_value_haggle_charm_coefficient = 0
+ jo9_trait_value_haggle_charm_bonus = 0
+ jo9_trait_value_haggle_chance = 0
+ jo9_trait_value_haggle_master_coefficient = 0
+ jo9_trait_value_haggle_master_bonus = 0
+ jo9_trait_value_haggle_price = 0
+ ! Within each master coefficient interval the highest price is at its right endpoint.
+ ! Keep the extra 65536 endpoint: QSP integer division reaches coefficient 9 there.
+ jo9_trait_value_haggle_i = 0
+ :jo9_trait_value_haggle_loop
+  jo9_trait_value_haggle_roll = min(65536, 16384 * (jo9_trait_value_haggle_i + 1) - 1)
+  jo9_trait_value_haggle_charm_coefficient = demand_rating[$npc_id] + jo9_trait_value_haggle_roll / (65537 / (1 + demand_rating[$npc_id]))
+  jo9_trait_value_haggle_charm_bonus = jo9_trait_value_haggle_unit * (jo9_trait_value_haggle_excess / 2 + jo9_trait_value_haggle_charm_coefficient + 2 * jo9_trait_value_haggle_brand + 3 * jo9_trait_value_haggle_rating)
+  jo9_trait_value_haggle_price = jo9_trait_value_haggle_base
+  if jo9_trait_value_haggle_factor = 2: jo9_trait_value_haggle_price += jo9_trait_value_haggle_charm_bonus
+  if jo9_trait_value_haggle_factor = 3: jo9_trait_value_haggle_price += jo9_trait_value_haggle_charm_bonus + jo9_trait_value_haggle_charm_bonus / 2
+  jo9_trait_value_haggle_chance = master_cha + master_domination + master_style + master_str + 4 * personal_relations[$npc_id] + jo9_trait_value_haggle_roll / (65537 / 77)
+  if custom_game = 0 and hero_choice = 4: jo9_trait_value_haggle_chance += 2 * master_cha
+  jo9_trait_value_haggle_master_coefficient = 5 + jo9_trait_value_haggle_roll / (65537 / 4)
+  jo9_trait_value_haggle_master_bonus = jo9_trait_value_haggle_unit * (jo9_trait_value_haggle_master_coefficient + jo9_trait_value_haggle_rating) * (jo9_trait_value_haggle_factor + jo9_trait_value_haggle_brand) / 2
+  if jo9_trait_value_haggle_chance <= 30:
+   jo9_trait_value_haggle_master_bonus -= jo9_trait_value_haggle_unit * jo9_trait_value_haggle_rating
+   jo9_trait_value_haggle_price -= jo9_trait_value_haggle_master_bonus
+  elseif jo9_trait_value_haggle_chance <= 49:
+   jo9_trait_value_haggle_price += 0
+  elseif jo9_trait_value_haggle_chance <= 68:
+   jo9_trait_value_haggle_price += jo9_trait_value_haggle_master_bonus
+  else
+   jo9_trait_value_haggle_price += jo9_trait_value_haggle_master_bonus + jo9_trait_value_haggle_master_bonus / 2
+  end
+  if jo9_trait_value_haggle_price > jo9_trait_value_haggle_best:
+   jo9_trait_value_haggle_best = jo9_trait_value_haggle_price
+   jo9_trait_value_haggle_best_roll = jo9_trait_value_haggle_roll
+  end
+  jo9_trait_value_haggle_i += 1
+ if jo9_trait_value_haggle_i <= 4: jump 'jo9_trait_value_haggle_loop'
+ result = jo9_trait_value_haggle_best_roll
+ killvar 'jo9_trait_value_haggle_base'
+ killvar 'jo9_trait_value_haggle_unit'
+ killvar 'jo9_trait_value_haggle_brand'
+ killvar 'jo9_trait_value_haggle_rating'
+ killvar 'jo9_trait_value_haggle_excess'
+ killvar 'jo9_trait_value_haggle_factor'
+ killvar 'jo9_trait_value_haggle_best'
+ killvar 'jo9_trait_value_haggle_best_roll'
+ killvar 'jo9_trait_value_haggle_i'
+ killvar 'jo9_trait_value_haggle_roll'
+ killvar 'jo9_trait_value_haggle_charm_coefficient'
+ killvar 'jo9_trait_value_haggle_charm_bonus'
+ killvar 'jo9_trait_value_haggle_chance'
+ killvar 'jo9_trait_value_haggle_master_coefficient'
+ killvar 'jo9_trait_value_haggle_master_bonus'
+ killvar 'jo9_trait_value_haggle_price'
+end
+! JO9 MOD END TBV_HAGGLE_NATIVE57
+! JO9 MOD END J9M3029
+
+------------ jo9_meiki_sale ------------

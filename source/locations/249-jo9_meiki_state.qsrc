@@ -1,0 +1,235 @@
+# jo9_meiki_state
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M3027 | 2026-10-15_zz_meiki_state, 2026-10-15_zzz_meiki_training | changed block; context may be included
+! JO9_STATE_V2: state bookkeeping only; args[1]=1 permits the first-transition roll.
+if $args[0] = 'slave' and func('jo9_meiki_checks', 'age', slave['age']) = 1:
+ if slave['jo9_meiki_initialized'] = 0:
+  slave['jo9_meiki_initialized'] = 1
+  slave['jo9_meiki_prev'] = slave['virginity']
+  if slave['virginity'] > 0:
+   slave['jo9_meiki_checked'] = 1
+  end
+ end
+ if slave['virginity'] = 4:
+  slave['jo9_meiki_known'] = 1
+  slave['jo9_meiki_checked'] = 1
+ end
+ if slave['virginity'] = 1:
+  slave['jo9_meiki_checked'] = 1
+ end
+ if slave['jo9_meiki_prev'] = 0 and slave['virginity'] >= 2 and slave['jo9_meiki_checked'] = 0:
+  slave['jo9_meiki_checked'] = 1
+  if args[1] = 1:
+   if rand(1, 100) <= 5:
+    slave['jo9_meiki_known'] = 1
+   end
+  end
+ end
+ if slave['jo9_meiki_known'] = 1 and slave['virginity'] >= 2:
+  slave['virginity'] = 4
+  ! JO9_TRAINING_V3: one-time grant; reuse initialization revision, preserve higher existing ranks.
+  if slave['jo9_meiki_initialized'] < 2:
+   slave['sub_vaginal'] = max(slave['sub_vaginal'], 5)
+   slave['sub_threesome'] = max(slave['sub_threesome'], 3)
+   slave['sub_dp'] = max(slave['sub_dp'], 3)
+   slave['sub_tp'] = max(slave['sub_tp'], 3)
+   slave['sub_gangbang'] = max(slave['sub_gangbang'], 3)
+   slave['sub_bukkake'] = max(slave['sub_bukkake'], 3)
+   slave['jo9_meiki_initialized'] = 2
+  end
+ end
+ slave['jo9_meiki_prev'] = slave['virginity']
+end
+if $args[0] = 'assistant' and func('jo9_meiki_checks', 'age', assistant['age']) = 1:
+ if assistant['jo9_meiki_initialized'] = 0:
+  assistant['jo9_meiki_initialized'] = 1
+  assistant['jo9_meiki_prev'] = assistant['virginity']
+  if assistant['virginity'] > 0:
+   assistant['jo9_meiki_checked'] = 1
+  end
+ end
+ if assistant['virginity'] = 4:
+  assistant['jo9_meiki_known'] = 1
+  assistant['jo9_meiki_checked'] = 1
+ end
+ if assistant['virginity'] = 1:
+  assistant['jo9_meiki_checked'] = 1
+ end
+ if assistant['jo9_meiki_prev'] = 0 and assistant['virginity'] >= 2 and assistant['jo9_meiki_checked'] = 0:
+  assistant['jo9_meiki_checked'] = 1
+  if args[1] = 1:
+   if rand(1, 100) <= 5:
+    assistant['jo9_meiki_known'] = 1
+   end
+  end
+ end
+ if assistant['jo9_meiki_known'] = 1 and assistant['virginity'] >= 2:
+  assistant['virginity'] = 4
+  ! JO9_TRAINING_V3: one-time grant; reuse initialization revision, preserve higher existing ranks.
+  if assistant['jo9_meiki_initialized'] < 2:
+   assistant['sub_vaginal'] = max(assistant['sub_vaginal'], 5)
+   assistant['sub_threesome'] = max(assistant['sub_threesome'], 3)
+   assistant['sub_dp'] = max(assistant['sub_dp'], 3)
+   assistant['sub_tp'] = max(assistant['sub_tp'], 3)
+   assistant['sub_gangbang'] = max(assistant['sub_gangbang'], 3)
+   assistant['sub_bukkake'] = max(assistant['sub_bukkake'], 3)
+   assistant['jo9_meiki_initialized'] = 2
+  end
+ end
+ assistant['jo9_meiki_prev'] = assistant['virginity']
+end
+if $args[0] = 'room1' and func('jo9_meiki_checks', 'age', room1['age']) = 1:
+ if room1['jo9_meiki_initialized'] = 0:
+  room1['jo9_meiki_initialized'] = 1
+  room1['jo9_meiki_prev'] = room1['virginity']
+  if room1['virginity'] > 0:
+   room1['jo9_meiki_checked'] = 1
+  end
+ end
+ if room1['virginity'] = 4:
+  room1['jo9_meiki_known'] = 1
+  room1['jo9_meiki_checked'] = 1
+ end
+ if room1['virginity'] = 1:
+  room1['jo9_meiki_checked'] = 1
+ end
+ if room1['jo9_meiki_prev'] = 0 and room1['virginity'] >= 2 and room1['jo9_meiki_checked'] = 0:
+  room1['jo9_meiki_checked'] = 1
+  if args[1] = 1:
+   if rand(1, 100) <= 5:
+    room1['jo9_meiki_known'] = 1
+   end
+  end
+ end
+ if room1['jo9_meiki_known'] = 1 and room1['virginity'] >= 2:
+  room1['virginity'] = 4
+  ! JO9_TRAINING_V3: one-time grant; reuse initialization revision, preserve higher existing ranks.
+  if room1['jo9_meiki_initialized'] < 2:
+   room1['sub_vaginal'] = max(room1['sub_vaginal'], 5)
+   room1['sub_threesome'] = max(room1['sub_threesome'], 3)
+   room1['sub_dp'] = max(room1['sub_dp'], 3)
+   room1['sub_tp'] = max(room1['sub_tp'], 3)
+   room1['sub_gangbang'] = max(room1['sub_gangbang'], 3)
+   room1['sub_bukkake'] = max(room1['sub_bukkake'], 3)
+   room1['jo9_meiki_initialized'] = 2
+  end
+ end
+ room1['jo9_meiki_prev'] = room1['virginity']
+end
+if $args[0] = 'room2' and func('jo9_meiki_checks', 'age', room2['age']) = 1:
+ if room2['jo9_meiki_initialized'] = 0:
+  room2['jo9_meiki_initialized'] = 1
+  room2['jo9_meiki_prev'] = room2['virginity']
+  if room2['virginity'] > 0:
+   room2['jo9_meiki_checked'] = 1
+  end
+ end
+ if room2['virginity'] = 4:
+  room2['jo9_meiki_known'] = 1
+  room2['jo9_meiki_checked'] = 1
+ end
+ if room2['virginity'] = 1:
+  room2['jo9_meiki_checked'] = 1
+ end
+ if room2['jo9_meiki_prev'] = 0 and room2['virginity'] >= 2 and room2['jo9_meiki_checked'] = 0:
+  room2['jo9_meiki_checked'] = 1
+  if args[1] = 1:
+   if rand(1, 100) <= 5:
+    room2['jo9_meiki_known'] = 1
+   end
+  end
+ end
+ if room2['jo9_meiki_known'] = 1 and room2['virginity'] >= 2:
+  room2['virginity'] = 4
+  ! JO9_TRAINING_V3: one-time grant; reuse initialization revision, preserve higher existing ranks.
+  if room2['jo9_meiki_initialized'] < 2:
+   room2['sub_vaginal'] = max(room2['sub_vaginal'], 5)
+   room2['sub_threesome'] = max(room2['sub_threesome'], 3)
+   room2['sub_dp'] = max(room2['sub_dp'], 3)
+   room2['sub_tp'] = max(room2['sub_tp'], 3)
+   room2['sub_gangbang'] = max(room2['sub_gangbang'], 3)
+   room2['sub_bukkake'] = max(room2['sub_bukkake'], 3)
+   room2['jo9_meiki_initialized'] = 2
+  end
+ end
+ room2['jo9_meiki_prev'] = room2['virginity']
+end
+if $args[0] = 'room3' and func('jo9_meiki_checks', 'age', room3['age']) = 1:
+ if room3['jo9_meiki_initialized'] = 0:
+  room3['jo9_meiki_initialized'] = 1
+  room3['jo9_meiki_prev'] = room3['virginity']
+  if room3['virginity'] > 0:
+   room3['jo9_meiki_checked'] = 1
+  end
+ end
+ if room3['virginity'] = 4:
+  room3['jo9_meiki_known'] = 1
+  room3['jo9_meiki_checked'] = 1
+ end
+ if room3['virginity'] = 1:
+  room3['jo9_meiki_checked'] = 1
+ end
+ if room3['jo9_meiki_prev'] = 0 and room3['virginity'] >= 2 and room3['jo9_meiki_checked'] = 0:
+  room3['jo9_meiki_checked'] = 1
+  if args[1] = 1:
+   if rand(1, 100) <= 5:
+    room3['jo9_meiki_known'] = 1
+   end
+  end
+ end
+ if room3['jo9_meiki_known'] = 1 and room3['virginity'] >= 2:
+  room3['virginity'] = 4
+  ! JO9_TRAINING_V3: one-time grant; reuse initialization revision, preserve higher existing ranks.
+  if room3['jo9_meiki_initialized'] < 2:
+   room3['sub_vaginal'] = max(room3['sub_vaginal'], 5)
+   room3['sub_threesome'] = max(room3['sub_threesome'], 3)
+   room3['sub_dp'] = max(room3['sub_dp'], 3)
+   room3['sub_tp'] = max(room3['sub_tp'], 3)
+   room3['sub_gangbang'] = max(room3['sub_gangbang'], 3)
+   room3['sub_bukkake'] = max(room3['sub_bukkake'], 3)
+   room3['jo9_meiki_initialized'] = 2
+  end
+ end
+ room3['jo9_meiki_prev'] = room3['virginity']
+end
+if $args[0] = 'room4' and func('jo9_meiki_checks', 'age', room4['age']) = 1:
+ if room4['jo9_meiki_initialized'] = 0:
+  room4['jo9_meiki_initialized'] = 1
+  room4['jo9_meiki_prev'] = room4['virginity']
+  if room4['virginity'] > 0:
+   room4['jo9_meiki_checked'] = 1
+  end
+ end
+ if room4['virginity'] = 4:
+  room4['jo9_meiki_known'] = 1
+  room4['jo9_meiki_checked'] = 1
+ end
+ if room4['virginity'] = 1:
+  room4['jo9_meiki_checked'] = 1
+ end
+ if room4['jo9_meiki_prev'] = 0 and room4['virginity'] >= 2 and room4['jo9_meiki_checked'] = 0:
+  room4['jo9_meiki_checked'] = 1
+  if args[1] = 1:
+   if rand(1, 100) <= 5:
+    room4['jo9_meiki_known'] = 1
+   end
+  end
+ end
+ if room4['jo9_meiki_known'] = 1 and room4['virginity'] >= 2:
+  room4['virginity'] = 4
+  ! JO9_TRAINING_V3: one-time grant; reuse initialization revision, preserve higher existing ranks.
+  if room4['jo9_meiki_initialized'] < 2:
+   room4['sub_vaginal'] = max(room4['sub_vaginal'], 5)
+   room4['sub_threesome'] = max(room4['sub_threesome'], 3)
+   room4['sub_dp'] = max(room4['sub_dp'], 3)
+   room4['sub_tp'] = max(room4['sub_tp'], 3)
+   room4['sub_gangbang'] = max(room4['sub_gangbang'], 3)
+   room4['sub_bukkake'] = max(room4['sub_bukkake'], 3)
+   room4['jo9_meiki_initialized'] = 2
+  end
+ end
+ room4['jo9_meiki_prev'] = room4['virginity']
+end
+! JO9 MOD END J9M3027
+
+------------ jo9_meiki_state ------------

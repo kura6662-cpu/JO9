@@ -1,0 +1,108 @@
+# sex_end
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2914 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'sex_end': gs 'snk_room_bridge', 'guard', 'sex_end'
+! JO9 MOD END J9M2914
+!sex end, use modifiers obtained in the process, returns to normal mode
+$return_lock = $return_lock_prev
+
+gs 'main_layout'
+menu_form = 0
+$onnewloc = '' &! sex_initiate sets this to $sex_newloc - ImperatorAugustus
+
+a = 0
+if master_excitement > sex['pc_boner']: a = master_excitement - sex['pc_boner']
+if a > master_moodlet['pos_satisfied']: master_moodlet['pos_satisfied'] = a
+if a > 1 and sex['climax_count'] > 0 and master_str < 4: master_str_rate += 1
+if a > 0: master_excitement_rate = sex['pc_boner']*16
+a = 0
+
+if $sex_partner = '':
+	if sex['nymphomania_revealed'] = 1 and slave['nymphomania_revealed'] = 0: slave['nymphomania_revealed'] = 1
+	if sex['masochism_revealed'] = 1 and slave['masochism_revealed'] = 0: slave['masochism_revealed'] = 1
+	if sex['darkness_attitude_revealed'] = 1 and slave['darkness_attitude_revealed'] = 0: slave['darkness_attitude_revealed'] = 1
+	if sex['deprivation_attitude_revealed'] = 1 and slave['deprivation_attitude_revealed'] = 0: slave['deprivation_attitude_revealed'] = 1
+	if sex['perversion_revealed'] = 1 and slave['perversion_revealed'] = 0: slave['perversion_revealed'] = 1
+
+	killvar 'slave_already_sex_total'
+	copyarr 'slave_already_sex_total','sex_done_thisperson'
+	killvar 'slave_already_sex_today'
+	copyarr 'slave_already_sex_today','sex_done_today'
+
+	if deflorated = 1:
+! JO9 MOD START J9M2913 | 2026-10-15_zz_meiki_state | changed block; context may be included
+		gs 'jo9_meiki_state', 'slave', 0
+		slave['virginity'] = 2
+		gs 'jo9_meiki_state', 'slave', sex['jo9_meiki_discovery_eligible']
+! JO9 MOD END J9M2913
+		if is_perv ! 0 and slave['age'] = CONST_INT['loli_age']: master_perv_rate += 10
+		if slave['masochism'] ! 2: slave['neg_defloration'] = max(0, 1 + slave['sensitivity'] + slave['pride'] - slave['moral']*2 - slave['arousal'])
+		if slave['neg_defloration'] > 0: gs '$mood_drop', 'slave', slave['neg_defloration']
+	end
+	if sex['climax_count'] > 0:
+		if slave['no_orgasm_rule'] > 0:
+			interaction_slave['sin_potential'] = max (1, slave['moral'])
+			dynamic $sin_gained_now, 'slave'
+		end
+		slave['nymphomania_xp'] += min(3, (1 + sex['climax_count'])/2)
+		slave_rate['arousal'] -= sex['climax_count'] * slave['arousal'] * sex['climax_top']
+		slave_rate['temper'] += min(5, sex['climax_count']) &! +1 per orgasm
+		if slave['temper'] > slave['pride']: slave_rate['instinct'] += min(5, sex['climax_count'])
+		slave['calories'] -= 1 & slave_rate['stamina'] += 1
+		!dynamic $slave_energy_drop
+	end
+	slave['pos_orgasm'] += sex['climax_top'] &! moodlet exponentially decays in next_day -ImperatorAugustus
+	slave['orgasm_type'] = sex['girl_orgasm_type_change']
+	slave['virtue'] = max(0, sex['base_boner'] - sex['pc_boner'])
+	if slave['sententia_veritas'] > 0 and slave['virtue'] > 0: slave['virtue'] += slave['sententia_veritas'] & slave['sententia_veritas'] = 0
+	if slave['virtue'] > 5: slave['virtue'] = 5
+	slave['newness'] = sex['girl_newness']
+end
+
+if $sex_partner = 'assistant':
+	if sex['nymphomania_revealed'] = 1 and assistant['nymphomania_revealed'] = 0: assistant['nymphomania_revealed'] = 1
+	if sex['masochism_revealed'] = 1 and assistant['masochism_revealed'] = 0: assistant['masochism_revealed'] = 1
+	if sex['darkness_attitude_revealed'] = 1 and assistant['darkness_attitude_revealed'] = 0: assistant['darkness_attitude_revealed'] = 1
+	if sex['deprivation_attitude_revealed'] = 1 and assistant['deprivation_attitude_revealed'] = 0: assistant['deprivation_attitude_revealed'] = 1
+	if sex['perversion_revealed'] = 1 and assistant['perversion_revealed'] = 0: assistant['perversion_revealed'] = 1
+
+	killvar 'assistant_already_sex_total'
+	copyarr 'assistant_already_sex_total','sex_done_thisperson'
+	killvar 'assistant_already_sex_today'
+	copyarr 'assistant_already_sex_today','sex_done_today'
+
+	if deflorated = 1:
+! JO9 MOD START J9M2912 | 2026-10-15_zz_meiki_state | changed block; context may be included
+		gs 'jo9_meiki_state', 'assistant', 0
+		assistant['virginity'] = 2
+		gs 'jo9_meiki_state', 'assistant', sex['jo9_meiki_discovery_eligible']
+! JO9 MOD END J9M2912
+		assistant['neg_defloration'] = max(0, 1 + assistant['sensitivity'] + assistant['pride'] - assistant['moral']*2 - assistant['arousal'])
+		if assistant['neg_defloration'] > 0: gs '$mood_drop', 'assistant', assistant['neg_defloration']
+	end
+	if sex['climax_count'] > 0:
+		!if assistant['no_orgasm_rule'] > 0:
+		!	interaction_assistant['sin_potential'] = max (1, assistant['moral'])
+		!	dynamic $sin_gained_now, 'assistant' &! TODO: enable if no_orgasm_rule applies to assistant - ImperatorAugustus
+		!end
+		assistant['nymphomania_xp'] += min(3, (1 + sex['climax_count'])/2)
+		assistant_rate['arousal'] -= sex['climax_count'] * assistant['arousal'] * sex['climax_top']
+		assistant_rate['temper'] += min(5, sex['climax_count']) &! +1 per orgasm
+		if assistant['temper'] > assistant['pride']: assistant_rate['instinct'] += min(5, sex['climax_count'])
+		assistant['calories'] -= 1 & assistant_rate['stamina'] += 1
+		!dynamic $assistant_energy_drop
+	end
+	assistant['pos_orgasm'] += sex['climax_top'] &! moodlet exponentially decays in next_day -ImperatorAugustus
+	assistant['orgasm_type'] = sex['girl_orgasm_type_change']
+	!if assistant['sententia_veritas'] > 0 and assistant['virtue'] > 0: assistant['virtue'] += assistant['sententia_veritas'] & assistant['sententia_veritas'] = 0
+	!if assistant['virtue'] > 5: assistant['virtue'] = 5
+	assistant['newness'] = sex['girl_newness']
+end
+
+$sex_partner = ''
+killvar 'sex'
+sex_num = 0
+gs '$newloc'
+gt '<<$return_lock>>'
+
+------------ sex_end ------------

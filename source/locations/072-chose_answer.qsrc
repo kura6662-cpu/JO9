@@ -1,0 +1,180 @@
+# chose_answer
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START ARGON_R2_NATIVE_TOPICS | preserve original native request/wish/dislike dispatch
+! JO9 MOD START J9M2851 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'chose_answer': gs 'snk_room_bridge', 'guard', 'chose_answer'
+! JO9 MOD END J9M2851
+!The choice of answer to the question in the dialogue with slave
+
+if interaction = 1113:
+	killvar '$text'
+	txt = 0
+	if slave['passion_comfort'] = 1:
+		$text[] = $dyneval($voice_native,'1113_comfort_need',$comfort_need)
+	end
+	if slave['passion_luxury'] = 1:
+		$text[] = $dyneval($voice_native,'1113_luxury_need',$luxury_need)
+	end
+	if slave['passion_sweets'] = 1:
+		$text[] = $dyneval($voice_native,'1113_sweets_need',$sweets_need)
+	end
+	if slave['passion_fame'] = 1:
+		$text[] = $dyneval($voice_native,'1113_fame_need',$fame_need)
+	end
+	if slave['abuse_attitude'] = 2 and slave['custom'] > 1:
+		$text[] = $dyneval($voice_native,'1113_abuse_need',$abuse_need)
+	end
+	if slave['darkness_attitude'] = 2 and slave['custom'] > 1:
+		$text[] = $dyneval($voice_native,'1113_darkness_need',$darkness_need)
+	end
+	if slave['blood_attitude'] = 2 and slave['custom'] > 1:
+		$text[] = $dyneval($voice_native,'1113_blood_need',$blood_need)
+	end
+	if slave['fire_attitude'] = 2 and slave['custom'] > 1:
+		$text[] = $dyneval($voice_native,'1113_fire_need',$fire_need)
+	end
+	if slave['water_attitude'] = 2 and slave['custom'] > 1:
+		$text[] = $dyneval($voice_native,'1113_water_need',$water_need)
+	end
+	if slave['vermin_attitude'] = 2 and slave['custom'] > 1:
+		$text[] = $dyneval($voice_native,'1113_vermin_need',$vermin_need)
+	end
+	if slave['deprivation_attitude'] = 2 and slave['custom'] > 1:
+		$text[] = $dyneval($voice_native,'1113_deprivation_need',$deprivation_need)
+	end
+	if slave['nymphomania'] > 0 and slave['arousal'] > 1 and slave['instinct'] > 2 and slave['sex_sum'] > 5:
+		$text[] = $dyneval($voice_native,'1113_nymphomania_need',$nymphomania_need)
+	end
+	if slave['homosexualism'] = 2 and slave['arousal'] > 1 and slave['sex_sum'] > 0:
+		$text[] = $dyneval($voice_native,'1113_homosexualism_need',$homosexualism_need)
+	end
+	if slave['exhibitionism'] = 2 and slave['arousal'] > 2 and slave['obedience'] > 20:
+		$text[] = $dyneval($voice_native,'1113_exhibitionism_need',$exhibitionism_need)
+	end
+	if slave['perversion'] = 2 and slave['arousal'] > 3 and slave['obedience'] > 40:
+		$text[] = $dyneval($voice_native,'1113_perversion_need',$perversion_need)
+	end
+	if arrsize('$text') = 0:
+		if $slave_psy_status = 'obedient' or $slave_psy_status = 'servile' or $slave_psy_status = 'horny':
+			$text[] = $dyneval($voice_native,'1113_no_need_gentle',$no_need_gentle) & jo9_vn_no_request=1
+		else
+			$text[] = $dyneval($voice_native,'1113_no_need',$no_need) & jo9_vn_no_request=1
+		end
+	end
+end
+
+if interaction = 1114:
+	killvar '$text'
+	txt = 0
+	if slave['sport_affinity'] > 0:
+		$text[] = $dyneval($voice_native,'1114_sport_like',$sport_like)
+	end
+	if slave['expression_affinity'] > 0:
+		$text[] = $dyneval($voice_native,'1114_expression_like',$expression_like)
+	end
+	if slave['pet_affinity'] > 0:
+		$text[] = $dyneval($voice_native,'1114_pet_like',$pet_like)
+	end
+	if slave['dressage_affinity'] > 0:
+		$text[] = $dyneval($voice_native,'1114_dressage_like',$dressage_like)
+	end
+	if slave['cowSK_affinity'] > 0:
+		$text[] = $dyneval($voice_native,'1114_cowSK_like',$cowSK_like)
+	end
+	if slave['nurse_affinity'] > 0:
+		$text[] = $dyneval($voice_native,'1114_nurse_like',$nurse_like)
+	end
+	if slave['service_affinity'] > 0:
+		$text[] = $dyneval($voice_native,'1114_service_like',$service_like)
+	end
+	if slave['cook_affinity'] > 0:
+		$text[] = $dyneval($voice_native,'1114_cook_like',$cook_like)
+	end
+	if slave['gladiatrix_affinity'] > 0:
+		$text[] = $dyneval($voice_native,'1114_gladiatrix_like',$gladiatrix_like)
+	end
+	if slave['enchanter_affinity'] > 0:
+		$text[] = $dyneval($voice_native,'1114_enchanter_like',$enchanter_like)
+	end
+	if slave['art_affinity'] > 0:
+		$text[] = $dyneval($voice_native,'1114_art_like',$art_like)
+	end
+	if slave['music_affinity'] > 0:
+		$text[] = $dyneval($voice_native,'1114_music_like',$music_like)
+	end
+	if slave['calisthenics_affinity'] > 0:
+		$text[] = $dyneval($voice_native,'1114_calisthenics_like',$calisthenics_like)
+	end
+	if slave['secretary_affinity'] > 0:
+		$text[] = $dyneval($voice_native,'1114_secretary_like',$secretary_like)
+	end
+	if arrsize('$text') = 0:
+		if $slave_psy_status = 'obedient' or $slave_psy_status = 'servile' or $slave_psy_status = 'horny':
+			$text[] = $dyneval($voice_native,'1114_no_like_gentle',$no_like_gentle) & jo9_vn_no_wish=1
+		else
+			$text[] = $dyneval($voice_native,'1114_no_like',$no_like) & jo9_vn_no_wish=1
+		end
+	end
+end
+
+if interaction = 1115:
+	killvar '$text'
+	txt = 0
+	if slave['obedience'] >= slave['intellect'] - slave['temperament']:
+		if slave['nymphomania'] < 0 and slave['arousal'] > 0:
+			$text[] = $dyneval($voice_native,'1115_nymphomania_dislike',$nymphomania_dislike)
+		end
+		if slave['homosexualism'] = -1 and slave['arousal'] > 0:
+			$text[] = $dyneval($voice_native,'1115_homosexualism_dislike',$homosexualism_dislike)
+		end
+		if slave['exhibitionism'] = -1 and slave['arousal'] > 1:
+			$text[] = $dyneval($voice_native,'1115_exhibitionism_dislike',$exhibitionism_dislike)
+		end
+		if slave['perversion'] = -1 and slave['arousal'] > 2:
+			$text[] = $dyneval($voice_native,'1115_perversion_dislike',$perversion_dislike)
+		end
+		if slave['passion_comfort'] = -1:
+			$text[] = $dyneval($voice_native,'1115_comfort_dislike',$comfort_dislike)
+		end
+		if slave['passion_luxury'] = -1:
+			$text[] = $dyneval($voice_native,'1115_luxury_dislike',$luxury_dislike)
+		end
+		if slave['passion_sweets'] = -1:
+			$text[] = $dyneval($voice_native,'1115_sweets_dislike',$sweets_dislike)
+		end
+		if slave['passion_fame'] = -1:
+			$text[] = $dyneval($voice_native,'1115_fame_dislike',$fame_dislike)
+		end
+		if slave['abuse_attitude'] = -1 and slave['instinct'] > 0:
+			$text[] = $dyneval($voice_native,'1115_abuse_dislike',$abuse_dislike)
+		end
+		if slave['darkness_attitude'] = -1 and slave['instinct'] > 0:
+			$text[] = $dyneval($voice_native,'1115_darkness_dislike',$darkness_dislike)
+		end
+		if slave['blood_attitude'] = -1 and slave['instinct'] > 0:
+			$text[] = $dyneval($voice_native,'1115_blood_dislike',$blood_dislike)
+		end
+		if slave['fire_attitude'] = -1 and slave['instinct'] > 0:
+			$text[] = $dyneval($voice_native,'1115_fire_dislike',$fire_dislike)
+		end
+		if slave['water_attitude'] = -1 and slave['instinct'] > 0:
+			$text[] = $dyneval($voice_native,'1115_water_dislike',$water_dislike)
+		end
+		if slave['vermin_attitude'] = -1 and slave['instinct'] > 0:
+			$text[] = $dyneval($voice_native,'1115_vermin_dislike',$vermin_dislike)
+		end
+		if slave['deprivation_attitude'] = -1 and slave['instinct'] > 0:
+			$text[] = $dyneval($voice_native,'1115_deprivation_dislike',$deprivation_dislike)
+		end
+	end
+	if arrsize('$text') = 0:
+		if slave['obedience'] >= slave['intellect'] - slave['temperament']:
+			$text[] = $dyneval($voice_native,'1115_no_dislike',$no_dislike)
+		else
+			$text[] = $dyneval($voice_native,'1115_hide_dislikes',$hide_dislikes)
+		end
+	end
+end
+! JO9 MOD END ARGON_R2_NATIVE_TOPICS
+
+------------ chose_answer ------------

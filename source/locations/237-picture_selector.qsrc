@@ -1,0 +1,308 @@
+# picture_selector
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2955 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'picture_selector': gs 'snk_room_bridge', 'guard', 'picture_selector'
+! JO9 MOD END J9M2955
+
+!killvar 'picture_random'
+!killvar '$hair_array'
+! Выбор картинок
+
+
+!Субъект картинки:
+! subject =
+! 1 - рабыня
+! 2 - асситсентка
+! 3 - обе сразу
+
+!Цвет волос:
+! Black Blond Blue Brown Green Pink Purple Red White
+
+
+if interaction = menu_teambuilding_1: 
+	subject = 3
+	gs 'picture_selector_doublehousework'
+elseif interaction = menu_teambuilding_2: 
+	subject = 3
+	gs 'picture_selector_doublegym'
+elseif interaction = menu_teambuilding_35: 
+	subject = 3
+	gs 'picture_selector_doubledatebeach'
+elseif interaction = menu_provoke_5: 
+	subject = 3
+	gs 'picture_selector_doublebondage'
+elseif interaction = 1513: 
+	subject = 1
+	gs 'picture_selector_beach_date'	
+elseif interaction = menu_beach_assistant: 
+	subject = 2
+	gs 'picture_selector_beach_date'	
+elseif interaction = 1311: 
+	subject = 1
+	gs 'picture_selector_hj'	
+elseif interaction = 1312: 
+	subject = 1
+	gs 'picture_selector_fj'
+elseif interaction = 1313: 
+	subject = 1
+	gs 'picture_selector_hug'
+elseif interaction = 1314 or interaction = 5412 or interaction = 1531: 
+	subject = 1
+	gs 'picture_selector_paizuri'
+elseif interaction = 1321: 
+	subject = 1
+	gs 'picture_selector_kiss'
+!elseif interaction = 1322: 
+!	subject = 1
+!	gs 'picture_selector_tongue'
+elseif interaction = 1323 or interaction = 54142: 
+	subject = 1
+	gs 'picture_selector_bj'
+elseif interaction = menu_assistant_relaxed_Oral or interaction = menu_blowjob_assistant: 
+	subject = 2
+	gs 'picture_selector_bj'
+elseif interaction = 1324: 
+	subject = 1
+	gs 'picture_selector_dt'
+elseif interaction = 1325: 
+	subject = 1
+	gs 'picture_selector_rimming'	
+elseif sex_interaction = 11:
+	if $sex_partner = 'assistant':
+  		subject = 2
+ 	else
+  		subject = 1
+ 	end
+	gs 'picture_selector_defloration'
+elseif sex_interaction = 12 or sex_interaction = 91:
+	if $sex_partner = 'assistant':
+  		subject = 2
+ 	else
+  		subject = 1
+ 	end
+	gs 'picture_selector_sex_vaginal'
+elseif interaction = 1331 or interaction = 5414 or interaction = 161: 
+	subject = 1
+	if virginity < 2 and customization < 1:
+		gs 'picture_selector_defloration'
+	else
+		gs 'picture_selector_sex_vaginal'
+	end
+elseif interaction = 9999 and customization >= 1: 
+	subject = 1
+	gs 'picture_selector_defloration'
+elseif interaction = 7010 or interaction = menu_assistant_relaxed_Vaginal: 
+	subject = 2
+	if assistant_virginity < 2:
+		gs 'picture_selector_defloration'
+	else
+		gs 'picture_selector_sex_vaginal'
+	end	
+elseif sex_interaction = 13 or sex_interaction = 91 or (sex_interaction = 94 and $insertion = 'anal'):
+	if $sex_partner = 'assistant':
+  		subject = 2
+ 	else
+  		subject = 1
+ 	end
+	gs 'picture_selector_analsex'
+elseif interaction = 1332 or interaction = 54141 or interaction = 163: 
+	subject = 1
+	gs 'picture_selector_analsex'
+elseif interaction = menu_assistant_relaxed_Anal or interaction = 7011: 
+	subject = 2
+	gs 'picture_selector_analsex'
+elseif interaction = 1333: 
+	subject = 1
+	gs 'picture_selector_fisting'
+elseif interaction = 1334: 
+	subject = 1
+	gs 'picture_selector_analfisting'
+elseif interaction = 5422 or interaction = 5418: 
+	subject = 1
+	gs 'picture_selector_lesbian'
+elseif interaction = 7014: 
+	subject = 2
+	gs 'picture_selector_lesbian'
+elseif interaction = 5420 or interaction = 5416: 
+	subject = 3
+	gs 'picture_selector_lesbian'
+elseif interaction = 1342: 
+	subject = 1
+	gs 'picture_selector_gangbang'
+elseif interaction = 1343: 
+	subject = 1
+	gs 'picture_selector_3m'
+elseif interaction = 1344: 
+	subject = 1
+	gs 'picture_selector_5m'
+elseif interaction = 1345: 
+	subject = 1
+	gs 'picture_selector_bukkake'
+elseif interaction = 5286 or interaction = 7036 or slave_assistant_sex = 1:
+	subject = 3
+	gs 'picture_selector_lesbi1'
+elseif interaction = 5287 or interaction = 7037 or slave_assistant_sex = 2:
+	subject = 3
+	gs 'picture_selector_lesbi2'
+elseif interaction = 5288 or interaction = 7038 or slave_assistant_sex = 3:
+	subject = 3
+	gs 'picture_selector_lesbi3'
+elseif interaction = 5289 or interaction = 7039:
+	subject = 3
+	gs 'picture_selector_lesbi4'
+elseif interaction = 1351: 
+	subject = 1
+	gs 'picture_selector_dog_sex'
+elseif interaction = 1352: 
+	subject = 1
+	gs 'picture_selector_pig_sex'
+elseif interaction = 1353: 
+	subject = 1
+	gs 'picture_selector_horse_sex'
+elseif interaction = 1354: 
+	subject = 1
+	gs 'picture_selector_tentacles'
+elseif interaction = 1355 or interaction = 1356: 
+	subject = 1
+	gs 'picture_selector_spider'	
+elseif interaction = 1361 or interaction = 1362: 
+	subject = 1
+	gs 'picture_selector_bdsm'
+elseif interaction = 1363: 
+	subject = 1
+	gs 'picture_selector_urine_drink'
+!elseif interaction = 1364: 
+!	subject = 1
+!	gs 'picture_selector_kopro'
+elseif interaction = 1365: 
+	subject = 1
+	gs 'picture_selector_enema'
+elseif interaction = 1372 or interaction = 54134: 
+	subject = 1
+	gs 'picture_selector_masturbation'
+elseif interaction = 1373 or interaction = 1534: 
+	subject = 1
+	gs 'picture_selector_dildo'
+elseif sex_interaction = 102:
+	if $sex_partner = 'assistant':
+  		subject = 2
+ 	else
+  		subject = 1
+ 	end
+ 	gs 'picture_selector_exhibit'
+elseif interaction = 1371 or interaction = 1374 or interaction = 1375 or interaction = 1444 or interaction = menu_Cunnilingus: 
+	subject = 1
+	gs 'picture_selector_exhibit'
+elseif interaction = 7030 or interaction = 7033 or interaction = 7034 or interaction = menu_cunnilingus_assistant: 
+	subject = 2
+	gs 'picture_selector_exhibit'	
+elseif interaction = 1211 or interaction = menu_Tidy_S: 
+	subject = 1
+	gs 'picture_selector_cleaning'
+elseif interaction = 42 or interaction = menu_Tidy_A: 
+	subject = 2
+	gs 'picture_selector_cleaning'	
+elseif interaction = 1212 or interaction = menu_dinner_S: 
+	subject = 1
+	gs 'picture_selector_cooking'
+elseif interaction = 43 or interaction = menu_dinner_A: 
+	subject = 2
+	gs 'picture_selector_cooking'	
+elseif interaction = 1213: 
+	subject = 1
+	gs 'picture_selector_nurse'	
+elseif interaction = 1214: 
+	subject = 1
+	gs 'picture_selector_secretary'		
+elseif interaction = 1221 or interaction = menu_gymnastics_S: 
+	subject = 1
+	gs 'picture_selector_gymnastics'		
+elseif sex_interaction = 101:
+	if $sex_partner = 'assistant':
+  		subject = 2
+ 	else
+  		subject = 1
+ 	end
+	gs 'picture_selector_dance'
+elseif interaction = 1222 or interaction = 54132: 
+	subject = 1
+	gs 'picture_selector_dance'	
+elseif interaction = 5503 or interaction = 5504: 
+	subject = 2
+	gs 'picture_selector_dance'	
+elseif interaction = 1223: 
+	subject = 1
+	gs 'picture_selector_fighting'
+!elseif interaction = 1224 or interaction = 1225: 
+!	subject = 1
+!	gs 'picture_selector_ponyplay'	
+elseif interaction = 1231 or interaction = 1232: 
+	subject = 1
+	gs 'picture_selector_student'
+!elseif interaction = 1234: 
+!	subject = 1
+!	gs 'picture_selector_singing'
+elseif interaction = 1241 or interaction = 1242: 
+	subject = 1
+	gs 'picture_selector_petplay'
+elseif interaction = 1243: 
+	subject = 1
+	gs 'picture_selector_enchanting'
+elseif interaction = 1233: 
+	subject = 1
+	gs 'picture_selector_music'	
+!{elseif interaction = 112331: 
+	subject = 1
+	gs 'picture_selector_guitar'	
+elseif interaction = 112333: 
+	subject = 1
+	gs 'picture_selector_piano'
+elseif interaction = 112334: 
+	subject = 1
+	gs 'picture_selector_cello'
+elseif interaction = 112335: 
+	subject = 1
+	gs 'picture_selector_violin'}
+elseif interaction = 52 or interaction = 5201:
+	subject = 1
+	gs 'picture_selector_bathing_alone'
+elseif interaction = 5411:
+	subject = 1
+	gs 'picture_selector_washing'
+elseif interaction = 1521 or interaction = 1523:
+	subject = 1
+	gs 'picture_selector_rest'	
+elseif interaction = menu_assistant_washes_slave:
+	subject = 3
+	gs 'picture_selector_lesbo_bath'	
+end
+
+
+!End-day routine override
+if slave_auto_cook = 1:
+	subject = 1
+	gs 'picture_selector_cooking'
+elseif assistant_auto_cook = 1:
+	subject = 2
+	gs 'picture_selector_cooking'
+elseif slave_auto_clean = 1:
+	subject = 1
+	gs 'picture_selector_cleaning'
+elseif assistant_auto_clean = 1:
+	subject = 2
+	gs 'picture_selector_cleaning'
+end
+
+
+!msg '2 <<$picture_selector["result"]>>'
+$special_bg = '<<$picture_selector["result"]>>'
+
+if customization = 0: 
+	killvar '$picture_selector'
+	killvar '$hair_array'
+	killvar 'picture_random'
+	killvar 'subject'
+end
+
+
+------------ picture_selector ------------

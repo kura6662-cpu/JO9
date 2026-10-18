@@ -1,0 +1,67 @@
+# $expert_search
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2833 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$expert_search': gs 'snk_room_bridge', 'guard', '$expert_search'
+! JO9 MOD END J9M2833
+
+dynamic $swap_slave_instances, 'stock', 'saved_stock' &! save existing pending stock if any - ImperatorAugustus
+$has_backup = 1
+$found = 0
+for expert_search_attempts = 1 to rand(search['cost'], search['cost']*2):
+
+	if search['age'] = 1: $special_age = 'milf'
+	if search['age'] = 2: $special_age = 'young'
+	if search['age'] = 3 and no_loli ! 1: $special_age = 'loli'
+	gs 'generate_stock'
+
+	! randomly boost requested stats to reduce search attempts (beauty intentionally omitted here because it is a derived attribute) - ImperatorAugustus
+	if rand(1,5) > 3 and stock['stamina'] < search['stamina']: stock['stamina'] = search['stamina']
+	if rand(1,5) > 3 and stock['sensitivity'] < search['sensitivity']: stock['sensitivity'] = search['sensitivity']
+	if rand(1,5) > 3 and stock['intellect'] < search['intellect']: stock['intellect'] = search['intellect']
+	if rand(1,5) > 3 and stock['temper'] < search['temper']: stock['temper'] = search['temper']
+	if rand(1,5) > 3 and stock['ego'] < search['ego']: stock['ego'] = search['ego']
+
+	match = 0
+
+	if search['age'] = 0:
+		match += 1
+	elseif stock['age'] = CONST_INT['young_age']:
+		if search['age'] = 4 or search['age'] = 5 or search['age'] = 2 or (no_loli = 1 and search['age'] = 3): match += 1
+	elseif stock['age'] = CONST_INT['loli_age']:
+		if search['age'] = 4 or search['age'] = 3: match += 1
+	elseif stock['age'] = CONST_INT['milf_age']:
+		if search['age'] = 5 or search['age'] = 1: match += 1
+	else
+		!Debug
+		msg '오류! template <<stock_type>>.json에서 stock["age"] = <<stock["age"]>> 이지만, 값은 [0-2] 범위 안에 있어야 합니다. location = <<$curloc>>'
+	end
+
+	if stock['beauty'] >= search['beauty']: match += 1
+	if stock['stamina'] >= search['stamina']: match += 1
+	if stock['sensitivity'] >= search['sensitivity']: match += 1
+	if stock['intellect'] >= search['intellect']: match += 1
+	if stock['temper'] >= search['temper']: match += 1
+	if stock['ego'] >= search['ego']: match += 1
+
+	if match >= 7:
+		$found = 1
+		dynamic $swap_slave_instances, 'stock', 'selected'
+	jump 'expert_search_done'
+	end
+
+end
+
+:expert_search_done
+
+! Added failsafe. - RedGreen3
+if $has_backup = 1:
+	dynamic $swap_slave_instances, 'saved_stock', 'stock'
+else
+	msg 'No backup to restore! Report this to RedGreen3 on F95zone!'
+end
+!dynamic $swap_slave_instances, 'stock', 'saved_stock' &! restore saved stock - ImperatorAugustus
+dynamic $clear_slave_instance, 'saved_stock'
+if $found = 1:
+	search['active'] = 2
+end
+------------ $expert_search ------------

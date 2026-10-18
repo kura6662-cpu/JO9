@@ -1,0 +1,54 @@
+# $stock_traits
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2828 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '$stock_traits': gs 'snk_room_bridge', 'guard', '$stock_traits'
+! JO9 MOD END J9M2828
+!reveals stock traits
+!only list traits that would be apparent from visual inspection or reputation - ImperatorAugustus
+
+!Stock Traits
+! JO9 MOD START COG_STOCK_DISPLAY | 2026-10-16_innate_learning_traits
+$stock_features_list = ''
+if stock['jo9_learning_trait'] = 1: $stock_features_list += '<a href="EXEC: msg $jo9_genius_text"><<dyneval($vb_cycle_skill, 5, "천재")>></a><br>'
+if stock['jo9_learning_trait'] = -1: $stock_features_list += '<a href="EXEC: msg $jo9_idiot_text"><<dyneval($vb_cycle_skill, 0, "백치")>></a><br>'
+! JO9 MOD END COG_STOCK_DISPLAY
+! JO9 MOD START TRAITS_DISPLAY_STOCK_COG_STOCK_DISPLAY | 2026-10-17_traits_batch
+ $stock_features_list += $func('jo9_traits', 'list', 'stock')
+! JO9 MOD END TRAITS_DISPLAY_STOCK_COG_STOCK_DISPLAY
+sanity = stock['ego'] + stock['temper'] + stock['pride']
+if sanity < 3:
+	$stock_features_list += '<a style = "color: #cd0000;" href="EXEC: msg $sanity_broken">정신 상태</a><br>'
+elseif sanity < 5:
+	$stock_features_list += '<a style = "color: #ea0090;" href="EXEC: msg $sanity_low">정신 상태</a><br>'
+end
+!if stock['brand'] = 0:  $stock_features_list += '<a style = "color: #cd0000;" href = "EXEC: msg $Нет_клейма">Not Branded</a><br>'
+if stock['wounds'] > 0:  $stock_features_list += '<a href="EXEC: msg $wounds_chart"><<$wounds[stock["wounds"]]>></a><br>'
+if stock['scars'] > 0:   $stock_features_list += '<a href="EXEC: msg $scars_chart"><<$scars[stock["scars"]]>></a><br>'
+if stock['bruises'] > 0: $stock_features_list += '<a href="EXEC: msg $bruises_chart"><<$bruises[stock["bruises"]]>></a><br>'
+if cheat_no_starve = 0 and master_medic >= 4:
+	if stock['days_without_food'] = 0 and stock['neg_hungry'] > 0:
+		$stock_features_list += '<a href="EXEC: msg $starvation_chart"><<$starvation[1]>></a><br>'
+	elseif stock['days_without_food'] = 1:
+		$stock_features_list += '<a href="EXEC: msg $starvation_chart"><<$starvation[2]>></a><br>'
+	elseif stock['days_without_food'] = 2:
+		$stock_features_list += '<a href="EXEC: msg $starvation_chart"><<$starvation[3]>></a><br>'
+	elseif stock['days_without_food'] = 3 or stock['days_without_food'] < 0:
+		$stock_features_list += '<a href="EXEC: msg $starvation_chart"><<$starvation[4]>></a><br>'
+	elseif stock['days_without_food'] > 3:
+		$stock_features_list += '<a href="EXEC: msg $starvation_chart"><<$starvation[5]>></a><br>'
+	end
+end
+if stock['rehabilitation'] > 0: $stock_features_list += '<font color="#cd0000">회복</font> [<<stock["rehabilitation"]>>]<br>'
+if stock['virginity'] < 2: $stock_features_list += '처녀<br>'
+if stock['grace'] > 0: $stock_features_list += '<a href="EXEC: msg $NaturalGrace">우아함</a><br>'
+if stock['grace'] < 0: $stock_features_list += '<font color="#cd0000">어설픔</font><br>'
+if stock['dexterity'] > 0: $stock_features_list += '<a href="EXEC: msg $Dexterity">손재주 좋음</a><br>'
+if stock['dexterity'] < 0: $stock_features_list += '<font color="#cd0000">서투름</font><br>'
+if stock['arena_level'] > 8:
+	$stock_features_list += '투기장 그랜드 챔피언<br>'
+elseif stock['arena_level'] > 4:
+	$stock_features_list += '투기장 챔피언<br>'
+end
+!if stock['fertility'] = -2: $stock_features_list += 'Immature<br>'
+
+------------ $stock_traits ------------

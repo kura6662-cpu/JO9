@@ -1,0 +1,250 @@
+# get_stock_seed
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2855 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = 'get_stock_seed': gs 'snk_room_bridge', 'guard', 'get_stock_seed'
+! JO9 MOD END J9M2855
+!Get Stock Seed
+!Written by crushboss
+!Gets slave data from slave.json files in the json folder
+
+!Age
+stock['age'] = seed_age[stock_type]
+
+!Stats
+stock['beauty'] = seed_beauty[stock_type]
+stock['stamina'] = seed_stamina[stock_type]
+stock['sensitivity'] = seed_sensitivity[stock_type]
+stock['temper'] = seed_temper[stock_type]
+stock['ego'] = seed_ego[stock_type]
+stock['pride'] = seed_pride[stock_type]
+stock['intellect'] = seed_intellect[stock_type]
+
+stock['fat'] = seed_fat[stock_type]
+stock['exotic'] = seed_exotic[stock_type]
+stock['base_exotic'] = seed_exotic[stock_type]
+stock_rate['fame'] = seed_fame_rate[stock_type]
+stock['fertility'] = seed_fertility[stock_type]
+stock['fertility_revealed'] = seed_fertility_revealed[stock_type]
+
+stock['custom'] = seed_custom[stock_type]
+stock['moral'] = seed_moral[stock_type]
+stock['instinct'] = seed_instinct[stock_type]
+stock['rational'] = seed_rational[stock_type]
+stock['spoil'] = seed_spoil[stock_type]
+stock['angst'] = seed_angst[stock_type]
+
+!Obedience difficulty override (see #static_base)
+stock['obedience_bonus'] = seed_obedience_bonus[stock_type]
+
+!Skills
+stock['service'] = seed_service[stock_type]
+stock['cook'] = seed_cook[stock_type]
+stock['secretary'] = seed_secretary[stock_type]
+stock['expression'] = seed_expression[stock_type]
+stock['nurse'] = seed_nurse[stock_type]
+stock['alchemy'] = seed_alchemy[stock_type]
+stock['enchanter'] = seed_enchanter[stock_type]
+stock['gladiatrix'] = seed_gladiatrix[stock_type]
+stock['calisthenics'] = seed_calisthenics[stock_type]
+stock['music'] = seed_music[stock_type]
+stock['art'] = seed_art[stock_type]
+stock['pet'] = seed_pet[stock_type]
+stock['cowSK'] = seed_cowSK[stock_type]
+stock['dressage'] = seed_dressage[stock_type]
+
+stock['sub_hj'] = seed_sub_hj[stock_type]
+stock['sub_fj'] = seed_sub_fj[stock_type]
+stock['sub_hug'] = seed_sub_hug[stock_type]
+stock['sub_paizuri'] = seed_sub_paizuri[stock_type]
+stock['sub_kiss'] = seed_sub_kiss[stock_type]
+stock['sub_tongue'] = seed_sub_tongue[stock_type]
+stock['sub_bj'] = seed_sub_bj[stock_type]
+stock['sub_dt'] = seed_sub_dt[stock_type]
+stock['sub_asslik'] = seed_sub_asslik[stock_type]
+stock['sub_vaginal'] = seed_sub_vaginal[stock_type]
+stock['sub_anal'] = seed_sub_anal[stock_type]
+stock['sub_fisting'] = seed_sub_fisting[stock_type]
+stock['anal_stretch']= seed_anal_stretch[stock_type]
+stock['sub_seduce'] = seed_sub_seduce[stock_type]
+stock['sub_masturbation'] = seed_sub_masturbation[stock_type]
+stock['sub_dildo'] = seed_sub_dildo[stock_type]
+stock['sub_exhibit'] = seed_sub_exhibit[stock_type]
+stock['sub_humiliation'] = seed_sub_humiliation[stock_type]
+stock['sub_enema'] = seed_sub_enema[stock_type]
+stock['sub_mazo'] = seed_sub_mazo[stock_type]
+stock['sub_selfpain'] = seed_sub_selfpain[stock_type]
+stock['sub_piss'] = seed_sub_piss[stock_type]
+stock['sub_kopro'] = seed_sub_kopro[stock_type]
+stock['sub_threesome'] = seed_sub_threesome[stock_type]
+stock['sub_dp'] = seed_sub_dp[stock_type]
+stock['sub_tp'] = seed_sub_tp[stock_type]
+stock['sub_gangbang'] = seed_sub_gangbang[stock_type]
+stock['sub_bukkake'] = seed_sub_bukkake[stock_type]
+stock['sub_zoosex'] = seed_sub_zoosex[stock_type]
+stock['sub_bestiality'] = seed_sub_bestiality[stock_type]
+stock['sub_horse'] = seed_sub_horse[stock_type]
+stock['sub_tentacles'] = seed_sub_tentacles[stock_type]
+stock['sub_arachnidspider'] = seed_sub_arachnidSpider[stock_type]
+stock['sub_polypusvermin'] = seed_sub_polypusvermin[stock_type]
+
+!Trait Affinities
+stock['sport_affinity'] = seed_sport_affinity[stock_type]
+stock['expression_affinity'] = seed_expression_affinity[stock_type]
+stock['pet_affinity'] = seed_pet_affinity[stock_type]
+stock['dressage_affinity'] = seed_dressage_affinity[stock_type]
+stock['cowSK_affinity'] = seed_cowSK_affinity[stock_type]
+stock['nurse_affinity'] = seed_nurse_affinity[stock_type]
+stock['service_affinity'] = seed_service_affinity[stock_type]
+stock['cook_affinity'] = seed_cook_affinity[stock_type]
+stock['gladiatrix_affinity'] = seed_gladiatrix_affinity[stock_type]
+stock['enchanter_affinity'] = seed_enchanter_affinity[stock_type]
+stock['art_affinity'] = seed_art_affinity[stock_type]
+stock['music_affinity'] = seed_music_affinity[stock_type]
+stock['calisthenics_affinity'] = seed_calisthenics_affinity[stock_type]
+stock['secretary_affinity'] = seed_secretary_affinity[stock_type]
+stock['sport_affinity_revealed'] = seed_sport_affinity_revealed[stock_type]
+stock['expression_affinity_revealed'] = seed_expression_affinity_revealed[stock_type]
+stock['pet_affinity_revealed'] = seed_pet_affinity_revealed[stock_type]
+stock['dressage_affinity_revealed'] = seed_dressage_affinity_revealed[stock_type]
+stock['cowSK_affinity_revealed'] = seed_cowSK_affinity_revealed[stock_type]
+stock['nurse_affinity_revealed'] = seed_nurse_affinity_revealed[stock_type]
+stock['service_affinity_revealed'] = seed_service_affinity_revealed[stock_type]
+stock['cook_affinity_revealed'] = seed_cook_affinity_revealed[stock_type]
+stock['gladiatrix_affinity_revealed'] = seed_gladiatrix_affinity_revealed[stock_type]
+stock['enchanter_affinity_revealed'] = seed_enchanter_affinity_revealed[stock_type]
+stock['art_affinity_revealed'] = seed_art_affinity_revealed[stock_type]
+stock['music_affinity_revealed'] = seed_music_affinity_revealed[stock_type]
+stock['calisthenics_affinity_revealed'] = seed_calisthenics_affinity_revealed[stock_type]
+stock['secretary_affinity_revealed'] = seed_secretary_affinity_revealed[stock_type]
+
+!Traits Specials
+stock['metabolism'] = seed_metabolism[stock_type]
+stock['metabolism_revealed'] = seed_metabolism_revealed[stock_type]
+
+stock['memory'] = seed_memory[stock_type]
+stock['memory_revealed'] = seed_memory_revealed[stock_type]
+
+stock['meekness'] = seed_meekness[stock_type]
+stock['meekness_revealed'] = seed_meekness_revealed[stock_type]
+
+stock['selfesteem'] = seed_selfesteem[stock_type]
+stock['selfesteem_revealed'] = seed_selfesteem_revealed[stock_type]
+
+stock['dexterity'] = seed_dexterity[stock_type]
+stock['dexterity_revealed'] = seed_dexterity_revealed[stock_type]
+
+stock['compassion'] = seed_compassion[stock_type]
+stock['compassion_revealed'] = seed_compassion_revealed[stock_type]
+
+stock['courage'] = seed_courage[stock_type]
+stock['courage_revealed'] = seed_courage_revealed[stock_type]
+
+stock['grace'] = seed_grace[stock_type]
+stock['grace_revealed'] = seed_grace_revealed[stock_type]
+
+stock['nymphomania'] = seed_nymphomania[stock_type]
+stock['nymphomania_revealed'] = seed_nymphomania_revealed[stock_type]
+
+stock['exhibitionism'] = seed_exhibitionism[stock_type]
+stock['exhibitionism_revealed'] = seed_exhibitionism_revealed[stock_type]
+
+stock['perversion'] = seed_perversion[stock_type]
+stock['perversion_revealed'] = seed_perversion_revealed[stock_type]
+
+stock['masochism'] = seed_masochism[stock_type]
+stock['masochism_revealed'] = seed_masochism_revealed[stock_type]
+
+stock['homosexualism'] = seed_homosexualism[stock_type]
+stock['homosexualism_revealed'] = seed_homosexualism_revealed[stock_type]
+
+stock['abuse_attitude'] = seed_abuse_attitude[stock_type]
+stock['abuse_attitude_revealed'] = seed_abuse_attitude_revealed[stock_type]
+
+stock['blood_attitude'] = seed_blood_attitude[stock_type]
+stock['blood_attitude_revealed'] = seed_blood_attitude_revealed[stock_type]
+
+stock['darkness_attitude'] = seed_darkness_attitude[stock_type]
+stock['darkness_attitude_revealed'] = seed_darkness_attitude_revealed[stock_type]
+
+stock['fire_attitude'] = seed_fire_attitude[stock_type]
+stock['fire_attitude_revealed'] = seed_fire_attitude_revealed[stock_type]
+
+stock['water_attitude'] = seed_water_attitude[stock_type]
+stock['water_attitude_revealed'] = seed_water_attitude_revealed[stock_type]
+
+stock['vermin_attitude'] = seed_vermin_attitude[stock_type]
+stock['vermin_attitude_revealed'] = seed_vermin_attitude_revealed[stock_type]
+
+stock['passion_fame'] = seed_passion_fame[stock_type]
+stock['passion_fame_revealed'] = seed_passion_fame_revealed[stock_type]
+
+stock['passion_sweets'] = seed_passion_sweets[stock_type]
+stock['passion_sweets_revealed'] = seed_passion_sweets_revealed[stock_type]
+
+stock['passion_comfort'] = seed_passion_comfort[stock_type]
+stock['passion_comfort_revealed'] = seed_passion_comfort_revealed[stock_type]
+
+stock['passion_luxury'] = seed_passion_luxury[stock_type]
+stock['passion_luxury_revealed'] = seed_passion_luxury_revealed[stock_type]
+
+!Illness, Parasite, Scars, Bruises, Starvation
+stock['ill'] = seed_ill[stock_type]
+stock['parasite'] = seed_parasite[stock_type]
+stock['scars'] = seed_scars[stock_type]
+stock['bruises'] = seed_bruises[stock_type]
+stock['starvation'] = seed_starvation[stock_type]
+
+!Anatomy
+stock['boobs'] = seed_boobs[stock_type]
+stock['virginity'] = seed_virginity[stock_type]
+$stock['boobs_img'] = $seed_boobs_img[stock_type]
+$stock['pussy_img'] = $seed_pussy_img[stock_type]
+
+!BACKGROUND
+$stock_name = $seed_name[stock_type]
+$stock_psy_basic = $seed_psy_basic[stock_type]
+$stock_world_description = $seed_world_description[stock_type]
+$stock_family_description = $seed_family_description[stock_type]
+$stock_occupation_description = $seed_occupation_description[stock_type]
+if $args[0] ! 'demo':
+	stock["world_index"] = stock_world_index[stock_type]
+	stock["nation_index"] = stock_nation_index[stock_type]
+	stock["family_index"] = stock_family_index[stock_type]
+	stock["work_index"] = stock_work_index[stock_type]
+	stock["id"] = stock_id[stock_type]
+	stock["relative_id"] = stock_id_relative[stock_type]
+	$stock["relative_relations"] = $stock_relative_relations[stock_type]
+	stock['tolerant_world'] = RAND (0,20) - (stock["world_index"] * 4) + 4
+	stock['tolerant_nation'] = RAND (0,20) - (stock["world_index"] * 4) + 4
+	stock['tolerant_family'] = RAND (0,20) - (stock["world_index"] * 4) + 4
+	stock['tolerant_work'] = RAND (0,20) - (stock["world_index"] * 4) + 4
+	if stock['tolerant_world'] <0: stock['tolerant_world'] = 0
+	if stock['tolerant_nation'] <0: stock['tolerant_nation'] = 0
+	if stock['tolerant_family'] <0: stock['tolerant_family'] = 0
+	if stock['tolerant_work'] <0: stock['tolerant_work'] = 0
+end
+
+!Images
+$stock['fullimage'] = $fullimage[stock_type]
+$stock['ava'] = $seed_ava[stock_type]
+$stock['ava_gray'] = $seed_ava_gray[stock_type]
+$stock['ava_clear'] = $seed_ava_clear[stock_type]
+
+!Equipment
+$stock['wpn'] = 'безоружный'
+$stock['armor'] = 'без_брони'
+$stock['scnd'] = ''
+
+$stock['back_wpn'] = ''
+$stock['left_wpn'] = ''
+$stock['right_wpn'] = ''
+$stock['arm_wpn'] = ''
+$stock['leg_wpn'] = ''
+
+$stock['cloth'] = 'голая'
+
+stock['newness'] = 10
+
+$stock_scene_tag = $scene_tag[stock_type]    &!고유씬이미지태그
+$stock_dohna_tag = $dohna_tag[stock_type]
+------------ get_stock_seed ------------

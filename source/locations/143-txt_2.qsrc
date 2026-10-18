@@ -1,0 +1,11 @@
+# #txt_2
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2889 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '#txt_2': gs 'snk_room_bridge', 'guard', '#txt_2'
+! JO9 MOD END J9M2889
+if hero_choice > 100:
+	gs '#txt_2_woman'
+else
+	gs '#txt_2_man'
+end	
+------------ #txt_2 ------------

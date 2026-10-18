@@ -1,0 +1,1872 @@
+# #item_base
+! Readable view; authoritative fields are in ../locations.json.
+! JO9 MOD START J9M2251 | 2026-10-10_restore_private_room_ui | changed block; context may be included
+if snk_room_target > 0 and $curloc = '#item_base': gs 'snk_room_bridge', 'guard', '#item_base'
+! JO9 MOD END J9M2251
+!ITEM DATABASE
+![0]
+$item_name[0] = '-' &! DO NOT MODIFY THIS
+item_price[0] = 0
+!item_size[0] = 0 &! CURRENTLY UNUSED
+$item_description[0] = ''
+$item_demo[0] = ''
+
+$item_property[0] = {}
+$item_property_off[0] = {}
+
+!EXAMPLE OF AN ITEM DEFINITION
+!['']
+!$item_name[''] = ''
+!item_price[''] = 0
+!$item_description[''] = ''
+!$item_demo[''] = 'scene\item\item_'
+!
+!$item_property[''] = {
+	!dynslave_rate['nothing'] += 1
+	!learn_bonus['skill'] += 1
+	!example_item_is_worn = 1
+!}
+!
+!$item_property_off[''] = {
+	!example_item_is_worn = 0
+!}
+
+$recalc_equipment_bonuses = {
+	!this function expects to be called with dynamic $replace($recalc_equipment_bonuses, 'dynslave', 'an actual slave variable')
+	!currently used in $newloc via #static_base (for style, exotic and moodlet), next_day and $moodlets_account (for daily_bonus) and interaction (for learn_bonus)
+	if dynslave_state > CONST_INT['no_slave']:
+		! state check includes fainted
+
+		dynslave['st_plus'] = 0 &! reset count from zero (items that confer a style bonus)
+		dynslave['ex_plus'] = 0 &! reset count from zero (items that confer an exoticism bonus)
+		dynslave['neg_clothes'] = 0 &! reset in case no longer wearing an item with this effect
+		dynslave['pos_clothes'] = 0 &! reset in case no longer wearing an item with this effect
+		dynslave['slave_collar'] = 0 &! reset in case no longer wearing an item with this effect
+		dynslave['wig'] = 0 &! reset in case no longer wearing an item with this effect
+		killvar 'learn_bonus'
+		killvar 'daily_bonus'
+		killvar 'worn_bonus'
+		! use $replace to generalize the $item_property effects - ImperatorAugustus
+		dynamic $replace($item_property[$dynslave['armor']], 'dyn'+'slave', 'dynslave')
+		dynamic $replace($item_property[$dynslave['headband']], 'dyn'+'slave', 'dynslave')
+		dynamic $replace($item_property[$dynslave['earrings']], 'dyn'+'slave', 'dynslave')
+		dynamic $replace($item_property[$dynslave['tongue']], 'dyn'+'slave', 'dynslave')
+		dynamic $replace($item_property[$dynslave['cloth']], 'dyn'+'slave', 'dynslave')
+		dynamic $replace($item_property[$dynslave['collar']], 'dyn'+'slave', 'dynslave')
+		dynamic $replace($item_property[$dynslave['nipplerings']], 'dyn'+'slave', 'dynslave')
+		dynamic $replace($item_property[$dynslave['gloves']], 'dyn'+'slave', 'dynslave')
+		dynamic $replace($item_property[$dynslave['ring_left']], 'dyn'+'slave', 'dynslave')
+		dynamic $replace($item_property[$dynslave['ring_right']], 'dyn'+'slave', 'dynslave')
+		dynamic $replace($item_property[$dynslave['navel']], 'dyn'+'slave', 'dynslave')
+		dynamic $replace($item_property[$dynslave['clitring']], 'dyn'+'slave', 'dynslave')
+		dynamic $replace($item_property[$dynslave['boots']], 'dyn'+'slave', 'dynslave')
+		if $args[0] ! 'ignore gifts':
+			if dynslave_inventory['plaid'] > 0: dynamic $replace($item_property['plaid'], 'dyn'+'slave', 'dynslave')
+			if dynslave_inventory['stuffed_toy'] > 0: dynamic $replace($item_property['stuffed_toy'], 'dyn'+'slave', 'dynslave')
+			if dynslave_inventory['perfume'] > 0: dynamic $replace($item_property['perfume'], 'dyn'+'slave', 'dynslave')
+			if dynslave_inventory['pony'] > 0: dynamic $replace($item_property['pony'], 'dyn'+'slave', 'dynslave')
+		end
+		! neg_clothes is intended as a display-only moodlet, to indicate via "how do you feel?" that some item(s) worn by the slave have negative impact - ImperatorAugustus
+		if dynslave['neg_clothes'] > 0: worn_bonus['mood'] += 1 &! reverse the -1 mood for a negative moodlet that is applied by $recalc_slave_mood in #static_base
+		! items setting neg_clothes should apply negative worn_bonus['mood'] or worn_bonus['mood_rate'] adjustments of the appropriate magnitude
+		! in contrast, pos_clothes applies +1 mood (not stacking from multiple items); however, it does not contribute to raising mood above Hopeful (capped in $recalc_slave_mood in #static_base)
+		if dynslave['pos_clothes'] > 0 and (dynslave['neg_clothes'] > 0 or $dynslave['cloth'] = 'голая' or $dynslave['cloth'] = 'пусто'): dynslave['pos_clothes'] = -100 & worn_bonus['mood'] += 1
+		! this suppresses contradictory moodlet text if pos_clothes is active at the same time as neg_clothes or when slave is naked, but still elevates mood
+		! setting pos_clothes to -100 signals $recalc_slave_mood to skip the moodlet and also to apply a -1 adjustment if total mood exceeds Hopeful
+
+	end
+}
+
+!TODO: replace price hardcode in the description to a variable
+!replacement for item copypaste, by Lyazar
+$ib_cycle = {
+	$_ib_cycle_name = $args[0]
+	$item_name[$_ib_cycle_name] = $args[1]
+	item_price[$_ib_cycle_name] = args[2]
+	$item_description[$_ib_cycle_name] = $args[3]
+	$item_demo[$_ib_cycle_name] = $args[4]
+
+	killvar '$_ib_cycle_name'
+}
+
+!example:
+
+!$item_name['голая'] = 'Naked'
+!item_price['голая'] = 0
+!$item_description['голая'] = '   Your slave is completely naked.'
+!$item_demo['голая'] = 'scene\'
+
+! replaces to:
+
+!dynamic $ib_cycle, 'голая', 'Naked', 0, '   Your slave is completely naked.', 'scene\'
+!-----replacement for item copypaste, by Lyazar-----
+
+!MASTER ITEMS
+
+!['man_rugs']
+! JO9 MOD START J9M2250 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'man_rugs', '허름한 옷', 5, '<br> 다 헤지고 유행도 지난 옷이다. 당신 마음에 드는 구석이 단 하나도 없다. 새로운 옷을 사는편이 훨씬 낫다.<br><br>  기분 dn, 장악력dn', 'scene\item\item_worn_clothes'
+! JO9 MOD END J9M2250
+!item_size['man_rugs'] = 0
+style_modifer['man_rugs'] = -1
+$item_property['man_rugs'] = {
+	master_moodlet['neg_worn_clothes'] = 100
+}
+$item_property_off['man_rugs'] = {
+	master_moodlet['neg_worn_clothes'] = 0
+}
+
+!['comfy_robes']
+! JO9 MOD START J9M2249 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'comfy_robes', '헐렁한 평복', 25, '<br> 편안하고 부드러운 평복이다. 아주 좋은 외형은 아니지만, 매우 편리하고 입기에 편안하다. 진정하기 딱인 정도다!<br><br>  기분Up, 장악력Dn', 'scene\item\item_Housecoat'
+! JO9 MOD END J9M2249
+!item_size['comfy_robes'] = 0
+style_modifer['comfy_robes'] = -1
+$item_property['comfy_robes'] = {
+	master_moodlet['pos_master_cloth'] = 100
+	master_moodlet['neg_worn_clothes'] = 0
+}
+$item_property_off['comfy_robes'] = {
+	master_moodlet['pos_master_cloth'] = 0
+}
+
+!['regal_suit']
+! JO9 MOD START J9M2248 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'regal_suit', '귀족 예복', 200, '<br> 이 무거운 옷엔 아주 비싼 보형물이 들어가 있고 훌륭한 장식이 되어있어, 당신의 몸집을 더 커보이게 해준다. 아름답고 인상적이며, 정말 실용적이지 않다.<br><br>  장악력 상승, 기분 dn', 'scene\item\item_Noble_regalia'
+! JO9 MOD END J9M2248
+!item_size['regal_suit'] = 0
+style_modifer['regal_suit'] = 2
+$item_property['regal_suit'] = {
+	master_moodlet['neg_master_cloth'] = 100
+	master_moodlet['neg_worn_clothes'] = 0
+}
+$item_property_off['regal_suit'] = {
+	master_moodlet['neg_master_cloth'] = 0
+}
+
+!['fancy_suit']
+! JO9 MOD START J9M2247 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'fancy_suit', '화려한 예복', 100, '<br> 불멸의 로마의 유행을 따라잡기란 거의 불가능하다, 다들 시도중이지만. 어찌 되었든, 고상함과 편리함을 조합한 옷이다.<br><br>  장악력 조금 상승', 'scene\item\item_Fashionable_attire'
+! JO9 MOD END J9M2247
+!item_size['fancy_suit'] = 0
+style_modifer['fancy_suit'] = 1
+$item_property['fancy_suit'] = {}
+$item_property_off['fancy_suit'] = {}
+	master_moodlet['neg_worn_clothes'] = 0
+
+!['formal_suit']
+! JO9 MOD START J9M2246 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'Formal_suit', '중세풍 정장', 40, '<br> 매우 형식적인 복장이다. 고지식하고 매력 없어 보이게 만들어도, 진지해 보일수는 있다. 연예인이나 극장 단장에게 안성맞춤이다.<br><br>  예술 지식Up', 'scene\item\item_Formal_suit'
+! JO9 MOD END J9M2246
+!item_size['formal_suit'] = 0
+style_modifer['formal_suit'] = 0
+$item_property['formal_suit'] = {
+	boost_up['master_artdirector'] = 1
+	master_moodlet['neg_worn_clothes'] = 0
+}
+$item_property_off['formal_suit'] = {
+	boost_up['master_artdirector'] = 0
+}
+
+!['aketon']
+! JO9 MOD START J9M2245 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'aketon', '누비갑 외투', 40, '<br> 누비갑 외투 매일 입고다녀도 될만큼 가볍다. 훌륭한 전사에 아주 딱 맞는 옷이다.<br><br>  전투력Up', 'scene\item\item_Aketon'
+! JO9 MOD END J9M2245
+!item_size['aketon'] = 0
+style_modifer['aketon'] = 0
+$item_property['aketon'] = {
+	boost_up['master_fighter'] = 1
+	master_moodlet['neg_worn_clothes'] = 0
+}
+$item_property_off['aketon'] = {
+	boost_up['master_fighter'] = 0
+}
+
+!['livery']
+! JO9 MOD START J9M2244 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'livery', '집사복', 40, '<br> 장식있는 집사장 용 집사복. 착의와 동시에 가계 유일한 지배자가 됨을 느낄수 있다.<br><br>  관리력Up', 'scene\item\item_Livery'
+! JO9 MOD END J9M2244
+!item_size['livery'] = 0
+style_modifer['livery'] = 0
+$item_property['livery'] = {
+	boost_up['master_butler'] = 1
+	master_moodlet['neg_worn_clothes'] = 0
+}
+$item_property_off['livery'] = {
+	boost_up['master_butler'] = 0
+}
+
+!['medic_robes']
+! JO9 MOD START J9M2243 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'medic_robes', '의료용 예복', 40, '<br> 의학계통 근로자엔 매우 편안하고 실용적인 옷이다. 착복과 동시에 의사가 됨을 느낀다. 그게 자가 최면이더라도.<br><br>  의학 지식Up', 'scene\item\item_Medical_gown'
+! JO9 MOD END J9M2243
+!item_size['medic_robes'] = 0
+style_modifer['medic_robes'] = 0
+$item_property['medic_robes'] = {
+	boost_up['master_medic'] = 1
+	master_moodlet['neg_worn_clothes'] = 0
+}
+$item_property_off['medic_robes'] = {
+	boost_up['master_medic'] = 0
+}
+
+!['wizard_robes']
+! JO9 MOD START J9M2242 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'wizard_robes', '마법사 예복', 40, '<br> 이 의례적 의상은 룬 문자로 뒤덮여있다. 당신의 마법력을 증가 시켜준다.<br><br>  마법력Up', 'scene\item\item_Wizard robes'
+! JO9 MOD END J9M2242
+!item_size['wizard_robes'] = 0
+style_modifer['wizard_robes'] = 0
+$item_property['wizard_robes'] = {
+	boost_up['master_mage'] = 1
+	master_moodlet['neg_worn_clothes'] = 0
+}
+$item_property_off['wizard_robes'] = {
+	boost_up['master_mage'] = 0
+}
+
+!옷바꾸기 짜증나서 만듦
+! JO9 MOD START J9M2241 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'miracle_robes', '광휘의 예복', 3000, '<br> 불멸의 로마의 모든 기술력을 집약해 만든 이 신비로운 옷은 마치 내가 전지전능 해진 듯한 기분이 들게 한다.<br><br>  모든 의상보너스 획득', 'scene\item\miracle_robes'
+! JO9 MOD END J9M2241
+style_modifer['miracle_robes'] = 2
+$item_property['miracle_robes'] = {
+	master_moodlet['pos_master_cloth'] = 100
+	master_moodlet['neg_worn_clothes'] = 0
+		boost_up['master_mage'] = 1
+	boost_up['master_medic'] = 1
+	boost_up['master_butler'] = 1
+	boost_up['master_fighter'] = 1
+	boost_up['master_artdirector'] = 1
+}
+$item_property_off['miracle_robes'] = {
+	boost_up['master_mage'] = 0
+	boost_up['master_medic'] = 0
+	boost_up['master_butler'] = 0
+	boost_up['master_fighter'] = 0
+	boost_up['master_artdirector'] = 0
+	master_moodlet['pos_master_cloth'] = 0
+}
+
+!Raven crown ['raven_crown']
+! JO9 MOD START J9M2240 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'raven_crown', '큰까마귀 관', 0, '<br> 이 인공물은 큰까마귀 관이라 제작자 발리오스가 명명했다. 영구적인 아우스펙스를 사용하게 만들며 타인을 꿰뚫어볼 수 있다. 또 아우라의 장악력도 이끌어 내며, 종합정보 열람 및 각종 창에서 등급 확인이 가능해진다.<br><br>  아우스펙스 영구 발동, 장악력 조금 상승', ''
+! JO9 MOD END J9M2240
+
+$item_property['raven_crown'] = {
+	auspex = 1
+	item_supermacy_bonus += 1
+	raven_crown_on = 1
+}
+$item_property_off['raven_crown'] = {
+	auspex = 0
+	item_supermacy_bonus -= 1
+	raven_crown_on = 0
+}
+
+!Chimaera’s gem ['chimera_earring']
+! JO9 MOD START J9M2239 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'chimera_earring', '키메라 귀걸이', 0, '<br> 이 귀걸이는, 가르시드라는 이름의 쉭쉭대는 괴생물체가 건넸다. 성욕을 증진시키고 아우라의 장악력을 강화하며 빠르게 상처를 치료한다.<br><br>  평시: 장악력 상승 | 전투: 체력, 근력 증가, 상처 약화', ''
+! JO9 MOD END J9M2239
+
+$item_property['chimera_earring'] = {
+	chimera_gem_on = 1
+	item_supermacy_bonus += 2
+}
+$item_property_off['chimera_earring'] = {
+	chimera_gem_on = 0
+	item_supermacy_bonus -= 2
+}
+
+!Snake talisman ['snake_amulet']
+! JO9 MOD START J9M2238 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'snake_amulet', '뱀모양 목걸이', 0, '<br> 이 목걸이는 세르피스 가문의 현명한 부셴이 제작하여 직접 건네받은 것이다. 착용자의 집중력과 통솔력, 두려움과 고통의 저항을 올려주며 아우라 장악력을 증대시킨다. 정신적 방어력도 상승한다<br><br>  평시: 장악력 조금 상승 | 전투: 정신력x2', ''
+! JO9 MOD END J9M2238
+
+$item_property['snake_amulet'] = {
+	snake_amulet_on = 1
+	item_supermacy_bonus += 1
+}
+$item_property_off['snake_amulet'] = {
+	snake_amulet_on = 0
+	item_supermacy_bonus -= 1
+}
+
+!Bull ring ['bull_ring']
+! JO9 MOD START J9M2237 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'bull_ring', '황소 반지', 0, '<br> 이 평범한 외형의 반지는 타우루스 가문 장교 아라무스가 건네 주었다. 전투중 근력과 체력을 증가시키고, 착용자의 아우라 장악력을 강화한다.<br><br>  평시: 장악력 조금 상승, 행동력 사용 1/2 | 전투: 근력, 정신 상승', ''
+! JO9 MOD END J9M2237
+
+$item_property['bull_ring'] = {
+	bull_ring_on = 1
+	item_supermacy_bonus += 1
+}
+$item_property_off['bull_ring'] = {
+	bull_ring_on = 0
+	item_supermacy_bonus -= 1
+}
+
+!Оберег ["obereg"]
+! JO9 MOD START J9M2236 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'obereg', '오베레그', 0, '<br> 이 독특한 형태의 부적은 전직 검투사 그라쿠스에게 대가로 받은 것이다. 착용자에게 특별한 힘을 주고, 질병으로 부터 보호해 준다. 그리고 아우라 장악력을 증대시킨다.<br><br>  평시: 장악력 조금 상승, 질병면역, 행동력 초과사용시 다음날 체력감소 무효, 리벨리스 영구 발동', ''
+! JO9 MOD END J9M2236
+$item_property["obereg"] = {
+	spell_revelio = 1
+    obereg_on = 1
+    item_supermacy_bonus += 2
+}
+$item_property_off["obereg"] = {
+	spell_revelio = 0
+    obereg_on = 0
+    item_supermacy_bonus -= 2
+}
+
+!OTHER ITEMS
+!['пусто'] EMPTY
+dynamic $ib_cycle, 'пусто', '-', 0, '', ''
+
+$item_property['пусто'] = {
+}
+
+!ITEMS WORN ON BODY
+
+!['голая'] NAKED
+dynamic $ib_cycle, 'голая', '알몸', 0, ' <br> 이미 완전히 벗은 알몸이다.<br><br>  - 부정적인 무들렛, 일정 흥분 이하 기분 dn, 성교육, 체력, 사육 +1, 젖소녀 일정 이상 교육시 부정적인 무들렛 삭제', ''
+
+$item_property['голая'] = {
+	if dynslave['pride'] > 2: worn_bonus['mood_rate'] -= dynslave['pride']*3 &! proud slaves dislike being put on display - ImperatorAugustus
+	if dynslave['exhibitionism'] < 0 and $dynslave_psy_status ! 'horny': worn_bonus['mood'] -= 1 & dynslave['exhibitionism_revealed'] = max(1, dynslave['exhibitionism_revealed']) &! shy, insufficiently-aroused slaves strongly dislike being naked - stacks with the neg_naked moodlet applied in #static_base that can be suppressed with exhibitionism training (shy trait itself also can be removed with enough training) - ImperatorAugustus
+	learn_bonus['sex'] += 1
+	learn_bonus['stamina'] += 1
+	daily_bonus['instinct'] += 1
+}
+
+!Фартук ['apron']
+! JO9 MOD START J9M2235 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'common_apron', '주름 앞치마', 5, '<br> 앞치마는 주방에서 가장 쓸모있다. 이 앞치마는 다른 옷과 동시 착용하지 않으며, 당신 여자가 주방에서 일하는 동안 여러 기회를 만들어낼 수 있다<br><br>  요리 교육효율 Up,', 'scene\item\item_apron1'
+! JO9 MOD END J9M2235
+
+$item_property['common_apron'] = {
+	if dynslave['pride'] > 2: dynslave['neg_clothes'] = 100 & worn_bonus['mood_rate'] -= dynslave['pride']*3 &! proud slaves dislike being put on display - ImperatorAugustus
+	if dynslave['exhibitionism'] < 0 and $dynslave_psy_status ! 'horny': dynslave['neg_clothes'] = 100 & worn_bonus['mood'] -= 1 & dynslave['exhibitionism_revealed'] = max(1, dynslave['exhibitionism_revealed']) &! body-shy, insufficiently-aroused slaves dislike revealing outfits - ImperatorAugustus
+	if dynslave['cook_affinity'] > 0: dynslave['pos_clothes'] = 100 &! affinity finds the outfit comfortable, but wearing it does not reveal the trait - ImperatorAugustus
+	learn_bonus['cook'] += 2
+}
+
+!Платье горничной ['maid_dress']
+! JO9 MOD START J9M2234 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'maid_dress', '하녀복', 5, '<br> 고전적인 프랑스풍 하녀복이다. 옷감을 살리느라 많은 부위가 제외되었다. 다수 고객들이 이 모양을 선호한다.<br><br>  잡일과 청소 교육효율 Up, 세련됨 +1', 'scene\item\item_maido'
+! JO9 MOD END J9M2234
+
+$item_property['maid_dress'] = {
+	if dynslave['pride'] > 2: dynslave['neg_clothes'] = 100 & worn_bonus['mood_rate'] -= dynslave['pride']*3 &! proud slaves dislike being put on display (albeit less than more revealing outfits) - ImperatorAugustus
+	if dynslave['exhibitionism'] < 0 and $dynslave_psy_status ! 'horny': dynslave['neg_clothes'] = 100 & worn_bonus['mood'] -= 1 & dynslave['exhibitionism_revealed'] = max(1, dynslave['exhibitionism_revealed']) &! body-shy, insufficiently-aroused slaves dislike revealing outfits - ImperatorAugustus
+	if dynslave['service_affinity'] > 0: dynslave['pos_clothes'] = 100 &! affinity finds the outfit comfortable, but wearing it does not reveal the trait - ImperatorAugustus
+	learn_bonus['service'] += 2
+	dynslave['st_plus'] += 1
+}
+
+!Платье медсестры ['nurse_dress']
+! JO9 MOD START J9M2233 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'nurse_dress', '간호복', 5, '<br> 화끈한 흰색 간호복. 당신이 어떤 순간에도 불끈대게 만든다.<br><br>  간호 교육효율 Up', 'scene\item\item_nurse'
+! JO9 MOD END J9M2233
+
+$item_property['nurse_dress'] = {
+	if dynslave['nurse_affinity'] > 0: dynslave['pos_clothes'] = 100 &! affinity finds the outfit comfortable, but wearing it does not reveal the trait - ImperatorAugustus
+	learn_bonus['nurse'] += 2
+}
+
+!['leotard']
+! JO9 MOD START J9M2232 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'leotard', '치어리딩 복장', 5, '<br> 꽉 끼는 하의로 움직임도 방해않고, 맵시를 강조한다. 전투를 제외한 모든 운동 종목에 알맞다.<br><br>  체력/무용 교육효율 Up', 'scene\item\item_leotard'
+! JO9 MOD END J9M2232
+
+$item_property['leotard'] = {
+	if dynslave['pride'] > 2: dynslave['neg_clothes'] = 100 & worn_bonus['mood_rate'] -= dynslave['pride']*2 &! proud slaves dislike being put on display (albeit less than more revealing outfits) - ImperatorAugustus
+	if dynslave['exhibitionism'] < 0 and $dynslave_psy_status ! 'horny': dynslave['neg_clothes'] = 100 & worn_bonus['mood'] -= 1 & dynslave['exhibitionism_revealed'] = max(1, dynslave['exhibitionism_revealed']) &! body-shy, insufficiently-aroused slaves dislike revealing outfits - ImperatorAugustus
+	if dynslave['sport_affinity'] > 0: dynslave['pos_clothes'] = 100 &! affinity finds the outfit comfortable, but wearing it does not reveal the trait - ImperatorAugustus
+	learn_bonus['stamina'] += 2
+	learn_bonus['calisthenics'] += 2
+}
+
+!['chainmail_bikini']
+! JO9 MOD START J9M2231 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'chainmail_bikini', '사슬 비키니', 5, '<br> 로마풍 여성투사 의류. 반복한다, 의류다. 갑옷은 아닌데, 시합 의상이고, 가볍고 빛나는 양극처리 알루미늄 소재다. 이 쪼가리는 거의 가려주지 않는다.<br><br>  체력 교육효율 조금 up, 전투술 교육효율 대폭 up, 세련됨 +1', 'scene\item\item_chainmail_bikini'
+! JO9 MOD END J9M2231
+
+$item_property['chainmail_bikini'] = {
+	if dynslave['pride'] > 2: dynslave['neg_clothes'] = 100 & worn_bonus['mood_rate'] -= dynslave['pride']*3 &! proud slaves dislike being put on display - ImperatorAugustus
+	if dynslave['exhibitionism'] < 0 and $dynslave_psy_status ! 'horny': dynslave['neg_clothes'] = 100 & worn_bonus['mood'] -= 1 & dynslave['exhibitionism_revealed'] = max(1, dynslave['exhibitionism_revealed']) &! body-shy, insufficiently-aroused slaves dislike revealing outfits - ImperatorAugustus
+	if dynslave['gladiatrix_affinity'] > 0: dynslave['pos_clothes'] = 100 &! affinity finds the outfit comfortable, but wearing it does not reveal the trait - ImperatorAugustus
+	learn_bonus['stamina'] += 1
+	learn_bonus['gladiatrix'] += 3
+	dynslave['ex_plus'] += 1
+}
+
+!['enchanter_robe']
+! JO9 MOD START J9M2230 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'enchanter_robe', '마법 망토', 5, '<br> 빛이 전혀 투과되지 않는 가벼운 옷감으로 만들어졌다. 이 불가사의한 망토는, 두건이 달려있어 완벽히 모습을 감싸준다. 성적 매력은 없지만, 알수없는 신비로운 힘을 부여한다.<br><br>  마법력 교육효율 대폭 up 연금 교육효율 Up, 일정 이상 태도 <b>나쁨시</b> 편안함, 스타일 -1, 독특함 +2', 'scene\item\item_robe'
+! JO9 MOD END J9M2230
+
+$item_property['enchanter_robe'] = {
+	if dynslave['pride'] >= 3: dynslave['pos_clothes'] = 100 &! proud slaves like wearing a concealing outfit - ImperatorAugustus
+	if dynslave['enchanter_affinity'] > 0: dynslave['pos_clothes'] = 100 &! affinity finds the outfit comfortable, but wearing it does not reveal the trait - ImperatorAugustus
+	learn_bonus['enchanter'] += 3 &! mystical way
+	learn_bonus['alchemy'] += 2 &! mystical way
+	dynslave['st_plus'] -= 1 &! not very sexy
+	dynslave['ex_plus'] += 2 &! but very mysterious
+}
+
+!['sun_dress']
+! JO9 MOD START J9M2229 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'sun_dress', '반투명 원피스', 5, '<br> 이 귀여운 옷을 입은 사람을 안정시켜 기분 좋게해준다. 더 예쁘고 기능좋은 옷은 많지만, 이걸 입는게 예쁘다.<br><br>  편안함, 세련됨 +1', 'scene\item\item_sundress'
+! JO9 MOD END J9M2229
+
+$item_property['sun_dress'] = {
+	dynslave['pos_clothes'] = 100
+	dynslave['st_plus'] += 1
+}
+
+!['laced_underwear']
+! JO9 MOD START J9M2228 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'laced_underwear', '명주 속옷', 5, '<br> 요염한 명주 속옷 세트. 브라, 팬티, 가벼운 코르셋과 가터벨트로, 어떤 여자든 갖고싶게 만든다. 노예로 눈요기도 하고, 거친 밤도 만들어 주세요!<br><br>  매일 흥분도Up, 성 교육효율Up, 세련됨 +1', 'scene\item\item_laced_underwear'
+! JO9 MOD END J9M2228
+
+$item_property['laced_underwear'] = {
+	if dynslave['pride'] > 2: dynslave['neg_clothes'] = 100 & worn_bonus['mood_rate'] -= dynslave['pride']*3 &! proud slaves dislike being put on display - ImperatorAugustus
+	if dynslave['exhibitionism'] < 0 and $dynslave_psy_status ! 'horny': dynslave['neg_clothes'] = 100 & worn_bonus['mood'] -= 1 & dynslave['exhibitionism_revealed'] = max(1, dynslave['exhibitionism_revealed']) &! body-shy, insufficiently-aroused slaves dislike revealing outfits - ImperatorAugustus
+	learn_bonus['sex'] += 2 &! better than being naked - ImperatorAugustus
+	if dynslave['moral'] > 0 and master_style >= 3: daily_bonus['arousal'] += 1
+	dynslave['st_plus'] += 1
+}
+
+!['sailor_foku']
+! JO9 MOD START J9M2227 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'sailor_foku', '세라복', 10, '<br> 세인트 피터 학원의 제복. 강의실을 마치 집처럼 느낄수 있게 해준다. 세라복의 어린 여학생보다 순진하고, 매력적으로 보일건 없다.<br><br>  사무 교육효율 Up, 학과 출석 효율 up, 세련됨 +1', 'scene\item\item_sailor'
+! JO9 MOD END J9M2227
+
+$item_property['sailor_foku'] = {
+	if dynslave['secretary_affinity'] > 0: dynslave['pos_clothes'] = 100 &! affinity finds the outfit comfortable, but wearing it does not reveal the trait - ImperatorAugustus
+	learn_bonus['secretary'] += 2
+	learn_bonus['academy'] += 2
+	dynslave['st_plus'] += 1
+}
+
+!['cocktail_dress']
+! JO9 MOD START J9M2226 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'cocktail_dress', '명주 의상', 10, '<br> 고품질 원단으로 만든 의상이다. 이 의상은 어떤 행사에 참석해도 돋보이게 만든다. 아주 세련되고 알맞는 가격으로, 구매가 최선이다.<br><br>  세련됨 +2', 'scene\item\item_laced_dreess'
+! JO9 MOD END J9M2226
+
+$item_property['cocktail_dress'] = {
+	dynslave['st_plus'] += 2
+}
+
+!['rubber_dress']
+! JO9 MOD START J9M2225 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'rubber_dress', '캣슈트', 20, '<br> 가는 라텍스 재질의 의상으로, 몸에 꽉 달라붙어 모든 부위를 강조해준다. 노예와 쉽게 합체 가능하며, 성교육의 효율을 높여주고 꾸준히 기대하게 만든다. 형식적인 느낌도 주어 저녁 행사에 입을수 있다.<br><br>  성 교육효율 대폭Up, 세련됨 +2', 'scene\item\item_rubber_dress'
+! JO9 MOD END J9M2225
+
+$item_property['rubber_dress'] = {
+	if dynslave['pride'] > 2: dynslave['neg_clothes'] = 100 & worn_bonus['mood_rate'] -= dynslave['pride']*3 &! proud slaves dislike being put on display (albeit less than more revealing outfits) - ImperatorAugustus
+	if dynslave['exhibitionism'] < 0 and $dynslave_psy_status ! 'horny': dynslave['neg_clothes'] = 100 & worn_bonus['mood'] -= 1 & dynslave['exhibitionism_revealed'] = max(1, dynslave['exhibitionism_revealed']) &! body-shy, insufficiently-aroused slaves dislike revealing outfits - ImperatorAugustus
+	learn_bonus['sex'] += 3
+	dynslave['st_plus'] += 2
+}
+
+!['ukata']
+! JO9 MOD START J9M2224 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'ukata', '유카타', 20, '<br> 아름다우며 엄숙함을 내뿜는 일본 전통복, 게이샤 옷으로도 불린다. 명도높고 색채 짙은 소재의 비싼 허리띠가 옷의 청초함을 강조해준다. 이 엄숙한 옷차림은, 어떤 특권층과의 공식 석상에도 어울린다.<br><br>  수사학 교육효율 Up, 무용술 교육효율 소폭up 세련됨 +2 독특함 +2', 'scene\item\item_ukata'
+! JO9 MOD END J9M2224
+
+$item_property['ukata'] = {
+	if dynslave['secretary_affinity'] > 0: dynslave['pos_clothes'] = 100 &! affinity finds the outfit comfortable, but wearing it does not reveal the trait - ImperatorAugustus
+	learn_bonus['expression'] += 2
+	learn_bonus['calisthenics'] += 1
+	dynslave['st_plus'] += 2
+	dynslave['ex_plus'] += 2
+}
+
+!['bellydance']
+! JO9 MOD START J9M2223 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'bellydance', '벨리댄스복', 25, '<br> 특이한 차림새로 도시 사람들의 인상을 사긴 어려운 편이다. 반투명 소매, 헐렁한 하의, 소리나고 반짝이는 금붙이와 하나되면, 딱 가능하다. 벨리 댄스도!<br><br>  무용술 교육효율 대폭Up, 성교육 효율 조금 up 세련됨 +2, 독특함 +3', 'scene\item\item_bellydance'
+! JO9 MOD END J9M2223
+
+$item_property['bellydance'] = {
+	if dynslave['pride'] > 2: dynslave['neg_clothes'] = 100 & worn_bonus['mood_rate'] -= dynslave['pride'] &! proud slaves dislike being put on display (albeit this outfit is not as revealing) - ImperatorAugustus
+	if dynslave['calisthenics_affinity'] > 0: dynslave['pos_clothes'] = 100 &! affinity finds the outfit comfortable, but wearing it does not reveal the trait - ImperatorAugustus
+	learn_bonus['calisthenics'] += 3
+	learn_bonus['sex'] += 1
+	dynslave['ex_plus'] += 3
+	dynslave['st_plus'] += 2
+}
+
+!['leather_corset']
+! JO9 MOD START J9M2222 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'leather_corset', '코르셋 치마', 50, '<br> 금속 매무새의 이 딱딱한 코르셋은, 가슴과 성기를 드러내고 있다. 가벼운 바람 만으로도, 노출된 성감대를 자극하여 주인을 갈구할 것이다! 거기에, 모든 성교육을 더욱 집중하게 해준다. 아름답고, 자극적이며, 행동적으로!<br><br>  일정 이상 충성시 매일 흥분도Up, 성 교육효율 대폭Up, 세련됨 +2', 'scene\item\item_corset'
+! JO9 MOD END J9M2222
+
+$item_property['leather_corset'] = {
+	if dynslave['pride'] > 2: dynslave['neg_clothes'] = 100 & worn_bonus['mood_rate'] -= dynslave['pride']*3 &! proud slaves dislike being put on display - ImperatorAugustus
+	if dynslave['exhibitionism'] < 0 and $dynslave_psy_status ! 'horny': dynslave['neg_clothes'] = 100 & worn_bonus['mood'] -= 1 & dynslave['exhibitionism_revealed'] = max(1, dynslave['exhibitionism_revealed']) &! body-shy, insufficiently-aroused slaves dislike revealing outfits - ImperatorAugustus
+	if dynslave['moral'] > 0 and master_style >= 3: daily_bonus['arousal'] += 2
+	learn_bonus['sex'] += 4
+	dynslave['st_plus'] += 2
+}
+
+!['rich_dress']
+! JO9 MOD START J9M2221 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'rich_dress', '수려한 의상', 50, '&nbsp- 가격 :50 스파크<br><br> 맞다, 이 의상은 비싸기만 하고 편안하지 않다. 그래도 수려하다! 축복받은 디자이너들이, 누가 입든 우아하고 감각적으로 보이게끔 만들었다.<br><br>  불편함, 세련됨 +3', 'scene\item\item_rich_dress'
+! JO9 MOD END J9M2221
+
+$item_property['rich_dress'] = {
+	dynslave['neg_clothes'] = 100 & worn_bonus['mood_rate'] -= 5 &! not very comfortable - ImperatorAugustus
+	dynslave['st_plus'] += 3 &! same style bonus as wedding dress at half the price - ImperatorAugustus
+}
+
+!['wedding_dress']
+! JO9 MOD START J9M2220 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'wedding_dress', '웨딩드레스', 100, '<br> 웨딩드레스 보다 뛰어난게 없다. 호화로울 뿐 아니라, 순수함과 행복의 상징이다. 특히나 희생적인 노예에. 모든 여자들이 이걸 입는 꿈을 주체하지 못한다! 거사를 위한 앞트임도 가능하다.<br><br>  일정 이하 태도시 편안함, 일정 이상 충성시 매일 흥분도, 성 교육효율 대폭 up, 세련됨 +3', 'scene\item\item_wedding_dress'
+! JO9 MOD END J9M2220
+
+$item_property['wedding_dress'] = {
+	if dynslave['pride'] < 3 and rebell[$dynslave_psy_status] <= 0: dynslave['pos_clothes'] = 100
+	if min(dynslave['moral'], dynslave['mood'], master_style) >= 3: daily_bonus['moral'] += 1 & daily_bonus['arousal'] += 1 & worn_bonus['mood_rate'] += 5 &! devoted slaves fantasize about being a waifu, further increasing mood by +0.5 while also raising devotion and arousal - ImperatorAugustus
+	learn_bonus['sex'] += dynslave['moral'] &! better than corset only with maximum devotion, but the mood bonus helps balance the scale - ImperatorAugustus
+	dynslave['st_plus'] += 3 &! same style bonus as gorgeous dress and precious tiara - ImperatorAugustus
+}
+
+!ITEMS WORN ON HANDS
+
+!['rubber_gloves']
+! JO9 MOD START J9M2219 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'rubber_gloves', '고무재질 장갑', 5, '<br> 어떤 복장과 맞거나, 손을 예쁘게 하지도 않지만, 다양한 일을 하게 해준다. 집정리나 설거지를 하는 동안 섬세한 피부결을 보호해준다. 의학 절차에도 딱 좋다.<br><br>  잡일과 청소/간호의학 교육효율 조금 Up 새련됨 -2', 'scene\item\item_rubber_gloves'
+! JO9 MOD END J9M2219
+
+$item_property['rubber_gloves'] = {
+	learn_bonus['nurse'] += 1
+	learn_bonus['service'] += 1
+	dynslave['st_plus'] -= 2 &! very not stylish (considered making an exception when paired with nurse outfit but decided against it) - ImperatorAugustus
+}
+
+!['laced_gloves']
+! JO9 MOD START J9M2218 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'laced_gloves', '명주 장갑', 5, '<br> 팔꿈치 길이의 명주 재질 장갑 우아해 보이고, 착용중 의상의 매력과 세련됨을 강조한다. 이 부드러운 명주가 손가락 유무에 관계없이, 팔꿈치 높이로 감싸준다.<br><br>  세련됨 +2', 'scene\item\item_laced_gloves'
+! JO9 MOD END J9M2218
+
+$item_property['laced_gloves'] = {
+	dynslave['st_plus'] += 2
+}
+
+!['leather_gloves']
+! JO9 MOD START J9M2217 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'leather_gloves', '가죽 장갑', 5, '<br> 멋스럽고 질긴 가죽 장갑 웬만한 옷들을 더욱 세련되게 만들고, 무기 훈련간 손도 보호해준다.<br><br>  전투술, 연금술 교육효율 조금up, 세련됨 +1', 'scene\item\item_leather_gloves'
+! JO9 MOD END J9M2217
+
+$item_property['leather_gloves'] = {
+	learn_bonus['gladiatrix'] += 1
+	learn_bonus['alchemy'] += 1
+	dynslave['st_plus'] += 1 &! stylish but not as much as laced_gloves - ImperatorAugustus
+}
+
+!['plastic_bracers']
+! JO9 MOD START J9M2216 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'plastic_bracers', '탄소섬유 장갑', 10, '<br> 검정색 탄소섬유로 만들어진 가볍고 질긴 장갑 우아함이라곤 찾아볼 수 없지만, 전투술 훈련중 손을 보호해준다. 때론 외모보다 건강이 훨씬 소중하다.<br><br>  전투술 교육효율up, 세련됨 -1', 'scene\item\item_bracers'
+! JO9 MOD END J9M2216
+
+$item_property['plastic_bracers'] = {
+	learn_bonus['gladiatrix'] += 2
+	dynslave['st_plus'] -= 1 &! not stylish - ImperatorAugustus
+}
+
+!['fluffy_gloves']
+! JO9 MOD START J9M2215 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'fluffy_gloves', '고양이 손', 5, '<br> 이 오동통하고 푹신한 장갑은 고양이 손을 본따 만들어졌다. 기능은 없어도 옷장 수집품으론 더할 나위 없다. 동물이 된 기분을 쉽게 느끼게 만들어줘요!<br><br>  애완녀 교육효율 조금Up, 그외 모든 교육효율 초특대폭dn 세련됨 -1', 'scene\item\item_fluffy_gloves'
+! JO9 MOD END J9M2215
+
+$item_property['fluffy_gloves'] = {
+	if dynslave['pet_affinity'] > 0: dynslave['pos_clothes'] = 100 &! slaves with pet affinity find these comfortable (but wearing does not reveal the trait) - ImperatorAugustus
+	learn_bonus['pet'] += 1 &! easier to feel like a pet
+	! not functional - interferes with other lessons - ImperatorAugustus
+	learn_bonus['service']      -= 10
+	learn_bonus['cook']         -= 10
+	learn_bonus['secretary']    -= 10
+	learn_bonus['expression']   -= 10
+	learn_bonus['nurse']        -= 10
+	learn_bonus['alchemy']      -= 10
+	learn_bonus['enchanter']    -= 10
+	learn_bonus['stamina']      -= 10
+	learn_bonus['gladiatrix']   -= 10
+	learn_bonus['calisthenics'] -= 10
+	learn_bonus['music']        -= 10
+	learn_bonus['art']          -= 10
+	learn_bonus['cowSK']        -= 10
+	learn_bonus['dressage']     -= 10
+	dynslave['st_plus'] -= 1 &! not stylish - ImperatorAugustus
+}
+
+!ITEMS WORN ON FEET
+
+!['tabi']
+! JO9 MOD START J9M2214 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'tabi', '일본 전통 양말', 5, '<br> "타비" 라는 이름의 이 두꺼운 양말은 엄지 발가락쪽이 나뉘어 있다. 무술 훈련, 조용한 움직임에 최적화된 전통 양말이다. 무슨 훈련을 몇 번이든 견뎌낸다.<br><br>  전투술 교육효율 Up, 무용 교육효율 조금up, 독특함 +1', 'scene\item\item_tabi'
+! JO9 MOD END J9M2214
+
+$item_property['tabi'] = {
+	if dynslave['gladiatrix'] > 2 or dynslave['gladiatrix_affinity'] > 0: dynslave['pos_clothes'] = 100 &! B+ gladiatrices or slaves with gladiatrix trait find these comfortable (but wearing does not reveal the trait) - ImperatorAugustus
+	learn_bonus['gladiatrix'] += 2 &! martial arts
+	learn_bonus['calisthenics'] += 1 &! silent movement
+	dynslave['ex_plus'] += 1 &! slightly exotic - ImperatorAugustus
+}
+
+!['fluffy_stepins']
+! JO9 MOD START J9M2213 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'fluffy_stepins', '푹신한 슬리퍼', 5, '<br> 부드럽고 뽀송한 이 슬리퍼는 엄청 따뜻하고, 정말 편하다. 생긴건 간단하다, 뒤는 트여있고 머리엔 리본과 공 두개가 달려있다.<br><br> 편안함, 세련됨, 독특함 -1', 'scene\item\item_fluffy_stepins'
+! JO9 MOD END J9M2213
+
+$item_property['fluffy_stepins'] = {
+	dynslave['pos_clothes'] = 100
+	dynslave['st_plus'] -= 1 &! does not complement a stylish outfit - ImperatorAugustus
+	dynslave['ex_plus'] -= 1 &! reduces exoticism - ImperatorAugustus
+}
+
+!['pointes']
+! JO9 MOD START J9M2212 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'pointes', '토슈즈', 5, '<br> 발레를 하면서 절대 없어서는 안 될 물건, 토슈즈. 무도를 위해 고안되었고, 익숙한 사람에겐 가장 편안한 신발.<br><br>  무용술 교육효율 Up, 일정이상의 무용술 기능시 편안함', 'scene\item\item_pointes'
+! JO9 MOD END J9M2212
+
+$item_property['pointes'] = {
+	if dynslave['calisthenics'] > 2 or dynslave['calisthenics_affinity'] > 0: dynslave['pos_clothes'] = 100 &! B+ dancers or slaves with ballerina trait find these comfortable (but wearing does not reveal the trait) - ImperatorAugustus
+	learn_bonus['calisthenics'] += 2 &! dancing
+}
+
+!['sneakers']
+! JO9 MOD START J9M2211 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'sneakers', '운동화', 5, '<br> 운동하기 편안하고, 실용적인 신발로 평소에 신기 편하다.<br><br>  체력 교육효율 대폭 up, 전투술/무용 교육효율 조금Up, 운동광일때 매일 체력up 세련됨 -1, 독특함 -1', 'scene\item\item_sneakers'
+! JO9 MOD END J9M2211
+
+$item_property['sneakers'] = {
+	if dynslave['sport_affinity'] > 0: dynslave['pos_clothes'] = 100 &! slaves with sport affinity find these comfortable (but wearing does not reveal the trait) - ImperatorAugustus
+	learn_bonus['stamina'] += 3 &! sports
+	learn_bonus['gladiatrix'] += 1 &! sports
+	learn_bonus['calisthenics'] += 1 &! sports
+	dynslave['st_plus'] -= 1 &! does not complement a stylish outfit - ImperatorAugustus
+	dynslave['ex_plus'] -= 1 &! reduces exoticism - ImperatorAugustus
+}
+
+!['high_heels']
+! JO9 MOD START J9M2210 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'high_heels', '하이힐', 5, '<br> 높고 뾰족한 이 구두가 우아와 세련의 표본이다. 광범위한 모양과 색상으로, 어떤 의상에도 맞는 쌍이 있기 마련이다. 하이힐 없는 패션에 완성이란 없다.<br><br>  세련됨 +2', 'scene\item\item_high_heels'
+! JO9 MOD END J9M2210
+
+$item_property['high_heels'] = {
+	if dynslave['stamina'] < 3: dynslave['neg_clothes'] = 100 & worn_bonus['mood'] -= 3 - dynslave['stamina'] &! unhealthy slaves find heels unpleasant to wear - ImperatorAugustus
+	dynslave['st_plus'] += 2 &! as elegant as high_boots
+}
+
+!['high_boots']
+! JO9 MOD START J9M2209 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'high_boots', '도미나 부츠', 20, '<br> 광택나는 금속 장식의 세련미 넘치는 허벅지 높이 부츠. 번식욕을 자극하고, 걷잡을 수 없는 욕구를 불러 일으킨다.<br><br>  매일 성격/체력 up, (일정 이상의 체력일 때)성 교육효율Up, 세련됨 +2', 'scene\item\item_high_boots'
+! JO9 MOD END J9M2209
+
+$item_property['high_boots'] = {
+	if dynslave['stamina'] < 3: dynslave['neg_clothes'] = 100 & worn_bonus['mood'] -= 3 - dynslave['stamina'] &! unhealthy slaves find heels unpleasant to wear - ImperatorAugustus
+	learn_bonus['sex'] += 2 &! emphasize sexuality
+	if dynslave['temper'] > 2: daily_bonus['temper'] += 1 &! emphasize temper, effect shared with hoofed_boots (pony gear) - ImperatorAugustus
+	dynslave['st_plus'] += 2 &! as elegant as high_heels
+}
+
+!JEWELRY AND ACCESSORIES FOR HANDS
+
+!['plain_ring']
+! JO9 MOD START J9M2208 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'plain_ring', '도색 반지', 3, '<br> 귀금속을 잘 세공한 아름다운 반지<br><br>  세련됨 +1', 'scene\item\item_plain_ring'
+! JO9 MOD END J9M2208
+
+$item_property['plain_ring'] = {
+	dynslave['st_plus'] += 1
+}
+
+!['incrusted_ring']
+! JO9 MOD START J9M2207 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'incrusted_ring', '보석 반지', 5, '<br> 고품질 금속을 돌로 상감 세공하여, 착용자의 조촐함을 더해주는 반지.<br><br>  세련됨 +2', 'scene\item\item_incrusted_ring'
+! JO9 MOD END J9M2207
+
+$item_property['incrusted_ring'] = {
+	dynslave['st_plus'] += 2 &! more style bonus than plain_ring, but removed +1 to ex_plus - ImperatorAugustus
+}
+
+!JEWELRY AND ACCESSORIES FOR PIERCINGS
+
+!['plain_earrings']
+! JO9 MOD START J9M2206 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'plain_earrings', '작은 고리', 3, '<br> 뚫어둔 어떤 부위에도 딱 맞는 한 쌍의 고리<br><br>  세련됨 +1', 'scene\item\item_plain_earring'
+! JO9 MOD END J9M2206
+
+$item_property['plain_earrings'] = {
+	dynslave['st_plus'] += 1
+}
+
+!['incrusted_earrings']
+! JO9 MOD START J9M2205 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'incrusted_earrings', '보석 고리', 5, '<br> 한 쌍의 귀고리 겉면을 희귀 크리스탈로 마감, 일반품보다 더 특이한 보석이 달려있다. 고리로도 사용 가능하다.<br><br>  독특함+2, 세련됨 +2', 'scene\item\item_incrusted_earring'
+! JO9 MOD END J9M2205
+
+$item_property['incrusted_earrings'] = {
+	dynslave['st_plus'] += 2 &! more stylish than other piercing accessories
+	dynslave['ex_plus'] += 2 &! more rare and exotic than standard gemstones
+}
+
+!['barbells']
+! JO9 MOD START J9M2204 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'barbells', '바벨 고리', 10, '<br> 귀금속 재질의 한 쌍의 바벨 고리, 양 끝에 잘 연마된 희귀 보석이 달려있다.<br><br>  매일 흥분도Up, 독특함+1, 세련됨 +1', 'scene\service\service_tongue_piercing'
+! JO9 MOD END J9M2204
+
+$item_property['barbells'] = {
+	! sold in pairs, twice the price of gemstone studs which are equivalent for style and exoticism - a premium for increasing arousal, which helps sex training - ImperatorAugustus
+	daily_bonus['arousal'] += 1 &! mild stimulation
+	dynslave['st_plus'] += 1 &! precious metal
+	dynslave['ex_plus'] += 1 &! rare gemstone
+	! not quite as good for charm as gemstone studs, despite the higher price, giving a reason to buy both - ImperatorAugustus
+}
+
+!['nipple_chain']
+! JO9 MOD START J9M2203 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'nipple_chain', '유두 사슬', 10, '<br> 사슬로 연결된 한 쌍의 고리로, 젖꼭지를 잇는다. 지속적인 자극을 주며, 사슬을 잡아 당김으로 행동을 교정할 수 있다. 진짜 아프다.<br><br>  매일 사육/흥분도Up, 성 교육효율Up, 세련됨 +1', 'scene\item\item_nipple_chain'
+! JO9 MOD END J9M2203
+
+$item_property['nipple_chain'] = {
+	if dynslave['pride'] >= 2 or (dynslave['arousal'] = 0 and dynslave['masochism'] <= 0):
+		if dynslave_state = CONST_INT['slave_exist'] and rebell[$dynslave_psy_status] > 0 and dynslave['obedience'] < 0 and dynslave['beaten_ever'] = 0 and dynslave['domini_dictum'] = 0:
+			$place = 'study'
+			$picture_type = 'dynslave_picture'
+			npc = 0 & txt = 1 & $text[1] = '  <<$dynslave_name>>는 유두 사슬 착용을 거부한다. 그래도 강제로 착용시킬까?'
+			$yes = {
+				if 'dynslave' = 'slave' and dynslave['gladiatrix'] > max(0, master_supermacy - master_style):
+					dynamic $slave_fights_back
+				else
+					dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'dynslave')
+					dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+				end
+			}
+			$no = {
+				$dynslave['nipplerings'] = 'пусто' &! empty
+				dynslave_inventory['nipple_chain'] += 2
+				dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+			}
+			gt 'choice_screen'
+		end
+	end
+	if dynslave['arousal'] = 0 and dynslave['masochism'] <= 0: dynslave['neg_clothes'] = 100 & worn_bonus['mood_rate'] -= 5 &! not inured (1) or masochist (2)
+	daily_bonus['arousal'] += 2 &! constant stimulation, more than barbells
+	daily_bonus['instinct'] += 1 &! behave more respectfully / pulling it hurts
+	! removed direct bonus for sex lessons (arousal still assists with lessons implicitly) - ImperatorAugustus
+	dynslave['ex_plus'] += 1 &! changed to exoticism bonus instead of style bonus - ImperatorAugustus
+	! no style bonus, so for charm when selling the slave, using barbells or gemstone studs is better - ImperatorAugustus
+}
+
+!['heavy_gauge_rings']
+! JO9 MOD START J9M2202 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'heavy_gauge_rings', '두꺼운 고리', 30, '<br> 이 것만큼 <u>노예</u>를 잘 표현하는건 없다. 7개씩 판매한다. 인상적인 장면을 연출할 수 있다.<br><br>  블편함, 독특함+2, 세련됨 -1, 장착된 갯수에 따라 효과 다름', 'scene\item\item_heavy_gauge'
+! JO9 MOD END J9M2202
+
+$item_property['heavy_gauge_rings'] = {
+	! daily impact (+instinct, -mood) is applied in next_day according to the number of rings equipped
+	! maximum impact is +3 instinct for -0.9 mood with 5 of these rings [tongue/nipple(x2)/navel/clit] and a permanent nose ring
+	! substituting nipple chain for thick steel rings is a change of -1 instinct, +0.3 mood and the chain adds +1 instinct and up to -1.0 mood (ideally zero, if she is aroused or a masochist)
+	! when using a nipple chain, +3 instinct requires a nose piercing and all other slots filled with these rings; the mood impact in this case is -0.6
+	! if you omit the nose piercing, a nipple chain and two rings yields a total impact of +2 instinct and -0.3 to -0.4 mood, plus arousal
+	! that leaves one empty slot for another accessory, for example a barbell for extra arousal
+	dynslave['neg_clothes'] = 100 &! for display only, moodlet impact is negated in $recalc_equipment_bonuses
+	dynslave['st_plus'] -= 1 &! not a refined, stylish look
+	dynslave['ex_plus'] += 2 &! but more exotic than gemstone rings
+	! not the best for style, but on par with gemstone studs for exoticism - ImperatorAugustus
+}
+
+!ITEMS WORN ON HEAD
+
+!['plain_headband']
+! JO9 MOD START J9M2201 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'plain_headband', '머리띠', 3, '<br> 매일 사용 가능한 머리장식 가벼운 무게에 유연성을 더하여, 안면이 보이도록 깔끔하게 머리를 정돈 해준다.<br><br>  머리 모양 고정, 요리 교육효율 조금up', 'scene\item\item_headband'
+! JO9 MOD END J9M2201
+
+$item_property['plain_headband'] = {
+	dynslave['wig'] = 1 &! equivalent style bonus as a recent haircut - ImperatorAugustus
+	learn_bonus['cook'] += 1 &! same as hijab, which costs the same, but hijab also boosts service
+	! aside from the style function, this item serves as an inexpensive gift
+}
+$item_property_off['plain_headband'] = {
+	if dynslave['hairstyle'] = 1: dynslave['hairstyle'] = 0
+}
+
+!['hijab']
+! JO9 MOD START J9M2200 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'hijab', '히잡', 3, '<br> 머리카락을 완벽하게 감싸주는 히잡. 머리에 그다지 어울리는 장신구는 아니지만, 평범한 일엔 실용적이다. 수프를 먹는동안 머리가 안젖고, 잡일과 청소에도 방해되지 않는다.<br><br>  잡일과 청소/요리 교육 조금 Up, 세련됨 -1', 'scene\item\item_hijab'
+! JO9 MOD END J9M2200
+
+$item_property['hijab'] = {
+	learn_bonus['service'] += 1
+	learn_bonus['cook'] += 1
+	dynslave['st_plus'] -= 1 &! not a refined, stylish look
+}
+
+!도나이식
+!['paper bag']
+! JO9 MOD START J9M2199 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'paper_bag', '빵봉지', 5, '<br> 머리를 완벽하게 가리는 종이재질의 봉투. 시야를 차단하고 익명성을 보장해준다.<br><br>  성교육 효율 증가,세련됨 -2', 'scene\item\item_paper_bag'
+! JO9 MOD END J9M2199
+
+$item_property['paper_bag'] = {
+	learn_bonus['sex'] += 1    
+	dynslave['st_plus'] -= 2 
+}
+
+
+!['crown_of_thorns']
+! JO9 MOD START J9M2198 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'crown_of_thorns', '뾰족한 가시관', 5, '<br> 물론 이름만 이렇고 실제로 가시는 없다. 테두리는 가시 철사로 둘러져 있으며, 조립 기술의 눈속임으로 위험해 보이는 것이다. 통증은 유발하나 상처는 내지 않고, 쉽게 벗을 수 없는 구조다. 부드러운 긁힘이 자존심도 긁어낸다.<br><br>  매일 사육Up, 마조히즘 수치에 따라 기분 변화, 세련됨 -2', 'scene\item\item_thorns'
+! JO9 MOD END J9M2198
+
+$item_property['crown_of_thorns'] = {
+	if dynslave['masochism'] <= 0:
+		if dynslave_state = CONST_INT['slave_exist'] and rebell[$dynslave_psy_status] > 0 and dynslave['obedience'] < 0 and dynslave['beaten_ever'] = 0 and dynslave['domini_dictum'] = 0:
+			$place = 'study'
+			$picture_type = 'dynslave_picture'
+			npc = 0 & txt = 1 & $text[1] = '  <<$dynslave_name>>는 가시관 착용을 거부한다. 그래도 강제로 착용시킬까?'
+			$yes = {
+				if 'dynslave' = 'slave' and dynslave['gladiatrix'] > max(0, master_supermacy - master_style):
+					dynamic $slave_fights_back
+				else
+					dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'dynslave')
+					dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+				end
+			}
+			$no = {
+				$dynslave['headband'] = 'пусто' &! empty
+				dynslave_inventory['crown_of_thorns'] += 1
+				dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+			}
+			gt 'choice_screen'
+		end
+	end
+	dynslave['masochism_revealed'] = max(1, dynslave['masochism_revealed']) &! always reveals trait when worn - ImperatorAugustus
+	if dynslave['masochism'] ! 2: dynslave['neg_clothes'] = 100
+	worn_bonus['mood'] += iif(dynslave['masochism'] = 2, 1, -1) &! conditioned mood effect on masochism (2 = masochist) - ImperatorAugustus
+	daily_bonus['instinct'] += 2 &! mild pain reminds slave of humility - ImperatorAugustus
+	dynslave['st_plus'] = -2 &! added style penalty - ImperatorAugustus
+}
+
+!['plain_tiara']
+! JO9 MOD START J9M2197 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'plain_tiara', '평범한 관', 10, '<br> 스파크 귀금속 세공의 세련된 관 머리를 완벽하게 장식하고, 고귀한 분위기를 내뿜는다.<br><br>  럭셔리함, 세련됨 +2', 'scene\item\item_plain_tiara'
+! JO9 MOD END J9M2197
+
+$item_property['plain_tiara'] = {
+	if dynslave['passion_luxury'] > 0: worn_bonus['mood_rate'] += 5 & dynslave['passion_luxury_revealed'] = max(1, dynslave['passion_luxury_revealed']) &! sybarite loves luxurious items - ImperatorAugustus
+	dynslave['st_plus'] += 2 &! more stylish than glasses as the diadem has no other function for non-sybarite slaves - ImperatorAugustus
+}
+
+!['hairnet']
+! JO9 MOD START J9M2196 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'hairnet', '진주 머리망', 10, '><br> 비싼 직물로 짜여진 진주장식 예쁜 그물망<br>멋스러움을 더해줄 뿐더러 머리 모양을 영구적으로 잡아준다. 은색 머리핀과 진주빗을 동봉 판매한다.<br><br>  머리모양 고정, 세련됨 +2 ', 'scene\item\item_hairnet'
+! JO9 MOD END J9M2196
+
+$item_property['hairnet'] = {
+	dynslave['wig'] = 1 &! equivalent style bonus as a recent haircut - ImperatorAugustus
+	dynslave['st_plus'] += 2 &! increased style effectiveness to give a reason to use it (superior to a wig for style, but no exoticism bonus) - ImperatorAugustus
+}
+$item_property_off['hairnet'] = {
+	if dynslave['hairstyle'] = 1: dynslave['hairstyle'] = 0
+}
+
+!['glasses']
+! JO9 MOD START J9M2195 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'glasses', '세련된 안경', 10, '<br> 예쁘고 실용적인 안경 전문가의 안내로 시력을 최적 교정하고, 보다 효율적으로 문서를 읽게 해준다. 세련된 귀금속 테는 착용 여성에게 독특한 분위기를 준다.<br><br>  사무 교육효율 조금Up, 세련됨 +1', 'scene\item\item_glasses'
+! JO9 MOD END J9M2195
+
+$item_property['glasses'] = {
+	if dynslave['secretary_affinity'] > 0: dynslave['pos_clothes'] = 100 &! slaves with secretary affinity are happier wearing glasses (but wearing them does not reveal the trait) - ImperatorAugustus
+	learn_bonus['secretary'] += 1
+	dynslave['st_plus'] += 1
+}
+
+!['nekomimi']
+! JO9 MOD START J9M2194 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'nekomimi', '고양이 귀', 10, '<br> 유연한 테두리의 커다란 털 고양이 귀 타인들의 시선을 끌고, 진짜 애완녀처럼 느끼게 한다. 다만 수인에 대한 이미지는 썩 좋지 않다는걸 감안해야 한다.<br><br>  애완녀 교육효율 조금Up, 독특함+1, 세련됨 -1', 'scene\item\item_nekomimi'
+! JO9 MOD END J9M2194
+
+$item_property['nekomimi'] = {
+	if dynslave['pet_affinity'] > 0: dynslave['pos_clothes'] = 100 &! slaves with pet affinity find these comfortable (but wearing does not reveal the trait) - ImperatorAugustus
+	learn_bonus['pet'] += 1 &! feel like a real pet
+	dynslave['st_plus'] -= 1 &! not a refined, stylish look
+	dynslave['ex_plus'] += 1 &! but it is slightly exotic
+}
+
+!['incrusted_tiara']
+! JO9 MOD START J9M2193 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'incrusted_tiara', '날개장식 티아라', 20, '<br> 커다란 관에 아른대는 최고급 보석들로 장식했다. 시선을 한몸에 집중받고 아름다움을 연출한다.<br><br>  럭셔리함, 독특함 +1, 세련됨 +3', 'scene\item\item_incrusted_tiara'
+! JO9 MOD END J9M2193
+
+$item_property['incrusted_tiara'] = {
+	if dynslave['passion_luxury'] > 0: worn_bonus['mood_rate'] += 5 & dynslave['passion_luxury_revealed'] = max(1, dynslave['passion_luxury_revealed']) &! sybarite loves luxurious items - ImperatorAugustus
+	dynslave['st_plus'] += 3 &! increased effectiveness to give a reason to use it (better than a wig for style when combined with a recent haircut, but less exotic) - ImperatorAugustus
+	dynslave['ex_plus'] += 1
+}
+
+!['exotic_wig']
+! JO9 MOD START J9M2192 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'exotic_wig', '독특한 가발', 20, '<br> 개성있는 모습을 연출하고 싶은가? 이 느낌있는 가발을 쓰면 된다.<br>다채색, 깃털장식, 레게 머리에, 빛나는 보석을 머리칼에 엮어 정말 한눈에 이끌린다.<br><br>  머리모양 고정, 독특함 +2, 세련됨 +1', 'scene\item\item_exotic_wig'
+! JO9 MOD END J9M2192
+
+$item_property['exotic_wig'] = {
+	dynslave['wig'] = 1 &! equivalent style bonus as a recent haircut - ImperatorAugustus
+	dynslave['ex_plus'] += 2 &! best in slot
+	dynslave['st_plus'] += 1 &! inferior to hairnet and diadem for style - ImperatorAugustus
+}
+$item_property_off['exotic_wig'] = {
+	if dynslave['hairstyle'] = 1: dynslave['hairstyle'] = 0
+}
+
+!ITEMS WORN ON NECK - NOT SLAVE COLLARS (SLAVE WEARING THESE CAN ESCAPE)
+
+!['plain_pendant']
+! JO9 MOD START J9M2191 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'plain_pendant', '장식 목걸이', 5, '<br> 잘 세공된 펜던트가 달린 귀금속 줄. 세련미와 멋을 강조해준다.<br><br>  세련됨 +1', 'scene\item\item_plain_pendant'
+! JO9 MOD END J9M2191
+
+$item_property['plain_pendant'] = {
+	dynslave['st_plus'] += 1
+}
+
+!['incrusted_necklace']
+! JO9 MOD START J9M2190 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'incrusted_necklace', '보석 목걸이', 10, '<br> 아름다운 보석문양 목걸이<br><br>  세련됨 +2', 'scene\item\item_incrusted_necklace'
+! JO9 MOD END J9M2190
+
+$item_property['incrusted_necklace'] = {
+	dynslave['st_plus'] += 2
+}
+
+!['dog_collar']
+! JO9 MOD START J9M2189 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'dog_collar', '개목줄', 5, '<br> 인간을 위한게 아니라, 동물을 위한 목줄이다. 즉각 동물처럼 느끼게 만들지만, 전문적인 목줄보다는 벗기기가 쉽다. <br><br>  애완녀 교육효율 Up, 세련됨 -1', 'scene\item\item_dog_collar'
+! JO9 MOD END J9M2189
+
+$item_property['dog_collar'] = {
+	if dynslave['pet'] < 3 and dynslave['pet_affinity'] = 0:
+		if dynslave_state = CONST_INT['slave_exist'] and rebell[$dynslave_psy_status] > 0 and dynslave['obedience'] < 0 and dynslave['beaten_ever'] = 0 and dynslave['domini_dictum'] = 0:
+			$place = 'study'
+			$picture_type = 'dynslave_picture'
+			npc = 0 & txt = 1 & $text[1] = '  <<$dynslave_name>>는 애완동물용 목줄 착용을 거부한다. 그래도 강제로 착용시킬까? 잠금장치가 없어서 쉽게 벗을 수 있다.'
+			$yes = {
+				if 'dynslave' = 'slave' and dynslave['gladiatrix'] > max(0, master_supermacy - master_style):
+					dynamic $slave_fights_back
+				else
+					dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'dynslave')
+					dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+				end
+			}
+			$no = {
+				$dynslave['collar'] = 'пусто' &! empty
+				dynslave_inventory['dog_collar'] += 1
+				dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+			}
+			gt 'choice_screen'
+		end
+	end
+	if dynslave['pet'] > 2 and (dynslave['ego'] < 3 or dynslave['moral'] > 1): worn_bonus['mood_rate'] += 5
+	! no mood penalty, like leather and ornamented collar, but this is not a slave collar (easy to remove) - ImperatorAugustus
+	learn_bonus['pet'] += 2 &! helps set up a slave in the right mood (better than leather or spiked collar for pet training) - ImperatorAugustus
+	dynslave['st_plus'] = -1 &! added style penalty - ImperatorAugustus
+}
+
+!ITEMS WORN ON NECK - SLAVE COLLARS (SLAVE WEARING THESE CANNOT ESCAPE)
+
+!['leather_collar']
+! JO9 MOD START J9M2188 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'leather_collar', '가죽 목줄', 3, '<br> 넓은 가죽띠에 단추형 보석과 고리를 채워놓은 목줄. 착용 하자마자 운명을 되새겨준다. 다양한 놀이에 실용적이라는건 말할 필요도 없다.<br><br> 목줄. 매일 사육up, 애완녀 교육효율 조금up, 세련됨 -1', 'scene\item\item_leather_collar'
+! JO9 MOD END J9M2188
+
+$item_property['leather_collar'] = {
+	if dynslave_state = CONST_INT['slave_exist'] and rebell[$dynslave_psy_status] > 0 and dynslave['obedience'] < 0 and dynslave['beaten_ever'] = 0 and dynslave['domini_dictum'] = 0:
+		$place = 'study'
+		$picture_type = 'dynslave_picture'
+		npc = 0 & txt = 1 & $text[1] = '  <<$dynslave_name>>는 가죽 목걸이 착용을 거부한다. 그래도 강제로 잠가 버릴까?'
+		$yes = {
+			if 'dynslave' = 'slave' and dynslave['gladiatrix'] > max(0, master_supermacy - master_style):
+				dynamic $slave_fights_back
+			else
+				dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'dynslave')
+				dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+			end
+		}
+		$no = {
+			$dynslave['collar'] = 'пусто' &! empty
+			dynslave_inventory['leather_collar'] += 1
+			dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+		}
+		gt 'choice_screen'
+	end
+	! no mood penalty gives a reason to use this or the ornamented collar, and this is 17$ cheaper - ImperatorAugustus
+	dynslave['slave_collar'] = 1 &! equipped with name token
+	daily_bonus['instinct'] += 1 &! never forget about her fate
+	learn_bonus['pet'] += 1 &! rings for attaching a leash
+	dynslave['st_plus'] = -1 &! added style penalty - ImperatorAugustus
+}
+
+!도나이식
+!['steel_leash']
+! JO9 MOD START J9M2187 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'steel_leash', '외출용 목줄', 20, '<br> 고급스러운 목줄. 분실을 대비해 주인 이름이 각인되어 있다.<br><br>  목줄. 매일 태도 조금 좋아짐, 매일 사육up, 세련됨 -2', 'scene\item\item_steel_leash'
+! JO9 MOD END J9M2187
+
+$item_property['steel_leash'] = {
+	if dynslave_state = CONST_INT['slave_exist'] and rebell[$dynslave_psy_status] > 0 and dynslave['obedience'] < 0 and dynslave['beaten_ever'] = 0 and dynslave['domini_dictum'] = 0:
+		$place = 'study'
+		$picture_type = 'dynslave_picture'
+		npc = 0 & txt = 1 & $text[1] = '  <<$dynslave_name>>(이)가 목줄 착용을 거부합니다. 그녀에게 강제로 착용시키기 위해 무력을 사용하시겠습니까?'
+		$yes = {
+			if dynslave['gladiatrix'] > max(0, master_supermacy - master_style):
+				dynamic $slave_fights_back
+			else
+				dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'dynslave')
+				dynslave_stat_screen = 2 & gt 'dynslave_stat'
+			end
+		}
+		$no = {
+			$dynslave['collar'] = 'пусто' &! empty
+			dynslave_inventory['steel_leash'] += 1
+			dynslave_stat_screen = 2 & gt 'dynslave_stat'
+		}
+		gt 'choice_screen'
+	end
+	dynslave['neg_clothes'] = 100 & worn_bonus['mood'] -= 1 &! not a pleasant experience
+	dynslave['slave_collar'] = 1 &! engraved with name and address
+	daily_bonus['pride'] -= 1 &! impact on pride and conceit
+	daily_bonus['instinct'] += 2 &! heavy reminder of fate
+	dynslave['st_plus'] = -2 &! added style penalty - ImperatorAugustus
+}
+
+!['pwring']
+! JO9 MOD START J9M2186 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'pwring', '순산 기원 반지', 20, '<br> 다산의 여신의 가호가 깃든 반지 임산부의 건강을 지켜준다. -메이드룸 배치시 버그있음<br><br>  임신중일떄 체력감소 완화, 세련됨 +2', 'scene\item\item_pwring'
+! JO9 MOD END J9M2186
+
+$item_property['pwring'] = {
+	dynslave['st_plus'] += 2 
+    if dynslave['pregnant'] > 1: daily_bonus['stamina'] += 2
+}
+
+
+!['steel_collar']
+! JO9 MOD START J9M2185 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'steel_collar', '쇠목줄', 10, '<br> 튼튼한 쇠목줄. 불가피한 운명을 뇌리에 박아준다. 목을 조이고 피부를 스쳐대는, 이 쇠목줄 착용은 꺼림칙한 경험이다. 분실을 대비해 주인 이름이 각인되어 있다. 자존심을 긁는건 말할 필요도 없다.<br><br>  목줄. 매일 태도 조금 좋아짐, 매일 사육 대폭up, 세련됨 -2', 'scene\item\item_steel_collar'
+! JO9 MOD END J9M2185
+
+$item_property['steel_collar'] = {
+	if dynslave_state = CONST_INT['slave_exist'] and rebell[$dynslave_psy_status] > 0 and dynslave['obedience'] < 0 and dynslave['beaten_ever'] = 0 and dynslave['domini_dictum'] = 0:
+		$place = 'study'
+		$picture_type = 'dynslave_picture'
+		npc = 0 & txt = 1 & $text[1] = '  <<$dynslave_name>>는 강철 목걸이 착용을 거부한다. 그래도 강제로 잠가 버릴까?'
+		$yes = {
+			if 'dynslave' = 'slave' and dynslave['gladiatrix'] > max(0, master_supermacy - master_style):
+				dynamic $slave_fights_back
+			else
+				dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'dynslave')
+				dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+			end
+		}
+		$no = {
+			$dynslave['collar'] = 'пусто' &! empty
+			dynslave_inventory['steel_collar'] += 1
+			dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+		}
+		gt 'choice_screen'
+	end
+	dynslave['neg_clothes'] = 100 & worn_bonus['mood'] -= 2 &! not a pleasant experience
+	dynslave['slave_collar'] = 1 &! engraved with name and address
+	if dynslave['pride'] > 2: daily_bonus['pride'] -= 1 &! impact on pride and conceit
+	daily_bonus['instinct'] += 3 &! heavy reminder of fate
+	dynslave['st_plus'] = -2 &! added style penalty - ImperatorAugustus
+}
+
+!['spiked_collar']
+! JO9 MOD START J9M2184 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'spiked_collar', '가시장식 목줄', 10, '<Br> 스파크 길고 뾰족한 철가시가 박힌 위험한 모양의 목줄. 자신의 분수를 알려주며 더 위협적인 느낌을 받게 한다. 투사에게 좋은 장신구로, 특히나 성격을 더 드세게 보이게 한다.<br><br>  목줄. 매일 자아/사육Up 감수성 dn, 전투술 교육효율 조금up 세련됨 -1', 'scene\item\item_spiked_collar'
+! JO9 MOD END J9M2184
+
+$item_property['spiked_collar'] = {
+	if dynslave['gladiatrix'] < 3 and dynslave['gladiatrix_affinity'] = 0:
+		if dynslave_state = CONST_INT['slave_exist'] and rebell[$dynslave_psy_status] > 0 and dynslave['obedience'] < 0 and dynslave['beaten_ever'] = 0 and dynslave['domini_dictum'] = 0:
+			$place = 'study'
+			$picture_type = 'dynslave_picture'
+			npc = 0 & txt = 1 & $text[1] = '  <<$dynslave_name>>는 가시 목걸이 착용을 거부한다. 그래도 강제로 잠가 버릴까?'
+			$yes = {
+				if 'dynslave' = 'slave' and dynslave['gladiatrix'] > max(0, master_supermacy - master_style):
+					dynamic $slave_fights_back
+				else
+					dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'dynslave')
+					dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+				end
+			}
+			$no = {
+				$dynslave['collar'] = 'пусто' &! empty
+				dynslave_inventory['spiked_collar'] += 1
+				dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+			}
+			gt 'choice_screen'
+		end
+	end
+	if dynslave['gladiatrix'] > 2 and dynslave['ego'] > 2 and dynslave['temper'] > 2:
+		! good accessory for gladiatrix and temperamental bitch
+		worn_bonus['mood_rate'] += 5 &! mood increase for B+ gladiatrix skill (not for pets - use collar and leash instead) - ImperatorAugustus
+	else
+		dynslave['neg_clothes'] = 100 & worn_bonus['mood'] -= 1 &! reason to use leather or ornamented collar in early training - ImperatorAugustus
+	end
+	dynslave['slave_collar'] = 1 &! equipped with name token
+	daily_bonus['instinct'] += 1 &! reminds of her status
+	daily_bonus['sensitivity'] -= 1 &! more aggressive
+	learn_bonus['gladiatrix'] += 1 &! accessory for gladiatrix
+	dynslave['st_plus'] = -1 &! added style penalty - ImperatorAugustus
+}
+
+!['shock_collar']
+dynamic $ib_cycle, 'shock_collar', '전기충격 목걸이', 25, '   가격: 25 스파크<br>   기술식 전기충격 목걸이다. 세르피스가 복제 병사들을 훈육하기 위해 개발했고, 군사용이 아닌 용도로 조련사 길드와 협약을 맺었다. 노예에게 자신의 신분을 상기시켜 줄 뿐 아니라, 말하는 동안 정신 패턴을 지속적으로 감시하여 겸손이 부족한 태도를 감지하면 크루시아토와 비슷한 효과를 가한다. 분실 시를 대비해 네 이름표가 달려 있다.', 'scene\item\item_shock_collar'
+
+$item_property['shock_collar'] = {
+	if dynslave_state = CONST_INT['slave_exist'] and rebell[$dynslave_psy_status] > 0 and dynslave['obedience'] < 0 and dynslave['beaten_ever'] = 0 and dynslave['domini_dictum'] = 0:
+		$place = 'study'
+		$picture_type = 'dynslave_picture'
+		npc = 0 & txt = 1 & $text[1] = '  <<$dynslave_name>>는 전기충격 목걸이 착용을 거부한다. 그래도 강제로 잠가 버릴까?'
+		$yes = {
+			if 'dynslave' = 'slave' and dynslave['gladiatrix'] > max(0, master_supermacy - master_style):
+				dynamic $slave_fights_back
+			else
+				dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'dynslave')
+				dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+			end
+		}
+		$no = {
+			$dynslave['collar'] = 'пусто' &! empty
+			dynslave_inventory['shock_collar'] += 1
+			dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+		}
+		gt 'choice_screen'
+	end
+	dynslave['neg_clothes'] = 100 & worn_bonus['mood'] -= 1 &! not a pleasant experience
+	dynslave['slave_collar'] = 1 &! engraved with name and address
+	daily_bonus['instinct'] += 1 &! reminds of her status
+	dynslave['st_plus'] = 2 &! as stylish as a gemstone necklace - ImperatorAugustus
+	dynslave['ex_plus'] = 1 &! inferior to ornamented collar - ImperatorAugustus
+}
+
+!['golden_collar']
+! JO9 MOD START J9M2183 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'golden_collar', '금장 목줄', 20, '<br> 넓직한 금띠로 된 이 사치스런 목줄은 특이한 보석 장식과 주인의 이름표가 달려있고, 여러개의 줄은 목을 당기고 흔들수 있다. 이 화려한 목장식은 누구에게 복종해야 하는가를 되새김질 시킨다.<br><br>  목줄. 매일 사육 up, 독특함+2, 세련됨 +2', 'scene\item\item_golden_collar'
+! JO9 MOD END J9M2183
+
+$item_property['golden_collar'] = {
+	if dynslave['passion_luxury'] = 0:
+		if dynslave_state = CONST_INT['slave_exist'] and rebell[$dynslave_psy_status] > 0 and dynslave['obedience'] < 0 and dynslave['beaten_ever'] = 0 and dynslave['domini_dictum'] = 0:
+			$place = 'study'
+			$picture_type = 'dynslave_picture'
+			npc = 0 & txt = 1 & $text[1] = '  <<$dynslave_name>>는 장식 목걸이 착용을 거부한다. 그래도 강제로 잠가 버릴까?'
+			$yes = {
+				if 'dynslave' = 'slave' and dynslave['gladiatrix'] > max(0, master_supermacy - master_style):
+					dynamic $slave_fights_back
+				else
+					dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'dynslave')
+					dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+				end
+			}
+			$no = {
+				$dynslave['collar'] = 'пусто' &! empty
+				dynslave_inventory['golden_collar'] += 1
+				dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+			}
+			gt 'choice_screen'
+		end
+	end
+	if dynslave['passion_luxury'] > 0: worn_bonus['mood_rate'] += 5 & dynslave['passion_luxury_revealed'] = max(1, dynslave['passion_luxury_revealed']) &! sybarite loves luxurious items - ImperatorAugustus
+	dynslave['slave_collar'] = 1 &! equipped with name token
+	daily_bonus['instinct'] += 1 &! will not forget you are her master
+	dynslave['ex_plus'] += 2 &! best in slot
+	dynslave['st_plus'] += 2 &! as stylish as a gemstone necklace
+}
+
+!ITEMS WORN ON HANDS OR FEET
+
+!['leather_straps']
+! JO9 MOD START J9M2182 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'leather_straps', '가죽 수갑', 5, '<br> 철제 사슬과 사슬 고정대가 달린 견고한 가죽 수갑. 손이나 발에 입힐 수 있고, 어떤 결박에도 겸용 가능하다. 아주 실용적이다!<br><br> 성교육 효율 up, 기분 하락, 세련됨 -1', 'scene\item\item_leather_straps'
+! JO9 MOD END J9M2182
+
+$item_property['leather_straps'] = {
+	if dynslave['deprivation_attitude'] ! 2:
+		if dynslave_state = CONST_INT['slave_exist'] and rebell[$dynslave_psy_status] > 0 and dynslave['obedience'] < 0 and dynslave['beaten_ever'] = 0 and dynslave['domini_dictum'] = 0:
+			$place = 'study'
+			$picture_type = 'dynslave_picture'
+			npc = 0 & txt = 1 & $text[1] = '  <<$dynslave_name>>는 가죽 족쇄 착용을 거부한다. 그래도 강제로 착용시킬까?'
+			$yes = {
+				if 'dynslave' = 'slave' and dynslave['gladiatrix'] > max(0, master_supermacy - master_style):
+					dynamic $slave_fights_back
+				else
+					dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'dynslave')
+					dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+				end
+			}
+			$no = {
+				if $dynslave['gloves'] = 'leather_straps':
+					$dynslave['gloves'] = 'пусто' &! empty
+					dynslave_inventory['leather_straps'] += 1
+				end
+				if $dynslave['boots'] = 'leather_straps':
+					$dynslave['boots'] = 'пусто' &! empty
+					dynslave_inventory['leather_straps'] += 1
+				end
+				dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+			}
+			gt 'choice_screen'
+		end
+	end
+	dynslave['deprivation_attitude_revealed'] = max(1, dynslave['deprivation_attitude_revealed']) &! always reveals trait when worn - ImperatorAugustus
+	if dynslave['deprivation_attitude'] = 2:
+		! deprivation attitude 2 = loves helplessness - ImperatorAugustus
+		worn_bonus['mood_rate'] += 5
+		if master_style >= 3: daily_bonus['arousal'] += 1
+	elseif dynslave['deprivation_attitude'] = -1:
+		! deprivation attitude -1 = claustrophobic - ImperatorAugustus
+		dynslave['neg_clothes'] = 100
+		worn_bonus['mood'] -= 2
+		daily_bonus['arousal'] -= 2
+	else
+		dynslave['neg_clothes'] = 100
+		worn_bonus['mood_rate'] -= 5
+	end
+	learn_bonus['sex'] += 1 &! used in any bondage
+	daily_bonus['instinct'] += 1 &! restraints induce taming (equivalent to ponygirl harness)
+	dynslave['st_plus'] = -1 &! added style penalty - ImperatorAugustus
+}
+
+!도나이식
+!['chain_straps']
+! JO9 MOD START J9M2181 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'chain_straps', '금장 수갑', 10, '<br> 금으로 도금된 견고한 수갑 손목과 발목에 고정할수 있는 벤드에 여러곳에 고정할수 있는 체인이 달려있다.  <br><br> 성교육 효율 up, 기분 하락, 세련됨 +1', 'scene\item\item_chain_straps'
+! JO9 MOD END J9M2181
+
+$item_property['chain_straps'] = {
+	dynslave['deprivation_attitude_revealed'] = max(1, dynslave['deprivation_attitude_revealed']) &! always reveals trait when worn - ImperatorAugustus
+	if dynslave['deprivation_attitude'] = 2:
+		worn_bonus['mood_rate'] += 5
+		if master_style >= 3: daily_bonus['arousal'] += 1
+	elseif dynslave['deprivation_attitude'] = -1:
+		dynslave['neg_clothes'] = 100
+		worn_bonus['mood'] -= 2
+		daily_bonus['arousal'] -= 2
+	else
+		dynslave['neg_clothes'] = 100
+		worn_bonus['mood_rate'] -= 5
+	end
+	learn_bonus['sex'] += 1 
+	dynslave['st_plus'] += 1 
+}
+
+
+!ITEMS FOR ANIMAL ROLEPLAY (TAIL IS CLOTHING SLOT, HARNESS IS HAND SLOT)
+
+!['anal_tail']
+! JO9 MOD START J9M2180 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'anal_tail', '삽입 말꼬리', 10, '<br> 항문에 들어맞는 커다란 성기 모형과 그에 탈부착 가능한 꼬리. 동물행세에 알맞은 도구이며, 흥분하게 한다. 옷입기 불편한건 어쩔수 없다.<br><br>  매일 흥분Up 태도 좋아짐, 애완녀 교육효율up, 경마녀 교육효율 조금up, 세련됨 -2', 'scene\item\item_anal_tail'
+! JO9 MOD END J9M2180
+
+$item_property['anal_tail'] = {
+	if dynslave['dressage_affinity'] = 0 and dynslave['pet_affinity'] = 0:
+		if dynslave_state = CONST_INT['slave_exist'] and rebell[$dynslave_psy_status] > 0 and dynslave['obedience'] < 0 and dynslave['beaten_ever'] = 0 and dynslave['domini_dictum'] = 0:
+			$place = 'study'
+			$picture_type = 'dynslave_picture'
+			npc = 0 & txt = 1 & $text[1] = '  <<$dynslave_name>>는 애널 테일 착용을 거부한다. 그래도 강제로 착용시킬까?'
+			$yes = {
+				if 'dynslave' = 'slave' and dynslave['gladiatrix'] > max(0, master_supermacy - master_style):
+					dynamic $slave_fights_back
+				else
+					dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'dynslave')
+					dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+				end
+			}
+			$no = {
+				$dynslave['cloth'] = 'голая' &! naked
+				dynslave_inventory['anal_tail'] += 1
+				dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+			}
+			gt 'choice_screen'
+		end
+	end
+	if dynslave['dressage_affinity'] = 0 and dynslave['pet_affinity'] = 0 and dynslave['has_ride_win'] < 7 and $dynslave_psy_status ! 'horny': dynslave['neg_clothes'] = 100 & worn_bonus['mood_rate'] -= dynslave['pride']*5
+	if dynslave['dressage_affinity'] > 0 or dynslave['pet_affinity'] > 0:
+		dynslave['dressage_affinity_revealed'] = max(1, dynslave['dressage_affinity_revealed']) &! always reveals trait when worn - ImperatorAugustus
+		dynslave['pet_affinity_revealed'] = max(1, dynslave['pet_affinity_revealed']) &! always reveals trait when worn - ImperatorAugustus
+		worn_bonus['mood_rate'] += 5
+	end
+	learn_bonus['pet'] += 2 &! well suited for animal play (more for pet)
+	learn_bonus['dressage'] += 1 &! well suited for animal play (less for pony)
+	daily_bonus['arousal'] += 2 &! increases arousal
+	if dynslave['pride'] > 1: daily_bonus['pride'] -= 1 &! anal is degrading
+	dynslave['st_plus'] = -2 &! added style penalty - ImperatorAugustus
+}
+
+!['pony_plume']
+! JO9 MOD START J9M2179 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'pony_plume', '깃달린 굴레', 15, '<br>가죽 굴레는, 재갈과 단단히 묶여 있고 허리 고삐와 연결되어 있다. 두꺼운 가죽 곁눈 가리개는 앞길에 집중하게 만든다. 밝고 높은 장식깃이 눈에 띄게 만드는 경마녀 필수품.<br><br>  매일 사육 대폭Up, 태도 좋아짐, 경마녀 교육효율 대폭Up, 세련됨 +1', 'scene\item\item_pony_plume'
+! JO9 MOD END J9M2179
+
+$item_property['pony_plume'] = {
+	if dynslave['dressage_affinity'] = 0:
+		if dynslave_state = CONST_INT['slave_exist'] and rebell[$dynslave_psy_status] > 0 and dynslave['obedience'] < 0 and dynslave['beaten_ever'] = 0 and dynslave['domini_dictum'] = 0:
+			$place = 'study'
+			$picture_type = 'dynslave_picture'
+			npc = 0 & txt = 1 & $text[1] = '  <<$dynslave_name>>는 깃장식 굴레 착용을 거부한다. 그래도 강제로 착용시킬까?'
+			$yes = {
+				if 'dynslave' = 'slave' and dynslave['gladiatrix'] > max(0, master_supermacy - master_style):
+					dynamic $slave_fights_back
+				else
+					dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'dynslave')
+					dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+				end
+			}
+			$no = {
+				$dynslave['headband'] = 'пусто' &! empty
+				dynslave_inventory['pony_plume'] += 1
+				dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+			}
+			gt 'choice_screen'
+		end
+	end
+	if dynslave['dressage_affinity'] > 0:
+		dynslave['dressage_affinity_revealed'] = max(1, dynslave['dressage_affinity_revealed']) &! always reveals trait when worn - ImperatorAugustus
+		worn_bonus['mood_rate'] += 5
+	elseif dynslave['has_ride_win'] < 4:
+		dynslave['neg_clothes'] = 100 & worn_bonus['mood'] -= 2
+	end
+	daily_bonus['instinct'] += 1 &! restraints induce taming (less than crown of thorns) - ImperatorAugustus
+	if dynslave['pride'] > 1: daily_bonus['pride'] -= 1 &! mouth gag is degrading
+	learn_bonus['dressage'] += 3 &! for ponygirl
+	dynslave['st_plus'] += 1 &! pleasing to the eye
+}
+
+!['ponygirl_harness']
+! JO9 MOD START J9M2178 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'ponygirl_harness', '경마녀 마구', 20, '<br> 이 가죽 코르셋은 주로 경마녀의 팔 위치를 고정할 때 사용한다. 팔을 고정시킨 부분의 큰 고리가 탑승 자세를 편하게 해준다. 흉부에 달린 추가 끈으로 가슴 위치를 잡고, 더 커보이게 해준다.<br><br>  매일 사육 대폭Up, 태도 좋아짐, 경마녀 교육효율 초대폭Up, 세련됨 -2', 'scene\item\item_harness'
+! JO9 MOD END J9M2178
+
+$item_property['ponygirl_harness'] = {
+	if dynslave['dressage_affinity'] = 0:
+		if dynslave_state = CONST_INT['slave_exist'] and rebell[$dynslave_psy_status] > 0 and dynslave['obedience'] < 0 and dynslave['beaten_ever'] = 0 and dynslave['domini_dictum'] = 0:
+			$place = 'study'
+			$picture_type = 'dynslave_picture'
+			npc = 0 & txt = 1 & $text[1] = '  <<$dynslave_name>>는 조랑말 하네스 착용을 거부한다. 그래도 강제로 착용시킬까?'
+			$yes = {
+				if 'dynslave' = 'slave' and dynslave['gladiatrix'] > max(0, master_supermacy - master_style):
+					dynamic $slave_fights_back
+				else
+					dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'dynslave')
+					dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+				end
+			}
+			$no = {
+				$dynslave['gloves'] = 'пусто' &! empty
+				dynslave_inventory['ponygirl_harness'] += 1
+				dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+			}
+			gt 'choice_screen'
+		end
+	end
+	! body-shy, insufficiently-aroused slaves dislike revealing outfits (leather corset, emphasize the breasts) - ImperatorAugustus
+	if dynslave['exhibitionism'] < 0 and $dynslave_psy_status ! 'horny': dynslave['neg_clothes'] = 100 & worn_bonus['mood'] -= 1 & dynslave['exhibitionism_revealed'] = max(1, dynslave['exhibitionism_revealed'])
+	! slaves who love helplessness feel better when tied up while those inured to it are less unaffected and those who are afraid of it feel worse
+	if dynslave['deprivation_attitude'] = 2:  worn_bonus['mood'] += 1 & dynslave['deprivation_attitude_revealed'] = max(1, dynslave['deprivation_attitude_revealed']) &! Loves Helplessness (2)
+	if dynslave['deprivation_attitude'] = -1: worn_bonus['mood'] -= 1 & dynslave['deprivation_attitude_revealed'] = max(1, dynslave['deprivation_attitude_revealed']) &! Claustrophobic (-1)
+	! the effects above can stack with the effects below
+	if dynslave['dressage_affinity'] > 0:
+		dynslave['dressage_affinity_revealed'] = max(1, dynslave['dressage_affinity_revealed']) &! always reveals trait when worn - ImperatorAugustus
+		worn_bonus['mood'] += 1 &! can stack with shy and claustrophic for a combined -1, or loves helplessness can elevate it to +2
+	elseif dynslave['deprivation_attitude'] = 1:
+		dynslave['deprivation_attitude_revealed'] = max(1, dynslave['deprivation_attitude_revealed']) &! Inured (1)
+		! trait blocks negative mood - ImperatorAugustus
+	elseif dynslave['has_ride_win'] < 4:
+		dynslave['neg_clothes'] = 100
+		worn_bonus['mood'] -= 2 &! can stack with shy and claustrophic for a combined -4, or loves helplessness can mitigate it to -1
+	end
+	daily_bonus['instinct'] += 1 &! restraints induce taming (equivalent to leather_straps)
+	learn_bonus['dressage'] += 4 &! for ponygirl
+	dynslave['st_plus'] = -2 &! added style penalty - ImperatorAugustus
+}
+
+!['hoofed_boots']
+! JO9 MOD START J9M2177 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'hoofed_boots', '말발굽 신발', 25, '<br> 말발굽을 모방한 높이 있는 특제 신발. 보통의 높이가 있는 신발들 보다도 훨씬 불편하다. 착용시 쌈박해 보이고 큰 굽소리가 나며, 그 소리로 성질을 내보일 수도 있다.<br><br>  매일 성격Up, 태도 좋아짐, 경마녀 교육효율 초특대폭Up, 세련됨 +1', 'scene\item\item_hoofs'
+! JO9 MOD END J9M2177
+
+$item_property['hoofed_boots'] = {
+	! slave will not refuse to wear these like they refuse other pony gear - ImperatorAugustus
+	dynslave['dressage_affinity_revealed'] = max(1, dynslave['dressage_affinity_revealed']) &! always reveals trait when worn - ImperatorAugustus
+	if dynslave['dressage_affinity'] = 0 and dynslave['has_ride_win'] < 4: dynslave['neg_clothes'] = 100 & worn_bonus['mood_rate'] -= 15 &! -1.5 mood, more uncomfortable than high_heels or high_boots
+	if dynslave['temper'] > 2: daily_bonus['temper'] += 1 &! showing temper, effect shared with high_boots - ImperatorAugustus
+	learn_bonus['dressage'] += 5 &! better for learning than other items to compensate for higher price - ImperatorAugustus
+	dynslave['st_plus'] += 1 &! look stylish (but less than high_heels and high_boots) - ImperatorAugustus
+}
+
+!['cow_gear']
+dynamic $ib_cycle, 'cow_gear', '젖소녀 장비', 25, '<br> 꼬리, 귀, 주인의 이름이 새겨진 멋진 종. 젖소가 젖소임을 되새김질 하는데에 필수 요소이다.<br><br>  - 매일 습관/인식Up, 태도 좋아짐, 지성Dn, 젖소녀 교육효율 Up, 세련됨 -2', 'scene\item\item_cow_gear'
+
+$item_property['cow_gear'] = {
+	if dynslave['cowSK_affinity'] = 0 and dynslave['cowSK'] < 3 and dynslave['pet'] < 3:
+		if dynslave_state = CONST_INT['slave_exist'] and rebell[$dynslave_psy_status] > 0 and dynslave['obedience'] < 0 and dynslave['beaten_ever'] = 0 and dynslave['domini_dictum'] = 0:
+			$place = 'study'
+			$picture_type = 'dynslave_picture'
+			npc = 0 & txt = 1 & $text[1] = '  <<$dynslave_name>>는 젖소녀 장비 착용을 거부한다. 그래도 강제로 착용시킬까?'
+			$yes = {
+				if 'dynslave' = 'slave' and dynslave['gladiatrix'] > max(0, master_supermacy - master_style):
+					dynamic $slave_fights_back
+				else
+					dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'dynslave')
+					dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+				end
+			}
+			$no = {
+				$dynslave['cloth'] = 'голая' &! naked
+				dynslave_inventory['cow_gear'] += 1
+				dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+			}
+			gt 'choice_screen'
+		end
+	end
+	if dynslave['cowSK_affinity'] > 0:
+		dynslave['pos_clothes'] = 100 &! affinity finds the outfit comfortable, but wearing it does not reveal the trait - ImperatorAugustus
+	elseif max(dynslave['cowSK'], dynslave['pet']) < 3:
+		! conditioned mood effect on cow or pet training (B+ or higher accepts the gear without a mood penalty) - ImperatorAugustus
+		dynslave['neg_clothes'] = 100
+		worn_bonus['mood_rate'] -= 5
+	end
+	learn_bonus['cowSK'] += 2 &! remind cow of her role
+	if dynslave['pride'] > 1: daily_bonus['pride'] -= 1 &! tail is degrading
+	if dynslave['intellect'] > 2: daily_bonus['intellect'] -= 1 &! mind-numbing (intellect drain stops at C-, Dimwitted - ImperatorAugustus)
+	dynslave['st_plus'] = -2 &! added style penalty - ImperatorAugustus
+}
+
+!['petsuit']
+! JO9 MOD START J9M2176 | 2026-10-09_dialogue_format_and_protagonist | changed block; context may be included
+dynamic $ib_cycle, 'petsuit', '동물 구속복', 25, '<br> 시야와 귀를 완전히 차단하지는 않는 구속복 착용자를 고양이나 개처럼 행동하게 만든다. 팔꿈치와 무릎 네 부위로만 걸어야 한다.<br><br>  매일 사육Up, 태도 좋아짐, 애완녀 교육효율 대폭Up 그외 일반기술Dn, 독특함 +1, 세련됨 -2', 'scene\item\item_petsuit'
+! JO9 MOD END J9M2176
+
+$item_property['petsuit'] = {
+	! these conditions must be kept in sync with next_day pet_rule evaluation to avoid interrupting next_day processing with an equip refusal
+	if dynslave['pride'] >= 2 and dynslave['pet_affinity'] = 0 and dynslave['pet'] < 3 and dynslave['deprivation_attitude'] <= 0:
+		if dynslave_state = CONST_INT['slave_exist'] and rebell[$dynslave_psy_status] > 0 and dynslave['obedience'] < 0 and dynslave['beaten_ever'] = 0 and dynslave['domini_dictum'] = 0:
+			$place = 'study'
+			$picture_type = 'dynslave_picture'
+			npc = 0 & txt = 1 & $text[1] = '  <<$dynslave_name>>는 펫수트 착용을 거부한다. 그래도 강제로 착용시킬까?'
+			$yes = {
+				if 'dynslave' = 'slave' and dynslave['gladiatrix'] > max(0, master_supermacy - master_style):
+					dynamic $slave_fights_back
+				else
+					dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'dynslave')
+					dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+				end
+			}
+			$no = {
+				$dynslave['cloth'] = 'голая' &! naked
+				dynslave_inventory['petsuit'] += 1
+				dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+			}
+			gt 'choice_screen'
+		end
+	end
+	dynslave['deprivation_attitude_revealed'] = max(1, dynslave['deprivation_attitude_revealed']) &! always reveals trait when worn - ImperatorAugustus
+	if dynslave['deprivation_attitude'] = 2:
+		worn_bonus['mood'] += 1
+	else
+		dynslave['neg_clothes'] = 100
+		worn_bonus['mood'] -= 1 - dynslave['deprivation_attitude'] &! less restrictive than pet suit (1 for inured, -1 for claustrophobic)
+		daily_bonus['ego'] -= 1 &! like behave pet rule - ImperatorAugustus
+	end
+	daily_bonus['pride']        -= 1 &! being forced to act like an animal is degrading - ImperatorAugustus
+	daily_bonus['instinct']     += 2 &! restraints induce taming (less than deprivation suit) - ImperatorAugustus
+	learn_bonus['pet']          += 3 &! act like a cat or dog (best in slot, anal tail gives +2) - ImperatorAugustus
+	! interferes with lessons
+	learn_bonus['service']      -= 10
+	learn_bonus['cook']         -= 10
+	learn_bonus['secretary']    -= 10
+	learn_bonus['expression']   -= 10
+	learn_bonus['nurse']        -= 10
+	learn_bonus['alchemy']      -= 10
+	learn_bonus['enchanter']    -= 10
+	learn_bonus['stamina']      -= 10
+	learn_bonus['gladiatrix']   -= 10
+	learn_bonus['calisthenics'] -= 10
+	learn_bonus['music']        -= 10
+	learn_bonus['art']          -= 10
+	learn_bonus['dressage']     -= 10
+	learn_bonus['cowSK']        -= 10
+	dynslave['st_plus'] = -2
+	dynslave['ex_plus'] = 1
+}
+
+!['deprivation_suit']
+dynamic $ib_cycle, 'deprivation_suit', '구속복', 50, '<br> 복장으로 불리지만 그런 류로 입는게 아니라, 철저한 구속을 위한 것이다. 두툼한 고무 외피와 튼튼한 가죽 끈으로 움직임을 막아 버리고, 계속 착복 자세를 유지하는 압력을 가한다. 눈, 귀, 입은 완전히 틀어막혀 착용자를 세상과 단절시킨다. - 사육 특대폭up, 기분 dn, 모든 일반교육 초특대폭dn', 'scene\item\item_dsuit'
+
+$item_property['deprivation_suit'] = {
+	if dynslave['deprivation_attitude'] <= 0:
+		if dynslave_state = CONST_INT['slave_exist'] and rebell[$dynslave_psy_status] > 0 and dynslave['obedience'] < 0 and dynslave['beaten_ever'] = 0 and dynslave['domini_dictum'] = 0:
+			$place = 'study'
+			$picture_type = 'dynslave_picture'
+			npc = 0 & txt = 1 & $text[1] = '  <<$dynslave_name>>는 감각 차단 수트 착용을 거부한다. 그래도 강제로 착용시킬까?'
+			$yes = {
+				if 'dynslave' = 'slave' and dynslave['gladiatrix'] > max(0, master_supermacy - master_style):
+					dynamic $slave_fights_back
+				else
+					dynamic $replace($dyn_slave_forced, 'dyn'+'slave', 'dynslave')
+					dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+				end
+			}
+			$no = {
+				$dynslave['cloth'] = 'голая' &! naked
+				dynslave_inventory['deprivation_suit'] += 1
+				dynslave_stat_screen = 2 & menu_form = 0 & gt iif('dynslave' = 'slave' or 'dynslave' = 'assistant', 'dynslave_stat', $return_lock)
+			}
+			gt 'choice_screen'
+		end
+	end
+	dynslave['deprivation_attitude_revealed'] = max(1, dynslave['deprivation_attitude_revealed']) &! always reveals trait when worn - ImperatorAugustus
+	if dynslave['deprivation_attitude'] = 2:
+		worn_bonus['mood'] += 1
+	else
+		dynslave['neg_clothes'] = 100
+		worn_bonus['mood'] -= 2 - dynslave['deprivation_attitude'] &! more restrictive than pet suit (1 for inured, -1 for claustrophobic)
+		daily_bonus['temper'] -= 1 &! like behave silence rule - ImperatorAugustus
+	end
+	daily_bonus['instinct']     += 3 &! restraints induce taming (best in slot) - ImperatorAugustus
+	! interferes with lessons
+	learn_bonus['pet']          -= 10
+	learn_bonus['service']      -= 10
+	learn_bonus['cook']         -= 10
+	learn_bonus['secretary']    -= 10
+	learn_bonus['expression']   -= 10
+	learn_bonus['nurse']        -= 10
+	learn_bonus['alchemy']      -= 10
+	learn_bonus['enchanter']    -= 10
+	learn_bonus['stamina']      -= 10
+	learn_bonus['gladiatrix']   -= 10
+	learn_bonus['calisthenics'] -= 10
+	learn_bonus['music']        -= 10
+	learn_bonus['art']          -= 10
+	learn_bonus['dressage']     -= 10
+	learn_bonus['cowSK']        -= 10
+	dynslave['st_plus'] = -4
+	dynslave['ex_plus'] = 2
+}
+
+!New items! - RedGreen3
+!["strapon"]
+dynamic $ib_cycle, 'strapon', '착용식 딜도', 100, '   가격: 100 스파크. <br>   이 장난감은 레즈비언과 여성 조련사에게 그야말로 없어선 안 될 물건이다. 교체 가능한 부착구와 7단 진동 기능은 너와 상대 둘 다 만족시켜 줄 것이다!', 'scene\item\strapon'
+$item_property['strapon'] = {
+}
+![""]
+$item_name[""] = ''
+item_price[""] = 0
+$item_description[""] = ''
+$item_demo[""] = 'scene\item\item_'
+$item_property[""] = {
+slave_rate["nothing"] += 1
+learn_bonus["skill"] += 1
+}
+!Барахолка
+!["slavecostume"]
+dynamic $ib_cycle, 'slavecostume', '노예 복장', 20, '   가격: 20 스파크.  <br>   이것은 전통적인 노예 복장이다. 화려함과 끝없는 성애가 독특하게 결합된 것이 이 의상의 특징이다. 자유 시간 내내 끝없이 헌신한 네 노예에게서 보고 싶은 게 바로 이런 모습 아니겠나?! - 성 교육효율Up, 매일 흥분도 대폭Up, 세련됨 +1, 독특함 +1', 'scene\item\slavecostume'
+$item_property["slavecostume"] = {
+!    dynslave["exotic_bonus"] += 20
+!    dynslave["style"] += 1
+    daily_bonus["arousal"] += 3
+    learn_bonus["sex"] += 2
+    dynslave["st_plus"] += 1
+    dynslave["ex_plus"] += 1
+}
+!["smalldress"]
+dynamic $ib_cycle, 'smalldress', '짧은 드레스', 30, '   가격: 30 스파크.  <br>   이 드레스보다 더 단순하고 직설적인 건 없다. 이걸 입는 여자는 사교계 여성이자 코르티잔이 될 것이다. 이 다면적인 매력은 야생의 노예를 길들이기에 아주 특별한 발견이다. 어떤 여자도 대중 앞에서 창녀처럼 보이고 싶어 하진 않는다. 하지만 이 드레스를 입으면, 그녀는 그 부끄러움을 극복해야만 한다. - 매일 흥분도 초대폭Up, 매일 사육 소폭Up, 성 교육효율Up, 세련됨 +1, 독특함 +1', 'scene\item\smalldress'
+$item_property["smalldress"] = {
+!    dynslave["exotic_bonus"] += 40
+!    dynslave["style"] += 1
+    daily_bonus["arousal"] += 4
+    daily_bonus["instinct"] += 1
+    learn_bonus["sex"] += 2
+    dynslave["st_plus"] += 1
+    dynslave["ex_plus"] += 1
+}
+!["dancecostume"]
+dynamic $ib_cycle, 'dancecostume', '무희 의상', 40, '   가격: 40 스파크.  <br>   이 의상은 로마풍으로 디자인되었다. 동방풍 요소도 살짝 섞여 있어 무희나 후궁에게 완벽하다. 아름다운 노예에게 입히면 그녀의 관능을 훌륭하게 강조해 줄 것이다. - 매일 흥분도 소폭Up, 성 교육효율Up, 무용술 교육효율Up, 세련됨 +1, 독특함 +2', 'scene\item\dancecostume'
+$item_property["dancecostume"] = {
+!    dynslave["exotic_bonus"] += 50
+!    dynslave["style"] += 1
+    daily_bonus["arousal"] += 1
+    learn_bonus["sex"] += 2
+    learn_bonus["calisthenics"] += 2
+    dynslave["st_plus"] += 1
+    dynslave["ex_plus"] += 2
+}
+!["korset"]
+dynamic $ib_cycle, 'korset', '코르셋', 40, '   가격: 40 스파크.  <br>   이 세트의 미래 주인은 분명 잠자리에서 뽐낼 것이 있다. 이보다 더 노출되는 의상은 찾기 어렵다. 섹스와 흥분, 유혹의 바다가 보장된다. - 매일 흥분도 Up, 매일 사육 소폭Up, 성 교육효율 대폭Up, 세련됨 +1, 독특함 +2', 'scene\item\korset'
+$item_property["korset"] = {
+!    dynslave["exotic_bonus"] += 80
+!    dynslave["style"] += 1
+    daily_bonus["arousal"] += 2
+    learn_bonus["sex"] += 3
+    dynslave["st_plus"] += 1
+    dynslave["ex_plus"] += 2
+}
+!["wooltunika"]
+dynamic $ib_cycle, 'wooltunika', '울 튜닉', 50, '   가격: 50 스파크.  <br>   이 부정할 수 없이 이국적인 복장은 로마에서 가장 흔한 건 아니다. 하지만 장점은 많다. 첫째, 아름답다. 둘째, 서늘한 날씨에는 몸을 따뜻하게 해 준다. 셋째, 한없이 에로틱하다. 네 노예는 그걸 완벽히 느끼게 될 것이다. 매일 흥분도 Up, 성 교육효율 대폭Up, 세련됨 +2, 독특함 +1', 'scene\item\wooltunika'
+$item_property["wooltunika"] = {
+!    dynslave["exotic_bonus"] += 50
+!    dynslave["style"] += 1
+    daily_bonus["arousal"] += 2
+    learn_bonus["sex"] += 3
+    dynslave["st_plus"] += 2
+    dynslave["ex_plus"] += 1
+}
+!["slaveparad"]
+dynamic $ib_cycle, 'slaveparad', '퍼레이드 복장', 100, '   가격: 100 스파크.  <br>   행사를 열거나... 노예를 팔기 위해 준비 중인가... 그럼 네 노예를 가장 빛나게 보여 줄 의상으로 이보다 더 좋은 건 찾기 어렵다. 최고급 천, 넘쳐나는 보석, 금빛 세공이 네 노예에게 최고의 관능과 이국성, 우아함을 부여해 줄 것이다. - 매일 흥분도 소폭Up, 성 교육효율Up, 무용술 교육효율 소폭Up, 세련됨 +4, 독특함 +3', 'scene\item\slaveparad'
+$item_property["slaveparad"] = {
+!    dynslave["exotic_bonus"] += 80
+!    dynslave["style"] += 1
+    daily_bonus["arousal"] += 1
+    learn_bonus["sex"] += 2
+    learn_bonus["calisthenics"] += 1
+    dynslave["st_plus"] += 4
+    dynslave["ex_plus"] += 3
+}
+!["slavetunika"]
+dynamic $ib_cycle, 'slavetunika', '노예 튜닉', 20, '   가격: 20 스파크.  <br>   노예에게 가장 단순하고 편안한 옷이다. 튜닉은 아주 실용적인 옷으로 입증되었고, 관리도 거의 필요 없다. 낮은 가격을 생각하면 가성비도 아주 좋다. -  매일 흥분도 Up,  세련됨 +1, 독특함 +1', 'scene\item\slavetunika'
+$item_property["slavetunika"] = {
+!    dynslave["exotic_bonus"] += 10
+!    dynslave["style"] += 1
+    daily_bonus["arousal"] += 2
+    dynslave["st_plus"] += 1
+    dynslave["ex_plus"] += 1
+}
+!["kimono"]
+dynamic $ib_cycle, 'kimono', '기모노', 50, '   가격: 50 스파크.  <br>   기모노는 오래전부터 사랑받아 온 의상이다. 아주 실용적이고, 화려하며, 편안해서 네 노예도 분명 만족할 것이다.  -  잡일/요리/전투술 교육효율 소폭Down, 수사학 교육효율 대폭Up, 음악/미술 교육효율 소폭Up, 성 교육효율Up, 세련됨 +3, 독특함 +3', 'scene\item\kimono'
+$item_property["kimono"] = {
+    dynslave["mood"] += 1
+!    dynslave["exotic_bonus"] += 10
+!    dynslave["style"] += 1
+	learn_bonus["service"] -= 1
+    learn_bonus["cook"] -= 1
+    learn_bonus["gladiatrix"] -= 1
+    learn_bonus["expression"] += 3
+    learn_bonus["music"] += 1
+    learn_bonus["art"] += 1
+    learn_bonus["sex"] += 2
+    dynslave["st_plus"] += 3
+    dynslave["ex_plus"] += 3
+}
+!["charcostume"]
+dynamic $ib_cycle, 'charcostume', '마녀 복장', 30, '   가격: 30 스파크.  <br>   네 노예가 마법 쪽 재능이 있다면, 그녀는 분명 이 복장을 사랑하게 될 것이다. 일정한 마법과 신비가 스며든 흥미롭고 세련된 디자인은 그녀를 더 자신감 있고 안전하게 느끼게 해 줄 것이다. - 매일 흥분도 소폭Up,  마법력 교육효율 대폭 Up, 연금술 교육효율 대폭 Up, 세련됨 +1, 독특함 +2', 'scene\item\charcostume'
+$item_property["charcostume"] = {
+    dynslave["mood"] += 1
+!    dynslave["exotic_bonus"] += 30
+!    dynslave["style"] += 1
+    daily_bonus["arousal"] += 1
+    learn_bonus["enchanter"] += 3
+    learn_bonus["alchemy"] += 3        
+    dynslave["st_plus"] += 1
+    dynslave["ex_plus"] += 2
+}
+!["tunika"]
+dynamic $ib_cycle, 'tunika', '튜닉', 40, '   가격: 40 스파크.  <br>   고전은 여전히 유행이다. 비단과 아마포가 아름답게 결합된 이 전통적인 영원의 도시 의상은 네 노예의 가장 좋은 매력을 완벽하게 강조해 줄 것이다. - 매일 흥분도 소폭Up, 수사학 교육효율 소폭Up, 세련됨 +2, 독특함 +1', 'scene\item\tunika'
+$item_property["tunika"] = {
+!    dynslave["exotic_bonus"] += 20
+!    dynslave["style"] += 1
+    learn_bonus["expression"] += 1
+    daily_bonus["arousal"] += 1
+    dynslave["st_plus"] += 2
+    dynslave["ex_plus"] += 1
+}
+!["toga"]
+dynamic $ib_cycle, 'toga', '토가', 50, '   가격: 50 스파크.  <br>   또 하나의 고전 의상 변형이다. 다만 토가는 주로 부유한 시민들이 입는다. 그러니 노예에게는 아주 값진 선물이 될 것이다. 적어도 가끔은 완전히 행복한 기분을 느낄 수 있을 테니까. 그리고 몸을 부드럽게 어루만지는 비단은 그걸 더욱 잘 도와줄 것이다.  - 매일 흥분도 소폭Up, 수사학 교육효율 소폭Up, 세련됨 +2, 독특함 +2', 'scene\item\toga'
+$item_property["toga"] = {
+    dynslave["mood"] += 1
+!    dynslave["exotic_bonus"] += 20
+!    dynslave["style"] += 1
+    learn_bonus["expression"] += 1
+    daily_bonus["arousal"] += 1
+    dynslave["st_plus"] += 2
+    dynslave["ex_plus"] += 2
+}
+!["paradtunika"]
+dynamic $ib_cycle, 'paradtunika', '고급 튜닉', 70, '   가격: 70 스파크.  <br>   아마포와 비단, 단순함과 우아함의 정교한 결합을 축제 장식으로 완성시킨 이 버전의 튜닉은 어떤 여자에게도 아주 탐나는 의상이 되었다. - 성 교육효율 소폭Up, 매일 흥분도 소폭Up, 수사학 교육효율 소폭Up, 세련됨 +3, 독특함 +3', 'scene\item\paradtunika'
+$item_property["paradtunika"] = {
+!    dynslave["exotic_bonus"] += 20
+!    dynslave["style"] += 2
+    learn_bonus["expression"] += 1
+    learn_bonus["sex"] += 1
+    daily_bonus["arousal"] += 1
+    dynslave["st_plus"] += 3
+    dynslave["ex_plus"] += 3
+}
+!["nuncostume"]
+dynamic $ib_cycle, 'nuncostume', '수녀 복장', 60, '   가격: 60 스파크.  <br>  수녀의 이미지는 신비와 정숙이 뒤섞인 칵테일이며, 가장 사람을 끄는 것 중 하나다. 이 복장을 입은 소녀는 분명 파티의 별이자 밤의 여왕이 될 것이다. 자신감과 완벽함에 대한 확신을 얻고, 자신의 장점을 드러내며, 기분도 단번에 올라갈 것이다. 복장에는 윔플, 묵주, 라텍스 란제리 세트, 스타킹, 하이힐이 포함된다. - 매일 흥분도 대폭Up, 매일 사육/인식/습관 소폭Up, 성 교육효율 초대폭Up, 세련됨 +3, 독특함 +3', 'scene\item\nuncostume'
+!["nuncostume_parts"]
+dynamic $ib_cycle, 'underwear_nun', '수녀 드레스'
+$item_property["underwear_nun"] = {
+!    dynslave["exotic_bonus"] += 20
+!    dynslave["style"] += 2
+    daily_bonus["arousal"] += 3
+    daily_bonus["custom"] += 1
+    daily_bonus["instinct"] += 1
+    daily_bonus["rational"] += 1
+    daily_bonus["mood"] += 1
+    if dynslave["pos_clothes"] < 2: dynslave["pos_clothes"] += 1
+    learn_bonus["sex"] += 4
+    dynslave["st_plus"] += 3
+    dynslave["ex_plus"] += 3
+}
+dynamic $ib_cycle, 'wimple_nun', '수녀 머릿수건'
+dynamic $ib_cycle, 'rosary_nun', '묵주'
+dynamic $ib_cycle, 'heels_nun', '수녀 하이힐'
+!["slut_costume"]
+dynamic $ib_cycle, 'slutcostume', '창녀 복장', 30, '   가격: 30 스파크.  <br>   <font size = 3%>이건 창녀들의 고전 복장이다. 가발, 상의, 치마, 도미나 부츠 - 전부 단순하고 직설적이다. 군더더기는 없다. 하지만 소녀는 풀어지고 자신의 관능을 드러내게 될 것이며, 네 노예의 몸매가 지닌 모든 장점도 잠재 고객들에게 뚜렷하게 보여질 것이니, 당연히 매상도 더 올라갈 것이다. 물론 이 복장을 입은 네 노예는 극장이나 식당, 혹은 그냥 시내를 산책할 때는 우스꽝스럽게 보일 것이다. 하지만 홍등가에서는 분명 몇 점쯤은 더 벌어 줄 것이다.</font> - 성 교육효율Up, 매일 흥분도 초대폭Up, 매일 인식/습관 소폭Up, 세련됨 +3, 독특함 +2', 'scene\item\slut_costume'
+dynamic $ib_cycle, 'slut_dress', '창녀 드레스'
+$item_property["slut_dress"] = {
+!    dynslave["exotic_bonus"] += 50
+!    dynslave["style"] -= 1
+    learn_bonus["sex"] += 2
+    daily_bonus["arousal"] += 4
+    daily_bonus["custom"] += 1
+    daily_bonus["rational"] += 1
+    dynslave["st_plus"] += 3
+    dynslave["ex_plus"] += 2 
+}
+dynamic $ib_cycle, 'slut_wig', '창녀 가발'
+dynamic $ib_cycle, 'slut_boots', '창녀 부츠'
+!["klips"]
+dynamic $ib_cycle, 'klips', '클립 귀걸이', 5, '   가격: 5 스파크.  <br>   클립식 귀걸이는 피어싱이 필요 없는 귀걸이다. 일반 귀걸이만큼 훌륭하다. - 세련됨 +1', 'scene\item\klips'
+$item_property["klips"] = {
+!    dynslave["style"] += 1
+    dynslave["st_plus"] += 1
+}
+!["brasletyboho"]
+dynamic $ib_cycle, 'brasletyboho', '보헤미안 팔찌', 10, '   가격: 10 스파크.  <br>   같은 스타일로 통일된 선명한 팔찌와 반지 세트가 네 노예의 우아함과 이국성을 강조해 준다. - 세련됨 +1, 독특함 +1', 'scene\item\brasletyboho'
+$item_property["brasletyboho"] = {
+!    dynslave["style"] += 2
+    dynslave["mood"] += 1
+!    dynslave["exotic_bonus"] += 15
+    dynslave["st_plus"] += 1
+    dynslave["ex_plus"] += 1
+}
+!["encrustedbracelet"]
+dynamic $ib_cycle, 'encrustedbracelet', '보석 박힌 팔찌', 20, '   가격: 20 스파크.  <br>   기분을 북돋워 주고 네 노예의 스타일과 이국성을 완벽하게 강조해 주도록 만든, 보석이 박힌 금팔찌다. - 세련됨 +2, 독특함 +1', 'scene\item\encrustedbracelet'
+$item_property["encrustedbracelet"] = {
+!    dynslave["style"] += 2
+    dynslave["mood"] += 1
+!    dynslave["exotic_bonus"] += 20
+    dynslave["st_plus"] += 2
+    dynslave["ex_plus"] += 1
+}
+!["kaffs"]
+dynamic $ib_cycle, 'kaffs', '커프', 20, '   가격: 20 스파크.  <br>   이어 커프는 귀 전체를 감싸는 귀걸이다. 네 노예의 이국성과 우아함을 한층 돋보이게 해 줄 것이다. - 세련됨 +2, 독특함 +2', 'scene\item\kaffs'
+$item_property["kaffs"] = {
+!    dynslave["style"] += 2
+    dynslave["mood"] += 1
+!    dynslave["exotic_bonus"] += 20
+    dynslave["st_plus"] += 2
+    dynslave["ex_plus"] += 2
+}
+!["sleivbraslety"]
+dynamic $ib_cycle, 'sleivbraslety', '노예 팔찌', 30, '   가격: 30 스파크  <br>   여러 종류의 보석이 박힌 귀금속 팔찌다. 아주 야성적인 이국미를 풍긴다. - 세련됨 +2, 독특함 +3', 'scene\item\sleivbraslety'
+$item_property["sleivbraslety"] = {
+!    dynslave["style"] += 1
+    dynslave["mood"] += 1
+!    dynslave["exotic_bonus"] += 40
+    dynslave["st_plus"] += 2
+	dynslave["ex_plus"] += 3
+}
+!["sandalii"]
+dynamic $ib_cycle, 'sandalii', '샌들', 30, '   가격: 30 스파크.  <br>   샌들은 전통적인 신발 선택지다. 일상용으로도 특별한 자리용으로도 적합하다. 편안하고, 우아하며, 가격도 합리적이다. - 세련됨 +2', 'scene\item\sandalii'
+$item_property["sandalii"] = {
+!    dynslave["style"] += 1
+    dynslave["mood"] += 1
+!    dynslave["exotic_bonus"] += 10
+    dynslave["st_plus"] += 2
+}
+
+
+!ONE TIME PURCHASES FOR RULES OR RULE ENFORCEMENT
+
+!['vaginal_balls']
+dynamic $ib_cycle, 'vaginal_balls', '바기나 비즈', 5, '<br> 손잡이가 달려있는 두 개의 이어진 구슬, 질속에 장시간 삽입 가능하게 설계되었다. 괄약근과 감도 개발에 아주 좋은 물건이다.', 'scene\item\item_vaginal_balls'
+
+$item_property['vaginal_balls'] = {
+}
+
+!['anal_plug']
+dynamic $ib_cycle, 'anal_plug', '애널 플러그', 20, '<br> 일반적인 똥꼬 마개와 달리 홈을 갖고 있어, 돌리면 항문을 확장시킨다. 홈엔 작은 자물쇠가 있고 열쇠 없이 마개를 제거할 수 없다.', 'scene\item\item_toys'
+
+$item_property['anal_plug'] = {}
+
+!['secure_gag']
+dynamic $ib_cycle, 'secure_gag', '견고한 재갈', 20, '<br> 개구기와 말굴레의 강점만 빼내어 만든 인상깊은 철제 도구. 열쇠 없이는 탈착 불가능하며 입크기를 최대로 고정시킨다.', 'scene\item\item_secure_gag'
+
+$item_property['secure_gag'] = {
+}
+
+!['chastity belt']
+dynamic $ib_cycle, 'chastity_belt', '정조대', 30, '<br> 가죽과 철로 구성된 착용형 정조대 질구엔 열쇠 소지자를 제외한, 누구 좆도 얼씬할 수 없다.', 'scene\item\item_chastity_belt'
+
+$item_property['chastity_belt'] = {
+}
+
+!['pissuar_stable']
+dynamic $ib_cycle, 'pissuar_stable', '구속 소변기', 100, '<br> 노예 자체를 씀으로써 많은 공간을 요구하지 않는 가구 손, 발, 머리를 위한 충분한 크기의 조임틀이 있다. 입을 위한 개구기와 코마개도 같이 있다. 또, 그릇 딸린 투명한 머리띠를 착용시켜 <u>마실래 박힐래</u> 놀이도 할 수 있다.', 'scene\item\item_pissuar'
+
+$item_property['pissuar_stable'] = {
+}
+
+!['toilet_stable']
+dynamic $ib_cycle, 'toilet_stable', '구속 대변기', 250, '<br> 꽤나 큰 부피의 가구지만, 그만한 가치가 있다. 튀어나온 머리 부분을 제외하고, 움직임을 완벽히 고정하여 도망을 차단한다. 특별 장치가, 입 안에 이물질 넣는 동안 벌린채로 확실히 고정해준다.', 'scene\item\item_toilet'
+
+$item_property['toilet_stable'] = {
+}
+
+!PRESENTS
+
+!Букет ['bouqet']
+dynamic $ib_cycle, 'bouqet', '아름다운 꽃다발 (2$)', 2, '<br> 작지만 매우 아름다운 꽃다발. 이것은 수경재배로 길러져 활짝 핀 특별한 꽃다발이다. - 단 하루만 활짝 피고 져버리지만, 꽤 저렴하다.', 'scene\item\item_bouqet'
+
+$item_property['bouqet'] = {}
+
+!Плед ['plaid']
+dynamic $ib_cycle, 'plaid', '체크무늬 담요 (9$)', 9, '<br> 탈탄식 격자 무늬의 크고 부드러운 직물. 이 담요를 덮으면 소녀는 편안함을 느끼고 인생의 시련을 더 잘 극복할 수 있을 것이다. 마음만이라도.', 'scene\item\item_plaid'
+
+$item_property['plaid'] = {
+	if (dynslave['sleep_condition'] = 0 and 'dynslave' = 'slave') or dynslave['well_rested'] > 0: daily_bonus['angst'] -= 1 &! reduces angst nightly if used during the day or in her bedroll
+}
+
+!Мягкая игрушка ['stuffed_toy']
+dynamic $ib_cycle, 'stuffed_toy', '봉제 인형 (15$)', 15, '<br> 다소 크고 비싼 이 인형은 좋은 선물이 될 것이다. 또한 문 근처에서 얇은 침낭에서 자는 노예를 따뜻하게 해줄 것이다.', 'scene\item\item_stuffed_toy'
+
+$item_property['stuffed_toy'] = {
+	if dynslave['sleep_condition'] = 0 and 'dynslave' = 'slave': daily_bonus['half_action'] -= 1 &! increases energy by a half-star overnight when sleeping on a bedroll
+}
+
+!Духи ['perfume']
+dynamic $ib_cycle, 'perfume', '고급 향수 (20$)', 20, '<br> 안개를 건너 온 훌륭한 조합으로 만들어진 예쁜 병에 든 향수. 물론, 이런 선물을 마다할 여자는 없다. 그러나 당신의 목적은 두가지다. - 그녀에 대항 보상과, 고객들에게 더 인기 있어지는 것.', 'scene\item\item_perfume'
+
+$item_property['perfume'] = {
+	if 'dynslave' ! 'prisoner' and arrpos('$livestock_slave_characters', 'dynslave') = -1: daily_bonus['custom'] += 1 & dynslave['perfume'] = 1
+}
+
+!Мини-пони ['pony']
+dynamic $ib_cycle, 'pony', '애완 망아지 (50$)', 50, '<br> 이 고양이 크기의 멋진 생명체는 기술 집약소 유전공학의 산물이다. 이들은 수명이 그리 길지 않고, 먹을 수도 없다. 하지만 주인에 대한 충성심이 강하고 사랑스러운 존재다. 당신은 이제 주기적으로 사료비를 내야 한다. (1$/일)', 'scene\item\item_pony'
+
+$item_property['pony'] = {
+	dynslave['pos_pony'] = 1
+	dynslave['neg_pony_died'] = 0
+}
+------------ #item_base ------------
