@@ -8,6 +8,10 @@ The project began with a Korean retranslation of JO9 2.3, consulting Russian and
 
 The current release combines revised UI and artwork with contextual conversations, companion combat, expanded traits, clearer character information, household-management improvements, world descriptions, and fixes to existing systems. The in-game language is Korean and the supported start is male-protagonist only.
 
+## Why share this source with English-speaking modders?
+
+The Korean build uses resources from the **Indie Patch**, created by [PSP_PSP](https://f95zone.to/members/psp_psp.4602157/). Sharing SAnk’s source, UI work, and reference material with the English-speaking modding community is also a gesture of respect and gratitude for that work, and a way to give something useful back.
+
 ## Dialogue: inherited idea and implemented system
 
 The original direction was handed over from Claude and inspired by Wayward's contextual-text approach. It separates **subject selection** from **voice**: background and circumstances determine what is relevant, while personality and speaking style determine how it is expressed. The retained [v1 design](dialogue/design-original/README.md) proposed short additions around original replies, using existing state without new persistent state variables; it is an initial design, not a full description of the later implementation.

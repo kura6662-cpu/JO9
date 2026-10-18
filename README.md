@@ -2,6 +2,8 @@
 
 This repository is a history-free source and reference snapshot of **SAnk's Korean Jack-o-nine-tails 2.4 alpha**, prepared on 19 October 2026 for modders who want to study the changes or port selected parts to their own projects. In-game text remains Korean. This is a reference snapshot, rather than a complete English translation or an installer for every JO9 edition.
 
+Sharing this work with the English-speaking modding community is also a gesture of respect and gratitude to [PSP_PSP](https://f95zone.to/members/psp_psp.4602157/), the creator of the **Indie Patch**, whose resources are used in the Korean build. Making SAnk’s own work available is intended to give something useful back to that community.
+
 The project began as an AI-assisted Korean retranslation of 2.3, consulting both Russian and English text, and expanded into UI, artwork, dialogue, gameplay, and bug fixes. The current playable working copy was used as the snapshot authority; older source exports and the previous September UI-patch README do not define this release.
 
 ## What is here
@@ -95,5 +97,7 @@ Longer-term ideas include freeing developed characters, homes and shop roles for
 Thanks to **Old Huntsman**, **Graylor** for FastQSP, and the original developers and contributors, including **Beaver14, Crushboss, Fugitive Red, qwertyu12359, Powerairmax, Lokplart, ImperatorAugustus, Mars & Jinn, RedGreen3, Teletube**, and the wider community.
 
 Thanks to **한글을사랑합시다**, the **사서고생분들 / Dona Patch team** for the Korean 2.3 release, and **smsfbatalovehandle** for the AI girl pack. Preserve the existing in-game credits and any bundled component notices when adapting the work.
+
+Special thanks to [PSP_PSP](https://f95zone.to/members/psp_psp.4602157/) for creating the **Indie Patch** and for the resources used in this Korean build.
 
 SAnk has invited reuse and adaptation of SAnk's own image replacements, UI work, and other changes. This statement does not assign a new license to the original game, engine, external packs, or other third-party material. No repository-wide license is invented by this snapshot; consult each component's existing terms and credits.
